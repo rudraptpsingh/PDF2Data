@@ -26,6 +26,7 @@ After installing the package, use `pdf2data` without `./`. For Qwen use the MLX-
 | `pdf2data l1-qwen-run` | run pinned cached Qwen offline with resumable per-page receipts |
 | `pdf2data l1-qwen-validate` | compare source-bound readings without promoting unresolved content |
 | `pdf2data l1-qwen-reproof` | reassess exact source-raster Qwen witnesses into a new immutable L1 version; never replace text |
+| `pdf2data export-l1-data` | export ALL processed text/layout/tables and diagnostics, including flagged pages |
 | `pdf2data pdf-repair` | repair selected original physical pages without reprocessing the PDF |
 | `pdf2data pdf-native-repair` | atomically replace one page from a source-bound PDFium/pypdf/raster receipt |
 | `pdf2data pdf-batch` | extract a bounded manifest of local PDFs with resumable page receipts |
@@ -303,6 +304,25 @@ options:
   -h, --help           show this help message and exit
   --cases CASES
   --readings READINGS
+  --packages PACKAGES
+  --output OUTPUT
+  --json
+```
+
+### export-l1-data
+
+export ALL processed text/layout/tables and diagnostics, including flagged pages
+
+```bash
+pdf2data export-l1-data --packages <packages> --output <output>
+```
+
+```text
+usage: pdf2data export-l1-data [-h] --packages PACKAGES --output OUTPUT
+                               [--json]
+
+options:
+  -h, --help           show this help message and exit
   --packages PACKAGES
   --output OUTPUT
   --json

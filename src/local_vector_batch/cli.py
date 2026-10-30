@@ -112,6 +112,10 @@ def parser() -> argparse.ArgumentParser:
     qproof.add_argument("--packages", required=True, type=Path)
     qproof.add_argument("--output", required=True, type=Path)
     qproof.add_argument("--json", action="store_true")
+    export_l1 = sub.add_parser("export-l1-data", help="export ALL processed text/layout/tables and diagnostics, including flagged pages")
+    export_l1.add_argument("--packages", required=True, type=Path)
+    export_l1.add_argument("--output", required=True, type=Path)
+    export_l1.add_argument("--json", action="store_true")
     repair = sub.add_parser("pdf-repair", help="repair selected original physical pages without reprocessing the PDF")
     repair.add_argument("--input", required=True, type=Path, help="original source PDF")
     repair.add_argument("--package", required=True, type=Path, help="existing verified extraction package")
@@ -333,6 +337,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "l1-qwen-reproof":
             from .l1_qwen import reproof
             result = reproof(args.cases, args.readings, args.packages, args.output)
+        elif args.command == "export-l1-data":
+            from .l1_export import export_processed
+            result = export_processed(args.packages, args.output)
         elif args.command == "pdf-extract":
             from .pdf_ingest import extract_pdf
             result = extract_pdf(args.input, args.output, title=args.title,

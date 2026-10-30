@@ -42,6 +42,10 @@
       "purpose": "reassess exact source-raster Qwen witnesses into a new immutable L1 version; never replace text"
     },
     {
+      "name": "export-l1-data",
+      "purpose": "export ALL processed text/layout/tables and diagnostics, including flagged pages"
+    },
+    {
       "name": "pdf-repair",
       "purpose": "repair selected original physical pages without reprocessing the PDF"
     },
