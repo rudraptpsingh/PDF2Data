@@ -39,4 +39,6 @@ def test_memory_error_aborts_partition_for_worker_cleanup(tmp_path,monkeypatch):
   return {'page':n,'quality':b['quality']['results'][n-1]}
  monkeypatch.setattr(engine,'_evaluate',evaluate)
  with pytest.raises(MemoryError):engine.create_region_reproof(tmp_path/'synthetic-parent',tmp_path/'synthetic-runtime',tmp_path/'synthetic-origin',[1,2,3],tmp_path/'sidecar')
- assert calls==[1,2]and not(tmp_path/'sidecar').exists()
+ assert calls==[1,2]and not(tmp_path/'sidecar/reproof-version.json').exists()
+ # A staging directory may preserve earlier failed candidate diagnostics; an
+ # aborted partition must never leave a sealed quality/version receipt.
