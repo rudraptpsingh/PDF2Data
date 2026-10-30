@@ -142,7 +142,7 @@ def sync_feedback_jobs(manifest: Path, feedback: Path, output: Path) -> dict:
         return result
 
 
-def preview_tables(source_pdf: Path, physical_page: int, source_sha: str) -> list[dict]:
+def preview_tables(source_pdf: Path, physical_page: int, source_sha: str, *, selected_page_text=None) -> list[dict]:
     """Recompute a table repair preview; never rewrite an immutable package."""
     import pdfplumber
     import pypdfium2 as pdfium
@@ -163,6 +163,7 @@ def preview_tables(source_pdf: Path, physical_page: int, source_sha: str) -> lis
                 identity=f'{source_sha[:16]}:p{physical_page}:table{index}'
                 prepared.append((index,found,cells,table_shape(found,cells,identity)))
             source_lines=page.extract_text_lines()
+            selected_source_page=(page.extract_text()or'')if selected_page_text is None else selected_page_text
             from .native_tight_cell_ownership import page_source_cell_context
             all_source_cells=[cell for _,_,_,shape in prepared for cell in shape.get('cell_spans',[])]
             with page_source_cell_context(source_pdf,physical_page,page,source_sha,all_source_cells,pdfium_page=other_page,text_page=text_page,third_layout=third_layout):
@@ -188,6 +189,15 @@ def preview_tables(source_pdf: Path, physical_page: int, source_sha: str) -> lis
                         cell['independent_reader_mapping']=mapping
                         cell['readers_agree']=agrees(cell['text'] or '',mapping['mapped_text'],exact_characters=True)
                         cell['independent_glyph_audit']=glyph_audit(mapping['mapped_text'])
+                        if not cell['readers_agree']and not cell.get('glyph_audit',{}).get('issues')and not cell['independent_glyph_audit'].get('issues'):
+                            from .native_cell_space_projection import prove_processed_cell
+                            processed=prove_processed_cell(page,other_page,text_page,
+                                {**cell,'table_geometry_sha256':shape['table_geometry_sha256']},
+                                value,third_layout,selected_source_page,source_sha)
+                            if processed is not None:
+                                # Retain raw text/readers_agree; the distinct
+                                # processed version is not a raw-table rewrite.
+                                cell['processed_cell_version']=processed
                     result.append({'id':identity,'page':physical_page,'source_pdf_sha256':source_sha,
                         'bbox':[float(x) for x in found.bbox],'page_width':page.width,'page_height':page.height,
                         'caption':caption or f'Source table {index+1}', 'caption_source_page':caption_page,**shape,

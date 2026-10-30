@@ -116,3 +116,20 @@ def test_completed_failed_witness_is_durable_but_unsealed_after_later_abort(tmp_
     assert not(sidecar/'reproof-version.json').exists()
     assert not(sidecar/'quality.json').exists()
     with pytest.raises(FileNotFoundError):engine.verify_region_reproof(sidecar,runtime,fresh=True)
+
+
+def test_failed_capture_warning_is_sealed_and_does_not_approve(tmp_path,monkeypatch):
+    import logging
+    engine,api,bound,modules,origin,runtime,_,_,cells,_=setup(tmp_path,monkeypatch)
+    def capture(*args):
+        logging.getLogger('pypdf._cmap').warning('future font warning with source scope')
+        raise RuntimeError('reader failure after warning')
+    monkeypatch.setattr(cells,'capture_source',capture)
+    sidecar=tmp_path/'sidecar';engine.create_region_reproof(bound['path'],runtime,origin,[1],sidecar)
+    proof=api.read(sidecar/'page-proofs.json')[0]
+    from local_vector_batch.native_source_warnings import verify
+    warning=verify(proof['warning_provenance'],sidecar,bound['source_pdf_sha256'],1,bound['pages'][1]['text_sha256'],bound['profile']['profile_sha256'])
+    assert warning['events'][0]['processing_stage']=='source_capture'
+    assert proof['quality']==bound['quality']['results'][0]and proof['status']=='held'
+    result=engine.verify_region_reproof(sidecar,runtime,fresh=False)
+    assert result['newly_auto_accepted_pages']==[]and result['still_held_pages']==[1]

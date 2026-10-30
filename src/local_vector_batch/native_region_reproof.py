@@ -42,7 +42,8 @@ def _configuration(bound,runtime,modules,origin):
 def _evaluate(bound,origin,n,*,candidate_snapshot=None):
     from local_vector_batch.native_table_feedback import capture_source,validate_feedback
     from local_vector_batch.native_table_regions import derive_regions,_quality_from_regions
-    api=_api();page=bound['pages'][n];started=time.perf_counter()
+    from .native_source_warnings import stage as warning_stage
+    api=_api();page=bound['pages'][n];started=time.perf_counter();warning_stage('source_capture')
     snapshot=copy.deepcopy(candidate_snapshot)if candidate_snapshot is not None else capture_source(bound['path'],origin,n)
     observation='untrusted_builder_candidate'if candidate_snapshot is not None else'fresh_original_capture'
     if any(snapshot.get(k)!=v for k,v in {'source_pdf_sha256':bound['source_pdf_sha256'],'page':n,'page_text_sha256':page['text_sha256']}.items()):raise ValueError('Region snapshot source/page/text binding changed')
@@ -55,9 +56,11 @@ def _evaluate(bound,origin,n,*,candidate_snapshot=None):
     from .native_region_diagnostics import HeldRegionEvidence
     cells=None;stage='validate_cells'
     try:
+        warning_stage('validate_cells')
         cells=validate_feedback(snapshot,[],{})
         if cells['status']!='validated':raise ValueError('Region source cells remain held')
-        stage='derive_regions';proof=derive_regions(bound['path'],snapshot,cells);quality=_quality_from_regions(snapshot,proof)
+        stage='derive_regions';warning_stage('derive_regions');proof=derive_regions(bound['path'],snapshot,cells)
+        warning_stage('quality_gates');quality=_quality_from_regions(snapshot,proof)
     except MemoryError:
         raise
     except Exception as error:
@@ -69,7 +72,7 @@ def _evaluate(bound,origin,n,*,candidate_snapshot=None):
 
 
 def _stable(proof):
-    return {k:v for k,v in proof.items()if k!='elapsed_seconds'}
+    return {k:v for k,v in proof.items()if k not in('elapsed_seconds','warning_provenance')}
 
 
 def create_region_reproof(parent,runtime,source_runtime,pages,output,*,expected_manifest_sha256=None,candidate_snapshots=None):
@@ -84,6 +87,9 @@ def create_region_reproof(parent,runtime,source_runtime,pages,output,*,expected_
     output.mkdir(parents=True)
     candidates=candidate_snapshots or {};proofs=[];candidate_inputs={}
     for n in pages:
+        from .native_source_warnings import SourceWarnings
+        observer=SourceWarnings(output,bound['source_pdf_sha256'],n,bound['pages'][n]['text_sha256'],bound['profile']['profile_sha256'])
+        observer.__enter__()
         try:
             candidate=candidates.get(n,candidates.get(str(n)))
             if candidate is not None:
@@ -131,6 +137,10 @@ def create_region_reproof(parent,runtime,source_runtime,pages,output,*,expected_
                                'traceback_ascii_json':json.dumps(traceback.format_exc(),ensure_ascii=True),
                                'diagnostic_not_selected_source_text':True,'source_quality_clearance':False},
                            'quality':old[n],'selected_text_modified':False,'legal_review':'not_run','answer_publication_eligible':False})
+        finally:
+            observer.__exit__(*sys.exc_info())
+            if observer.link is not None and proofs and proofs[-1]['page']==n:
+                proofs[-1]['warning_provenance']=observer.link
     api.verify_parent_unchanged(bound)
     selected={p['page']:p['quality']for p in proofs};merged={**bound['quality'],'results':[selected.get(q['page'],q)for q in bound['quality']['results']]}
     merged['counts']={state:sum(q['outcome']==state for q in merged['results'])for state in('auto_accepted','repair_required','source_blocked')}
@@ -170,7 +180,10 @@ def verify_region_reproof(output,runtime,*,fresh=True):
     passed=[p for p in proofs if p.get('status')=='source_proved'];held=[p for p in proofs if p.get('status')=='held']
     if len(passed)+len(held)!=len(proofs)or any(p['quality']!=old[p['page']]for p in held):raise ValueError('Held page cannot acquire a quality clearance')
     from .native_region_diagnostics import verify_link
+    from .native_source_warnings import verify as verify_warnings
     for proof in proofs:
+        if 'warning_provenance'in proof:
+            verify_warnings(proof['warning_provenance'],output,bound['source_pdf_sha256'],proof['page'],bound['pages'][proof['page']]['text_sha256'],bound['profile']['profile_sha256'])
         if 'diagnostics'in proof:
             if proof.get('status')!='held':raise ValueError('Failed diagnostic cannot become a passing proof')
             verify_link(proof['diagnostics'],output,bound,receipt['source_runtime'],runtime,modules,proof['page'])

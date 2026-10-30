@@ -153,11 +153,41 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
             font_evidence = native_font_script_evidence(native.chars, policy)
             if font_evidence['required_scripts']:
                 raise ValueError('Native table font mapping needs independent raster linguistic proof')
-            if native.extract_text()!=page['text']:
+            raw_native_page=native.extract_text()or''
+            if raw_native_page!=page['text']and not any(c.get('processed_cell_version')for t in cell_result['tables']for c in t['cells']):
                 raise ValueError('Selected text differs from fresh original native extraction')
             glyph_inventory=Counter(chars(''.join(c['text']for c in native.chars)))
             if Counter(chars(page['text']))!=glyph_inventory:
                 raise ValueError('Selected text loses or adds source glyphs')
+            independent_layout=PdfReader(source).pages[n-1].extract_text(extraction_mode='layout')or''
+            processed_cells=[]
+            for table in tables:
+                proved=next(p for p in cell_result['tables']if p['table_version_id']==table['table_version_id'])
+                for cell in table['cell_spans']:
+                    observed=next(p for p in proved['cells']if p['id']==cell['id'])
+                    if observed.get('processed_cell_version'):
+                        processed_cells.append((table,cell,observed['processed_cell_version']))
+            if processed_cells:
+                from .native_cell_space_projection import prove_processed_cell
+                from .native_table_cell_spacing import read_source_box
+                from .native_tight_cell_ownership import page_source_cell_context
+                all_cells=[cell for table in tables for cell in table['cell_spans']]
+                with page_source_cell_context(source,n,native,snapshot['source_pdf_sha256'],all_cells,
+                        pdfium_page=view,text_page=tp,third_layout=independent_layout):
+                    for table,cell,stored_projection in processed_cells:
+                        x0,y0,x1,y1=cell['bbox']
+                        raw,_=read_source_box(native,view,tp,[x0+.2,y0+.2,x1-.2,y1-.2])
+                        actual=prove_processed_cell(native,view,tp,
+                            {**cell,'table_geometry_sha256':table['table_geometry_sha256']},
+                            raw,independent_layout,page['text'],snapshot['source_pdf_sha256'])
+                        if actual is None or actual!=stored_projection:
+                            raise ValueError('Processed cell differs from fresh original glyph/ink/context proof')
+            page_representation=None
+            if raw_native_page!=page['text']:
+                if not processed_cells:
+                    raise ValueError('Selected text differs from fresh original native extraction')
+                from .native_cell_space_projection import project_page_text
+                page_representation=project_page_text(raw_native_page,[p for _,_,p in processed_cells],page['text'])
             memberships={cell['id']:[] for table in tables for cell in table['cell_spans']}
             outside=[]
             for glyph in native.chars:
@@ -175,7 +205,6 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
             outside_ids={id(g)for g in outside}
             prose_page=native.filter(lambda obj:obj.get('object_type')!='char'or id(obj)in outside_ids)
             lines=prose_page.extract_text_lines(return_chars=True)
-            independent_layout=PdfReader(source).pages[n-1].extract_text(extraction_mode='layout')or''
             prose=[]
             for index,line in enumerate(lines):
                 box=bbox(line)
@@ -277,6 +306,7 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                 raise ValueError('Uncovered original source ink remains: '+canonical(uncovered))
             proof={'kind':KIND,'source_pdf_sha256':snapshot['source_pdf_sha256'],'page':n,
                    'page_text_sha256':page['text_sha256'],'tables':cell_result['tables'],
+                   **({'source_bound_page_representation':page_representation}if page_representation is not None else{}),
                    **({'zero_table_source_proof':zero_table_source_proof}if zero_table_source_proof is not None else{}),
                    'outside_prose':prose,'source_glyph_inventory_sha256':sha(canonical(sorted(glyph_inventory.items()))),
                    'source_glyph_count':len(native.chars),'table_glyph_count':sum(len(v)for v in memberships.values()),
@@ -287,7 +317,7 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                    'native_grid_snap_tolerance_points':snap,'native_grid_snap_basis':'selected_pdfplumber_TableSettings_default',
                    'source_residual_mask_sha256':sha(residual.tobytes()),'native_grid_mask_sha256':sha(grid.tobytes()),
                    'accounted_residual_ink_pixels':int(residual.sum()),'remaining_unaccounted_ink_pixels':0,
-                   'word_number_operator_basis':'exact_order_within_each_source_cell_and_outside_prose_line_or_bound_header_metadata_block; no global table-column prose order claim',
+                   'word_number_operator_basis':('exact_order_within_each_source_bound_processed_cell_view_preserving_raw_matrix_and_outside_prose_line; no global table-column prose order claim'if processed_cells else'exact_order_within_each_source_cell_and_outside_prose_line_or_bound_header_metadata_block; no global table-column prose order claim'),
                    'header_layout':'source top-row geometry preserved; semantic header associations remain candidate',
                    'source_text_modified':False,'legal_review':'not_run','answer_publication_eligible':False,
                    'engine_sha256':sha(Path(__file__).read_bytes()),'policy_sha256':sha(canonical(policy))}

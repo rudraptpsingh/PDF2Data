@@ -7,7 +7,7 @@ import pytest
 
 def _bound(tmp_path):
  components={k:{'state':'fail'}for k in('source_identity','text_content','language','source_render','words_and_order','ordered_numbers','ordered_operators','layout')}
- return {'path':tmp_path/'synthetic-parent','manifest_sha256':'a'*64,'source_pdf_sha256':'b'*64,'profile':{},'source_origin_profile':{},'artifact_hashes':{},'source':{'configuration':{}},'pages':{n:{'text_sha256':str(n)*64,'text':'synthetic local test'}for n in(1,2,3)},'quality':{'results':[{'page':n,'outcome':'repair_required','components':copy.deepcopy(components)}for n in(1,2,3)]}}
+ return {'path':tmp_path/'synthetic-parent','manifest_sha256':'a'*64,'source_pdf_sha256':'b'*64,'profile':{'profile_sha256':'d'*64},'source_origin_profile':{},'artifact_hashes':{},'source':{'configuration':{}},'pages':{n:{'text_sha256':str(n)*64,'text':'synthetic local test'}for n in(1,2,3)},'quality':{'results':[{'page':n,'outcome':'repair_required','components':copy.deepcopy(components)}for n in(1,2,3)]}}
 
 
 @pytest.mark.parametrize('failure',[RecursionError('cyclic annotation graph'),RuntimeError('reader crashed'),RuntimeError('invalid diagnostic \udc65')])

@@ -48,11 +48,11 @@ def capture_source(package, parser_root, page):
         if not Path(module.__file__).resolve().is_relative_to(proof_root/'src/local_vector_batch'):
             raise ValueError('Mixed cached proof runtime modules are prohibited')
     legal_l1.verify_document(package);source=package/'original.pdf';source_sha=sha(source.read_bytes())
-    preview=l1_review.preview_tables(source,page,source_sha)
-    tables=json.loads((package/'extraction/tables.json').read_text())
-    quality=quality_gate.assess_package(package/'extraction',source,pages=[page],derive_ocr_source_raster=True)
     session=active_session()
     selected=session.page_row(package/'extraction/pages.jsonl',page)if session else next(row for row in read_rows(package/'extraction/pages.jsonl')if row['page']==page)
+    preview=l1_review.preview_tables(source,page,source_sha,selected_page_text=selected['text'])
+    tables=json.loads((package/'extraction/tables.json').read_text())
+    quality=quality_gate.assess_package(package/'extraction',source,pages=[page],derive_ocr_source_raster=True)
     return {'source_pdf_sha256':source_sha,'page':page,'page_text_sha256':selected['text_sha256'],
             'tables':preview,'raw_tables':[t for t in tables if t['page']==page],'fresh_quality':quality}
 
@@ -150,6 +150,14 @@ def validate_feedback(snapshot, decisions, raster_reviews):
                 mapping=cell.get('independent_reader_mapping',{})
                 result.update(status='validated', basis='source_bound_registered_reader_mapping'if mapping.get('status')=='source_proved'else'independent_pdfium_native_cell_agreement')
                 if mapping.get('status')=='source_proved':result['independent_reader_mapping']=mapping
+            elif cell.get('processed_cell_version'):
+                from .native_cell_space_projection import validate_processed_cell_version
+                projection=cell['processed_cell_version']
+                if (not cell.get('glyph_audit',{}).get('issues')and not cell.get('independent_glyph_audit',{}).get('issues')and
+                    validate_processed_cell_version(projection,cell,source_sha,page,snapshot['page_text_sha256'])):
+                    result.update(status='validated',basis='source_bound_additive_processed_cell_projection',
+                                  processed_cell_version=projection)
+                else:result.update(status='held',basis='processed_cell_projection_binding_invalid')
             elif cell['id'] in unique:
                 decision = unique[cell['id']][0]
                 try:

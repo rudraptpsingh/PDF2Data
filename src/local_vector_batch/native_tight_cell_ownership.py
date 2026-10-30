@@ -126,7 +126,7 @@ def _prepare_ownership_page(source,page_number,page,other,tp,third):
   ids=[int(i)for i in np.unique(labels[y0:y1,x0:x1])if i]if x0<x1 and y0<y1 else[]
   character_components[char['pdfium_index']]=ids
   for component in ids:component_owners[component].add(char['pdfium_index'])
- return {'page':page,'other':other,'tp':tp,'third':third,'source_sha':source_sha,'page_number':page_number,
+ return {'page':page,'other':other,'tp':tp,'third':third,'source_sha':source_sha,'source_path':str(source.resolve()),'page_number':page_number,
          'policy':policy,'paint':paint,'fills':fills,'unsupported':unsupported,'visibility':visibility,
          'ink':ink,'scale':scale,'raster_sha':raster_sha,'characters':characters,
          'component_owners':component_owners,'character_components':character_components,
