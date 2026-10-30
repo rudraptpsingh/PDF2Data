@@ -1,4 +1,5 @@
 """Readable, portable outputs derived from an immutable verified L1 package."""
+from .jsonl import jsonl_physical_lines
 from html import escape
 import hashlib,json,shutil,subprocess,tempfile
 from pathlib import Path
@@ -109,15 +110,15 @@ def export_readable(package:Path,output:Path,docx_python:Path|None=None):
     if output.exists() or output.is_symlink():raise ValueError('readable output must be a new directory')
     if package==output.resolve() or package in output.resolve().parents or output.resolve() in package.parents:raise ValueError('readable output must be outside the immutable package')
     verification=verify_document(package)
-    source=json.loads((package/'source-receipt.json').read_text());pages=[json.loads(l) for l in (package/'extraction/pages.jsonl').read_text().splitlines() if l.strip()]
+    source=json.loads((package/'source-receipt.json').read_text());pages=[json.loads(l) for l in jsonl_physical_lines((package/'extraction/pages.jsonl').read_text()) if l.strip(' \t\r')]
     quality=json.loads((package/'quality.json').read_text());tables=json.loads((package/'extraction/tables.json').read_text())
     data={'schema_version':'pdf2data.readable.v1','title':source['declared'].get('title',source['declared']['id']),
       'source_id':source['declared']['id'],'source_pdf_sha256':source['actual_sha256'],'source':source,
       'pages':pages,'tables':tables,'structure':json.loads((package/'structure.json').read_text()),'quality':quality,
-      'fact_candidates':[json.loads(l) for l in (package/'extraction/fact-candidates.jsonl').read_text().splitlines() if l.strip()],
-      'structure_candidates':[json.loads(l) for l in (package/'extraction/structure-candidates.jsonl').read_text().splitlines() if l.strip()],
+      'fact_candidates':[json.loads(l) for l in jsonl_physical_lines((package/'extraction/fact-candidates.jsonl').read_text()) if l.strip(' \t\r')],
+      'structure_candidates':[json.loads(l) for l in jsonl_physical_lines((package/'extraction/structure-candidates.jsonl').read_text()) if l.strip(' \t\r')],
       'flagged_pages':sum(q['outcome']!='auto_accepted' for q in quality['results']),
-      'layout':[json.loads(l) for l in (package/'layout.jsonl').read_text().splitlines() if l.strip()],
+      'layout':[json.loads(l) for l in jsonl_physical_lines((package/'layout.jsonl').read_text()) if l.strip(' \t\r')],
       'verification':verification,'publication_eligible':False}
     from .document_blocks import build_blocks
     data['document_blocks']=build_blocks(data)

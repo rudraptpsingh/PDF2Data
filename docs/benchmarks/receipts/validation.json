@@ -1,0 +1,34 @@
+{
+  "schema_version": "pdf2data.benchmark-validation.v1",
+  "public_documents": 70,
+  "public_rules": 429,
+  "tests_including_baselines": 499,
+  "suite_sha256": "a85780f812672738e228a0c93c09a611b41702d531ea9f34981737ae41fcb516",
+  "complete_public_dataset": false,
+  "pdf2data_tests_passed": 406,
+  "pdf2data_tests_skipped": 1,
+  "skip_reason": "optional docling_core not installed",
+  "legal_pipeline_tests_passed": 120,
+  "custom_legal_probes_passed": 7,
+  "custom_legal_baselines_passed": 8,
+  "auto_review_flagged_pages": 44,
+  "auto_extraction_errors": 0,
+  "native_extraction_errors": 0,
+  "auto_selected_methods": {
+    "vision": 43,
+    "pdf_text": 27
+  },
+  "auto_device_used": [
+    "system_managed_unreported"
+  ],
+  "profile_runtime_identical": true,
+  "profile_implementation_identical": true,
+  "original_failure_source_sha256": "382a90f646126c1569df780f7082dec3a5c78792f4135bdb31427af96939c35d",
+  "known_weaknesses": [
+    "mathematical transcription",
+    "complex reading order",
+    "scanned or complex table recognition",
+    "independent legal interpretation not measured"
+  ],
+  "cloudflare_operations": 0
+}

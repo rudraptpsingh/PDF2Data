@@ -1,5 +1,6 @@
 """Propose local OCR review questions; no extraction or evidence is promoted."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 from collections import Counter
 from difflib import SequenceMatcher
 import json
@@ -171,7 +172,7 @@ def feedback_entries(paths: list[Path]) -> tuple[dict, int]:
     latest, invalid = {}, 0
     keys = ('source_pdf_sha256', 'page', 'selected_text_sha256', 'independent_text_sha256', 'prompt_sha256', 'focus_sha256', 'proposal_sha256')
     for path in paths:
-        for line in Path(path).read_text(encoding='utf-8').splitlines():
+        for line in jsonl_physical_lines(Path(path).read_text(encoding='utf-8')):
             try:
                 row = json.loads(line)
                 # Earlier feedback lacked a focus hash. Retain it for summary,

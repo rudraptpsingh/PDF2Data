@@ -4,6 +4,7 @@ An auto acceptance is a machine evidence decision, never a human source-visual
 review receipt or a verified legal fact. Unknown evidence remains held.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from collections import Counter
 import hashlib
@@ -605,7 +606,7 @@ def assess_package(package: Path, source_pdf: Path, *, pages: list[int] | None =
                 "pages_assessed": 0, "counts": {"auto_accepted": 0, "repair_required": 0, "source_blocked": 0},
                 "packages_blocked": 1, "results": [], "human_review_receipts_created": 0}
     doc = json.loads((package / "evidence-package.json").read_text(encoding="utf-8"))["document"]
-    raw_pages = [json.loads(line) for line in (package / "pages.jsonl").read_text(encoding="utf-8").splitlines()]
+    raw_pages = [json.loads(line) for line in jsonl_physical_lines((package / "pages.jsonl").read_text(encoding="utf-8"))]
     selected = set(pages) if pages is not None else {page["page"] for page in raw_pages}
     if selected - {page["page"] for page in raw_pages}:
         raise ValueError("requested physical page is absent")

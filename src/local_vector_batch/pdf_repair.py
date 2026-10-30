@@ -1,5 +1,6 @@
 """Source-bound, page-targeted OCR repair of an existing evidence package."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from collections import defaultdict
 import json
@@ -12,7 +13,7 @@ from .pdf_ingest import extract_pdf
 
 
 def _rows(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [json.loads(line) for line in jsonl_physical_lines(path.read_text(encoding="utf-8")) if line.strip(' \t\r')]
 
 
 def _page_rows(package: Path, name: str) -> dict[int, list[dict]]:

@@ -2,6 +2,22 @@
   "tool": "PDF2Data",
   "commands": [
     {
+      "name": "benchmark-prepare",
+      "purpose": "freeze source PDFs and external labels by hash"
+    },
+    {
+      "name": "benchmark-run",
+      "purpose": "run native or automatic OCR profiles through the PDF2Data CLI"
+    },
+    {
+      "name": "benchmark-score",
+      "purpose": "execute pinned upstream olmOCR-bench rule classes"
+    },
+    {
+      "name": "benchmark-compare",
+      "purpose": "compare reports from an identical frozen suite"
+    },
+    {
       "name": "doctor",
       "purpose": "show installed backends and accelerator availability"
     },

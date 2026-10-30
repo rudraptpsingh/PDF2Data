@@ -4,6 +4,7 @@ This module never makes a page searchable. It can explain whether a footer
 region is independently classified as a picture without inventing text.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from hashlib import sha256
 from io import BytesIO
@@ -33,7 +34,7 @@ def fresh_docling_picture(package: Path, source_pdf: Path, page: int,
         if process.returncode:
             raise ValueError("fresh independent layout failed: " + process.stderr[-200:])
         rows = [json.loads(line) for line in
-                (Path(folder) / "page-regions.jsonl").read_text().splitlines()]
+                jsonl_physical_lines((Path(folder) / "page-regions.jsonl").read_text())]
         pictures = [row for row in rows if row.get("kind") == "picture" and
                     row.get("id") == expected.get("id")]
         if len(pictures) != 1:

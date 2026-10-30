@@ -5,6 +5,7 @@ in its original page text; independent recognition is confined to each cell.
 """
 
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from collections import Counter
 from copy import deepcopy
@@ -692,7 +693,7 @@ def apply_label_value_layout(package: Path, receipt: dict) -> dict:
     source = Path(receipt["source_pdf_path"])
     verify_package(package, source_pdf=source)
     pages = [
-        json.loads(line) for line in (package / "pages.jsonl").read_text().splitlines()
+        json.loads(line) for line in jsonl_physical_lines((package / "pages.jsonl").read_text())
     ]
     page = next((row for row in pages if row["page"] == receipt["page"]), None)
     if (
@@ -763,9 +764,8 @@ def apply_label_value_layout(package: Path, receipt: dict) -> dict:
         }
         structures = [
             json.loads(line)
-            for line in (package / "structure-candidates.jsonl")
-            .read_text()
-            .splitlines()
+            for line in jsonl_physical_lines((package / "structure-candidates.jsonl")
+            .read_text())
             if line
         ]
         for row in rows:
@@ -860,7 +860,7 @@ def apply_label_value_layout(package: Path, receipt: dict) -> dict:
             for old, new in zip(
                 [
                     json.loads(x)
-                    for x in (package / "pages.jsonl").read_text().splitlines()
+                    for x in jsonl_physical_lines((package / "pages.jsonl").read_text())
                 ],
                 pages,
             )

@@ -4,6 +4,7 @@ import unicodedata
 import re
 import hashlib
 import json
+from collections import Counter
 
 
 def is_ruling_object(obj: dict) -> bool:
@@ -61,6 +62,9 @@ def table_shape(found, cells: list[list], table_id: str) -> dict:
     xs=sorted(set(round(float(x),2) for b in boxes for x in (b[0],b[2])))
     ys=sorted(set(round(float(y),2) for b in boxes for y in (b[1],b[3])))
     spans=[];seen=set()
+    # pdfplumber row positions may omit boundaries that occur only inside a
+    # vertically merged cell. Place values by physical box coordinates.
+    geometry_grid=[[None for _ in range(len(xs)-1)] for _ in range(len(ys)-1)]
     for r,row in enumerate(native_rows):
         for c,box in enumerate(row.cells):
             if box is None:continue
@@ -68,11 +72,14 @@ def table_shape(found, cells: list[list], table_id: str) -> dict:
             if b in seen:continue
             seen.add(b);lo=xs.index(b[0]);hi=xs.index(b[2]);top=ys.index(b[1]);bottom=ys.index(b[3])
             value=cells[r][c] if r<len(cells) and c<len(cells[r]) else None
+            geometry_grid[top][lo]=value
             spans.append({'id':f'{table_id}:r{top}:c{lo}','row':top,'column':lo,
                 'row_span':bottom-top,'column_span':hi-lo,'bbox':list(b),
                 'text':value,'role_candidate':'header' if top==0 else 'data',
                 'status':'source_cell_candidate','glyph_audit':glyph_audit(value or '')})
-    grid_hash=hashlib.sha256(json.dumps({'cells':cells,'cell_geometry':sorted(seen)},sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+    if Counter(str(v) for row in cells for v in row if v not in (None,''))!=Counter(str(c['text']) for c in spans if c['text'] not in (None,'')):
+        raise ValueError('native geometry cannot map every populated extracted cell')
+    grid_hash=hashlib.sha256(json.dumps({'cells':cells,'geometry_grid':geometry_grid,'mapping_version':2,'cell_geometry':sorted(seen)},sort_keys=True,ensure_ascii=False).encode()).hexdigest()
     table_version=f'{table_id}:v{grid_hash[:24]}'
     covered=set()
     for cell in spans:
@@ -82,7 +89,9 @@ def table_shape(found, cells: list[list], table_id: str) -> dict:
                 if (r,c) in covered:raise ValueError('overlapping native table cell spans')
                 covered.add((r,c))
     unresolved=[{'row':r,'column':c} for r in range(len(ys)-1) for c in range(len(xs)-1) if (r,c) not in covered]
-    return {'table_version_id':table_version,'table_geometry_sha256':grid_hash,'unresolved_grid_slots':unresolved,
+    return {'cells':geometry_grid,'extracted_cells':cells,
+        'grid_mapping':'source_box_coordinates; original extractor rows retained in extracted_cells',
+        'table_version_id':table_version,'table_geometry_sha256':grid_hash,'unresolved_grid_slots':unresolved,
         'row_count':len(ys)-1,'column_count':len(xs)-1,'cell_spans':spans,
         'structure_status':'source_geometry_candidate_requires_cell_review',
         'detection_method':getattr(found,'_powerlex_detection','source_rulings_excluding_fill_only_text_shading'),

@@ -1,5 +1,6 @@
 """Small, scriptable CLI; stdout is JSON with --json."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 import argparse
 import importlib.util
@@ -37,6 +38,19 @@ def parser() -> argparse.ArgumentParser:
     main = argparse.ArgumentParser(prog="pdf2data",
                                    description="PDF2Data: source-backed PDF extraction, structured data, quality, local AI repair and embeddings")
     sub = main.add_subparsers(dest="command", required=True)
+    prep = sub.add_parser("benchmark-prepare", help="freeze the pinned public olmOCR suite without label-based selection")
+    prep.add_argument("--dataset-root", type=Path, required=True);prep.add_argument("--output", type=Path, required=True)
+    prep.add_argument("--custom", action="store_true", help="local rules with explicitly custom provenance, not the public dataset")
+    prep.add_argument("--per-category", type=int);prep.add_argument("--seed", default="pdf2data-v1");prep.add_argument("--json", action="store_true")
+    bench = sub.add_parser("benchmark-run", help="run source-only extraction profiles over a frozen suite")
+    bench.add_argument("--suite", type=Path, required=True);bench.add_argument("--profile", choices=("native","auto"), required=True)
+    bench.add_argument("--output", type=Path, required=True);bench.add_argument("--parser-python", type=Path, default=Path(sys.executable))
+    bench.add_argument("--workers", type=int, default=4);bench.add_argument("--resume", action="store_true");bench.add_argument("--json", action="store_true")
+    scoring = sub.add_parser("benchmark-score", help="score predictions with the pinned official olmOCR rule classes")
+    for key in ("suite","run","upstream","eval-python","output"):scoring.add_argument("--"+key,type=Path,required=True)
+    scoring.add_argument("--mode",choices=("text","tables"),default="tables");scoring.add_argument("--json",action="store_true")
+    comparison = sub.add_parser("benchmark-compare", help="compare matched external evaluation reports")
+    comparison.add_argument("--score",type=Path,action="append",required=True);comparison.add_argument("--output",type=Path,required=True);comparison.add_argument("--json",action="store_true")
     health = sub.add_parser("doctor", help="show installed backends and accelerator availability")
     health.add_argument("--json", action="store_true")
     embed = sub.add_parser("embed", help="embed documents from JSONL")
@@ -322,7 +336,19 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command == "doctor":
+        if args.command == "benchmark-prepare":
+            from .benchmark import prepare
+            result = prepare(args.dataset_root,args.output,args.per_category,args.seed,args.custom)
+        elif args.command == "benchmark-run":
+            from .benchmark import run as benchmark_run
+            result = benchmark_run(args.suite,args.profile,args.output,args.parser_python,args.workers,args.resume)
+        elif args.command == "benchmark-score":
+            from .benchmark import score
+            result = score(args.suite,args.run,args.upstream,args.eval_python,args.output,args.mode)
+        elif args.command == "benchmark-compare":
+            from .benchmark import compare
+            result = compare(args.score,args.output)
+        elif args.command == "doctor":
             result = doctor()
         elif args.command == "verify":
             result = verify(args.output)
@@ -378,7 +404,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "validate-evidence":
             from .evidence import validate_candidates
             def records(path):
-                rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+                rows = [json.loads(line) for line in jsonl_physical_lines(path.read_text(encoding="utf-8")) if line.strip(' \t\r')]
                 if any(not isinstance(row, dict) for row in rows):
                     raise ValueError("evidence inputs must contain JSON objects")
                 return rows
@@ -433,10 +459,10 @@ def main(argv: list[str] | None = None) -> int:
             verify_package(args.package, source_pdf=args.source_pdf)
             report = json.loads((args.package / "report.json").read_text())
             page = next((row for row in (json.loads(line) for line in
-                (args.package / "pages.jsonl").read_text().splitlines()) if row["page"] == args.page), None)
+                jsonl_physical_lines((args.package / "pages.jsonl").read_text())) if row["page"] == args.page), None)
             if page is None or not 1 <= args.max_pairs <= 16:
                 raise ValueError("valid physical page and max-pairs 1..16 required")
-            independent = next((row for row in (json.loads(line) for line in args.independent.read_text().splitlines())
+            independent = next((row for row in (json.loads(line) for line in jsonl_physical_lines(args.independent.read_text()))
                 if row.get("source_pdf_sha256") == report["source_pdf_sha256"] and
                 row.get("page") == args.page and
                 row.get("selected_page_text_sha256") == page["text_sha256"]), None)
@@ -463,10 +489,10 @@ def main(argv: list[str] | None = None) -> int:
             verify_package(args.package, source_pdf=args.source_pdf)
             report = json.loads((args.package / "report.json").read_text())
             page = next((row for row in (json.loads(line) for line in
-                (args.package / "pages.jsonl").read_text().splitlines()) if row["page"] == args.page), None)
+                jsonl_physical_lines((args.package / "pages.jsonl").read_text())) if row["page"] == args.page), None)
             if page is None:
                 raise ValueError("source page missing")
-            independent = next((row for row in (json.loads(line) for line in args.independent.read_text().splitlines())
+            independent = next((row for row in (json.loads(line) for line in jsonl_physical_lines(args.independent.read_text()))
                 if row.get("source_pdf_sha256") == report["source_pdf_sha256"] and
                 row.get("page") == args.page and
                 row.get("selected_page_text_sha256") == page["text_sha256"]), None)
@@ -524,8 +550,8 @@ def main(argv: list[str] | None = None) -> int:
             if args.independent:
                 document = json.loads((args.package / "evidence-package.json").read_text())["document"]
                 page_versions = {row["page"]: row["text_sha256"] for row in (
-                    json.loads(line) for line in (args.package / "pages.jsonl").read_text().splitlines() if line.strip())}
-                rows = [json.loads(line) for line in args.independent.read_text(encoding="utf-8").splitlines() if line.strip()]
+                    json.loads(line) for line in jsonl_physical_lines((args.package / "pages.jsonl").read_text()) if line.strip(' \t\r'))}
+                rows = [json.loads(line) for line in jsonl_physical_lines(args.independent.read_text(encoding="utf-8")) if line.strip(' \t\r')]
                 rows = [row for row in rows if row.get("source_pdf_sha256") == document["pdf_sha256"] and
                         (args.pages is None or row.get("page") in args.pages)]
                 independent, metadata, stale = bound_independent(rows, page_versions, document["pdf_sha256"])
@@ -535,7 +561,7 @@ def main(argv: list[str] | None = None) -> int:
                                     derive_ocr_source_raster=args.source_raster)
             result["stale_independent_versions_ignored"] = stale
             if args.references:
-                references = [json.loads(line) for line in args.references.read_text(encoding="utf-8").splitlines() if line.strip()]
+                references = [json.loads(line) for line in jsonl_physical_lines(args.references.read_text(encoding="utf-8")) if line.strip(' \t\r')]
                 result["calibration"] = evaluate_calibration(result["results"], references)
             write_quality_report(result, args.output)
         elif args.command == "audit-review":

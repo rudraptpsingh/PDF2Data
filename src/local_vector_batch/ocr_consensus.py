@@ -5,6 +5,7 @@ hash and selected Vision page hash must match the immutable package. This is
 an audit signal, not proof that either OCR engine read the source correctly.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, wait, FIRST_COMPLETED
@@ -151,11 +152,11 @@ def _parallel_audit(manifest: Path, output: Path, limit: int, dpi: int, workers:
     if resume:
         for path in [output, *sorted(parts.glob("worker-*.output.jsonl"))]:
             if path.is_file():
-                for line in path.read_text(encoding="utf-8").splitlines():
+                for line in jsonl_physical_lines(path.read_text(encoding="utf-8")):
                     if line.strip():
                         row = json.loads(line)
                         existing[(row["source_pdf_sha256"], row["page"])] = row
-    for line in manifest.read_text(encoding="utf-8").splitlines():
+    for line in jsonl_physical_lines(manifest.read_text(encoding="utf-8")):
         if not line.strip() or remaining == 0:
             continue
         item = json.loads(line)
@@ -165,7 +166,7 @@ def _parallel_audit(manifest: Path, output: Path, limit: int, dpi: int, workers:
         pdf_sha = receipt["source_pdf_sha256"]
         checked_source = False
         requested = set(item["pages"]) if "pages" in item else None
-        for raw in (Path(item["package"]) / "pages.jsonl").read_text(encoding="utf-8").splitlines():
+        for raw in jsonl_physical_lines((Path(item["package"]) / "pages.jsonl").read_text(encoding="utf-8")):
             page = json.loads(raw)
             identity = (pdf_sha, page["page"])
             if (page.get("method") == "vision" and page.get("status") == "review_required"
@@ -283,7 +284,7 @@ def _audit_manifest_unlocked(manifest: Path, output: Path, *, limit: int, dpi: i
     counts = Counter()
     seen = 0
     with output.open("w", encoding="utf-8") as sink:
-        for line in Path(manifest).read_text(encoding="utf-8").splitlines():
+        for line in jsonl_physical_lines(Path(manifest).read_text(encoding="utf-8")):
             if seen >= limit:
                 break
             if not line.strip():
@@ -296,7 +297,7 @@ def _audit_manifest_unlocked(manifest: Path, output: Path, *, limit: int, dpi: i
             tables = json.loads((package / "tables.json").read_text(encoding="utf-8"))
             table_pages = {row["page"] for row in tables}
             with pdfium.PdfDocument(str(source)) as pdf:
-                for raw in (package / "pages.jsonl").read_text(encoding="utf-8").splitlines():
+                for raw in jsonl_physical_lines((package / "pages.jsonl").read_text(encoding="utf-8")):
                     if seen >= limit:
                         break
                     page = json.loads(raw)

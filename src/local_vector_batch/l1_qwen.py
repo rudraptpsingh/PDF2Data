@@ -4,6 +4,7 @@ Model readings are evidence candidates, never publication approval. Existing L1
 packages are immutable; this module writes only a separate versioned workspace.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 import hashlib,json,os,re,time,unicodedata
 from pathlib import Path
 
@@ -24,7 +25,7 @@ def bound(case):
     if digest(case['image'])!=case['image_sha256']:raise ValueError('source image hash mismatch')
     folder=Path(case['source_package'])
     if digest(folder/'original.pdf')!=case['source_pdf_sha256']:raise ValueError('source PDF hash mismatch')
-    pages=[json.loads(line) for line in (folder/'extraction/pages.jsonl').read_text().splitlines() if line.strip()]
+    pages=[json.loads(line) for line in jsonl_physical_lines((folder/'extraction/pages.jsonl').read_text()) if line.strip(' \t\r')]
     page=next(p for p in pages if p['page']==case['page'])
     if page['text_sha256']!=case['page_text_sha256'] or hashlib.sha256(page['text'].encode()).hexdigest()!=page['text_sha256']:
         raise ValueError('selected source page hash mismatch')
@@ -246,7 +247,7 @@ def verify_vision_evidence(folder:Path,pages:list,pdf_sha:str):
     rows=evidence.get('results',[]);ids=[r.get('page') for r in rows]
     if not rows or len(ids)!=len(set(ids)):raise ValueError('duplicate or empty L1 vision evidence')
     bypage={p['page']:p for p in pages}
-    layout={p['page']:p for p in map(json.loads,(folder/'layout.jsonl').read_text().splitlines())}
+    layout={p['page']:p for p in map(json.loads,jsonl_physical_lines((folder/'layout.jsonl').read_text()))}
     with pdfium.PdfDocument(folder/'original.pdf') as pdf:
         for row in rows:
             p=bypage.get(row.get('page'))

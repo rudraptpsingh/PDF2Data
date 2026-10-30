@@ -4,6 +4,7 @@ This only proposes repairs. The caller must run the whole-page quality gate
 and compare-and-swap publisher before making any text searchable.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from hashlib import sha256
 from importlib.resources import files
@@ -537,7 +538,7 @@ def propose_footnote_marker_link(package: Path, source_pdf: Path, page_number: i
     verify_package(package, source_pdf=source_pdf)
     report = json.loads((package / "report.json").read_text())
     page = next(row for row in (json.loads(line) for line in
-                (package / "pages.jsonl").read_text().splitlines()) if row["page"] == page_number)
+                jsonl_physical_lines((package / "pages.jsonl").read_text())) if row["page"] == page_number)
     lines = page.get("ocr", {}).get("lines", [])
     if (page.get("status") != "review_required" or page.get("review_decision") or
             page.get("method") not in {"vision", "rapidocr"} or
@@ -665,7 +666,7 @@ def propose_region_repairs(package: Path, source_pdf: Path, pages: list[int], ou
     verify_package(package, source_pdf=source_pdf)
     report = json.loads((package / "report.json").read_text())
     rows = {row["page"]: row for row in (json.loads(line) for line in
-            (package / "pages.jsonl").read_text().splitlines() if line.strip())}
+            jsonl_physical_lines((package / "pages.jsonl").read_text()) if line.strip(' \t\r'))}
     table_pages = {table["page"] for table in json.loads((package / "tables.json").read_text())}
     output.mkdir(parents=True, exist_ok=True)
     policy, policy_sha = load_region_policy()

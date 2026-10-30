@@ -1,5 +1,6 @@
 """Source-bound paired footnote correction; never publishes a page by itself."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from hashlib import sha256
 from pathlib import Path
@@ -21,7 +22,7 @@ from .structure_candidates import page_candidates
 
 
 def _rows(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+    return [json.loads(line) for line in jsonl_physical_lines(path.read_text()) if line.strip(' \t\r')]
 
 
 def _write_rows(path: Path, rows: list[dict]) -> None:

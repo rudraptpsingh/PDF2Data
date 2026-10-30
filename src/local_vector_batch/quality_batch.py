@@ -1,5 +1,6 @@
 """Parallel source quality decisions over cached extraction, without new OCR."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime, timezone
@@ -48,7 +49,7 @@ def _score(task):
     package, source, pages, independent, policy, output = task
     try:
         versions = {p["page"]: p["text_sha256"] for p in (
-            json.loads(line) for line in (Path(package)/"pages.jsonl").read_text().splitlines() if line.strip())}
+            json.loads(line) for line in jsonl_physical_lines((Path(package)/"pages.jsonl").read_text()) if line.strip(' \t\r'))}
         source_sha = json.loads((Path(package)/"evidence-package.json").read_text())["document"]["pdf_sha256"]
         texts, metadata, stale = bound_independent(independent, versions, source_sha)
         report = assess_package(Path(package), Path(source), pages=pages,
@@ -76,12 +77,12 @@ def assess_batch(manifest: Path, output: Path, *, independent: Path | None = Non
     if type(workers) is not int or not 1 <= workers <= 32:
         raise ValueError("quality worker count must be 1..32")
     manifest, output = Path(manifest).resolve(), Path(output).resolve()
-    rows = [json.loads(line) for line in manifest.read_text().splitlines() if line.strip()]
+    rows = [json.loads(line) for line in jsonl_physical_lines(manifest.read_text()) if line.strip(' \t\r')]
     if not rows:
         raise ValueError("quality batch manifest is empty")
     cached = {}
     if independent:
-        for line in Path(independent).read_text().splitlines():
+        for line in jsonl_physical_lines(Path(independent).read_text()):
             if line.strip():
                 row = json.loads(line)
                 cached.setdefault(row.get("source_pdf_sha256"), []).append(row)

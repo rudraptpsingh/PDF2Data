@@ -5,6 +5,7 @@ held page into searchable text or a confirmed blank page. This validates receipt
 integrity; the named reviewer remains responsible for visual transcription.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 import hashlib
 import json
@@ -25,7 +26,7 @@ def apply_reviewed_page_decisions(
     reviewed = {number: dict(page) for number, page in original.items()}
     seen: set[int] = set()
     promoted = 0
-    for line in receipt_path.read_text(encoding='utf-8').splitlines():
+    for line in jsonl_physical_lines(receipt_path.read_text(encoding='utf-8')):
         if not line.strip():
             continue
         decision = json.loads(line)

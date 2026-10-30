@@ -1,5 +1,6 @@
 """Deterministic, browsable views of a source-bound PDF evidence package."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 import hashlib
 from html import escape
@@ -20,7 +21,7 @@ def _write(path: Path, value: str) -> str:
 
 
 def _rows(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [json.loads(line) for line in jsonl_physical_lines(path.read_text(encoding="utf-8")) if line.strip(' \t\r')]
 
 
 def _html(title: str, body: str) -> str:

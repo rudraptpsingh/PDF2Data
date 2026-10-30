@@ -28,3 +28,24 @@ def test_mixed_script_lookalike_is_flagged_but_preserved():
     result=glyph_audit('Pаy 100')  # Cyrillic a inside an otherwise Latin word.
     assert result['status']=='repair_required'
     assert result['issues'][0]['literal']=='Pаy'
+
+
+def test_irregular_grid_keeps_values_at_physical_box_coordinates():
+    from local_vector_batch.document_blocks import validated_cells,table_html
+    # The first physical row omits an x boundary present in another row.
+    found=SimpleNamespace(rows=[SimpleNamespace(cells=[(0,0,20,10),(20,0,30,10)]),SimpleNamespace(cells=[(0,10,10,20),(10,10,30,20)])])
+    raw=[['Merged header','Right header'],['Left value','Merged value']]
+    shape=table_shape(found,raw,'t')
+    assert shape['cells']==[['Merged header',None,'Right header'],['Left value','Merged value',None]]
+    assert shape['extracted_cells']==raw and raw[0][1]=='Right header'
+    validated_cells(shape)
+    html=table_html(shape)
+    assert all(html.count(value)==1 for row in raw for value in row)
+    assert 'colspan="2"' in html
+
+
+def test_unmapped_populated_raw_cell_is_rejected_instead_of_lost():
+    import pytest
+    found=SimpleNamespace(rows=[SimpleNamespace(cells=[(0,0,10,10),None])])
+    with pytest.raises(ValueError,match='every populated'):
+        table_shape(found,[['Visible','Unmapped value']],'t')

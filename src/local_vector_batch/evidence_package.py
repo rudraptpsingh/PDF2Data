@@ -5,6 +5,7 @@ records separate. A local chat and a hosted importer can verify the same
 hashes/anchors without trusting a model's interpretation of a PDF.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 import hashlib
 import json
@@ -24,7 +25,7 @@ def _sha(path: Path) -> str:
 
 
 def _rows(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [json.loads(line) for line in jsonl_physical_lines(path.read_text(encoding="utf-8")) if line.strip(' \t\r')]
 
 
 def create_package(output: Path) -> dict:

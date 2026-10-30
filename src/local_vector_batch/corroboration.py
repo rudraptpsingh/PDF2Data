@@ -5,6 +5,7 @@ people or documents are the same. Source PDF bytes and package anchors are
 checked, but OCR and document relationships still require visual review.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from dataclasses import dataclass
 import hashlib
@@ -34,7 +35,7 @@ def load_source_pages(package: Path, original_pdf: Path, page_numbers: list[int]
         raise ValueError("physical page numbers must be unique positive integers")
     verify_package(package, source_pdf=original_pdf)
     document = json.loads((package / "evidence-package.json").read_text(encoding="utf-8"))["document"]
-    pages = (json.loads(line) for line in (package / "pages.jsonl").read_text(encoding="utf-8").splitlines() if line.strip())
+    pages = (json.loads(line) for line in jsonl_physical_lines((package / "pages.jsonl").read_text(encoding="utf-8")) if line.strip(' \t\r'))
     wanted = set(page_numbers)
     selected = {item['page']: item for item in pages if item.get('page') in wanted}
     if set(selected) != wanted:

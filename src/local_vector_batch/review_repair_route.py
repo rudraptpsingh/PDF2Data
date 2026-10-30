@@ -1,5 +1,6 @@
 """Turn focused OCR feedback into source-bound repair work, never approval."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from collections import Counter
 from hashlib import sha256
@@ -32,8 +33,8 @@ def route_feedback(manifest: Path, feedback: Path, package_root: Path, output: P
     pass the whole-page gate, commit with CAS, and publish/index separately.
     """
     manifest, feedback, package_root, output = map(Path, (manifest, feedback, package_root, output))
-    manifest_rows = [json.loads(x) for x in manifest.read_text().splitlines() if x.strip()]
-    feedback_rows = [json.loads(x) for x in feedback.read_text().splitlines() if x.strip()]
+    manifest_rows = [json.loads(x) for x in jsonl_physical_lines(manifest.read_text()) if x.strip(' \t\r')]
+    feedback_rows = [json.loads(x) for x in jsonl_physical_lines(feedback.read_text()) if x.strip(' \t\r')]
     wanted = {(row.get("source_pdf_sha256"), row.get("page"), row.get("selected_text_sha256"),
                row.get("independent_text_sha256")) for row in feedback_rows}
     by_identity = {}
@@ -68,7 +69,7 @@ def route_feedback(manifest: Path, feedback: Path, package_root: Path, output: P
         package = package_root / item["source_pdf_sha256"]
         current = None
         if (package / "pages.jsonl").is_file():
-            current = next((json.loads(x) for x in (package / "pages.jsonl").read_text().splitlines()
+            current = next((json.loads(x) for x in jsonl_physical_lines((package / "pages.jsonl").read_text())
                             if x.strip() and json.loads(x).get("page") == item["page"]), None)
         stale = (current is None or current.get("text_sha256") != item["selected_text_sha256"] or
                  current.get("status") != "review_required" or bool(current.get("review_decision")))

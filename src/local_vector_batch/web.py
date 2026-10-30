@@ -1,5 +1,6 @@
 """Single-user localhost PDF review and embedding UI; no network service."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -180,7 +181,7 @@ def serve(port: int = 8765, max_upload_mb: int = 150, *, review_manifest: Path |
                         cell_file=review_decisions.with_name('table-cell-feedback.jsonl')
                         cell_feedback={}
                         if cell_file.is_file():
-                            for line in cell_file.read_text(encoding='utf-8').splitlines():
+                            for line in jsonl_physical_lines(cell_file.read_text(encoding='utf-8')):
                                 if line.strip():
                                     saved=json.loads(line)
                                     if saved.get('kind')=='extraction_table_cell_feedback':
@@ -264,7 +265,7 @@ def serve(port: int = 8765, max_upload_mb: int = 150, *, review_manifest: Path |
                     with render_lock:
                         with lock:
                             receipt = record_decision(review_manifest, review_decisions, request)
-                    native_rows = [json.loads(line) for line in review_manifest.read_text(encoding='utf-8').splitlines() if line.strip()]
+                    native_rows = [json.loads(line) for line in jsonl_physical_lines(review_manifest.read_text(encoding='utf-8')) if line.strip(' \t\r')]
                     repair_jobs = None
                     if any(row.get('l1_package') for row in native_rows):
                         from .l1_review import sync_feedback_jobs

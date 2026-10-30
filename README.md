@@ -710,3 +710,7 @@ two OCR text hashes, and focused-difference hash that a reviewer already
 handled; other differences on the same page remain eligible. Footnote marker
 feedback covers the marker only: preserve and review the associated full note
 separately.
+
+### Benchmark extraction
+
+Use the source-hashed, pinned olmOCR-bench adapter to compare native extraction and automatic OCR with text-only and table-preserving outputs. See the [benchmark guide](docs/benchmarks/README.md) and [measured results](docs/benchmarks/2026-10-31-results.md). Benchmark scores measure sampled output properties, not legal correctness.

@@ -4,6 +4,7 @@ Docling is optional. Its output never promotes page text or extracted facts; the
 comparison is a reusable review artifact, with physical page and source hashes.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from collections import Counter
 import hashlib
@@ -361,7 +362,7 @@ def _layout_runtime(converter) -> dict:
 def selected_pages(package: Path, pages: list[int] | None, limit: int) -> list[dict]:
     if limit < 1:
         raise ValueError("page limit must be positive")
-    rows = [json.loads(line) for line in (package / "pages.jsonl").read_text().splitlines() if line.strip()]
+    rows = [json.loads(line) for line in jsonl_physical_lines((package / "pages.jsonl").read_text()) if line.strip(' \t\r')]
     if pages is not None:
         if not pages or len(set(pages)) != len(pages) or any(type(p) is not int or p < 1 for p in pages):
             raise ValueError("pages must be unique positive physical page numbers")

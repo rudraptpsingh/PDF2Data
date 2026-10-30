@@ -16,6 +16,10 @@ After installing the package, use `pdf2data` without `./`. For Qwen use the MLX-
 
 | Command | Purpose |
 |---|---|
+| `pdf2data benchmark-prepare` | freeze source PDFs and external labels by hash |
+| `pdf2data benchmark-run` | run native or automatic OCR profiles through the PDF2Data CLI |
+| `pdf2data benchmark-score` | execute pinned upstream olmOCR-bench rule classes |
+| `pdf2data benchmark-compare` | compare reports from an identical frozen suite |
 | `pdf2data doctor` | show installed backends and accelerator availability |
 | `pdf2data embed` | embed documents from JSONL |
 | `pdf2data verify` | check hashes, dimensions, and unique vector IDs |
@@ -1080,3 +1084,7 @@ The preparation command was already run; use a new workspace for another prepara
 - `l1-qwen-validate`: missing/incomplete readings, exact and critical-token comparisons, source differences; no promotion.
 - `l1-qwen-reproof`: new immutable package versions and a receipt reporting actual accepted/repair-required counts.
 - DB consumers must check source quality and separate legal/publication gates. Text extraction alone does not establish applicability, legal effect or currentness.
+
+## External OCR benchmarks
+
+The four `benchmark-*` commands and their reproducible examples are documented in [benchmark guide](benchmarks/README.md). They write local JSON receipts and Markdown/HTML comparisons; they do not contact Cloudflare.

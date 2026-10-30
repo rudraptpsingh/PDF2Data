@@ -4,6 +4,7 @@ Numbers are *candidates*, never verified legal facts. Tables preserve blank
 cells instead of guessing inherited labels or values.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 import hashlib
 import json
@@ -235,8 +236,8 @@ def extract_pdf(
                 (document_id, sha, label, source_url):
             raise ValueError("targeted repair source identity differs from verified baseline")
         def existing_rows(name: str) -> list[dict]:
-            return [json.loads(line) for line in (reuse_package / name).read_text(encoding="utf-8").splitlines()
-                    if line.strip()]
+            return [json.loads(line) for line in jsonl_physical_lines((reuse_package / name).read_text(encoding="utf-8"))
+                    if line.strip(' \t\r')]
         old_pages = {row["page"]: row for row in existing_rows("pages.jsonl")}
         table_page = {}
         for row in json.loads((reuse_package / "tables.json").read_text(encoding="utf-8")):

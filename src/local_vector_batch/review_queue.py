@@ -1,5 +1,6 @@
 """Local, non-promoting OCR disagreement review queue."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 import hashlib
 import io
 import json
@@ -86,7 +87,7 @@ def focus_segments(text: str, excerpt: str, span: list[int] | None) -> list[dict
 
 
 def load_item(manifest: Path, index: int) -> dict:
-    rows = [json.loads(line) for line in manifest.read_text(encoding='utf-8').splitlines() if line.strip()]
+    rows = [json.loads(line) for line in jsonl_physical_lines(manifest.read_text(encoding='utf-8')) if line.strip(' \t\r')]
     if not 0 <= index < len(rows):
         raise ValueError('review item outside queue')
     row = rows[index]
@@ -255,7 +256,7 @@ def latest_feedback(output: Path, item: dict) -> dict | None:
 
 def review_group(manifest: Path, index: int, feedback: Path | None = None) -> list[dict]:
     """List individually reviewable differences for the same PDF and page."""
-    rows = [json.loads(line) for line in manifest.read_text(encoding='utf-8').splitlines() if line.strip()]
+    rows = [json.loads(line) for line in jsonl_physical_lines(manifest.read_text(encoding='utf-8')) if line.strip(' \t\r')]
     if not 0 <= index < len(rows):
         raise ValueError('review item outside queue')
     base = rows[index]
@@ -282,8 +283,8 @@ def attach_observations(manifest: Path, observations: Path, output: Path) -> dic
     manifest, observations, output = Path(manifest).resolve(strict=True), Path(observations).resolve(strict=True), Path(output).resolve()
     if output.exists() or output in (manifest, observations):
         raise ValueError('choose a new proposal manifest')
-    rows = [json.loads(line) for line in manifest.read_text(encoding='utf-8').splitlines() if line.strip()]
-    evidence = [json.loads(line) for line in observations.read_text(encoding='utf-8').splitlines() if line.strip()]
+    rows = [json.loads(line) for line in jsonl_physical_lines(manifest.read_text(encoding='utf-8')) if line.strip(' \t\r')]
+    evidence = [json.loads(line) for line in jsonl_physical_lines(observations.read_text(encoding='utf-8')) if line.strip(' \t\r')]
     keys = ('source_pdf_sha256', 'page', 'selected_text_sha256', 'independent_text_sha256', 'prompt_sha256', 'focus_sha256')
     if not rows or len(rows) != len(evidence):
         raise ValueError('every queued difference needs one visual observation')
@@ -323,7 +324,7 @@ def filter_reviewed_focus(manifest: Path, reviewed: list[Path], output: Path) ->
         raise ValueError('choose a new review manifest')
     feedback, invalid = feedback_entries([Path(path) for path in reviewed])
     known = {(key[0], key[1], key[2], key[3], key[5]) for key in feedback if key[5] != 'legacy'}
-    rows = [json.loads(line) for line in manifest.read_text(encoding='utf-8').splitlines() if line.strip()]
+    rows = [json.loads(line) for line in jsonl_physical_lines(manifest.read_text(encoding='utf-8')) if line.strip(' \t\r')]
     kept, skipped = [], 0
     for index, row in enumerate(rows):
         item = load_item(manifest, index)
@@ -357,7 +358,7 @@ def generate_review_queue(manifest: Path, independent: Path, output: Path, *, li
     manifest, independent, output = Path(manifest).resolve(strict=True), Path(independent).resolve(strict=True), Path(output).resolve()
     if output.exists():
         raise ValueError('review output already exists; choose a new directory')
-    inputs = [json.loads(line) for line in manifest.read_text(encoding='utf-8').splitlines() if line.strip()]
+    inputs = [json.loads(line) for line in jsonl_physical_lines(manifest.read_text(encoding='utf-8')) if line.strip(' \t\r')]
     cache: dict[tuple[str, int], list[dict]] = {}
     with independent.open(encoding='utf-8') as stream:
         for line in stream:
@@ -383,7 +384,7 @@ def generate_review_queue(manifest: Path, independent: Path, output: Path, *, li
             if _sha(source.read_bytes()) != source_sha:
                 skip('source_hash_mismatch'); continue
             pages = {page['page']: page for page in (json.loads(line) for line in
-                     (package / 'pages.jsonl').read_text(encoding='utf-8').splitlines() if line.strip())}
+                     jsonl_physical_lines((package / 'pages.jsonl').read_text(encoding='utf-8')) if line.strip(' \t\r'))}
         except (OSError, ValueError, KeyError, TypeError):
             skip('source_or_package_unavailable'); continue
         requested = row.get('pages') or list(pages)

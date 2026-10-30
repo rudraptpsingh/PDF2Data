@@ -1,5 +1,6 @@
 """Attach PP-Structure page blocks as source-bound layout candidates."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 import hashlib
 import json
@@ -20,7 +21,7 @@ def import_paddle_layout(package: Path, source_pdf: Path, manifest_path: Path) -
     if manifest.get("source_pdf_sha256") != report["source_pdf_sha256"] or manifest.get("engine") not in {"PPStructureV2", "PPStructureV3"}:
         raise ValueError("Paddle source PDF or engine identity mismatch")
     pages = {row["page"]: row for row in (json.loads(line) for line in
-             (package / "pages.jsonl").read_text(encoding="utf-8").splitlines() if line.strip())}
+             jsonl_physical_lines((package / "pages.jsonl").read_text(encoding="utf-8")) if line.strip(' \t\r'))}
     rows = []
     seen = set()
     for entry in manifest.get("pages", []):

@@ -4,6 +4,7 @@ The imported rows are review candidates. Neither page text nor facts are
 replaced, and no table cell becomes a verified value by this operation.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 import hashlib
 import json
@@ -16,7 +17,7 @@ from .structure_candidates import table_candidates
 
 
 def _read_jsonl(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [json.loads(line) for line in jsonl_physical_lines(path.read_text(encoding="utf-8")) if line.strip(' \t\r')]
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:

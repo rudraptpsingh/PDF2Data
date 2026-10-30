@@ -4,6 +4,7 @@ Reuses pdf-extract. Originals, raw representations, regions and exact children
 are separate from candidates. No database, model or publication API is called.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from collections import Counter
 from difflib import SequenceMatcher
@@ -63,7 +64,7 @@ def write_json(path: Path, value) -> None:
 
 
 def rows(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines() if line.strip()]
+    return [json.loads(line) for line in jsonl_physical_lines(path.read_text(encoding='utf-8')) if line.strip(' \t\r')]
 
 
 def write_rows(path: Path, values: list[dict]) -> None:

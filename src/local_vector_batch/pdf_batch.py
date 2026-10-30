@@ -1,5 +1,6 @@
 """Bounded, resumable local PDF extraction from a source-download manifest."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
 from contextlib import contextmanager
@@ -39,7 +40,7 @@ def read_manifest(path: Path, *, limit: int) -> list[dict]:
     if not 1 <= limit <= 100_000:
         raise ValueError("limit must be 1–100000")
     rows, seen = [], set()
-    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+    for number, line in enumerate(jsonl_physical_lines(path.read_text(encoding="utf-8")), 1):
         if not line.strip():
             continue
         row = json.loads(line)

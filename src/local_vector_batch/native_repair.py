@@ -5,6 +5,7 @@ coverage proof may replace a page. Candidate facts/relations for that page are
 rebuilt; every other page and its candidates are copied byte-for-byte logically.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 import hashlib
 import json
@@ -26,7 +27,7 @@ def _sha(data: bytes) -> str:
 
 
 def _rows(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+    return [json.loads(line) for line in jsonl_physical_lines(path.read_text()) if line.strip(' \t\r')]
 
 
 def _write_rows(path: Path, rows: list[dict]) -> None:

@@ -4,6 +4,7 @@ This is a diagnostic layer. A suggestion never changes the page package or
 becomes searchable without the existing whole-page gate and guarded publisher.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from hashlib import sha256
 from pathlib import Path
@@ -126,7 +127,7 @@ def propose_local_vision_merge(package: Path, source_pdf: Path,
         raise ValueError("physical page, 1..8 distinct lines and 120..360 DPI required")
     verify_package(package, source_pdf=source_pdf)
     report = json.loads((package / "report.json").read_text())
-    page = next((row for row in map(json.loads, (package / "pages.jsonl").read_text().splitlines())
+    page = next((row for row in map(json.loads, jsonl_physical_lines((package / "pages.jsonl").read_text()))
                  if row["page"] == page_number), None)
     if not page or page["status"] != "review_required" or page.get("review_decision"):
         raise ValueError("source page is absent or not held")
@@ -231,11 +232,11 @@ def run_local_vision_batch(manifest: Path, independent_path: Path, output: Path,
     output.mkdir(parents=True, exist_ok=True)
     independent = {(row["source_pdf_sha256"], row["page"],
                     row["selected_page_text_sha256"]): row
-                   for row in map(json.loads, independent_path.read_text().splitlines())}
+                   for row in map(json.loads, jsonl_physical_lines(independent_path.read_text()))}
     ledger = output / "results.jsonl"
-    previous = [json.loads(line) for line in ledger.read_text().splitlines()] if ledger.exists() else []
+    previous = [json.loads(line) for line in jsonl_physical_lines(ledger.read_text())] if ledger.exists() else []
     jobs = []
-    for row in map(json.loads, manifest.read_text().splitlines()):
+    for row in map(json.loads, jsonl_physical_lines(manifest.read_text())):
         package = (base / row["package"]).resolve()
         source = (base / row["source_pdf"]).resolve()
         for number in row.get("pages", [row.get("page")]):
@@ -248,7 +249,7 @@ def run_local_vision_batch(manifest: Path, independent_path: Path, output: Path,
     current_keys = set()
     for package, _, number in jobs:
         report = json.loads((package / "report.json").read_text())
-        page = next((r for r in map(json.loads, (package / "pages.jsonl").read_text().splitlines())
+        page = next((r for r in map(json.loads, jsonl_physical_lines((package / "pages.jsonl").read_text()))
                      if r["page"] == number), None)
         if page:
             current_keys.add((report["source_pdf_sha256"], number, page["text_sha256"]))
@@ -260,7 +261,7 @@ def run_local_vision_batch(manifest: Path, independent_path: Path, output: Path,
     results = previous
     for package, source, number in jobs:
         report = json.loads((package / "report.json").read_text())
-        page = next((r for r in map(json.loads, (package / "pages.jsonl").read_text().splitlines())
+        page = next((r for r in map(json.loads, jsonl_physical_lines((package / "pages.jsonl").read_text()))
                      if r["page"] == number), None)
         if page is None:
             continue

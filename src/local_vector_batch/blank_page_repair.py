@@ -1,5 +1,6 @@
 """Source-raster proof and atomic status update for genuinely empty PDF pages."""
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from collections import defaultdict
 from hashlib import sha256
@@ -19,7 +20,7 @@ from .pdf_ingest import BLOCKING_ISSUES
 
 
 def _rows(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+    return [json.loads(line) for line in jsonl_physical_lines(path.read_text()) if line.strip(' \t\r')]
 
 
 def _raster_sha(source: Path, page_number: int, dpi: int) -> tuple[str, int, int, int]:

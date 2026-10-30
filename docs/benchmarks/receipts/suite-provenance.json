@@ -1,0 +1,667 @@
+{
+  "schema_version": "pdf2data.benchmark-suite.v1",
+  "dataset": "allenai/olmOCR-bench",
+  "dataset_revision": "54a96a6fb6a2bd3b297e59869491db4d3625b711",
+  "complete_public_dataset": false,
+  "source_pool_documents": 1403,
+  "upstream_revision": "f7cfe4c22098b154c76b6ec950d1c0a464eecf8d",
+  "selection": {
+    "per_category": 10,
+    "seed": "pdf2data-v1",
+    "strategy": "seeded_filename_hash_no_label_selection"
+  },
+  "cases": [
+    {
+      "id": "a7e8e0ebd0754d6ae5df",
+      "pdf": "arxiv_math/2503.04917_pg1.pdf",
+      "sha256": "a73546293cb93ea2e8daf4bfc5a4db46ac53cbf76cc02654aefddd7f7258daf7",
+      "pages": 1,
+      "categories": [
+        "arxiv_math"
+      ]
+    },
+    {
+      "id": "92d0596d3a921f488115",
+      "pdf": "arxiv_math/2503.04932_pg20.pdf",
+      "sha256": "6f704a84d7fe516efb1e82c5913bcef5e39b6a3de61714df398513567ee964df",
+      "pages": 1,
+      "categories": [
+        "arxiv_math"
+      ]
+    },
+    {
+      "id": "ad4cabefc8e4938480cc",
+      "pdf": "arxiv_math/2503.05685_pg4.pdf",
+      "sha256": "a225881fba5369e25e3826e414ad162332bf32403876ad87e4f78c3934be4ac0",
+      "pages": 1,
+      "categories": [
+        "arxiv_math"
+      ]
+    },
+    {
+      "id": "24c3315900c1a824ff91",
+      "pdf": "arxiv_math/2503.06070_pg1.pdf",
+      "sha256": "c28f2b5dceaae8a755cde4b6356252c394f4b153d054c7d900bf7204d116a524",
+      "pages": 1,
+      "categories": [
+        "arxiv_math"
+      ]
+    },
+    {
+      "id": "a05a8c7d8d745315a2ad",
+      "pdf": "arxiv_math/2503.06476_pg11.pdf",
+      "sha256": "f50682f2860a73c36b4f814c0f9f44105b0472e444c6b300be35d211cf702c67",
+      "pages": 1,
+      "categories": [
+        "arxiv_math"
+      ]
+    },
+    {
+      "id": "0ef782f4c2bae8166f36",
+      "pdf": "arxiv_math/2503.07875_pg21.pdf",
+      "sha256": "6a19349961cfa7b40412e8938f3e54d101b8ba1f3eaf5948b2900468e8fa19dc",
+      "pages": 1,
+      "categories": [
+        "arxiv_math"
+      ]
+    },
+    {
+      "id": "9bafae92032fcc575f1a",
+      "pdf": "arxiv_math/2503.07910_pg7.pdf",
+      "sha256": "1d01f1b2e747cfdbea8242ff2a633211c7a8c4215d135cb8d71d5f72a1afa5d1",
+      "pages": 1,
+      "categories": [
+        "arxiv_math"
+      ]
+    },
+    {
+      "id": "bbad770db5b6836e2640",
+      "pdf": "arxiv_math/2503.08649_pg4.pdf",
+      "sha256": "d7846c540e9ecc7bb44624ed6a0ef91f2814b24ef5d652741bc61fce6a349ab6",
+      "pages": 1,
+      "categories": [
+        "arxiv_math"
+      ]
+    },
+    {
+      "id": "db4059ab5394c2c7566d",
+      "pdf": "arxiv_math/2503.08949_pg8.pdf",
+      "sha256": "b9eaa8b8320f004ecd051556e92b88bf4285e957d1145dff934522ecc6481a9a",
+      "pages": 1,
+      "categories": [
+        "arxiv_math"
+      ]
+    },
+    {
+      "id": "d33098543f2978a33ebb",
+      "pdf": "arxiv_math/2503.09121_pg4.pdf",
+      "sha256": "e9c747cfa4f24882ef920fc8486644de7013469ee138e27da4c8de6a86434c12",
+      "pages": 1,
+      "categories": [
+        "arxiv_math"
+      ]
+    },
+    {
+      "id": "37b171f199727c0d6b1a",
+      "pdf": "headers_footers/038704b29be26b6d45233e5e11218273d372957e_page_2.pdf",
+      "sha256": "ef7b8c6275d5d04d2b9b811b33c4825737c563e84972f64be9f9334a8bc3c174",
+      "pages": 1,
+      "categories": [
+        "headers_footers"
+      ]
+    },
+    {
+      "id": "9598ffe2bc146b539863",
+      "pdf": "headers_footers/056544decf9498b6bf7949a1edddc6d58829df82_page_5_processed.pdf",
+      "sha256": "1de0ac9b45a7d83e193d91eb30364b430a64c50a9d8ca426fa63841eb7ed9b1f",
+      "pages": 1,
+      "categories": [
+        "headers_footers"
+      ]
+    },
+    {
+      "id": "4279fdff047bd1ae1c2f",
+      "pdf": "headers_footers/0e0a30f12921972f7af4f475dde567609d647d25_page_2_processed.pdf",
+      "sha256": "ad366d59604f91100f40ef8b866618c8769d43a5d36c46f00f72a25a4bf4d2f9",
+      "pages": 1,
+      "categories": [
+        "headers_footers"
+      ]
+    },
+    {
+      "id": "1e8486d0b6f92a56e956",
+      "pdf": "headers_footers/11c366821f12fc6ed2ab424475f9626602b8915e_page_10.pdf",
+      "sha256": "32035beee2d7d13c5e356da72ebc70a0f0931a86bdd5f7fd761a8d430b476555",
+      "pages": 1,
+      "categories": [
+        "headers_footers"
+      ]
+    },
+    {
+      "id": "84ce2811ec88e2410cf9",
+      "pdf": "headers_footers/189831e217cff468a410a9d07f666f8d0d6adfbe_page_40.pdf",
+      "sha256": "48a0dd3f0d149698aa5f75447cf4ddc13ec1c06a1542b2850e848d0c53761604",
+      "pages": 1,
+      "categories": [
+        "headers_footers"
+      ]
+    },
+    {
+      "id": "bdb61cd0ebe2d1a7df2d",
+      "pdf": "headers_footers/1fbe22f08958fb7d1a071b42b940f7d273f8c165_page_6.pdf",
+      "sha256": "faf225e02cc5e6b486b42471b2af363ef058611b2527ce8245be6e31671294b2",
+      "pages": 1,
+      "categories": [
+        "headers_footers"
+      ]
+    },
+    {
+      "id": "666570d6b882e6043e61",
+      "pdf": "headers_footers/275579590090bf114f27e3f7ce3939cece9a7b25_page_1.pdf",
+      "sha256": "5033dd63635e3975b1a0c7724f0b5a5c4fcd8a9d1073eec58697ec65202bedfa",
+      "pages": 1,
+      "categories": [
+        "headers_footers"
+      ]
+    },
+    {
+      "id": "fcb755a14b8fe8d38470",
+      "pdf": "headers_footers/5be349767dcbdc846508dfc2b18a93336485ba3c_page_1.pdf",
+      "sha256": "eb67320ddf60fe48fef2f39ce3f75a1773417f5977c7b52a2b950d97aa3c124b",
+      "pages": 1,
+      "categories": [
+        "headers_footers"
+      ]
+    },
+    {
+      "id": "20e8c65e827cddd427b4",
+      "pdf": "headers_footers/7fdd893376dc5416d936e33fc19829a7cd04e76a_page_9.pdf",
+      "sha256": "bedbda75c160ce112751d2cf11359651a362da1af2427bbc36e265076a3f5b81",
+      "pages": 1,
+      "categories": [
+        "headers_footers"
+      ]
+    },
+    {
+      "id": "3764d52520906a2c6458",
+      "pdf": "headers_footers/ba10222e40f05d76e2bf1d51c39066a4b1fe82ed_page_11.pdf",
+      "sha256": "6a08970e2ad99cbd67379ed26f2cf92a7f2a3070b967127597bcfdeda2c01fa3",
+      "pages": 1,
+      "categories": [
+        "headers_footers"
+      ]
+    },
+    {
+      "id": "12cfab4e7e6a34050b52",
+      "pdf": "long_tiny_text/10c_pg1.pdf",
+      "sha256": "9b4477326521fc7cc6ac0b57d06a5320838efab1ebf081064120294b94e4033e",
+      "pages": 1,
+      "categories": [
+        "long_tiny_text"
+      ]
+    },
+    {
+      "id": "2cb216cbabc91e8fddc2",
+      "pdf": "long_tiny_text/11_pg418_pg1.pdf",
+      "sha256": "e016078659d2cbc39231415295056fe79970762e80c6d6ed50b8486e93bff704",
+      "pages": 1,
+      "categories": [
+        "long_tiny_text"
+      ]
+    },
+    {
+      "id": "1c28cd81eaa0f3040358",
+      "pdf": "long_tiny_text/11_pg421_pg1.pdf",
+      "sha256": "478760d16210891b6e86e5191328a8feb11eea41d778af073f9d0eb38c5ed6bc",
+      "pages": 1,
+      "categories": [
+        "long_tiny_text"
+      ]
+    },
+    {
+      "id": "8440e5d927c7ddbaca2c",
+      "pdf": "long_tiny_text/12_pg174_pg1.pdf",
+      "sha256": "3ac0820d1a3441c092625ce9d129a1c9e4ccc0c4063a5df07c3b3dc2aa2d9bfa",
+      "pages": 1,
+      "categories": [
+        "long_tiny_text"
+      ]
+    },
+    {
+      "id": "8eedbded5bf13676da3c",
+      "pdf": "long_tiny_text/13_pg531_pg1.pdf",
+      "sha256": "3b0ba23e06932486183ce53224df4ebe710026674ae12deb057547453d3a6b79",
+      "pages": 1,
+      "categories": [
+        "long_tiny_text"
+      ]
+    },
+    {
+      "id": "23e4a3b25cf4d1af175a",
+      "pdf": "long_tiny_text/13_pg857_pg1.pdf",
+      "sha256": "18d940d2f86f808c07b92d8b7b11d31178dc0a88a4464265695d6c113fb7d953",
+      "pages": 1,
+      "categories": [
+        "long_tiny_text"
+      ]
+    },
+    {
+      "id": "a6d51c6cafc9a1de58d4",
+      "pdf": "long_tiny_text/14b_pg1.pdf",
+      "sha256": "a39fa98a478abe25d1834854d874267201eca1ab754441f8c2964a61605e48ba",
+      "pages": 1,
+      "categories": [
+        "long_tiny_text"
+      ]
+    },
+    {
+      "id": "9336f0117d0007eb7d8a",
+      "pdf": "long_tiny_text/15b_pg1.pdf",
+      "sha256": "64ab07e981cabb615d5eb9a304a455fc9fce96a668023b40e945275887a58663",
+      "pages": 1,
+      "categories": [
+        "long_tiny_text"
+      ]
+    },
+    {
+      "id": "1a7af2b151c8b0b0c1bc",
+      "pdf": "long_tiny_text/15c_pg1.pdf",
+      "sha256": "21789dd264ebc85d9f97a581fca014299871f7245d767d423b5cab12e57c850f",
+      "pages": 1,
+      "categories": [
+        "long_tiny_text"
+      ]
+    },
+    {
+      "id": "6aa83274f870e59896d1",
+      "pdf": "long_tiny_text/20_pg48_pg1.pdf",
+      "sha256": "db058c76975f8b319331098dea71d9d1ba8d0680c52211b8caf29f6e9b06ce2c",
+      "pages": 1,
+      "categories": [
+        "long_tiny_text"
+      ]
+    },
+    {
+      "id": "07f467dcb0227f128ae1",
+      "pdf": "multi_column/00945e98ea0970dcffb8f548336df3a0137f_page_4_pg1.pdf",
+      "sha256": "d5ed5801415d3444c947527376c7b428ed23b70a11764700914b1ec1ccb84768",
+      "pages": 1,
+      "categories": [
+        "multi_column"
+      ]
+    },
+    {
+      "id": "aed6d5cd22010c7da801",
+      "pdf": "multi_column/027c390510b2fd3364f5a382f2bc304af018_page_2_pg1.pdf",
+      "sha256": "28d2db9c90c4c873161f5be4e33e78d393f8ec4a0e25f98a37194447680ec562",
+      "pages": 1,
+      "categories": [
+        "multi_column"
+      ]
+    },
+    {
+      "id": "85aa799722f9f7781a7b",
+      "pdf": "multi_column/02a3e23da54b82c414d272051b0b5d8f44d8_page_12_pg1.pdf",
+      "sha256": "b750fae4d75a1c321645916e0d9b7ce28e1c51da0d22d1e3bc856c9e8943aa96",
+      "pages": 1,
+      "categories": [
+        "multi_column"
+      ]
+    },
+    {
+      "id": "35c945d10dc1521d4c54",
+      "pdf": "multi_column/065d792cf3923fc76a17183cfd13480cd51d_page_9_pg1.pdf",
+      "sha256": "30d34b198d50e01c1d2616b83060bc5eaf79895b14f1ebc24a96080bd04bf050",
+      "pages": 1,
+      "categories": [
+        "multi_column"
+      ]
+    },
+    {
+      "id": "8b2dc50f310767db4a1e",
+      "pdf": "multi_column/081875a1035e34dee439b9a2a3a55e319405_page_19_pg1.pdf",
+      "sha256": "382a90f646126c1569df780f7082dec3a5c78792f4135bdb31427af96939c35d",
+      "pages": 1,
+      "categories": [
+        "multi_column"
+      ]
+    },
+    {
+      "id": "c47cc5d50205388d646f",
+      "pdf": "multi_column/081875a1035e34dee439b9a2a3a55e319405_page_4_pg1.pdf",
+      "sha256": "9b03383f16d44f51e0853440f296e7ef5aa6f86458d6c9aed9256f1b23c99b68",
+      "pages": 1,
+      "categories": [
+        "multi_column"
+      ]
+    },
+    {
+      "id": "45c0fc8f081b40425d83",
+      "pdf": "multi_column/09f801e3a2ec90ef456d34ad571a46f36fce_page_18_pg1.pdf",
+      "sha256": "7dd0ba7c8d80ba642a8538d3f99858b412f36d2f8010025fc90e028ead87bd12",
+      "pages": 1,
+      "categories": [
+        "multi_column"
+      ]
+    },
+    {
+      "id": "7178e3265b2cd797aa5f",
+      "pdf": "multi_column/09f801e3a2ec90ef456d34ad571a46f36fce_page_40_pg1.pdf",
+      "sha256": "adff34855ab00fa1ae6debceb9549015d697572387c4b8a19a434d2217e815b5",
+      "pages": 1,
+      "categories": [
+        "multi_column"
+      ]
+    },
+    {
+      "id": "4cdf93beb442b6418d86",
+      "pdf": "multi_column/09f90a8fad0997f7cf454cbcbe79cab3bc0f_page_2_pg1.pdf",
+      "sha256": "c4f98d467c50d8f76595c3241c76deabbb5841eb2a0d99dc1e99e9a09e3e60d1",
+      "pages": 1,
+      "categories": [
+        "multi_column"
+      ]
+    },
+    {
+      "id": "6fd9122cdd063afecad9",
+      "pdf": "multi_column/0d7f2cbc54e1b8e58b42a867c3f7620bcd29_page_8_pg1.pdf",
+      "sha256": "e78563f46648308b2db38856ffa80437f2025e72953b2ce3815047ad6298f7d8",
+      "pages": 1,
+      "categories": [
+        "multi_column"
+      ]
+    },
+    {
+      "id": "68ce02045bff458fcaee",
+      "pdf": "old_scans/33.pdf",
+      "sha256": "faa1dd9667c7c23f82ff14d91835722bc90966f11f17b0eae6d65c6610ba3f2f",
+      "pages": 1,
+      "categories": [
+        "old_scans"
+      ]
+    },
+    {
+      "id": "e3879be01e49d29ea793",
+      "pdf": "old_scans/34.pdf",
+      "sha256": "fca2affd955a70e2272b284bd18811f87b74b277af82127c883542328f48717d",
+      "pages": 1,
+      "categories": [
+        "old_scans"
+      ]
+    },
+    {
+      "id": "b8ba278750839245d699",
+      "pdf": "old_scans/42.pdf",
+      "sha256": "6f9aa1335919404843de1564e76ba020803f091c0a26fc858cdef353469a9b55",
+      "pages": 1,
+      "categories": [
+        "old_scans"
+      ]
+    },
+    {
+      "id": "12e81c6fcc470cd97485",
+      "pdf": "old_scans/43.pdf",
+      "sha256": "573ba9eacf6aee5ab35fe9a760b9c8e544403f1290be954eed12934ddc1bf99b",
+      "pages": 1,
+      "categories": [
+        "old_scans"
+      ]
+    },
+    {
+      "id": "d6b5cfc70c994bad609a",
+      "pdf": "old_scans/52.pdf",
+      "sha256": "4a0c5065d6c20bff78fd701b482d77629c635e37e74232f25c88e2baf26cd295",
+      "pages": 1,
+      "categories": [
+        "old_scans"
+      ]
+    },
+    {
+      "id": "80077a66c378b6fe1e49",
+      "pdf": "old_scans/60.pdf",
+      "sha256": "b40f3c56b0bb2db60855b54b9dacf4fdbcd9a25407d19f18c6f52220430aee38",
+      "pages": 1,
+      "categories": [
+        "old_scans"
+      ]
+    },
+    {
+      "id": "71fb7710a4570d6e35a0",
+      "pdf": "old_scans/64.pdf",
+      "sha256": "a3cb5e9cbfb234562b5a1376be5a170eb31c31d095833bab3ea23f88ec54db80",
+      "pages": 1,
+      "categories": [
+        "old_scans"
+      ]
+    },
+    {
+      "id": "ea7bd798f777b9488ae5",
+      "pdf": "old_scans/67.pdf",
+      "sha256": "08e9dedce22dfc447085c5226eb3a7bc3f29bed1f5ee2b4120f7c5f4cab31a93",
+      "pages": 1,
+      "categories": [
+        "old_scans"
+      ]
+    },
+    {
+      "id": "154b85bf121050852617",
+      "pdf": "old_scans/84.pdf",
+      "sha256": "8baef0dae173530e0835a13aadd1f4f4c816dd16b8cc11d28e4a21a901b09036",
+      "pages": 1,
+      "categories": [
+        "old_scans"
+      ]
+    },
+    {
+      "id": "21aed854333b7b062885",
+      "pdf": "old_scans/92.pdf",
+      "sha256": "26ab4fb5b708f59f005b9a9f8494676ef521aae8d0663be522dc6850d83bb746",
+      "pages": 1,
+      "categories": [
+        "old_scans"
+      ]
+    },
+    {
+      "id": "9214060db1f7ddc3afb5",
+      "pdf": "old_scans_math/1_pg10.pdf",
+      "sha256": "8e966415e8f18ea89aba2b8116a5f7fea76277737c22b1edb9fc7af9a025eed1",
+      "pages": 1,
+      "categories": [
+        "old_scans_math"
+      ]
+    },
+    {
+      "id": "a6c24938afa1b4e99518",
+      "pdf": "old_scans_math/1_pg113.pdf",
+      "sha256": "ce15e7ce4089c9e3e2ae734d2560bb607b62a5525e41f1bbae796b55a08763a9",
+      "pages": 1,
+      "categories": [
+        "old_scans_math"
+      ]
+    },
+    {
+      "id": "79b09a89264628ac53c8",
+      "pdf": "old_scans_math/1_pg131.pdf",
+      "sha256": "86183f4a7f04ae8646cf53acd32bbec5450623c281b9a18087640d322fe99212",
+      "pages": 1,
+      "categories": [
+        "old_scans_math"
+      ]
+    },
+    {
+      "id": "043643a7163393d0f0ab",
+      "pdf": "old_scans_math/1_pg40.pdf",
+      "sha256": "5cc9fa528540404003e21de83ec212c41d330cae7e873ac6aa780505e3a0e39d",
+      "pages": 1,
+      "categories": [
+        "old_scans_math"
+      ]
+    },
+    {
+      "id": "d6cf38d965f1d97f0362",
+      "pdf": "old_scans_math/3_pg199.pdf",
+      "sha256": "2c545ca9776b99f81101a4d159defa22b694d63a3c495a8ec9075502b2cea891",
+      "pages": 1,
+      "categories": [
+        "old_scans_math"
+      ]
+    },
+    {
+      "id": "bc4adf710ca29ac0d208",
+      "pdf": "old_scans_math/3_pg634.pdf",
+      "sha256": "c6817819a70cf0f147ff08f0a5c6e25e6690387008e38cd931a60592b92aa7ec",
+      "pages": 1,
+      "categories": [
+        "old_scans_math"
+      ]
+    },
+    {
+      "id": "2f35600149ec2a988ff8",
+      "pdf": "old_scans_math/3_pg94.pdf",
+      "sha256": "0842d029e735a57ee1828aec6e6ab23ca0684d9f87f8a1a439227639be5ae3c5",
+      "pages": 1,
+      "categories": [
+        "old_scans_math"
+      ]
+    },
+    {
+      "id": "c927a4e48c288a6d93b5",
+      "pdf": "old_scans_math/4_pg281.pdf",
+      "sha256": "696452c1b767f2faf3720ffa2959441696ba107c967e018fd4bbd4108c93f7c2",
+      "pages": 1,
+      "categories": [
+        "old_scans_math"
+      ]
+    },
+    {
+      "id": "4e6fe361db941d355312",
+      "pdf": "old_scans_math/4_pg48.pdf",
+      "sha256": "2409a320a933e781c1c18bd06fe608309c5215dc5618ab786907f7f601c8f513",
+      "pages": 1,
+      "categories": [
+        "old_scans_math"
+      ]
+    },
+    {
+      "id": "f5a661d46d7260f2bcfd",
+      "pdf": "old_scans_math/5_pg558.pdf",
+      "sha256": "f7a819976115e43a498a94222642305561cd91d181f900f85c6211cfe3b13e0e",
+      "pages": 1,
+      "categories": [
+        "old_scans_math"
+      ]
+    },
+    {
+      "id": "31f20cdbf05b1a980743",
+      "pdf": "tables/0953927d7a3f032c46a2e6d0ead837398a0b_pg20.pdf",
+      "sha256": "7d4cf08f9a8a33ec118cbd3f3afc5a811b23a1d61d0ec18bd620a1d10a85447a",
+      "pages": 1,
+      "categories": [
+        "table_tests"
+      ]
+    },
+    {
+      "id": "7fba52812c1ef1e22669",
+      "pdf": "tables/23dc9c0db39d1b6c519a8fa31c672ff41aac_pg3_pg1.pdf",
+      "sha256": "4bb47f6eb4479e72478fafaf36400e3e3847d28a410e6f776f57b761b6b13d5a",
+      "pages": 1,
+      "categories": [
+        "table_tests"
+      ]
+    },
+    {
+      "id": "144a285a00d9f886a641",
+      "pdf": "tables/240cc9b2701d8110eac95cc55b06c8198f54_pg10_pg1.pdf",
+      "sha256": "66c97fedebaa4caf80df72b393b0840d28f437b863cda68c819f068b166308cd",
+      "pages": 1,
+      "categories": [
+        "table_tests"
+      ]
+    },
+    {
+      "id": "bc1ba74c9df53535768f",
+      "pdf": "tables/58ad80719a0d3473e065a3ead02d758e08b6_pg10_pg1.pdf",
+      "sha256": "c0dff7b493f5bd51729029458fbdde46a1a0a6951a8cd971ad6fa4d9d6e7318f",
+      "pages": 1,
+      "categories": [
+        "table_tests"
+      ]
+    },
+    {
+      "id": "3eccf7755cb1780338ad",
+      "pdf": "tables/58feed658a770073c88cb54453b21a056796_pg42.pdf",
+      "sha256": "c65bbe35df9880f8c80c732620d681d1122ee30aa7e89bcf4e5ff428dd731bcd",
+      "pages": 1,
+      "categories": [
+        "table_tests"
+      ]
+    },
+    {
+      "id": "10d28d6a003ce9f1a19d",
+      "pdf": "tables/904a1b4e9f7cdc2169509e570c03b5e6507a_pg141.pdf",
+      "sha256": "ad37dce7419f547462ae244e1e635b116b687de9f956e23598bbc88390831208",
+      "pages": 1,
+      "categories": [
+        "table_tests"
+      ]
+    },
+    {
+      "id": "781aef11bdbd6dc93a5b",
+      "pdf": "tables/bdb0c0697f6c45d77aac622a70b375d5b999_pg42.pdf",
+      "sha256": "60e589b3bdc4e78f989eb8179cac1fd5ea8db8659af7da734aa22f9b654f9e82",
+      "pages": 1,
+      "categories": [
+        "table_tests"
+      ]
+    },
+    {
+      "id": "7d5625fce3963f17196a",
+      "pdf": "tables/d22cfda9b7cf678a7996008fb8faa82209fe_pg10.pdf",
+      "sha256": "ad740ff857c6c3522d3de7608f45fdc25618e627341db6b0b92a45bcf11414bd",
+      "pages": 1,
+      "categories": [
+        "table_tests"
+      ]
+    },
+    {
+      "id": "829598110f4495dcd543",
+      "pdf": "tables/f5e5d540d2d21fb259a00bbbfbed7abacdf2_pg12.pdf",
+      "sha256": "5eef8a98879115336f5b3c5306fb9273fc88d40e90c0d79ca7117a49f67597d4",
+      "pages": 1,
+      "categories": [
+        "table_tests"
+      ]
+    },
+    {
+      "id": "ac25482518653043b6b0",
+      "pdf": "tables/ff19f6fe9ce187ea79f84df52004534e6ff7_pg4.pdf",
+      "sha256": "6b14914684de8fef4335a238c3d8db632a72b58d695b2fc332af51e7fdfbdae7",
+      "pages": 1,
+      "categories": [
+        "table_tests"
+      ]
+    }
+  ],
+  "category_rule_counts": {
+    "arxiv_math": 49,
+    "headers_footers": 32,
+    "long_tiny_text": 54,
+    "multi_column": 44,
+    "old_scans": 58,
+    "old_scans_math": 136,
+    "table_tests": 56
+  },
+  "annotation_sha256": {
+    "arxiv_math.jsonl": "5c1ba4770168a2312bf248c8b0125ed2279ec9f664ce64ba7cb52e3c41e4987c",
+    "headers_footers.jsonl": "315822b0fcd684eab7099bfb162ea45dc2384b23874be9529d60cd85b7e9c274",
+    "long_tiny_text.jsonl": "9ebe6a5fa690e78098e088b9eb677c4bb4212ed9b946be80b2d79a1a6c2a0e1a",
+    "multi_column.jsonl": "50192fd72f18434f3303b501bc9347763fb4b865238b7636604d3f6ebdf01595",
+    "old_scans.jsonl": "0cb14b2a5c3a08383f256931f79d1deea737e2635e0f1766b0fe0377f9416a0d",
+    "old_scans_math.jsonl": "aa514fb0c4c06aa077cadf316c2aede9716f62088ea1011683e059f7be67a8bd",
+    "table_tests.jsonl": "e37a99bd60de56c62cd3f4c1b7910b603641901c15ae119f849ffefa86cde120"
+  },
+  "dataset_license": "ODC-BY; original document rights remain with source owners",
+  "publication_eligible": false,
+  "suite_sha256": "a85780f812672738e228a0c93c09a611b41702d531ea9f34981737ae41fcb516",
+  "scope": "70 selected PDFs, not full 1403-document suite"
+}

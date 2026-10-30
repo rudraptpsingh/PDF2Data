@@ -4,6 +4,7 @@ This module only prepares verified local candidates. A project adapter decides
 when to publish a candidate and update its search index.
 """
 from __future__ import annotations
+from .jsonl import jsonl_physical_lines
 
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -31,7 +32,7 @@ def _digest(value: object) -> str:
 
 
 def _rows(path: Path) -> list[dict]:
-    return [json.loads(line) for line in Path(path).read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [json.loads(line) for line in jsonl_physical_lines(Path(path).read_text(encoding="utf-8")) if line.strip(' \t\r')]
 
 
 def _manifest_path(value: str, manifest: Path) -> Path:
