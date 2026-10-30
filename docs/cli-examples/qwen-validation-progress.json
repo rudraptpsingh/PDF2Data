@@ -1,1 +1,1 @@
-{"command": "l1-qwen-validate", "cases": 32, "counts": {"source_difference_requires_repair": 5, "literal_agreement_requires_layout_proof": 5, "not_run": 22}, "output": "out/pdf2data-qwen-repair/validation.json", "source_quality_changed": false}
+{"command": "l1-qwen-validate", "cases": 32, "counts": {"source_difference_requires_repair": 25, "literal_agreement_requires_layout_proof": 7}, "output": "out/pdf2data-qwen-repair/validation.json", "source_quality_changed": false}

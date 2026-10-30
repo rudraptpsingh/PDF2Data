@@ -1010,7 +1010,13 @@ These are outputs captured from this worktree, not proposed schemas. The validat
 ### qwen-validation-progress.json
 
 ```json
-{"command": "l1-qwen-validate", "cases": 32, "counts": {"source_difference_requires_repair": 5, "literal_agreement_requires_layout_proof": 5, "not_run": 22}, "output": "out/pdf2data-qwen-repair/validation.json", "source_quality_changed": false}
+{"command": "l1-qwen-validate", "cases": 32, "counts": {"source_difference_requires_repair": 25, "literal_agreement_requires_layout_proof": 7}, "output": "out/pdf2data-qwen-repair/validation.json", "source_quality_changed": false}
+```
+
+### qwen-reproof.json
+
+```json
+{"command": "l1-qwen-reproof", "documents": 9, "pages": 98, "newly_accepted": 0, "auto_accepted": 77, "repair_required": 21, "source_text_modified": false, "publication_eligible": false, "output": "/Users/rp/.codex/worktrees/legal-l1-build/PDF2Data/out/pdf2data-native-and-qwen-reproved"}
 ```
 
 ## Current offline Qwen repair run

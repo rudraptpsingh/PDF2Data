@@ -1,0 +1,297 @@
+{
+  "schema_version": "powerlex.legal-l1.v1",
+  "scope": "offline_L1_no_database_or_legal_promotion",
+  "documents": [
+    {
+      "id": "sharing-july-draft",
+      "status": "passed",
+      "integrity": "passed",
+      "source_id": "sharing-july-draft",
+      "source_pdf_sha256": "00bb0b39fbca29ee0cd0ef3934dc7479f6081b642f1c67b9e34ae2f5eebeb01e",
+      "pages": 7,
+      "structure": {
+        "physical_pages": 7,
+        "selected_characters": 13191,
+        "regions": 7,
+        "candidate_units": 8,
+        "exact_children": 20,
+        "selected_text_partition": "passed",
+        "body_unit_partition": "passed",
+        "exact_anchors": "passed",
+        "legal_review": "not_run",
+        "verified_claims": 0
+      },
+      "page_text_readiness": "complete",
+      "quality_counts": {
+        "auto_accepted": 6,
+        "repair_required": 1,
+        "source_blocked": 0
+      },
+      "content_ready": false,
+      "publication_eligible": false,
+      "legal_review": "not_run",
+      "reused": true
+    },
+    {
+      "id": "sharing-october-supplement",
+      "status": "passed",
+      "integrity": "passed",
+      "source_id": "sharing-october-supplement",
+      "source_pdf_sha256": "2efc99923a7df73c32615f5c201230f17974ef1a2b73ed1b3d20b1d917f5952e",
+      "pages": 3,
+      "structure": {
+        "physical_pages": 3,
+        "selected_characters": 5427,
+        "regions": 6,
+        "candidate_units": 2,
+        "exact_children": 7,
+        "selected_text_partition": "passed",
+        "body_unit_partition": "passed",
+        "exact_anchors": "passed",
+        "legal_review": "not_run",
+        "verified_claims": 0
+      },
+      "page_text_readiness": "complete",
+      "quality_counts": {
+        "auto_accepted": 2,
+        "repair_required": 1,
+        "source_blocked": 0
+      },
+      "content_ready": false,
+      "publication_eligible": false,
+      "legal_review": "not_run",
+      "reused": true
+    },
+    {
+      "id": "sharing-october-notice",
+      "status": "passed",
+      "integrity": "passed",
+      "source_id": "sharing-october-notice",
+      "source_pdf_sha256": "6d66b3d1005a050cb4f254c9b536cb402b30caec6c76d512b2ff7dd55a952bb7",
+      "pages": 1,
+      "structure": {
+        "physical_pages": 1,
+        "selected_characters": 2060,
+        "regions": 1,
+        "candidate_units": 4,
+        "exact_children": 4,
+        "selected_text_partition": "passed",
+        "body_unit_partition": "passed",
+        "exact_anchors": "passed",
+        "legal_review": "not_run",
+        "verified_claims": 0
+      },
+      "page_text_readiness": "complete",
+      "quality_counts": {
+        "auto_accepted": 1,
+        "repair_required": 0,
+        "source_blocked": 0
+      },
+      "content_ready": true,
+      "publication_eligible": false,
+      "legal_review": "not_run",
+      "reused": true
+    },
+    {
+      "id": "sharing-july-em",
+      "status": "passed",
+      "integrity": "passed",
+      "source_id": "sharing-july-em",
+      "source_pdf_sha256": "8534d3cd8f2206e6ab7ff060d4a9d8ce363607736c30d6aef64e1aaa8c187fa4",
+      "pages": 22,
+      "structure": {
+        "physical_pages": 22,
+        "selected_characters": 55709,
+        "regions": 22,
+        "candidate_units": 23,
+        "exact_children": 78,
+        "selected_text_partition": "passed",
+        "body_unit_partition": "passed",
+        "exact_anchors": "passed",
+        "legal_review": "not_run",
+        "verified_claims": 0
+      },
+      "page_text_readiness": "complete",
+      "quality_counts": {
+        "auto_accepted": 17,
+        "repair_required": 5,
+        "source_blocked": 0
+      },
+      "content_ready": false,
+      "publication_eligible": false,
+      "legal_review": "not_run",
+      "reused": true
+    },
+    {
+      "id": "sharing-october-em",
+      "status": "passed",
+      "integrity": "passed",
+      "source_id": "sharing-october-em",
+      "source_pdf_sha256": "17b7dd0fe13e4e4f1ca5d4793c7485d66bb5e1b527f9b846a44564577f4d49ff",
+      "pages": 6,
+      "structure": {
+        "physical_pages": 6,
+        "selected_characters": 15601,
+        "regions": 6,
+        "candidate_units": 8,
+        "exact_children": 22,
+        "selected_text_partition": "passed",
+        "body_unit_partition": "passed",
+        "exact_anchors": "passed",
+        "legal_review": "not_run",
+        "verified_claims": 0
+      },
+      "page_text_readiness": "complete",
+      "quality_counts": {
+        "auto_accepted": 5,
+        "repair_required": 1,
+        "source_blocked": 0
+      },
+      "content_ready": false,
+      "publication_eligible": false,
+      "legal_review": "not_run",
+      "reused": true
+    },
+    {
+      "id": "serentica-cerc-rop",
+      "status": "passed",
+      "integrity": "passed",
+      "source_id": "serentica-cerc-rop",
+      "source_pdf_sha256": "77a5884d98d8a9f1887825f94bbc68d39f130d682f789975387713ff9d359e77",
+      "pages": 2,
+      "structure": {
+        "physical_pages": 2,
+        "selected_characters": 2343,
+        "regions": 4,
+        "candidate_units": 3,
+        "exact_children": 5,
+        "selected_text_partition": "passed",
+        "body_unit_partition": "passed",
+        "exact_anchors": "passed",
+        "legal_review": "not_run",
+        "verified_claims": 0
+      },
+      "page_text_readiness": "complete",
+      "quality_counts": {
+        "auto_accepted": 0,
+        "repair_required": 2,
+        "source_blocked": 0
+      },
+      "content_ready": false,
+      "publication_eligible": false,
+      "legal_review": "not_run",
+      "reused": true
+    },
+    {
+      "id": "serentica-aptel-interim",
+      "status": "passed",
+      "integrity": "passed",
+      "source_id": "serentica-aptel-interim",
+      "source_pdf_sha256": "d6e57eb97d76e48236662fc582c4ca32efd106b3d57886bc1db1c063dd7d4c9d",
+      "pages": 16,
+      "structure": {
+        "physical_pages": 16,
+        "selected_characters": 27019,
+        "regions": 48,
+        "candidate_units": 31,
+        "exact_children": 53,
+        "selected_text_partition": "passed",
+        "body_unit_partition": "passed",
+        "exact_anchors": "passed",
+        "legal_review": "not_run",
+        "verified_claims": 0
+      },
+      "page_text_readiness": "complete",
+      "quality_counts": {
+        "auto_accepted": 16,
+        "repair_required": 0,
+        "source_blocked": 0
+      },
+      "content_ready": true,
+      "publication_eligible": false,
+      "legal_review": "not_run",
+      "reused": true
+    },
+    {
+      "id": "cerc-amount-conflict",
+      "status": "passed",
+      "integrity": "passed",
+      "source_id": "cerc-amount-conflict",
+      "source_pdf_sha256": "81b49711c885dff83f3fe738a1a6971ccdf4a675ccf76f2e344d21a6ea259606",
+      "pages": 35,
+      "structure": {
+        "physical_pages": 35,
+        "selected_characters": 76895,
+        "regions": 35,
+        "candidate_units": 37,
+        "exact_children": 117,
+        "selected_text_partition": "passed",
+        "body_unit_partition": "passed",
+        "exact_anchors": "passed",
+        "legal_review": "not_run",
+        "verified_claims": 0
+      },
+      "page_text_readiness": "complete",
+      "quality_counts": {
+        "auto_accepted": 34,
+        "repair_required": 1,
+        "source_blocked": 0
+      },
+      "content_ready": false,
+      "publication_eligible": false,
+      "legal_review": "not_run",
+      "reused": true
+    },
+    {
+      "id": "serentica-india2-licence",
+      "status": "passed",
+      "integrity": "passed",
+      "source_id": "serentica-india2-licence",
+      "source_pdf_sha256": "f81b17705af68637e42f13a676eb892ed519c487e4067461699e8740e7922943",
+      "pages": 6,
+      "structure": {
+        "physical_pages": 6,
+        "selected_characters": 8349,
+        "regions": 6,
+        "candidate_units": 12,
+        "exact_children": 17,
+        "selected_text_partition": "passed",
+        "body_unit_partition": "passed",
+        "exact_anchors": "passed",
+        "legal_review": "not_run",
+        "verified_claims": 0
+      },
+      "page_text_readiness": "complete",
+      "quality_counts": {
+        "auto_accepted": 0,
+        "repair_required": 6,
+        "source_blocked": 0
+      },
+      "content_ready": false,
+      "publication_eligible": false,
+      "legal_review": "not_run",
+      "reused": true
+    }
+  ],
+  "family_inventory": [
+    {
+      "id": "sharing-fifth-draft-context",
+      "required_source_ids": [
+        "sharing-july-draft",
+        "sharing-october-supplement",
+        "sharing-october-notice",
+        "sharing-july-em",
+        "sharing-october-em"
+      ],
+      "missing_source_ids": [],
+      "status": "members_supplied",
+      "legal_currentness": "unresolved"
+    }
+  ],
+  "passed": 9,
+  "failed": 0,
+  "content_ready_documents": 2,
+  "all_required_members_supplied": true,
+  "publication_eligible": false,
+  "legal_review": "not_run"
+}

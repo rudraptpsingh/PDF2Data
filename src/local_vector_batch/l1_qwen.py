@@ -177,8 +177,13 @@ def reproof(cases_path:Path,readings_path:Path,packages:Path,output:Path):
     if not folders:raise ValueError('no L1 packages found')
     for folder in folders:verify_document(folder)
     cases=read(cases_path)['cases'];readings=read(readings_path)
-    allowed={str(f.resolve()) for f in folders}
-    if any(str(Path(c['source_package']).resolve()) not in allowed for c in cases):raise ValueError('case outside declared package root')
+    source_ids={digest(f/'original.pdf') for f in folders}
+    if any(c['source_pdf_sha256'] not in source_ids for c in cases):raise ValueError('case outside declared source identity set')
+    for folder in folders:
+        current={p['page']:p['text_sha256'] for p in rows(folder/'extraction/pages.jsonl')}
+        for case in cases:
+            if case['source_pdf_sha256']==digest(folder/'original.pdf') and current.get(case['page'])!=case['page_text_sha256']:
+                raise ValueError('selected source text changed; rerun local reading validation')
     # Rerender every model input from the captured original, never trust a crop label.
     for case in cases:
         with pdfium.PdfDocument(Path(case['source_package'])/'original.pdf') as pdf:
@@ -198,7 +203,7 @@ def reproof(cases_path:Path,readings_path:Path,packages:Path,output:Path):
         byid={r['id']:r for r in readings['results']};results=[];newly_accepted=0
         for folder in folders:
             dest=stage/folder.name;shutil.copytree(folder,dest)
-            local=[c for c in cases if Path(c['source_package']).resolve()==folder.resolve() and c['id'] in eligible]
+            local=[c for c in cases if c['source_pdf_sha256']==digest(folder/'original.pdf') and c['id'] in eligible]
             if local:
                 layout=rows(dest/'layout.jsonl');witnesses={c['page']:byid[c['id']] for c in local}
                 for row in layout:

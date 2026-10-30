@@ -147,7 +147,7 @@ def capture_layout(original: Path, pages: list[dict]) -> list[dict]:
             independent=safe_text(alternate.extract_text)
             independent_layout=safe_text(lambda:alternate.extract_text(extraction_mode='layout'))
             from .native_consensus import read_source_lines,choose_witness
-            try:source_lines=read_source_lines(original,page,selected['page'])
+            try:source_lines=read_source_lines(original,page,selected['page'],secondary_layout_text=independent_layout)
             except Exception as error:source_lines={'status':'unavailable','text':None,'glyph_coverage':False,'reason':type(error).__name__}
             witness,witness_basis=choose_witness(selected['text'],independent_layout,source_lines) if selected['method']=='pdf_text' else (independent_layout,'pypdf_layout_for_ocr_comparison_only')
             glyphs=[]

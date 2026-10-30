@@ -9,7 +9,7 @@ def _glyph_key(char):
     return (char.get('text',''),)+tuple(round(float(char[k]),5) for k in ('x0','top','x1','bottom'))
 
 
-def read_source_lines(original: Path, source_page, physical_page: int) -> dict:
+def read_source_lines(original: Path, source_page, physical_page: int, secondary_layout_text: str | None = None) -> dict:
     """Geometry orders source lines; PDFium independently reads their contents.
 
     Every non-space native glyph must occur once in the line geometry. Rotated
@@ -46,7 +46,9 @@ def read_source_lines(original: Path, source_page, physical_page: int) -> dict:
                 for line in merged:
                     box=[max(0,line['x0']-.3),max(0,line['top']-.3),min(source_page.width,line['x1']+.3),min(source_page.height,line['bottom']+.3)]
                     text=text_page.get_text_bounded(left=box[0],bottom=source_page.height-box[3],right=box[2],top=source_page.height-box[1])
-                    lines.append({'bbox':box,'coordinate_system':'PDF points, top-left','text':text})
+                    native_line=''.join(c.get('text','') for c in sorted(line.get('chars',[]),key=lambda c:c['x0']))
+                    corrected,repairs=repair_control_hyphens(text,native_line,secondary_layout_text)
+                    lines.append({'bbox':box,'coordinate_system':'PDF points, top-left','text':corrected,'raw_text':text,'reader_mapping_repairs':repairs})
             finally:text_page.close()
         finally:page.close()
     return {**result,'status':'captured','text':'\n'.join(line['text'] for line in lines),'lines':lines,'glyph_coverage':True}
@@ -89,8 +91,10 @@ def repair_source_lines(original: Path, source_page, physical_page: int, selecte
         # flatten that into a legal clause or pretend to have proved its grid.
         if not text or '\n' in text or '\r' in text:continue
         members=[r for r in native_rows if r['top']>=box[1]-.01 and r['bottom']<=box[3]+.01 and r['x0']>=box[0]-.01 and r['x1']<=box[2]+.01]
-        intervals=[]
-        for r in members:
+        group='\n'.join(r['text'] for r in members)
+        group_matches=list(re.finditer(r'(?m)^'+re.escape(group)+r'$',selected)) if group else []
+        intervals=[(group_matches[0].start(),group_matches[0].end())] if len(group_matches)==1 else []
+        for r in ([] if intervals else members):
             value=r['text']
             starts=[m.start() for m in re.finditer(re.escape(value),selected)]
             if len(starts)!=1:intervals=[];break
@@ -116,3 +120,19 @@ def repair_source_lines(original: Path, source_page, physical_page: int, selecte
     for repair in sorted(repairs,key=lambda r:r['selected_start'],reverse=True):
         result=result[:repair['selected_start']]+repair['replacement']+result[repair['selected_end']:]
     return result,repairs
+
+
+def repair_control_hyphens(raw: str, native_glyph_text: str, secondary_layout_text: str | None) -> tuple[str,list[dict]]:
+    """Repair PDFium's U+0002 hyphen mapping only with two source witnesses.
+
+    All other source characters must match the source-ordered glyphs exactly;
+    the entire corrected physical line must occur uniquely in independent
+    pypdf layout output. This never changes selected text or invents a word.
+    """
+    if '\x02' not in raw or secondary_layout_text is None:return raw,[]
+    compact=lambda value:re.sub(r'\s+','',unicodedata.normalize('NFC',value))
+    candidate=raw.replace('\x02','-')
+    key=compact(candidate)
+    if not key or compact(native_glyph_text)!=key or compact(secondary_layout_text).count(key)!=1:return raw,[]
+    return candidate,[{'kind':'source_bound_pdfium_control_hyphen_mapping','raw_codepoint':'U+0002','replacement':'-','count':raw.count('\x02'),
+        'basis':'exact_source_ordered_native_glyph_line_and_unique_independent_pypdf_layout_line','raw_text':raw,'corrected_text':candidate}]
