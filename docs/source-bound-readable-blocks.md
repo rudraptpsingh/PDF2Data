@@ -69,3 +69,48 @@ unavailable for scanned/OCR text; such tables remain unresolved. Some long Word
 headers still wrap within narrow cells. Source coverage cannot establish that
 OCR spelling or table semantics are correct; review and downstream legal gates
 are still required.
+
+## Measured before/after comparison
+
+[Machine-readable receipt](source-block-fidelity-receipt.json) compares fresh CLI
+processing of the same three PDF hashes at `c8328d1` against `11de3b8`.
+The baseline CLI was frozen with `git archive` in an ignored output directory;
+no existing checkout was changed.
+
+| Check | Before | After |
+| --- | --- | --- |
+| Tables placed inline between correct source sections | 0/3 | 3/3 |
+| Explicit flattened-table duplicate probes | 2 | 0 |
+| October structured table values | 36/36 | 36/36, identical |
+| Page-five footer glued to next condition | Present | Absent |
+| RoP optional cross-page rejoinder condition | Preserved | Preserved |
+| Raw selected text | 18,672 characters | Identical page hashes |
+
+Duplicate probes are `Format Purpose` outside the source table and the extra
+`Not effective` occurrence. They are bounded probes, not a complete duplicate
+detector. Already-correct cell values and cross-page conditions are retained
+controls, not new extraction gains. Source blocks add a complete source-text
+partition audit; they do not improve OCR spelling in these native-text cases.
+
+Reproduce the artifact comparison:
+
+```sh
+python scripts/measure_export_fidelity.py \
+  --before out/fidelity-before/readable \
+  --after out/structured-review/review-v4 \
+  --output docs/source-block-fidelity-receipt.json
+```
+
+An independent generic holdout uses nested `(a)/(i)/(ii)/(b)` markers and a
+two-column merged header above voltage data. It was generated after the format
+fix with `scripts/generate_formatting_holdout.py` (requires ReportLab), processed
+only with `pdf2data legal-l1`, then exported through `pdf2data export-readable`.
+Its CLI result retains list depths `0,1,1,0`, source-backed `colspan=2`, one inline
+table between the original captions, and all source text. This is one simple
+geometric holdout, not evidence for arbitrary tables or legal hierarchy.
+
+Enable its regression with
+`PDF2DATA_FORMATTING_HOLDOUT=out/formatting-holdout-v2/readable` alongside the
+three-source environment above. Final combined run: **380 passed, one optional
+dependency skip**. All additions after `11de3b8` are measurements, fixtures and
+documentation; parser behavior is unchanged.
