@@ -239,7 +239,7 @@ def table_candidates(table: dict, page: dict) -> list[dict]:
             span = _evidence(page, *bounds) if bounds else None
             status = ("exact_unique" if len(hits) == 1 else
                       "exact_unique_row_context" if bounds else "ambiguous_or_not_in_selected_text")
-            rows.append({"kind": "table_cell", "table_id": table["id"],
+            rows.append({"kind": "table_cell", "table_id": table["id"], "table_version_id": table.get("table_version_id"),
                          "table_bbox": table["bbox"], "row": row_index, "column": column_index,
                          "proposed_header": row_index == 0,
                          "candidate_header_row": 0 if row_index else None,

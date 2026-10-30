@@ -74,7 +74,10 @@ def text_quality(text: str) -> dict:
     has_devanagari = any("\u0900" <= char <= "\u097f" for char in text)
     garbled = ((cid >= 5 and share > .01) or (cid > 0 and has_devanagari) or
                (replacements >= 5 and replacements / max(1, len(text)) > .02) or nul > 0)
-    return {"cid_glyphs": cid, "cid_share": round(share, 4), "replacement_chars": replacements,
+    from .native_tables import glyph_audit
+    audit = glyph_audit(text)
+    garbled = garbled or bool(audit["issues"])
+    return {"glyph_audit": audit, "cid_glyphs": cid, "cid_share": round(share, 4), "replacement_chars": replacements,
             "nul_chars": nul, "needs_ocr": garbled}
 
 
@@ -413,7 +416,8 @@ def extract_pdf(
             if tables:
                 native_tables_on_page = 0
                 try:
-                    for number, found in enumerate(page.find_tables(), 1):
+                    from .native_tables import find_native_tables, table_shape
+                    for number, found in enumerate(find_native_tables(page), 1):
                         cells = found.extract()
                         if len(cells) < 2:
                             continue
@@ -421,7 +425,8 @@ def extract_pdf(
                                            "bbox": [round(float(x), 2) for x in found.bbox],
                                            "bbox_coordinates": "PDF points, top-left",
                                            "extraction_basis": "native_pdf_geometry",
-                                           "cells": cells, "status": "needs_row_column_review"})
+                                           "cells": cells, "status": "needs_row_column_review",
+                                           **table_shape(found, cells, f"{page_id}:table{number}")})
                         native_tables_on_page += 1
                         structure_rows.extend(table_candidates(table_rows[-1], pages[-1]))
                 except Exception as error:

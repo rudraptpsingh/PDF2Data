@@ -140,7 +140,11 @@ def load_item(manifest: Path, index: int) -> dict:
     if not isinstance(selected_meta, dict):
         raise ValueError('invalid selected OCR metadata')
     proposal = proposal_for(row, focus)
-    return {'index': index, 'total': len(rows), 'title': row['title'], 'prompt': row['prompt'], 'source_url': source_url,
+    table_previews = []
+    if row.get('l1_package'):
+        from .l1_review import preview_tables
+        table_previews = preview_tables(source, page, row['source_pdf_sha256'])
+    return {'table_previews': table_previews, 'index': index, 'total': len(rows), 'title': row['title'], 'prompt': row['prompt'], 'source_url': source_url,
             'page_total_discrepancies': row.get('page_total_discrepancies'),
             'page_queued_discrepancies': row.get('page_queued_discrepancies'),
             'prompt_sha256': _sha(row['prompt'].encode()), 'selected_segments': left, 'independent_segments': right,
@@ -177,7 +181,8 @@ def render_page(item: dict, *, focus: bool = False) -> bytes:
                 top = 0
                 for crop in crops:
                     combined.paste(crop, (0, top)); top += crop.height + 16
-                image = combined
+                from PIL import ImageOps
+                image = ImageOps.expand(combined,border=12,fill='white')
             out = io.BytesIO()
             image.save(out, format='PNG')
             return out.getvalue()

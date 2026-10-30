@@ -155,7 +155,16 @@ def serve(port: int = 8765, max_upload_mb: int = 150, *, review_manifest: Path |
                     if path.path in ('/api/review-image', '/api/review-focus'):
                         try:
                             with render_lock:
-                                image = render_page(item, focus=path.path == '/api/review-focus')
+                                table_index = parse_qs(path.query).get('table', [None])[0]
+                                if table_index is not None:
+                                    table_index = int(table_index)
+                                    previews = item.get('table_previews', [])
+                                    if not 0 <= table_index < len(previews):
+                                        raise ValueError('source table outside page')
+                                    table = previews[table_index]
+                                    x0, y0, x1, y1 = table['bbox']
+                                    item = {**item, 'focus': {'boxes': [[max(0,(x0-2)/table['page_width']),max(0,(y0-2)/table['page_height']),min(1,(x1+2)/table['page_width']),min(1,(y1+2)/table['page_height'])]]}}
+                                image = render_page(item, focus=table_index is not None or path.path == '/api/review-focus')
                         except Exception:
                             return self._json(500, {'error': 'Could not render the original PDF page'})
                         return self._send(200, image, 'image/png')
@@ -167,6 +176,18 @@ def serve(port: int = 8765, max_upload_mb: int = 150, *, review_manifest: Path |
                     if review_decisions:
                         with lock:
                             item['saved_feedback'] = latest_feedback(review_decisions, item)
+                    if review_decisions:
+                        cell_file=review_decisions.with_name('table-cell-feedback.jsonl')
+                        cell_feedback={}
+                        if cell_file.is_file():
+                            for line in cell_file.read_text(encoding='utf-8').splitlines():
+                                if line.strip():
+                                    saved=json.loads(line)
+                                    if saved.get('kind')=='extraction_table_cell_feedback':
+                                        cell_feedback[(saved.get('table_version_id'),saved.get('cell_id'),saved.get('selected_cell_sha256'),saved.get('independent_cell_sha256'))]=saved
+                        for table in item.get('table_previews',[]):
+                            for cell in table['cell_spans']:
+                                cell['saved_feedback']=cell_feedback.get((table['table_version_id'],cell['id'],cell['selected_cell_sha256'],cell['independent_cell_sha256']))
                     item.pop('source_pdf')
                     return self._json(200, item)
                 except (OSError, ValueError, KeyError, TypeError) as error:
@@ -223,6 +244,17 @@ def serve(port: int = 8765, max_upload_mb: int = 150, *, review_manifest: Path |
                 length = 0
             if length < 1 or length > max_upload_mb * 1024 * 1024:
                 return self._json(413, {"error": f"request must be under {max_upload_mb} MB"})
+            if path.path == '/api/review-cell-decision' and review_manifest and review_decisions:
+                if length > 16*1024:
+                    return self._json(413, {'error':'cell feedback is too large'})
+                try:
+                    from .l1_review import record_cell_decision
+                    request=json.loads(self.rfile.read(length))
+                    with render_lock:
+                        receipt=record_cell_decision(review_manifest,review_decisions.with_name('table-cell-feedback.jsonl'),request)
+                    return self._json(200,{'saved':True,'promotes_page':False,'repair_state':receipt['repair_state']})
+                except (ValueError,KeyError,TypeError,OSError) as error:
+                    return self._json(400,{'error':str(error)[:180]})
             if path.path == '/api/review-decision' and review_manifest and review_decisions:
                 if length > 16 * 1024:
                     return self._json(413, {'error': 'review feedback is too large'})
