@@ -116,6 +116,27 @@ def parser() -> argparse.ArgumentParser:
     export_l1.add_argument("--packages", required=True, type=Path)
     export_l1.add_argument("--output", required=True, type=Path)
     export_l1.add_argument("--json", action="store_true")
+    export_l1.add_argument("--region-packets", type=Path, help="include verified mixed native/raster candidates without clearing quality flags")
+    logical=sub.add_parser("native-logical-repair",help="revalidate source-bound layout token spaces and filter exact resolved review focuses")
+    logical.add_argument('--manifest',type=Path,required=True)
+    logical.add_argument('--source-runtime',type=Path,required=True,help='original immutable extraction runtime; distinct from current proof tool')
+    logical.add_argument('--output',type=Path,required=True)
+    logical.add_argument('--json',action='store_true')
+    for command,help_text in [('native-table-cell-revalidate','consume source-bound native table-cell feedback'),('native-table-region-reproof','reprove plural native table regions and outside prose into new immutable L1')]:
+        table=sub.add_parser(command,help=help_text)
+        for option in ('package','source-runtime','feedback','dossier','output'):table.add_argument('--'+option,type=Path,required=True)
+        table.add_argument('--page',type=int,required=True);table.add_argument('--json',action='store_true')
+    image=sub.add_parser('native-image-regions',help='include exact original embedded images with CPU OCR candidates and strict mixed-page completeness holds')
+    for option in ('package','source-runtime','output'):image.add_argument('--'+option,type=Path,required=True)
+    image.add_argument('--page',type=int,required=True);image.add_argument('--readings',type=Path,help='reuse original source-bound candidate readings without model inference')
+    image.add_argument('--json',action='store_true')
+    image_verify=sub.add_parser('verify-native-image-regions',help='regenerate exact original raster regions and completeness gates')
+    image_verify.add_argument('--output',type=Path,required=True);image_verify.add_argument('--json',action='store_true')
+    targeted=sub.add_parser('targeted-native-reproof',help='bounded CPU source reproof sidecar; preserve original L1')
+    targeted.add_argument('--package',type=Path,required=True);targeted.add_argument('--source-runtime',type=Path,required=True)
+    targeted.add_argument('--pages',type=int,nargs='+',required=True);targeted.add_argument('--output',type=Path,required=True);targeted.add_argument('--json',action='store_true')
+    repair_verify=sub.add_parser('verify-native-quality-repair',help='freshly reconstruct registered source-quality repair evidence')
+    repair_verify.add_argument('--package',type=Path,required=True);repair_verify.add_argument('--source-runtime',type=Path,required=True);repair_verify.add_argument('--json',action='store_true')
     repair = sub.add_parser("pdf-repair", help="repair selected original physical pages without reprocessing the PDF")
     repair.add_argument("--input", required=True, type=Path, help="original source PDF")
     repair.add_argument("--package", required=True, type=Path, help="existing verified extraction package")
@@ -344,7 +365,28 @@ def main(argv: list[str] | None = None) -> int:
             result = reproof(args.cases, args.readings, args.packages, args.output)
         elif args.command == "export-l1-data":
             from .l1_export import export_processed
-            result = export_processed(args.packages, args.output)
+            result = export_processed(args.packages, args.output, args.region_packets)
+        elif args.command=='native-logical-repair':
+            from .native_quality_repair import repair_review_queue
+            result=repair_review_queue(args.manifest,args.source_runtime,args.output)
+        elif args.command=='native-table-cell-revalidate':
+            from .native_table_feedback import revalidate
+            result=revalidate(args.package,args.source_runtime,args.feedback,args.dossier,args.output,args.page)
+        elif args.command=='native-table-region-reproof':
+            from .native_table_regions import build_version
+            result=build_version(args.package,args.source_runtime,args.feedback,args.dossier,args.page,args.output)
+        elif args.command=='native-image-regions':
+            from .native_image_regions import build
+            result=build(args.package,args.source_runtime,args.page,args.output,args.readings)
+        elif args.command=='verify-native-image-regions':
+            from .native_image_regions import verify
+            result=verify(args.output)
+        elif args.command=='targeted-native-reproof':
+            from .targeted_reproof import create_reproof
+            result=create_reproof(args.package,args.source_runtime,args.pages,args.output)
+        elif args.command=='verify-native-quality-repair':
+            from .proof_identity import verify_source_quality_repair
+            result=verify_source_quality_repair(args.package,args.source_runtime)
         elif args.command == "pdf-extract":
             from .pdf_ingest import extract_pdf
             result = extract_pdf(args.input, args.output, title=args.title,
@@ -557,6 +599,8 @@ def main(argv: list[str] | None = None) -> int:
                       "token_budget_validated": result.get("token_budget_validated", False),
                       "skipped_input_records": result.get("input_audit", {}).get("records_without_passages")}
         print(json.dumps(result, ensure_ascii=False) if args.json else json.dumps(result, indent=2, ensure_ascii=False))
+        if args.command=='native-table-cell-revalidate'and result.get('status')!='validated':return 3
+        if args.command=='native-table-region-reproof'and result.get('status')!='passed':return 3
         if args.command == "pdf-quality" and args.require_accepted and (
                 result.get("packages_blocked") or result.get("counts", {}).get("repair_required") or
                 result.get("counts", {}).get("source_blocked") or not result.get("pages_assessed")):

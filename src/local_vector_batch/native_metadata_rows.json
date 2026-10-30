@@ -1,0 +1,36 @@
+{
+  "schema_version": "pdf2data.native-header-metadata-rules.v1",
+  "rules": {
+    "header_reference_number_and_date": {
+      "physical_pages": [
+        1
+      ],
+      "max_bottom_fraction": 0.25,
+      "max_line_height_points": 28,
+      "required_blocks": 2,
+      "minimum_gap_points": 36,
+      "minimum_gap_font_multiple": 4,
+      "layout_separator_min_spaces": 4,
+      "reference_pattern": "^No\\.?\\s*:?\\s*(?:[A-Za-z]{1,8}\\s+)?[A-Za-z0-9][A-Za-z0-9./_():-]*(?:\\s+[A-Za-z0-9./_():-]+){0,2}$",
+      "reference_required_pattern": "[0-9].*[/\\-]|[/\\-].*[0-9]",
+      "reference_excluded_words": [
+        "shall",
+        "must",
+        "not",
+        "and",
+        "or",
+        "provided",
+        "respondents",
+        "petitioners"
+      ],
+      "date_patterns": [
+        "^(?:Date(?:d)?\\s*:?\\s*)?\\d{1,2}[./-]\\d{1,2}[./-]\\d{4}\\.?$",
+        "^(?:Date(?:d)?\\s*:?\\s*)?\\d{1,2}(?:st|nd|rd|th)?\\s*(?:January|February|March|April|May|June|July|August|September|October|November|December),?\\s*\\d{4}\\.?$",
+        "^(?:Date(?:d)?\\s*:?\\s*)?(?:January|February|March|April|May|June|July|August|September|October|November|December)\\s*\\d{1,2}(?:st|nd|rd|th)?,?\\s*\\d{4}\\.?$"
+      ],
+      "syntax_comparison": "unicode_whitespace_removed_only_literal_codepoints_preserved",
+      "reference_issuer_pattern": "(?:/CERC|-CERC)(?:/\\d{4})?$"
+    }
+  },
+  "scope": "Source fidelity of two independently bounded header metadata blocks only; not date effect, legal status, table associations or general column proof"
+}

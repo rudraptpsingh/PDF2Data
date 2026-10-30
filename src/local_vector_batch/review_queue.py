@@ -85,6 +85,15 @@ def focus_segments(text: str, excerpt: str, span: list[int] | None) -> list[dict
             [{'text': excerpt[end:], 'changed': False}])
 
 
+def empty_focused_queue(manifest: Path, index: int) -> dict | None:
+    entries=[line for line in Path(manifest).read_text(encoding='utf-8').splitlines()if line.strip()]
+    if entries:return None
+    if index!=0:raise ValueError('review item outside queue')
+    return {'empty':True,'total':0,'scope':'focused_queue',
+            'message':'No unresolved questions in this focused queue',
+            'page_quality_approval':False,'legal_approval':False}
+
+
 def load_item(manifest: Path, index: int) -> dict:
     rows = [json.loads(line) for line in manifest.read_text(encoding='utf-8').splitlines() if line.strip()]
     if not 0 <= index < len(rows):

@@ -48,6 +48,11 @@ def load_policy(path: Path | None = None) -> dict:
             type(policy.get('native_complex_script_min_characters')) is not int or
             policy['native_complex_script_min_characters'] < 1):
         raise ValueError('invalid native complex-script verification policy')
+    font_routes = policy.get('native_font_families_requiring_raster_proof', {})
+    if (not isinstance(font_routes, dict) or any(
+            not isinstance(name, str) or not name or name != name.casefold() or
+            script not in required_scripts for name, script in font_routes.items())):
+        raise ValueError('invalid native font verification policy')
     return policy
 
 
@@ -91,10 +96,13 @@ def native_source_raster_evidence(page: dict, source_page, source_pdf_sha256: st
 
     policy = policy or load_policy()
     text = page.get("text", "")
+    from .text_script import native_font_script_evidence
     result = {"method": "native_glyph_raster_coverage", "ready": False,
               "page_complete": False, "reading_order_proven": False,
               "source_pdf_sha256": source_pdf_sha256, "page": page["page"],
               "page_text_sha256": page["text_sha256"],
+              "native_font_script_evidence": native_font_script_evidence(
+                  getattr(source_page, 'chars', []) or [], policy),
               "nontext_objects": {kind: len(getattr(source_page, kind, []) or [])
                                   for kind in ("images", "curves", "rects", "lines")}}
     if hashlib.sha256(text.encode()).hexdigest() != page["text_sha256"]:
@@ -365,7 +373,8 @@ def assess_page(page: dict, *, source_pdf_sha256: str | None,
                 independent_metadata: dict | None = None,
                 source_geometry: dict | None = None, layout_proof: dict | None = None,
                 table_count: int = 0, policy: dict | None = None,
-                source_pdf_path: Path | None = None) -> dict:
+                source_pdf_path: Path | None = None,
+                native_font_evidence: dict | None = None) -> dict:
     """Assess one physical page; every required component must pass separately."""
     policy = policy or load_policy()
     source_ok = (source_pdf_sha256 == package_pdf_sha256 and
@@ -408,9 +417,13 @@ def assess_page(page: dict, *, source_pdf_sha256: str | None,
     elif page.get("method") == "pdf_text":
         from .text_script import native_script_verification
         required = native_script_verification(text, policy)['required_scripts']
+        native_font_evidence = native_font_evidence or (source_geometry or {}).get('native_font_script_evidence')
+        font_required = (native_font_evidence or {}).get('required_scripts', [])
+        required = sorted(set(required) | set(font_required))
         if required and not independent_language_proof:
             components['language'] = _component('unknown', 'native_complex_script_glyph_mapping_unverified',
                 detected_script=script, required_scripts=required,
+                source_font_evidence=native_font_evidence,
                 native_parser_agreement_is_linguistic_proof=False)
         else:
             components['language'] = _component('pass', detected_script=script, reader='native_pdf_text',
@@ -625,6 +638,20 @@ def assess_package(package: Path, source_pdf: Path, *, pages: list[int] | None =
                     pass
     source_geometry_by_page = source_geometry_by_page or {}
     source_geometry_by_page = dict(source_geometry_by_page)
+    # Inspect original fonts even when callers supply geometry or disable raster
+    # derivation. Neither cached geometry nor two agreeing readers can bypass a
+    # known legacy-encoding language route.
+    native_font_by_page = {}
+    if policy.get('native_font_families_requiring_raster_proof'):
+        import pdfplumber
+        from .text_script import native_font_script_evidence
+        native_targets = [p for p in raw_pages if p['page'] in selected and p.get('method') == 'pdf_text']
+        if native_targets:
+            with pdfplumber.open(source_pdf) as original_fonts:
+                for target in native_targets:
+                    source_page = original_fonts.pages[target['page']-1]
+                    native_font_by_page[target['page']] = native_font_script_evidence(source_page.chars, policy)
+                    source_page.close()
     if derive_ocr_source_raster:
         from contextlib import ExitStack
         import pdfplumber
@@ -728,7 +755,8 @@ def assess_package(package: Path, source_pdf: Path, *, pages: list[int] | None =
                  source_geometry=source_geometry_by_page.get(page["page"]),
                  layout_proof=layout_proof_by_page.get(page["page"]),
                  table_count=table_counts[page["page"]], policy=policy,
-                 source_pdf_path=source_pdf)
+                 source_pdf_path=source_pdf,
+                 native_font_evidence=native_font_by_page.get(page['page']))
         result["policy_sha256"] = policy_sha256
         result["source_url"] = doc.get("source_url")
         result["independent_text_sha256"] = (hashlib.sha256(independent_by_page[page["page"]].encode()).hexdigest()

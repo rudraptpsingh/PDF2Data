@@ -146,8 +146,11 @@ def serve(port: int = 8765, max_upload_mb: int = 150, *, review_manifest: Path |
                 return self._json(200, summary)
             if path.path in {"/api/review-item", "/api/review-image", "/api/review-focus", "/api/review-group"} and review_manifest:
                 try:
-                    from .review_queue import load_item, render_page, latest_feedback, review_group, verify_proposal_source
+                    from .review_queue import load_item, render_page, latest_feedback, review_group, verify_proposal_source,empty_focused_queue
                     index = int(parse_qs(path.query).get('index', ['0'])[0])
+                    empty=empty_focused_queue(review_manifest,index)
+                    if empty and path.path=='/api/review-item':return self._json(200,empty)
+                    if empty and path.path=='/api/review-group':return self._json(200,{'differences':[],'empty':True,'scope':'focused_queue'})
                     if path.path == '/api/review-group':
                         with lock:
                             return self._json(200, {'differences': review_group(review_manifest, index, review_decisions)})
