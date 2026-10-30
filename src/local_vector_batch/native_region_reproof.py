@@ -44,15 +44,24 @@ def _evaluate(bound,origin,n,*,candidate_snapshot=None):
     from local_vector_batch.native_table_regions import derive_regions,_quality_from_regions
     api=_api();page=bound['pages'][n];started=time.perf_counter()
     snapshot=copy.deepcopy(candidate_snapshot)if candidate_snapshot is not None else capture_source(bound['path'],origin,n)
+    observation='untrusted_builder_candidate'if candidate_snapshot is not None else'fresh_original_capture'
     if any(snapshot.get(k)!=v for k,v in {'source_pdf_sha256':bound['source_pdf_sha256'],'page':n,'page_text_sha256':page['text_sha256']}.items()):raise ValueError('Region snapshot source/page/text binding changed')
     policy=__import__('local_vector_batch.quality_gate',fromlist=['load_policy']).load_policy()
     policy_hash=api.digest(json.dumps(policy,sort_keys=True,ensure_ascii=False))
     if snapshot.get('fresh_quality',{}).get('policy_sha256')!=policy_hash:
         if candidate_snapshot is None:raise ValueError('Fresh source policy identity differs')
         snapshot=capture_source(bound['path'],origin,n)
-    cells=validate_feedback(snapshot,[],{})
-    if cells['status']!='validated':raise ValueError('Region source cells remain held')
-    proof=derive_regions(bound['path'],snapshot,cells);quality=_quality_from_regions(snapshot,proof)
+        observation='fresh_original_capture'
+    from .native_region_diagnostics import HeldRegionEvidence
+    cells=None;stage='validate_cells'
+    try:
+        cells=validate_feedback(snapshot,[],{})
+        if cells['status']!='validated':raise ValueError('Region source cells remain held')
+        stage='derive_regions';proof=derive_regions(bound['path'],snapshot,cells);quality=_quality_from_regions(snapshot,proof)
+    except MemoryError:
+        raise
+    except Exception as error:
+        raise HeldRegionEvidence(error,stage,snapshot,cells,observation)from error
     return {'page':n,'page_text_sha256':page['text_sha256'],'source_pdf_sha256':bound['source_pdf_sha256'],
             'snapshot':snapshot,'cells':cells,'region_proof':proof,'quality':quality,
             'selected_text_modified':False,'legal_review':'not_run','answer_publication_eligible':False,
@@ -69,17 +78,44 @@ def create_region_reproof(parent,runtime,source_runtime,pages,output,*,expected_
     modules=api.runtime_modules(runtime);bound=_bound(parent,source_runtime,runtime,modules,expected_manifest_sha256)
     pages=sorted(set(pages));old={q['page']:q for q in bound['quality']['results']}
     if not pages or any(type(n)is not int or n not in bound['pages']or old[n]['outcome']=='auto_accepted'for n in pages):raise ValueError('Existing held physical target pages required')
+    # Failed witnesses are durable candidates immediately, not exception/frame
+    # buffers multiplied across a partition. No manifest is sealed until the
+    # final unchanged-parent check; interrupted outputs cannot confer quality.
+    output.mkdir(parents=True)
     candidates=candidate_snapshots or {};proofs=[];candidate_inputs={}
     for n in pages:
         try:
             candidate=candidates.get(n,candidates.get(str(n)))
             if candidate is not None:
                 path=Path(candidate).resolve();candidate_inputs[str(n)]={'path':str(path),'sha256':api.file_sha(path),'authority':'builder_candidate_only_final_fresh_source_decoder_required'};candidate=api.read(path)
+                from .native_region_diagnostics import CONTRACT,load_binding
+                if candidate.get('contract_version')==CONTRACT:candidate=load_binding(path,bound,source_runtime,runtime,modules,n)['snapshot']
             evaluated=_evaluate(bound,source_runtime,n,candidate_snapshot=candidate);evaluated['status']='source_proved';proofs.append(evaluated)
         except ValueError as error:
+            from .native_region_diagnostics import HeldRegionEvidence
             proofs.append({'page':n,'page_text_sha256':bound['pages'][n]['text_sha256'],'source_pdf_sha256':bound['source_pdf_sha256'],
-                           'status':'held','reason':str(error),'quality':old[n],'selected_text_modified':False,
+                           'status':'held','reason':str(error).encode('utf-8','backslashreplace').decode('utf-8'),'quality':old[n],'selected_text_modified':False,
                            'legal_review':'not_run','answer_publication_eligible':False})
+            if isinstance(error,HeldRegionEvidence)and not isinstance(error.original_error,ValueError):
+                original=error.original_error;message=str(original)
+                proofs[-1].update(failure_kind='technical_reader_exception',technical_error={
+                    'stage':error.stage,'class':type(original).__module__+'.'+type(original).__qualname__,
+                    'message_codepoints':[ord(c)for c in message],'message_ascii_json':json.dumps(message,ensure_ascii=True),
+                    'traceback_ascii_json':json.dumps(traceback.format_exc(),ensure_ascii=True),
+                    'diagnostic_not_selected_source_text':True,'source_quality_clearance':False})
+            if isinstance(error,HeldRegionEvidence):
+                from .native_region_diagnostics import persist
+                try:
+                    proofs[-1]['diagnostics']=persist(output,bound,source_runtime,runtime,modules,n,error)
+                finally:
+                    # The original exception can own capture/raster stack frames.
+                    # Only lossless JSON witnesses and small links survive here.
+                    error.original_error.__traceback__=None
+                    error.original_error.__context__=None
+                    error.original_error.__cause__=None
+                    error.__traceback__=None
+                    error.__context__=None
+                    error.__cause__=None
         except MemoryError:
             # Capacity failure aborts this partition for worker cleanup. Do not
             # keep evaluating sibling pages in a potentially exhausted process.
@@ -95,7 +131,7 @@ def create_region_reproof(parent,runtime,source_runtime,pages,output,*,expected_
                                'traceback_ascii_json':json.dumps(traceback.format_exc(),ensure_ascii=True),
                                'diagnostic_not_selected_source_text':True,'source_quality_clearance':False},
                            'quality':old[n],'selected_text_modified':False,'legal_review':'not_run','answer_publication_eligible':False})
-    api.verify_parent_unchanged(bound);output.mkdir(parents=True)
+    api.verify_parent_unchanged(bound)
     selected={p['page']:p['quality']for p in proofs};merged={**bound['quality'],'results':[selected.get(q['page'],q)for q in bound['quality']['results']]}
     merged['counts']={state:sum(q['outcome']==state for q in merged['results'])for state in('auto_accepted','repair_required','source_blocked')}
     api.save(output/'quality.json',merged);api.save(output/'page-proofs.json',proofs)
@@ -110,6 +146,7 @@ def create_region_reproof(parent,runtime,source_runtime,pages,output,*,expected_
              'newly_auto_accepted_pages':[p['page']for p in proofs if p['status']=='source_proved'],
              'still_held_pages':[p['page']for p in proofs if p['status']=='held'],
              'technical_hold_pages':[p['page']for p in proofs if p.get('failure_kind')=='technical_reader_exception'],
+             'failed_diagnostic_pages':[p['page']for p in proofs if 'diagnostics'in p],
              'artifacts_sha256':{name:api.file_sha(output/name)for name in('quality.json','page-proofs.json','parent-bindings.json')},
              'candidate_input_receipts':candidate_inputs,'status':'blocked_pending_registered_source_decoder',
              'elapsed_seconds':round(time.perf_counter()-started,6),'legal_review':'not_run','answer_publication_eligible':False,
@@ -132,6 +169,12 @@ def verify_region_reproof(output,runtime,*,fresh=True):
     if not targets or targets!=sorted(set(targets))or any(type(n)is not int or n not in old or old[n]['outcome']=='auto_accepted'for n in targets)or [p['page']for p in proofs]!=targets:raise ValueError('Region page scope changed')
     passed=[p for p in proofs if p.get('status')=='source_proved'];held=[p for p in proofs if p.get('status')=='held']
     if len(passed)+len(held)!=len(proofs)or any(p['quality']!=old[p['page']]for p in held):raise ValueError('Held page cannot acquire a quality clearance')
+    from .native_region_diagnostics import verify_link
+    for proof in proofs:
+        if 'diagnostics'in proof:
+            if proof.get('status')!='held':raise ValueError('Failed diagnostic cannot become a passing proof')
+            verify_link(proof['diagnostics'],output,bound,receipt['source_runtime'],runtime,modules,proof['page'])
+    if receipt.get('failed_diagnostic_pages',[])!=[p['page']for p in proofs if 'diagnostics'in p]:raise ValueError('Failed diagnostic page scope changed')
     technical=[p['page']for p in held if p.get('failure_kind')=='technical_reader_exception']
     if receipt.get('technical_hold_pages',[])!=technical:raise ValueError('Technical hold scope changed')
     if fresh:
@@ -152,6 +195,7 @@ def verify_region_reproof(output,runtime,*,fresh=True):
             'proof_profile':bound['profile'],'current_proof_profile_matches':True,'source_extraction_rerun':False,'selected_text_modified':False,
             'fresh_original_reproof':fresh,'actual_fresh_registered_decoder_calls':len(passed)if fresh else 0,'fresh_source_decoder_pages':[p['page']for p in passed]if fresh else[],
             'newly_auto_accepted_pages':[p['page']for p in passed],'still_held_pages':[p['page']for p in held],'technical_hold_pages':technical,
+            'failed_diagnostic_pages':[p['page']for p in held if 'diagnostics'in p],'diagnostics_are_not_quality_clearance':True,
             'target_pages':[{'page':p['page'],'page_text_sha256':p['page_text_sha256'],'quality':p['quality'],'embedding_candidate_allowed':fresh and p['status']=='source_proved'and bool(bound['pages'][p['page']]['text'].strip())}for p in proofs],
             'untargeted_quality_retained_with_original_producer_identity':True,'legal_review':'not_run','answer_publication_eligible':False,
             'new_model_calls':0,'remote_operations':0,'verification_elapsed_seconds':round(time.perf_counter()-started,6)}
