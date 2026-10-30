@@ -142,7 +142,8 @@ def reconstitute_page(source_pdf,physical_page,selected_text,*,policy=None):
             boxes=[list(t.bbox)for t in find_native_tables(native)]
             for line in native.extract_text_lines(return_chars=True):
                 x0,top,x1,bottom=[line[k]for k in ('x0','top','x1','bottom')]
-                raw=text_page.get_text_bounded(left=x0-.2,bottom=native.height-bottom-.2,right=x1+.2,top=native.height-top+.2)
+                from .native_table_cell_spacing import read_source_box
+                raw,_=read_source_box(native,view,text_page,[max(0,x0-.2),max(0,top-.2),min(native.width,x1+.2),min(native.height,bottom+.2)])
                 start=selected_text.find(line['text'])if selected_text.count(line['text'])==1 else None
                 result=reconstitute_line(line['text'],line['chars'],raw,layout,table_boxes=boxes,policy=policy,selected_line_start=start)
                 if result['repairs']and start is None:

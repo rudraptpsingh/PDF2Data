@@ -1,0 +1,21 @@
+{
+  "contract_version": "pdf2data.source-bound-ocr-selection.v1",
+  "minimum_script_characters": 16,
+  "minimum_latin_characters": 48,
+  "minimum_reader_confidence": 0.85,
+  "language_by_observed_script": {"latin": "eng", "devanagari_or_mixed": "eng+hin"},
+  "orientation_review_origins": ["model_assisted_original_source_raster_orientation"],
+  "orientation_proof_requires_exact_source_image_review": true,
+  "upright_candidate_from_independent_reader_geometry": {
+    "enabled": true,
+    "minimum_confidence": 0.95,
+    "minimum_long_lines": 4,
+    "minimum_line_characters": 20,
+    "minimum_horizontal_pixel_aspect": 3.0,
+    "minimum_horizontal_fraction": 0.95,
+    "required_declared_PDF_Rotate": 0,
+    "orientation_proved": false,
+    "all_eight_normal_quality_gates_required": true
+  },
+  "selection_is_quality_approval": false
+}

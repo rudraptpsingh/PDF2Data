@@ -15,6 +15,8 @@ pdf2data verify-native-quality-repair --package new-region-reproof/packages/sour
   --source-runtime /absolute/original/frozen/runtime --json
 pdf2data targeted-native-reproof --package original-l1 \
   --source-runtime /absolute/original/frozen/runtime --pages 1 2 --output new-sidecar --json
+pdf2data exact-white-blank-reproof --package original-l1 \
+  --source-runtime /absolute/original/frozen/runtime --pages 3 --output new-blank-quality --json
 ```
 
 `native_token_spacing.LEARNED_REPAIR_REGISTRY` declares split numeric tokens, split operator/native words and the existing constrained PDFium control-hyphen mapping. Layout-space reconstitution requires a unique complete physical source-line context, matching PDFium/native glyph characters, small contiguous native token gaps and overlapping vertical glyph geometry. Explicit source spaces, true line breaks, wide gaps, table tokens, conflicting characters/numbers and ambiguous repeated contexts remain unresolved. A PDFium newline before a raised ordinal suffix is accepted only when each boundary is proved to belong to the same physical source word. Only the independent reader's generated whitespace is removed; selected source text is untouched.
@@ -26,6 +28,8 @@ Native table feedback binds the physical source, table version, cell coordinates
 Plural native-table region proofs verify every cell/grid membership plus independently read outside-table prose. Literal thin original vector paths and contiguous corner tiles account for grid ink; table interiors are never masked. The detector's existing snap geometry is recorded. Words/numbers/operators are ordered within each cell and prose line, without claiming that interleaved table-column text is prose. Source top-row geometry is retained; semantic header interpretation remains a later review task. All eight quality components must pass before creating a ready new L1 version.
 
 `proof_identity.verify_source_quality_repair` reconstructs registered proof operations and rejects quality mutations outside their exact affected page scope. Matching hashes, a valid JSON document, a closed review queue or an extracted table alone cannot establish source quality or legal correctness. All outputs keep publication and legal review separate; no model or network operation is required.
+
+The exact-white operation requires every full physical-page RGB component to be 255 at 180 DPI with annotations rendered, equal media/crop boxes, zero native/PDFium character objects, and empty fresh native/PDFium reads. Nearwhite pixels, ink, scanned content, hidden text, cropped viewports and stale source scopes remain held. It creates a new L1 quality version; original extraction status, selected text and PDF bytes remain unchanged. A proven blank page has no embedding candidate, even when all source-quality components pass. The older mutating `pdf-blank-commit` command is not used by this workflow.
 
 The source-font review registry in `quality_policy.json` also learns negative
 cases. The observed `Devnagari-ChanakyaNormalA` family emits Latin character

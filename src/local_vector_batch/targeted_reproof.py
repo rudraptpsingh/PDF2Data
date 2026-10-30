@@ -212,6 +212,12 @@ def _verify_reproof(output, runtime, *, fresh=True):
     started = time.perf_counter()
     output, runtime = Path(output).resolve(), Path(runtime).resolve()
     receipt = read(output / 'reproof-version.json')
+    if receipt.get('strategy') == 'native_regions':
+        runtime_modules(runtime) # Only explicitly selected, hash-verified frozen code.
+        from local_vector_batch.native_region_reproof import verify_region_reproof
+        return verify_region_reproof(output,runtime,fresh=fresh)
+    if receipt.get('strategy') not in (None,'source_lines'):
+        raise ValueError('Unknown closed targeted-reproof strategy')
     if receipt.get('contract_version') != CONTRACT or receipt.get('answer_publication_eligible') is not False:
         raise ValueError('Unsupported or promoted proof contract')
     if (receipt.get('source_extraction_rerun') is not False or

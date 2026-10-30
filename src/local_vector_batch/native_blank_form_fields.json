@@ -1,0 +1,17 @@
+{
+  "contract_version": "pdf2data.blank-source-form-header-fields.v1",
+  "rule_version": 2,
+  "maximum_bottom_page_fraction": 0.25,
+  "maximum_line_height_points": 24,
+  "minimum_gap_points": 36,
+  "minimum_gap_font_multiple": 4,
+  "maximum_blank_marker_characters": 256,
+  "layout_separator_min_spaces": 4,
+  "label_patterns": {
+    "petitioner_name": "^Name\\s*of\\s*the\\s*Petitioner\\s*:?[ ]*$",
+    "integrated_mine_name": "^Name\\s*of\\s*the\\s*Integrated\\s*Mine\\s*:?[ ]*$"
+  },
+  "field_value_inference": false,
+  "source_quality_only": true,
+  "label_comparison": "only_original_source_whitespace_is_ignorable; literal_letters_and_underscores_unchanged"
+}

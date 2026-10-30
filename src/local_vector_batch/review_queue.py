@@ -88,10 +88,27 @@ def focus_segments(text: str, excerpt: str, span: list[int] | None) -> list[dict
 def empty_focused_queue(manifest: Path, index: int) -> dict | None:
     entries=[line for line in Path(manifest).read_text(encoding='utf-8').splitlines()if line.strip()]
     if entries:return None
-    if index!=0:raise ValueError('review item outside queue')
+    if type(index)is not int or index<0:raise ValueError('review item outside queue')
     return {'empty':True,'total':0,'scope':'focused_queue',
             'message':'No unresolved questions in this focused queue',
             'page_quality_approval':False,'legal_approval':False}
+
+
+def validate_review_target(target: dict | None, tables: list[dict], source_sha: str, page: int) -> dict | None:
+    """Bind an automatically queued question to the freshly read source cell."""
+    if target is None:return None
+    if not isinstance(target,dict)or target.get('source_pdf_sha256')!=source_sha or target.get('page')!=page:
+        raise ValueError('queued cell source changed')
+    matches=[(index,table,cell)for index,table in enumerate(tables)
+             if table.get('table_version_id')==target.get('table_version_id')
+             for cell in table.get('cell_spans',[])if cell.get('id')==target.get('cell_id')]
+    if len(matches)!=1:raise ValueError('queued source cell is missing or ambiguous')
+    index,table,cell=matches[0]
+    if any(target.get(key)!=cell.get(key)for key in ('row','column','bbox','selected_cell_sha256','independent_cell_sha256')):
+        raise ValueError('queued source cell geometry or readings changed')
+    if target.get('table_geometry_sha256')!=table.get('table_geometry_sha256'):
+        raise ValueError('queued source table geometry changed')
+    return {'table_index':index,'cell_id':cell['id'],'row':cell['row'],'column':cell['column']}
 
 
 def load_item(manifest: Path, index: int) -> dict:
@@ -153,7 +170,8 @@ def load_item(manifest: Path, index: int) -> dict:
     if row.get('l1_package'):
         from .l1_review import preview_tables
         table_previews = preview_tables(source, page, row['source_pdf_sha256'])
-    return {'table_previews': table_previews, 'index': index, 'total': len(rows), 'title': row['title'], 'prompt': row['prompt'], 'source_url': source_url,
+    target=validate_review_target(row.get('target_cell'),table_previews,row['source_pdf_sha256'],page)
+    return {'table_previews': table_previews, 'review_target':target, 'index': index, 'total': len(rows), 'title': row['title'], 'prompt': row['prompt'], 'source_url': source_url,
             'page_total_discrepancies': row.get('page_total_discrepancies'),
             'page_queued_discrepancies': row.get('page_queued_discrepancies'),
             'prompt_sha256': _sha(row['prompt'].encode()), 'selected_segments': left, 'independent_segments': right,

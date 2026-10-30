@@ -1,0 +1,15 @@
+{
+  "contract_version": "pdf2data.ocr-heading-row-order.v1",
+  "left_label_pattern": "^[0-9]+(?:\\.[0-9]+)+\\.?$",
+  "maximum_left_label_characters": 16,
+  "minimum_heading_characters": 4,
+  "maximum_heading_characters": 120,
+  "minimum_vertical_overlap_fraction": 0.65,
+  "maximum_center_y_difference_in_line_heights": 0.5,
+  "minimum_horizontal_gap_fraction": 0.002,
+  "maximum_horizontal_gap_fraction": 0.08,
+  "maximum_label_width_fraction": 0.07,
+  "independent_box_containment_tolerance": 0.02,
+  "source_crop_dpi": 240,
+  "source_quality_or_legal_approval_from_geometry_alone": false
+}

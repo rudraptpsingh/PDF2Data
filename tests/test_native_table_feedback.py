@@ -46,3 +46,25 @@ def test_grid_masks_never_authorize_interiors_or_external_regions():
     assert grid_path_owner([0,0,.5,40],[table],3)=='t:v'
     assert grid_path_owner([10,10,30,30],[table],3)is None
     assert grid_path_owner([60,0,60.5,40],[table],3)is None
+
+
+def test_empty_table_inventory_validates_no_grid_and_does_not_clear_page():
+ snapshot=fixture();snapshot['tables']=[];snapshot['raw_tables']=[]
+ result=validate_feedback(snapshot,[],{})
+ assert result['status']=='validated'and result['tables']==[]and result['jobs']==[]
+ assert result['table_inventory']=='fresh_and_raw_native_tables_both_empty'
+ assert result['page_quality_cleared']is False and result['answer_publication_eligible']is False
+ assert result['residual_gates']==['layout']
+
+
+@pytest.mark.parametrize('change',['fresh_missing','raw_missing','decision','raster_review','malformed_fresh','malformed_raw'])
+def test_zero_table_case_rejects_hidden_inventory_and_feedback(change):
+ snapshot=fixture();decisions=[];reviews={}
+ if change=='fresh_missing':snapshot['tables']=[]
+ if change=='raw_missing':snapshot['raw_tables']=[]
+ if change in('decision','raster_review'):snapshot['tables']=[];snapshot['raw_tables']=[]
+ if change=='decision':decisions=[{'cell_id':'not-on-page'}]
+ if change=='raster_review':reviews={'not-on-page':{'render_sha256':'irrelevant'}}
+ if change=='malformed_fresh':snapshot['tables']={};snapshot['raw_tables']=[]
+ if change=='malformed_raw':snapshot['tables']=[];snapshot['raw_tables']={}
+ with pytest.raises(ValueError):validate_feedback(snapshot,decisions,reviews)

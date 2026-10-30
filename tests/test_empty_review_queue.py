@@ -19,7 +19,9 @@ def test_empty_focus_is_explicit_and_nonempty_wrong_indexes_still_reject(tmp_pat
     item=empty_focused_queue(manifest,0)
     assert item['empty']and item['total']==0 and item['scope']=='focused_queue'
     assert not item['page_quality_approval']and not item['legal_approval']
-    with pytest.raises(ValueError):empty_focused_queue(manifest,1)
+    assert empty_focused_queue(manifest,1)['empty']
+    assert empty_focused_queue(manifest,999)['empty']
+    with pytest.raises(ValueError):empty_focused_queue(manifest,-1)
     manifest.write_text('{}\n')
     assert empty_focused_queue(manifest,0)is None
     with pytest.raises(ValueError):load_item(manifest,1)
@@ -49,7 +51,9 @@ def test_actual_local_http_empty_queue_returns200_without_image_or_decision(tmp_
             with urlopen(Request(base+path,headers={'X-Local-Token':token}),timeout=3)as response:return json.loads(response.read())
         assert get('/api/review-item?index=0')['message']=='No unresolved questions in this focused queue'
         assert get('/api/review-group?index=0')['differences']==[]
-        for path in ['/api/review-item?index=1','/api/review-image?index=0']:
+        assert get('/api/review-item?index=1')['empty']
+        assert get('/api/review-group?index=1')['differences']==[]
+        for path in ['/api/review-item?index=-1','/api/review-image?index=0']:
             with pytest.raises(HTTPError)as error:get(path)
             assert error.value.code==400
         manifest.write_text('{}\n')

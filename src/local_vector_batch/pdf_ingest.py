@@ -187,6 +187,8 @@ def extract_pdf(
     source: Path, output: Path, *, title: str | None = None, source_url: str | None = None,
     tables: bool = True, ocr: str = "auto", ocr_language: str = "eng", ocr_device: str = "auto",
     ocr_dpi: int = 180, native_consensus: bool = False,
+    ocr_use_angle_classifier: bool | None = None,
+    ocr_cpu_threads: int = 2,
     repair_pages: set[int] | None = None, reuse_package: Path | None = None,
     progress: Callable[[int, int], None] | None = None,
 ) -> dict:
@@ -272,7 +274,10 @@ def extract_pdf(
     except Exception as error:
         issues.append({"page": 0, "kind": "secondary_parser_unavailable", "detail": str(error)[:180]})
     from .ocr import LocalOCR
-    with LocalOCR(ocr, ocr_language, ocr_device, ocr_dpi) as recognizer, _open_pdf_with_page_recovery(source, secondary_pages, issues) as pdf:
+    angle_options = ({'use_angle_classifier':ocr_use_angle_classifier}
+                     if ocr_use_angle_classifier is not None else {})
+    if ocr_cpu_threads!=2:angle_options['cpu_threads']=ocr_cpu_threads
+    with LocalOCR(ocr, ocr_language, ocr_device, ocr_dpi, **angle_options) as recognizer, _open_pdf_with_page_recovery(source, secondary_pages, issues) as pdf:
         total = len(pdf.pages)
         if total == 0:
             raise ValueError("PDF has no pages")
@@ -419,7 +424,7 @@ def extract_pdf(
                     from .native_tables import find_native_tables, table_shape
                     for number, found in enumerate(find_native_tables(page), 1):
                         cells = found.extract()
-                        if len(cells) < 2:
+                        if not cells:
                             continue
                         table_rows.append({"id": f"{page_id}:table{number}", "page": index,
                                            "bbox": [round(float(x), 2) for x in found.bbox],
@@ -431,7 +436,7 @@ def extract_pdf(
                         structure_rows.extend(table_candidates(table_rows[-1], pages[-1]))
                 except Exception as error:
                     issues.append({"page": index, "kind": "table_extraction_failed", "detail": str(error)[:180]})
-                if selected_method in {"vision", "tesseract"} and ocr_result and not native_tables_on_page:
+                if selected_method in {"vision", "tesseract", "rapidocr"} and ocr_result and not native_tables_on_page:
                     try:
                         from .ocr_tables import ruled_table_candidates
                         rendered = (getattr(recognizer, "last_rendered_image", None) or

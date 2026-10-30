@@ -16,11 +16,43 @@ from pathlib import Path
 import shutil
 import sys
 import tempfile
+import hashlib
 
 from .native_table_feedback import canonical, sha, revalidate, capture_source, validate_feedback, read_rows
 from .proof_identity import verify_l1_source_readiness as verify_l1_candidate_readiness,proof_configuration
 
 KIND = 'powerlex.native-table-regions.v1'
+
+
+class _VerifiedSourceRenderCache:
+    """Job-local original raster cache; live source/profile drift fails closed."""
+    def __init__(self,source,snapshot,policy):
+        from .proof_identity import inspect_pdf2data_profile
+        self.source=Path(source);self.snapshot=snapshot;self.policy=policy
+        self.profile=inspect_pdf2data_profile(Path(__file__).resolve().parents[2])
+        self.key={'source_pdf_sha256':snapshot['source_pdf_sha256'],'page':snapshot['page'],
+                  'page_text_sha256':snapshot['page_text_sha256'],'policy_sha256':sha(canonical(policy)),
+                  'proof_profile_sha256':self.profile['profile_sha256']}
+        self.images={}
+
+    def _check(self):
+        from .proof_identity import inspect_pdf2data_profile
+        with self.source.open('rb')as stream:actual=hashlib.file_digest(stream,'sha256').hexdigest()
+        if actual!=self.key['source_pdf_sha256']:raise ValueError('Job raster cache original PDF changed')
+        if sha(canonical(self.policy))!=self.key['policy_sha256']:raise ValueError('Job raster cache policy changed')
+        if any(self.snapshot[k]!=self.key[k]for k in('source_pdf_sha256','page','page_text_sha256')):
+            raise ValueError('Job raster cache source/page/text identity changed')
+        current=inspect_pdf2data_profile(Path(__file__).resolve().parents[2])
+        if current['profile_sha256']!=self.key['proof_profile_sha256']:raise ValueError('Job raster cache proof/dependency epoch changed')
+
+    def image(self,render,**options):
+        self._check();key=canonical(options)
+        if key not in self.images:
+            image=render(**options);stream=BytesIO();image.original.save(stream,format='PNG')
+            self.images[key]=(image,sha(stream.getvalue()))
+        image,expected=self.images[key];stream=BytesIO();image.original.save(stream,format='PNG')
+        if sha(stream.getvalue())!=expected:raise ValueError('Job raster cache pixels changed')
+        return image
 
 
 def read(path):
@@ -82,7 +114,9 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
     package=Path(package);source=package/'original.pdf';n=snapshot['page'];policy=load_policy()
     if sha(source.read_bytes())!=snapshot['source_pdf_sha256']:
         raise ValueError('Region proof original PDF differs from table snapshot')
-    page=next(p for p in read_rows(package/'extraction/pages.jsonl')if p['page']==n)
+    from .native_verification_session import active_session
+    session=active_session()
+    page=session.page_row(package/'extraction/pages.jsonl',n)if session else next(p for p in read_rows(package/'extraction/pages.jsonl')if p['page']==n)
     if page['text_sha256']!=snapshot['page_text_sha256'] or sha(page['text'])!=page['text_sha256']:
         raise ValueError('Region proof selected page text is stale')
     tables=snapshot['tables']
@@ -103,8 +137,18 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
     with pdfplumber.open(source)as pdf,pdfium.PdfDocument(source)as independent:
         native=pdf.pages[n-1];view=independent[n-1];tp=view.get_textpage()
         try:
+            # The original is rendered once per immutable page/options within
+            # this derivation. Both users receive the exact same source pixels;
+            # source, policy, page/text and full proof/dependency epoch are live
+            # checked on every use. Nothing is cached across decoder jobs.
+            raster_cache=_VerifiedSourceRenderCache(source,snapshot,policy);render=native.to_image
+            native.to_image=lambda **options:raster_cache.image(render,**options)
             if native.images or native.curves:
                 raise ValueError('Images/curved source objects need separate source proof')
+            zero_table_source_proof=None
+            if not tables:
+                from .native_zero_table_prose import prove_zero_table_source
+                zero_table_source_proof=prove_zero_table_source(source,n,native,snapshot['source_pdf_sha256'])
             from .text_script import native_font_script_evidence
             font_evidence = native_font_script_evidence(native.chars, policy)
             if font_evidence['required_scripts']:
@@ -139,13 +183,21 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                 footer=box[1]>=native.height*.95 and re.search(r'\bPage\s+'+str(n)+r'\s*$',line['text'],re.I)is not None
                 metadata_proof=None
                 if not footer and any(b['x0']-a['x1']>max(36,4*max(a.get('size',0),b.get('size',0)))for a,b in zip(ordered,ordered[1:])):
-                    from .native_metadata_rows import prove_header_metadata
+                    from .native_header_registry import prove_header_gap
                     try:
-                        metadata_proof=prove_header_metadata(line,native,n,[t['bbox']for t in tables],tp,independent_layout)
+                        metadata_proof=prove_header_gap(line,native,n,[t['bbox']for t in tables],tp,independent_layout,pdfium_page=view,header_tables=tables,table_proofs=cell_result['tables'])
                     except ValueError as error:
                         raise ValueError('Outside-table prose has an unresolved column/block gap: '+str(error))from error
-                raw=tp.get_text_bounded(left=box[0]-.2,bottom=native.height-box[3]-.2,right=box[2]+.2,top=native.height-box[1]+.2)
+                from .native_table_cell_spacing import read_source_box
+                read_box=[max(0,box[0]-.2),max(0,box[1]-.2),min(native.width,box[2]+.2),min(native.height,box[3]+.2)]
+                raw,source_rectangle=read_source_box(native,view,tp,read_box)
                 mapped,repairs=repair_control_hyphens(raw,line['text'],independent_layout)
+                prose_reader_proof=None
+                if metadata_proof is None and not agrees(line['text'],mapped,exact_characters=True):
+                    from .native_prose_reader import map_prose_reader
+                    prose_reader_proof=map_prose_reader(line,native,view,tp,raw,independent_layout)
+                    if prose_reader_proof is not None:
+                        mapped=prose_reader_proof['mapped_text'];repairs=prose_reader_proof['repairs']
                 if metadata_proof is None and not agrees(line['text'],mapped,exact_characters=True):
                     raise ValueError(f'Outside-table prose line {index} disagrees with source reader at {box}')
                 if metadata_proof is None and any(NUMBER.findall(_normalized(line['text']))!=NUMBER.findall(_normalized(mapped)) or
@@ -154,10 +206,11 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                 prose.append({'sequence':index,'bbox':box,'region_kind':'source_header_metadata'if metadata_proof else('source_footer_metadata'if footer else'outside_table_prose'),
                               'selected_text_sha256':sha(line['text']),
                               'independent_raw_sha256':sha(raw),'independent_mapped_sha256':sha(mapped),
-                              'selected_text':line['text'],'independent_raw_text':raw,'reader_mapping_repairs':repairs,
+                              'selected_text':line['text'],'independent_raw_text':raw,'reader_mapping_repairs':repairs,'independent_source_rectangle':source_rectangle,
                               'ordered_numbers':NUMBER.findall(_normalized(line['text'])),
                               'ordered_operators':_operators(line['text'],policy),'source_glyph_count':len(line['chars']),
-                              **({'header_metadata_block_proof':metadata_proof}if metadata_proof else{})})
+                              **({'header_metadata_block_proof':metadata_proof}if metadata_proof else{}),
+                              **({'outside_prose_reader_mapping':prose_reader_proof}if prose_reader_proof else{})})
             if Counter(chars(''.join(line['text']for line in lines)))!=Counter(chars(''.join(g['text']for g in outside))):
                 raise ValueError('Outside prose line registry omits or duplicates source glyphs')
             # Source ink inventory only: the self text here authorizes NO
@@ -215,18 +268,22 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                                   'literal_ink_bbox':box,'linewidth':linewidth,'table_version_id':owner,
                                   'source_object_sha256':sha(canonical(obj)),
                                   'classification':'native_table_ruling_retained_as_structure'})
-            remaining=residual&~grid
+            from .literal_path_frames import derive_literal_path_mask
+            literal_mask,literal_paths=derive_literal_path_mask(native,view,ink,image.bbox)
+            remaining=residual&~grid&~literal_mask
             count,_,stats,_=cv2.connectedComponentsWithStats(remaining.astype('uint8'),8)
             uncovered=[{'bbox_pixels':[int(x),int(y),int(x+width),int(y+height)],'ink_pixels':int(area)}for x,y,width,height,area in stats[1:]]
             if uncovered:
                 raise ValueError('Uncovered original source ink remains: '+canonical(uncovered))
             proof={'kind':KIND,'source_pdf_sha256':snapshot['source_pdf_sha256'],'page':n,
                    'page_text_sha256':page['text_sha256'],'tables':cell_result['tables'],
+                   **({'zero_table_source_proof':zero_table_source_proof}if zero_table_source_proof is not None else{}),
                    'outside_prose':prose,'source_glyph_inventory_sha256':sha(canonical(sorted(glyph_inventory.items()))),
                    'source_glyph_count':len(native.chars),'table_glyph_count':sum(len(v)for v in memberships.values()),
                    'outside_prose_glyph_count':len(outside),'source_render_sha256':base['rendered_image_sha256'],
                    'source_render_dpi':base['render_dpi'],'source_style_regions':base.get('source_style_regions',[]),
                    'existing_decorative_regions':base.get('decorative_regions',[]),'native_grid_paths':paths,
+                   'literal_source_paths':literal_paths,
                    'native_grid_snap_tolerance_points':snap,'native_grid_snap_basis':'selected_pdfplumber_TableSettings_default',
                    'source_residual_mask_sha256':sha(residual.tobytes()),'native_grid_mask_sha256':sha(grid.tobytes()),
                    'accounted_residual_ink_pixels':int(residual.sum()),'remaining_unaccounted_ink_pixels':0,
@@ -256,7 +313,7 @@ def _quality_from_regions(snapshot, proof):
         result['components'][name]={'state':'pass','basis':proof['word_number_operator_basis'],
                                    'receipt_sha256':identity,'source_cells':sum(len(t['cells'])for t in proof['tables']),
                                    'outside_prose_lines':len(proof['outside_prose'])}
-    result['components']['layout']={'state':'pass','basis':'plural_nonoverlapping_source_native_grids_and_outside_prose_registry',
+    result['components']['layout']={'state':'pass','basis':('plural_nonoverlapping_source_native_grids_and_outside_prose_registry'if proof['tables']else'zero_native_tables_with_complete_source_prose_and_literal_path_registry'),
                                    'receipt_sha256':identity,'tables':len(proof['tables']),'header_semantics_reviewed':False}
     result.update(outcome='auto_accepted',page_complete=True,text_region_verified=True,missing_evidence=[],failed_components=[],
                   unresolved_visual_regions=[],source_style_regions=[*proof['source_style_regions'],*proof['native_grid_paths']],
@@ -276,7 +333,7 @@ def assess_registered_regions(package,snapshot,cell_result,proof):
     return _quality_from_regions(snapshot,proof)
 
 
-def build_version(package,runtime,feedback,dossier,page,output):
+def build_version(package,runtime,feedback,dossier,page,output,*,external_decoder=False):
     package,runtime,feedback,dossier,output=map(lambda p:Path(p).resolve(),(package,runtime,feedback,dossier,output))
     if output.exists():raise ValueError('Choose a new immutable output directory')
     output.mkdir(parents=True);(output/'engine-source.py').write_bytes(Path(__file__).read_bytes());sys.path.insert(0,str(runtime/'src'))
@@ -290,17 +347,15 @@ def build_version(package,runtime,feedback,dossier,page,output):
     snapshot=read(output/'cell-revalidation/source-snapshot.json')
     try:
         proof=PROOF_REGISTRY[KIND](package,snapshot,cells)
-        quality=assess_registered_regions(package,snapshot,cells,proof)
+        # Only the private builder reaches this path with a just-derived proof.
+        # The public assessor still reconstructs arbitrary/untrusted proofs.
+        quality=_quality_from_regions(snapshot,proof)
     except ValueError as error:
         result={'status':'held','reason':str(error),'page':page,'original_package':str(package),
                 'source_text_modified':False,'new_source_quality_version_created':False,'answer_publication_eligible':False,
                 'model_calls':0,'remote_operations':0}
         save(output/'validation.json',result);return result
     save(output/'region-proof.json',proof)
-    # A second original-source derivation validates the complete proof; neither
-    # a JSON-valid claim nor matching input hash can substitute for this step.
-    repeated=PROOF_REGISTRY[KIND](package,capture_source(package,runtime,page),cells)
-    if repeated!=proof:raise ValueError('Independent source reproof differs from proposed region evidence')
     dest=output/'packages'/package.name;dest.parent.mkdir()
     with tempfile.TemporaryDirectory(prefix='.native-region-',dir=output)as tmp:
         stage=Path(tmp)/package.name;shutil.copytree(package,stage)
@@ -329,17 +384,23 @@ def build_version(package,runtime,feedback,dossier,page,output):
     if not next(row for row in adapted['pages']if row['page']==page)['embedding_candidate_allowed']:
         raise ValueError('Existing candidate adapter does not accept the verified source-quality page')
     if sha((package/'l1-package.json').read_bytes())!=original_manifest:raise ValueError('Original package changed')
+    # Default standalone callers receive one fresh registered source decoder
+    # before readiness. A trusted integration may defer that exact check to its
+    # actual adapter boundary; such output is explicitly blocked and has NO
+    # adapter records until the caller performs the fresh registered decoder.
+    decoder=None if external_decoder else verify_region_version(dest,runtime)
     source=read(dest/'source-receipt.json')['declared'];aliases=source.get('catalog_source_identities')or[{'document_id':source['id'],'url':source.get('url','')}]
-    write_rows(output/'adapter-records.jsonl',[{'document_id':alias['document_id'],'source_url':alias.get('url',''),
+    if not external_decoder:write_rows(output/'adapter-records.jsonl',[{'document_id':alias['document_id'],'source_url':alias.get('url',''),
        'original_pdf':str(dest/'original.pdf'),'package_path':str(dest/'extraction'),'l1_package_path':str(dest),
        'source_pdf_sha256':proof['source_pdf_sha256'],'quality_receipts_file':str(dest/'quality.json'),
        'legal_review':'not_run','publication_eligible':False}for alias in aliases])
-    result={'contract_version':'powerlex.native-region-quality-version.v1','status':'passed','page':page,
+    result={'contract_version':'powerlex.native-region-quality-version.v1','status':'blocked_pending_registered_source_decoder'if external_decoder else'passed','page':page,
             'source_pdf_sha256':proof['source_pdf_sha256'],'parent_package':str(package),'parent_package_sha256':original_manifest,
             'new_l1_package_path':str(dest),'new_l1_package_sha256':sha((dest/'l1-package.json').read_bytes()),
             'verifier':verified,'quality_before':read(package/'quality.json')['counts'],'quality_after':q['counts'],
             'region_proof_sha256':sha(canonical(proof)),'cell_validation_signature':cells['signature'],
             'engine_source_artifact':'engine-source.py',
+            'registered_source_decoder':decoder,'registered_source_decoder_required':True,
             'source_text_modified':False,'new_source_quality_version_created':True,'answer_publication_eligible':False,
             'model_calls':0,'remote_operations':0}
     result['signature']=sha(canonical(result));save(output/'validation.json',result);return result
@@ -361,12 +422,16 @@ def verify_region_version(folder,source_runtime):
         cells=revalidate(parent,source_runtime,feedback,dossier,Path(temp)/'cells',n)
         snapshot=read(Path(temp)/'cells/source-snapshot.json');proof=derive_regions(parent,snapshot,cells)
         if proof!=stored:raise ValueError('Stored native region evidence no longer matches original source')
-        fresh=assess_registered_regions(parent,snapshot,cells,proof)
+        # `proof` was freshly reconstructed above, not supplied by a caller.
+        fresh=_quality_from_regions(snapshot,proof)
         actual=next(q for q in read(folder/'quality.json')['results']if q['page']==n)
         if fresh!=actual:raise ValueError('Stored region quality differs from reconstructed source proof')
     verify_unchanged_quality_pages(folder,parent,[n])
     if(folder/'original.pdf').read_bytes()!=(parent/'original.pdf').read_bytes()or(folder/'extraction/pages.jsonl').read_bytes()!=(parent/'extraction/pages.jsonl').read_bytes():raise ValueError('Source PDF or selected text changed in region version')
-    return {'status':'verified','operation':'native_table_regions','source_quality_pages_verified':[n],'source_text_modified':False,'publication_eligible':False}
+    return {'status':'verified','operation':'native_table_regions','source_quality_pages_verified':[n],
+            'fresh_registered_source_decoder':True,'source_pdf_sha256':proof['source_pdf_sha256'],
+            'page_text_sha256':proof['page_text_sha256'],'region_proof_sha256':sha(canonical(proof)),
+            'source_text_modified':False,'publication_eligible':False}
 
 
 if __name__=='__main__':

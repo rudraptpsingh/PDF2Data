@@ -73,3 +73,80 @@ def test_source_superscript_line_breaks_are_not_digit_substitution(tmp_path):
 def test_same_syntax_outside_configured_issuer_is_not_auto_classified(tmp_path):
  with actual(tmp_path,left='No. ABC/123/2019')as(pg,tp,line,layout):
   with pytest.raises(ValueError):prove_header_metadata(line,pg,1,[[40,200,550,300]],tp,layout)
+
+@contextmanager
+def contact_source(tmp_path,first_text='6th Floor, Tower B, World Trade Centre'):
+ """Actual original PDF with contact grid, No./Date and later source grid."""
+ from local_vector_batch.l1_review import preview_tables
+ import hashlib
+ p=tmp_path/'contact.pdf';w=PdfWriter();page=w.add_blank_page(612,842)
+ font=DictionaryObject({NameObject('/Type'):NameObject('/Font'),NameObject('/Subtype'):NameObject('/Type1'),NameObject('/BaseFont'):NameObject('/Helvetica')})
+ page[NameObject('/Resources')]=DictionaryObject({NameObject('/Font'):DictionaryObject({NameObject('/F1'):w._add_object(font)})})
+ operations=['50 732 512 80 re S','50 760 m 562 760 l S','50 786 m 562 786 l S',
+  '50 430 512 60 re S','50 460 m 562 460 l S']
+ for y,text in [(795,first_text),(769,'New Delhi-110029'),(743,'Ph: Fax: 011-20904365')]:
+  operations.append(f'BT /F1 11 Tf 60 {y} Td ({text}) Tj ET')
+ operations+=['BT /F1 11 Tf 50 680 Td (No. L-1/246/2019/CERC) Tj ET','BT /F1 11 Tf 350 680 Td (Date: 24th December, 2019) Tj ET']
+ content=DecodedStreamObject();content.set_data('\n'.join(operations).encode());page[NameObject('/Contents')]=w._add_object(content);w.write(p)
+ tables=preview_tables(p,1,hashlib.sha256(p.read_bytes()).hexdigest())
+ with pdfplumber.open(p)as native,pdfium.PdfDocument(p)as independent:
+  pg=native.pages[0];view=independent[0];tp=view.get_textpage()
+  line=next(l for l in pg.extract_text_lines(return_chars=True)if l['text'].startswith('No.'))
+  layout=PdfReader(p).pages[0].extract_text(extraction_mode='layout')
+  try:yield pg,view,tp,line,layout,tables
+  finally:tp.close();view.close()
+
+
+def test_actual_contact_grid_can_precede_metadata_without_losing_table(tmp_path):
+ with contact_source(tmp_path)as(pg,view,tp,line,layout,tables):
+  result=prove_header_metadata(line,pg,1,[t['bbox']for t in tables],tp,layout,pdfium_page=view,header_tables=tables)
+  proof=result['preceding_contact_header_tables']
+  assert len(proof)==1 and len(proof[0]['cells'])==3
+  assert proof[0]['table_structure_preserved']is True
+  assert result['field_semantics_reviewed']is False
+
+
+@pytest.mark.parametrize('change',['missing_registry','stale_cell','unproved_reader','invalid_glyph','wrong_page','header_boundary','overlap','operative_content','not_contact','missing_slot'])
+def test_prior_header_exception_rejects_stale_body_and_unproved_cells(tmp_path,change):
+ with contact_source(tmp_path)as(pg,view,tp,line,layout,tables):
+  tables=deepcopy(tables);boxes=[t['bbox'][:]for t in tables];page=1
+  if change=='missing_registry':tables=[]
+  if change=='stale_cell':tables[0]['cell_spans'][0]['text']='Different address'
+  if change=='unproved_reader':tables[0]['cell_spans'][0]['readers_agree']=False
+  if change=='invalid_glyph':tables[0]['cell_spans'][0]['independent_glyph_audit']['issues']=['unresolved']
+  if change=='wrong_page':page=2
+  if change=='header_boundary':boxes[0][3]=pg.height*.18+.01
+  if change=='overlap':boxes[0][3]=line['top']+.01
+  if change=='operative_content':tables[0]['cell_spans'][0]['text']='Respondents shall file'
+  if change=='not_contact':tables[0]['cell_spans'][0]['text']='Example ordinary body text'
+  if change=='missing_slot':tables[0]['cell_spans'].pop()
+  with pytest.raises(ValueError):
+   prove_header_metadata(line,pg,page,boxes,tp,layout,pdfium_page=view,header_tables=tables)
+
+
+def test_dual_day_header_preserves_both_literals_without_selecting_date(tmp_path):
+ with actual(tmp_path,right='Date: 15th/16th January, 2026')as(pg,tp,line,layout):
+  result=prove_header_metadata(line,pg,1,[[40,200,550,300]],tp,layout)
+  assert result['blocks'][1]['selected_text']=='Date: 15th/16th January, 2026'
+  assert result['field_semantics_reviewed']is False and result['legal_effect_inferred']is False
+
+
+def test_actual_operative_table_cannot_be_reclassified_as_contact_header(tmp_path):
+ with contact_source(tmp_path,first_text='Applicants shall file at Tower B')as(pg,view,tp,line,layout,tables):
+  assert all(c['readers_agree']for c in tables[0]['cell_spans'])
+  with pytest.raises(ValueError,match='contact-header grammar'):
+   prove_header_metadata(line,pg,1,[t['bbox']for t in tables],tp,layout,pdfium_page=view,header_tables=tables)
+
+
+def test_zero_table_reference_metadata_needs_fresh_empty_inventory(tmp_path):
+ with actual(tmp_path)as(pg,tp,line,layout):
+  result=prove_header_metadata(line,pg,1,[],tp,layout,header_tables=[])
+  assert len(result['blocks'])==2 and not result['preceding_contact_header_tables']
+  with pytest.raises(ValueError):prove_header_metadata(line,pg,1,[],tp,layout)
+  with pytest.raises(ValueError):prove_header_metadata(line,pg,2,[],tp,layout,header_tables=[])
+
+
+def test_real_native_grid_cannot_be_hidden_by_empty_metadata_registry(tmp_path):
+ with contact_source(tmp_path)as(pg,view,tp,line,layout,tables):
+  with pytest.raises(ValueError,match='freshly empty'):
+   prove_header_metadata(line,pg,1,[],tp,layout,pdfium_page=view,header_tables=[])

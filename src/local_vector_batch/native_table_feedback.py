@@ -30,28 +30,31 @@ def read_rows(path):
 
 
 def capture_source(package, parser_root, page):
-    """Actual source re-extraction and fresh whole-page gates; no writes/models."""
-    code = '''import json,sys
-from pathlib import Path
-sys.path.insert(0,sys.argv[1]+'/src')
-from local_vector_batch.legal_l1 import verify_document
-from local_vector_batch.l1_review import preview_tables
-from local_vector_batch.quality_gate import assess_package
-p=Path(sys.argv[2]); number=int(sys.argv[3]); verify_document(p)
-source=p/'original.pdf'; source_sha=__import__('hashlib').sha256(source.read_bytes()).hexdigest()
-preview=preview_tables(source,number,source_sha)
-tables=json.loads((p/'extraction/tables.json').read_text())
-quality=assess_package(p/'extraction',source,pages=[number],derive_ocr_source_raster=True)
-pages=[json.loads(line) for line in (p/'extraction/pages.jsonl').read_text().splitlines()]
-page=next(row for row in pages if row['page']==number)
-print(json.dumps({'source_pdf_sha256':source_sha,'page':number,'page_text_sha256':page['text_sha256'],
- 'tables':preview,'raw_tables':[t for t in tables if t['page']==number], 'fresh_quality':quality}))
-'''
-    run = subprocess.run([sys.executable, '-B', '-c', code, str(Path(parser_root).resolve()),
-                          str(Path(package).resolve()), str(page)], capture_output=True, text=True, timeout=180)
-    if run.returncode:
-        raise ValueError('Source/table re-extraction failed: ' + run.stderr.strip().splitlines()[-1])
-    return json.loads(run.stdout)
+    """Fresh current-tool proof in process, with explicit original epoch binding.
+
+    The origin is data provenance, never imported as executable proof code.
+    Relative imports must all belong to this selected proof package. An opaque
+    verification session may reuse earlier full parent validation only after
+    live complete-artifact hashes and dependency/profile guards match.
+    """
+    package=Path(package).resolve();origin_profile=inspect_pdf2data_profile(parser_root)
+    source_configuration=json.loads((package/'source-receipt.json').read_text())['configuration']
+    if any(source_configuration.get(k)!=v for k,v in origin_profile['source_configuration_expected'].items()):
+        raise ValueError('Original source extraction runtime/configuration differs')
+    from . import legal_l1,l1_review,quality_gate
+    from .native_verification_session import active_session
+    proof_root=Path(__file__).resolve().parents[2]
+    for module in(legal_l1,l1_review,quality_gate):
+        if not Path(module.__file__).resolve().is_relative_to(proof_root/'src/local_vector_batch'):
+            raise ValueError('Mixed cached proof runtime modules are prohibited')
+    legal_l1.verify_document(package);source=package/'original.pdf';source_sha=sha(source.read_bytes())
+    preview=l1_review.preview_tables(source,page,source_sha)
+    tables=json.loads((package/'extraction/tables.json').read_text())
+    quality=quality_gate.assess_package(package/'extraction',source,pages=[page],derive_ocr_source_raster=True)
+    session=active_session()
+    selected=session.page_row(package/'extraction/pages.jsonl',page)if session else next(row for row in read_rows(package/'extraction/pages.jsonl')if row['page']==page)
+    return {'source_pdf_sha256':source_sha,'page':page,'page_text_sha256':selected['text_sha256'],
+            'tables':preview,'raw_tables':[t for t in tables if t['page']==page],'fresh_quality':quality}
 
 
 def _geometry(table):
@@ -69,10 +72,18 @@ def validate_feedback(snapshot, decisions, raster_reviews):
     source_sha, page = snapshot['source_pdf_sha256'], snapshot['page']
     tables = snapshot['tables']
     raw_tables = snapshot['raw_tables']
-    if not tables or len(tables) != len(raw_tables):
+    if not isinstance(decisions,list)or not isinstance(raster_reviews,dict):raise ValueError('Explicit feedback list and raster-review mapping required')
+    if not isinstance(tables,list)or not isinstance(raw_tables,list)or len(tables)!=len(raw_tables):
         raise ValueError('Raw native table cardinality disagrees with independent re-extraction')
+    # Empty is an observed absence, not a fabricated complete grid. The closed
+    # region strategy must still independently prove all source prose and ink.
+    if not tables and(decisions or raster_reviews):
+        raise ValueError('Zero-table source cannot consume cell/raster feedback')
     all_cells = {}
     for table in tables:
+        if (any(type(table.get(k))is not int or table[k]<1 for k in('row_count','column_count'))
+                or not isinstance(table.get('cell_spans'),list)or not table['cell_spans']):
+            raise ValueError('Native grid needs positive dimensions and actual source cell spans')
         candidates = [raw for raw in raw_tables if [round(v, 2) for v in raw['bbox']] == [round(v, 2) for v in table['bbox']]]
         if len(candidates) != 1:
             raise ValueError('Raw native table geometry is missing or ambiguous')
@@ -136,7 +147,9 @@ def validate_feedback(snapshot, decisions, raster_reviews):
             result = {key: cell[key] for key in ('id', 'row', 'column', 'row_span', 'column_span', 'bbox',
                                                 'selected_cell_sha256', 'independent_cell_sha256')}
             if cell.get('readers_agree') and not cell.get('glyph_audit', {}).get('issues') and not cell.get('independent_glyph_audit', {}).get('issues'):
-                result.update(status='validated', basis='independent_pdfium_native_cell_agreement')
+                mapping=cell.get('independent_reader_mapping',{})
+                result.update(status='validated', basis='source_bound_registered_reader_mapping'if mapping.get('status')=='source_proved'else'independent_pdfium_native_cell_agreement')
+                if mapping.get('status')=='source_proved':result['independent_reader_mapping']=mapping
             elif cell['id'] in unique:
                 decision = unique[cell['id']][0]
                 try:
@@ -175,7 +188,8 @@ def validate_feedback(snapshot, decisions, raster_reviews):
             'status': 'validated' if all(t['status'] == 'validated' for t in results) else 'held',
             'fresh_page_quality': quality, 'residual_gates': [key for key, value in quality['components'].items() if value['state'] != 'pass'],
             'page_quality_cleared': False, 'legal_review': 'not_run', 'answer_publication_eligible': False,
-            'source_text_modified': False, 'actual_model_inference_calls': 0, 'remote_operations': 0}
+            'source_text_modified': False, 'actual_model_inference_calls': 0, 'remote_operations': 0,
+            **({'table_inventory':'fresh_and_raw_native_tables_both_empty','proof_scope':'absence_of_native_tables_only; complete_prose_and_raster_gates_still_required'}if not tables else{})}
 
 
 def _revalidate_checked(package, parser_root, feedback, dossier, output, page=5):

@@ -117,11 +117,28 @@ def parser() -> argparse.ArgumentParser:
     export_l1.add_argument("--output", required=True, type=Path)
     export_l1.add_argument("--json", action="store_true")
     export_l1.add_argument("--region-packets", type=Path, help="include verified mixed native/raster candidates without clearing quality flags")
+    observations=sub.add_parser('structured-table-observations',help='source-bound FY range, quantity, caption and header candidates; no legal applicability')
+    for option in ('package','output'):observations.add_argument('--'+option,type=Path,required=True)
+    observations.add_argument('--pages',type=int,nargs='+',required=True)
+    observations.add_argument('--calendar-policy',help='explicit configured calendar policy; default does not derive dates')
+    observations.add_argument('--rules',type=Path);observations.add_argument('--json',action='store_true')
     logical=sub.add_parser("native-logical-repair",help="revalidate source-bound layout token spaces and filter exact resolved review focuses")
     logical.add_argument('--manifest',type=Path,required=True)
     logical.add_argument('--source-runtime',type=Path,required=True,help='original immutable extraction runtime; distinct from current proof tool')
     logical.add_argument('--output',type=Path,required=True)
     logical.add_argument('--json',action='store_true')
+    blank=sub.add_parser('exact-white-blank-reproof',help='strict RGB255/180dpi and two-empty-reader proof into a new immutable L1 quality version')
+    for option in ('package','source-runtime','output'):blank.add_argument('--'+option,type=Path,required=True)
+    blank.add_argument('--pages',type=int,nargs='+',required=True);blank.add_argument('--json',action='store_true')
+    table_queue=sub.add_parser('auto-held-table-review',help='generate current source-bound held-table questions and exact source crops')
+    for option in ('input','proof-runtime','output'):table_queue.add_argument('--'+option,type=Path,required=True)
+    table_queue.add_argument('--source-runtime',type=Path,action='append',required=True)
+    table_queue.add_argument('--limit',type=int,default=8);table_queue.add_argument('--scan-limit',type=int,default=80)
+    table_queue.add_argument('--reviewed',type=Path,action='append',default=[]);table_queue.add_argument('--cache-dir',type=Path)
+    table_queue.add_argument('--json',action='store_true')
+    table_consume=sub.add_parser('consume-held-table-review',help='consume exact held-table feedback into terminal source revalidation receipts')
+    for option in ('manifest','feedback','output'):table_consume.add_argument('--'+option,type=Path,required=True)
+    table_consume.add_argument('--json',action='store_true')
     for command,help_text in [('native-table-cell-revalidate','consume source-bound native table-cell feedback'),('native-table-region-reproof','reprove plural native table regions and outside prose into new immutable L1')]:
         table=sub.add_parser(command,help=help_text)
         for option in ('package','source-runtime','feedback','dossier','output'):table.add_argument('--'+option,type=Path,required=True)
@@ -363,12 +380,24 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "l1-qwen-reproof":
             from .l1_qwen import reproof
             result = reproof(args.cases, args.readings, args.packages, args.output)
+        elif args.command == 'structured-table-observations':
+            from .structured_table_observations import write_observations
+            result=write_observations(args.package,args.pages,args.output,calendar_policy=args.calendar_policy,rules_path=args.rules)
         elif args.command == "export-l1-data":
             from .l1_export import export_processed
             result = export_processed(args.packages, args.output, args.region_packets)
         elif args.command=='native-logical-repair':
             from .native_quality_repair import repair_review_queue
             result=repair_review_queue(args.manifest,args.source_runtime,args.output)
+        elif args.command=='exact-white-blank-reproof':
+            from .native_blank_proof import create_blank_version
+            result=create_blank_version(args.package,args.source_runtime,args.pages,args.output)
+        elif args.command=='auto-held-table-review':
+            from .native_table_review_queue import generate_queue
+            result=generate_queue(args.input,args.source_runtime,args.proof_runtime,args.output,limit=args.limit,scan_limit=args.scan_limit,reviewed=args.reviewed,cache_dir=args.cache_dir)
+        elif args.command=='consume-held-table-review':
+            from .native_table_review_queue import consume_answers
+            result=consume_answers(args.manifest,args.feedback,args.output)
         elif args.command=='native-table-cell-revalidate':
             from .native_table_feedback import revalidate
             result=revalidate(args.package,args.source_runtime,args.feedback,args.dossier,args.output,args.page)
@@ -601,6 +630,7 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(result, ensure_ascii=False) if args.json else json.dumps(result, indent=2, ensure_ascii=False))
         if args.command=='native-table-cell-revalidate'and result.get('status')!='validated':return 3
         if args.command=='native-table-region-reproof'and result.get('status')!='passed':return 3
+        if args.command=='exact-white-blank-reproof'and result.get('status')!='passed':return 3
         if args.command == "pdf-quality" and args.require_accepted and (
                 result.get("packages_blocked") or result.get("counts", {}).get("repair_required") or
                 result.get("counts", {}).get("source_blocked") or not result.get("pages_assessed")):

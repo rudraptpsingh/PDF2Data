@@ -26,11 +26,39 @@
       "date_patterns": [
         "^(?:Date(?:d)?\\s*:?\\s*)?\\d{1,2}[./-]\\d{1,2}[./-]\\d{4}\\.?$",
         "^(?:Date(?:d)?\\s*:?\\s*)?\\d{1,2}(?:st|nd|rd|th)?\\s*(?:January|February|March|April|May|June|July|August|September|October|November|December),?\\s*\\d{4}\\.?$",
-        "^(?:Date(?:d)?\\s*:?\\s*)?(?:January|February|March|April|May|June|July|August|September|October|November|December)\\s*\\d{1,2}(?:st|nd|rd|th)?,?\\s*\\d{4}\\.?$"
+        "^(?:Date(?:d)?\\s*:?\\s*)?(?:January|February|March|April|May|June|July|August|September|October|November|December)\\s*\\d{1,2}(?:st|nd|rd|th)?,?\\s*\\d{4}\\.?$",
+        "^(?:Date(?:d)?\\s*:?\\s*)?\\d{1,2}(?:st|nd|rd|th)?/\\d{1,2}(?:st|nd|rd|th)?\\s*(?:January|February|March|April|May|June|July|August|September|October|November|December),?\\s*\\d{4}\\.?$"
       ],
       "syntax_comparison": "unicode_whitespace_removed_only_literal_codepoints_preserved",
-      "reference_issuer_pattern": "(?:/CERC|-CERC)(?:/\\d{4})?$"
+      "reference_issuer_pattern": "(?:/CERC|-CERC)(?:/\\d{4})?$",
+      "prior_contact_header": {
+        "max_bottom_fraction": 0.18,
+        "max_height_fraction": 0.1,
+        "minimum_width_fraction": 0.5,
+        "minimum_rows": 2,
+        "maximum_rows": 8,
+        "required_patterns": [
+          "\\b(?:Floor|Floors|Road|Street|Nagar|Marg|Avenue|Building|Tower)\\b",
+          "\\b\\d{6}\\b",
+          "\\b(?:Ph|Phone|Tel|Fax)\\s*:"
+        ],
+        "excluded_words": [
+          "shall",
+          "must",
+          "provided",
+          "petitioners",
+          "respondents",
+          "regulation",
+          "regulations",
+          "deadline",
+          "objections",
+          "comments",
+          "suggestions"
+        ]
+      },
+      "allow_verified_zero_table_page": true
     }
   },
-  "scope": "Source fidelity of two independently bounded header metadata blocks only; not date effect, legal status, table associations or general column proof"
+  "scope": "Source fidelity of two independently bounded header metadata blocks only; not date effect, legal status, table associations or general column proof",
+  "rule_revision": "contact-header-and-verified-zero-table-reference.v4"
 }

@@ -1,0 +1,31 @@
+{
+  "contract_version": "pdf2data.source-repeated-top-header.v1",
+  "rule_version": 1,
+  "maximum_bottom_page_fraction": 0.08,
+  "maximum_line_height_points": 20,
+  "minimum_gap_points": 36,
+  "minimum_gap_font_multiple": 4,
+  "minimum_blocks": 2,
+  "maximum_blocks": 3,
+  "minimum_stable_latin_letters": 24,
+  "maximum_edge_page_number_fraction": 0.15,
+  "geometry_tolerance_points": 0.5,
+  "reference_page_radius": 4,
+  "operative_words": [
+    "shall",
+    "must",
+    "may",
+    "provided",
+    "notwithstanding",
+    "except",
+    "means",
+    "includes",
+    "subject",
+    "where",
+    "within",
+    "following"
+  ],
+  "requires_observed_page_number_sequence": true,
+  "source_text_removal": false,
+  "maximum_auxiliary_latin_letters": 16
+}

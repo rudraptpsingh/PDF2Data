@@ -154,31 +154,44 @@ def preview_tables(source_pdf: Path, physical_page: int, source_sha: str) -> lis
     with pdfplumber.open(source_pdf) as pdf, pdfium.PdfDocument(source_pdf) as other:
         page=pdf.pages[physical_page-1];other_page=other[physical_page-1];text_page=other_page.get_textpage()
         try:
+            from pypdf import PdfReader
+            third_layout=PdfReader(source_pdf).pages[physical_page-1].extract_text(extraction_mode='layout')or''
+            prepared=[]
             for index,found in enumerate(find_native_tables(page)):
                 cells=found.extract()
-                if len(cells)<2 or not cells or len(cells[0])<2:continue
-                caption=None;caption_page=physical_page
-                preceding=[line for line in page.extract_text_lines() if line['bottom']<found.bbox[1] and re.search(r'Illustration\s+\d+',line['text'],re.I)]
-                if preceding:caption=preceding[-1]['text'].strip().rstrip(':')
-                elif index==0 and found.bbox[1]<100 and physical_page>1:
-                    previous=pdf.pages[physical_page-2].extract_text() or ''
-                    matches=list(re.finditer(r'Illustration\s+\d+\s*:',previous[-700:],re.I))
-                    if matches:caption=matches[-1].group().strip().rstrip(':');caption_page=physical_page-1
+                if not cells:continue
                 identity=f'{source_sha[:16]}:p{physical_page}:table{index}'
-                shape=table_shape(found,cells,identity)
-                for cell in shape.get('cell_spans',[]):
-                    x0,top,x1,bottom=cell['bbox']
-                    value=text_page.get_text_bounded(left=x0+.2,bottom=page.height-bottom+.2,right=x1-.2,top=page.height-top-.2)
-                    cell['independent_text']=value
-                    cell['selected_cell_sha256']=digest((cell['text'] or '').encode())
-                    cell['independent_cell_sha256']=digest(value.encode())
-                    cell['independent_engine']='pdfium_source_cell'
-                    cell['readers_agree']=agrees(cell['text'] or '',value,exact_characters=True)
-                    cell['independent_glyph_audit']=glyph_audit(value)
-                result.append({'id':identity,'page':physical_page,'source_pdf_sha256':source_sha,
-                    'bbox':[float(x) for x in found.bbox],'page_width':page.width,'page_height':page.height,
-                    'caption':caption or f'Source table {index+1}', 'caption_source_page':caption_page,**shape,
-                    'status':'repair_preview_not_approved','source_unchanged':True})
+                prepared.append((index,found,cells,table_shape(found,cells,identity)))
+            source_lines=page.extract_text_lines()
+            from .native_tight_cell_ownership import page_source_cell_context
+            all_source_cells=[cell for _,_,_,shape in prepared for cell in shape.get('cell_spans',[])]
+            with page_source_cell_context(source_pdf,physical_page,page,source_sha,all_source_cells,pdfium_page=other_page,text_page=text_page,third_layout=third_layout):
+                for index,found,cells,shape in prepared:
+                    caption=None;caption_page=physical_page
+                    preceding=[line for line in source_lines if line['bottom']<found.bbox[1] and re.search(r'Illustration\s+\d+',line['text'],re.I)]
+                    if preceding:caption=preceding[-1]['text'].strip().rstrip(':')
+                    elif index==0 and found.bbox[1]<100 and physical_page>1:
+                        previous=pdf.pages[physical_page-2].extract_text() or ''
+                        matches=list(re.finditer(r'Illustration\s+\d+\s*:',previous[-700:],re.I))
+                        if matches:caption=matches[-1].group().strip().rstrip(':');caption_page=physical_page-1
+                    for cell in shape.get('cell_spans',[]):
+                        x0,top,x1,bottom=cell['bbox']
+                        from .native_table_cell_spacing import read_source_box
+                        value,source_rectangle=read_source_box(page,other_page,text_page,[x0+.2,top+.2,x1-.2,bottom-.2])
+                        cell['independent_source_rectangle']=source_rectangle
+                        cell['independent_text']=value
+                        cell['selected_cell_sha256']=digest((cell['text'] or '').encode())
+                        cell['independent_cell_sha256']=digest(value.encode())
+                        cell['independent_engine']='pdfium_source_cell'
+                        from .native_table_cell_spacing import map_cell_reader
+                        mapping=map_cell_reader(page,other_page,text_page,cell['bbox'],cell['text']or'',value,third_layout)
+                        cell['independent_reader_mapping']=mapping
+                        cell['readers_agree']=agrees(cell['text'] or '',mapping['mapped_text'],exact_characters=True)
+                        cell['independent_glyph_audit']=glyph_audit(mapping['mapped_text'])
+                    result.append({'id':identity,'page':physical_page,'source_pdf_sha256':source_sha,
+                        'bbox':[float(x) for x in found.bbox],'page_width':page.width,'page_height':page.height,
+                        'caption':caption or f'Source table {index+1}', 'caption_source_page':caption_page,**shape,
+                        'status':'repair_preview_not_approved','source_unchanged':True})
         finally:text_page.close();other_page.close()
     return result
 

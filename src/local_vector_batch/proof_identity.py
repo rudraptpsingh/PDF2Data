@@ -29,8 +29,10 @@ def verify_l1_source_readiness(folder,source_runtime):
     config=json.loads((folder/'source-receipt.json').read_text())['configuration']
     matches=all(config.get(k)==v for k,v in profile['source_configuration_expected'].items())
     quality=json.loads((folder/'quality.json').read_text());pages=[]
+    source_pages={p['page']:p for p in (json.loads(line)for line in (folder/'extraction/pages.jsonl').read_text().splitlines()if line.strip())}
     for q in quality['results']:
         allowed=matches and q['page_complete']is True and not q['missing_evidence']and not q['failed_components']and q['outcome']=='auto_accepted'and all(q['components'].get(k,{}).get('state')=='pass'for k in ('source_identity','text_content','language','source_render','words_and_order','ordered_numbers','ordered_operators','layout'))
+        allowed=bool(allowed and source_pages[q['page']]['text'].strip() and q.get('verified_blank_physical_page')is not True)
         pages.append({'page':q['page'],'embedding_candidate_allowed':allowed})
     return {'integrity':verified['integrity'],'current_execution_profile_matches':matches,
             'source_extraction_profile_matches':matches,'source_configuration_observed':config,
@@ -52,6 +54,18 @@ def verify_source_quality_repair(folder,source_runtime):
     folder=Path(folder);config=json.loads((folder/'source-receipt.json').read_text()).get('quality_repair_configuration')
     if not config:raise ValueError('Package has no registered source-quality repair')
     operation=config.get('operation')
+    if operation=='targeted_cpu_ocr':
+        from .targeted_ocr_l1 import verify
+        return verify(folder,source_runtime)
+    if operation=='native_whitefill_prose':
+        from .native_whitefill_prose import verify_version
+        return verify_version(folder,source_runtime)
+    if operation=='native_exact_white_blank':
+        from .native_blank_proof import verify_blank_version
+        return verify_blank_version(folder,source_runtime)
+    if operation=='mixed_native_raster_reconstruction':
+        from .native_image_reconstruction import verify_mixed_version
+        return verify_mixed_version(folder,source_runtime)
     if operation=='native_table_regions':
         from .native_table_regions import verify_region_version
         return verify_region_version(folder,source_runtime)

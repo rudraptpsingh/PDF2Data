@@ -19,7 +19,7 @@ import uuid
 from .evidence_package import verify_package
 
 
-WORD = re.compile(r"\w+", re.UNICODE)
+from .unicode_words import WORD
 NUMBER = re.compile(r"(?<!\w)\d+(?:[.,:/-]\d+)*(?:\s*%)?(?!\w)")
 STATES = {"pass", "fail", "unknown"}
 
@@ -27,7 +27,7 @@ STATES = {"pass", "fail", "unknown"}
 def load_policy(path: Path | None = None) -> dict:
     raw = Path(path).read_text(encoding="utf-8") if path else files("local_vector_batch").joinpath("quality_policy.json").read_text(encoding="utf-8")
     policy = json.loads(raw)
-    if (policy.get("schema_version") != 1 or
+    if (policy.get("schema_version") != 1 or policy.get('require_exact_marked_word_tokens')is not True or
             any(not 0 <= policy[key] <= 1 for key in ("word_recall_min", "word_precision_min", "word_order_min")) or
             type(policy.get("source_ink_unaccounted_max")) is not int or policy["source_ink_unaccounted_max"] < 0 or
             any(type(policy.get(key)) is not int or policy[key] < 0 for key in
@@ -39,6 +39,7 @@ def load_policy(path: Path | None = None) -> dict:
             any(not isinstance(term, str) or not term.strip() for term in policy["operators"]) or
             any(type(policy.get(key)) is not bool for key in (
                 "require_exact_ordered_numbers", "require_exact_ordered_operators",
+                "require_exact_marked_word_tokens",
                 "require_source_render_coverage", "require_row_column_proof_for_tables"))):
         raise ValueError("invalid extraction quality policy")
     required_scripts = policy.get('native_scripts_requiring_raster_linguistic_proof')
@@ -502,11 +503,15 @@ def assess_page(page: dict, *, source_pdf_sha256: str | None,
         except ImportError:
             from difflib import SequenceMatcher
             order = SequenceMatcher(None, aw, bw, autojunk=False).ratio()
+        marked_a=[word for word in aw if any(unicodedata.category(c).startswith('M')for c in word)]
+        marked_b=[word for word in bw if any(unicodedata.category(c).startswith('M')for c in word)]
+        marked_exact=marked_a==marked_b
         word_ok = (recall >= policy["word_recall_min"] and precision >= policy["word_precision_min"]
-                   and order >= policy["word_order_min"])
+                   and order >= policy["word_order_min"]and marked_exact)
         components["words_and_order"] = _component("pass" if word_ok else "fail",
-            None if word_ok else "independent_text_word_or_order_disagreement",
-            word_recall=round(recall, 5), word_precision=round(precision, 5), word_order=round(order, 5))
+            None if word_ok else "independent_combining_mark_word_disagreement"if not marked_exact else "independent_text_word_or_order_disagreement",
+            word_recall=round(recall, 5), word_precision=round(precision, 5), word_order=round(order, 5),
+            marked_word_tokens_exact=marked_exact)
         an, bn = NUMBER.findall(a), NUMBER.findall(b)
         numeric_ok = an == bn
         components["ordered_numbers"] = _component("pass" if numeric_ok else "fail",

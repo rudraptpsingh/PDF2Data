@@ -12,13 +12,13 @@ def _glyph_key(char):
 def read_source_lines(original: Path, source_page, physical_page: int, secondary_layout_text: str | None = None) -> dict:
     """Geometry orders source lines; PDFium independently reads their contents.
 
-    Every non-space native glyph must occur once in the line geometry. Rotated
-    or translated page coordinate systems remain unsupported rather than guessed.
+    Every non-space native glyph must occur once in the line geometry. Right-angle
+    page rotation uses an explicit metadata inverse; translated frames remain held.
     Bounded reads are not obtained from selected-text strings or matching scores.
     """
     import pypdfium2 as pdfium
     result={'engine':'pdfium_source_lines','status':'unavailable','text':None,'lines':[],'glyph_coverage':False}
-    if getattr(source_page,'rotation',0) or tuple(source_page.bbox[:2])!=(0,0):
+    if tuple(source_page.bbox[:2])!=(0,0):
         return {**result,'reason':'unsupported_page_coordinate_system'}
     line_rows=source_page.extract_text_lines(return_chars=True)
     expected=Counter(_glyph_key(c) for c in source_page.chars if c.get('text','').strip())
@@ -45,10 +45,11 @@ def read_source_lines(original: Path, source_page, physical_page: int, secondary
                 lines=[]
                 for line in merged:
                     box=[max(0,line['x0']-.3),max(0,line['top']-.3),min(source_page.width,line['x1']+.3),min(source_page.height,line['bottom']+.3)]
-                    text=text_page.get_text_bounded(left=box[0],bottom=source_page.height-box[3],right=box[2],top=source_page.height-box[1])
+                    from .native_table_cell_spacing import read_source_box
+                    text,source_rectangle=read_source_box(source_page,page,text_page,box)
                     native_line=''.join(c.get('text','') for c in sorted(line.get('chars',[]),key=lambda c:c['x0']))
                     corrected,repairs=repair_control_hyphens(text,native_line,secondary_layout_text)
-                    lines.append({'bbox':box,'coordinate_system':'PDF points, top-left','text':corrected,'raw_text':text,'reader_mapping_repairs':repairs})
+                    lines.append({'bbox':box,'coordinate_system':'PDF points, top-left','text':corrected,'raw_text':text,'reader_mapping_repairs':repairs,'independent_source_rectangle':source_rectangle})
             finally:text_page.close()
         finally:page.close()
     return {**result,'status':'captured','text':'\n'.join(line['text'] for line in lines),'lines':lines,'glyph_coverage':True}
