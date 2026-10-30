@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:powerlex:legal-l1:structure:v1",
+  "title": "Powerlex source-bound candidate legal structure",
+  "type": "object",
+  "required": ["schema_version", "source_pdf_sha256", "declared_family", "status", "child_width", "regions", "family_regions", "units", "children", "legal_status", "verified_claims"],
+  "properties": {
+    "schema_version": {"const": "powerlex.legal-l1.v1"},
+    "source_pdf_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "declared_family": {"type": "string"},
+    "status": {"const": "candidate_only"},
+    "child_width": {"type": "integer", "minimum": 1},
+    "legal_status": {"const": "unresolved"},
+    "verified_claims": {"const": 0},
+    "regions": {"type": "array", "items": {"type": "object", "required": ["kind", "span"], "properties": {"kind": {"enum": ["body_candidate", "footer_candidate", "repeated_header_candidate"]}, "span": {"$ref": "#/$defs/span"}}}},
+    "family_regions": {"type": "array", "items": {"type": "object", "required": ["role_candidate", "span", "status"], "properties": {"span": {"$ref": "#/$defs/span"}, "status": {"const": "review_required"}}}},
+    "units": {"type": "array", "items": {"type": "object", "required": ["id", "label", "spans", "boundary_state", "semantic_state", "review_receipt_id"], "properties": {"id": {"type": "string"}, "spans": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/span"}}, "boundary_state": {"const": "candidate"}, "semantic_state": {"const": "unresolved"}, "review_receipt_id": {"type": "null"}}}},
+    "children": {"type": "array", "items": {"type": "object", "required": ["id", "text", "parent_provision_version_id", "page", "page_text_sha256", "char_start", "char_length", "offset_encoding"], "properties": {"offset_encoding": {"const": "codepoint"}, "embedding_status": {"const": "input_only"}}}}
+  },
+  "$defs": {
+    "span": {"type": "object", "required": ["page", "page_text_sha256", "char_start", "char_length", "offset_encoding", "exact_quote"], "properties": {"page": {"type": "integer", "minimum": 1}, "page_text_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "char_start": {"type": "integer", "minimum": 0}, "char_length": {"type": "integer", "minimum": 1}, "offset_encoding": {"const": "codepoint"}, "exact_quote": {"type": "string", "minLength": 1}}}
+  },
+  "$comment": "Runtime checks exact source slices, ordered/nonoverlapping full page partition, complete body coverage, unique IDs, candidate state, source hashes and complete child reconstruction. Schema success is not semantic/legal review."
+}

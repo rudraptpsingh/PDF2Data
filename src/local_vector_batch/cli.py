@@ -72,6 +72,17 @@ def parser() -> argparse.ArgumentParser:
                      help="Vision auto lets macOS schedule hardware; forced GPU is unsupported")
     pdf.add_argument("--ocr-language", default="eng", help="OCR language hint, such as eng, hin or eng+hin")
     pdf.add_argument("--json", action="store_true")
+    legal = sub.add_parser("legal-l1", help="run immutable offline legal-source extraction from a hash-bound manifest")
+    legal.add_argument("--manifest", required=True, type=Path)
+    legal.add_argument("--output", required=True, type=Path)
+    legal.add_argument("--ocr", choices=["off", "auto", "vision", "tesseract", "rapidocr"], default="off")
+    legal.add_argument("--ocr-language", default="eng")
+    legal.add_argument("--resume", action="store_true")
+    legal.add_argument("--require-content-ready", action="store_true", help="exit 3 if any page still requires source review or repair")
+    legal.add_argument("--json", action="store_true")
+    legal_verify = sub.add_parser("verify-legal-l1", help="verify original, extraction, layout and exact legal structure")
+    legal_verify.add_argument("--output", required=True, type=Path)
+    legal_verify.add_argument("--json", action="store_true")
     repair = sub.add_parser("pdf-repair", help="repair selected original physical pages without reprocessing the PDF")
     repair.add_argument("--input", required=True, type=Path, help="original source PDF")
     repair.add_argument("--package", required=True, type=Path, help="existing verified extraction package")
@@ -272,6 +283,15 @@ def main(argv: list[str] | None = None) -> int:
             result = doctor()
         elif args.command == "verify":
             result = verify(args.output)
+        elif args.command == "legal-l1":
+            from .legal_l1 import run as run_legal_l1
+            result = run_legal_l1(args.manifest, args.output, ocr=args.ocr,
+                                  language=args.ocr_language, resume=args.resume)
+            print(json.dumps(result, ensure_ascii=False, indent=None if args.json else 2))
+            return 3 if result["failed"] or not result["all_required_members_supplied"] or (args.require_content_ready and result["content_ready_documents"] != len(result["documents"])) else 0
+        elif args.command == "verify-legal-l1":
+            from .legal_l1 import verify_document
+            result = verify_document(args.output)
         elif args.command == "pdf-extract":
             from .pdf_ingest import extract_pdf
             result = extract_pdf(args.input, args.output, title=args.title,
