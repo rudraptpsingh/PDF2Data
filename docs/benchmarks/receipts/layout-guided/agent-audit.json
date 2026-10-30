@@ -1,0 +1,17 @@
+{
+  "reviewer_kind": "codex_subagent",
+  "human_review": false,
+  "source_and_outputs_reviewed": true,
+  "checks": [
+    "no benchmark labels enter processing prompts",
+    "unchanged499-outcome denominator and independent arithmetic recomputation",
+    "original source crop pixels re-rendered",
+    "headline crop clipping inspected before/after",
+    "known omitted formula/manuscript regions retained as findings",
+    "native font corruption cases protected by visual corroboration",
+    "no non-table block mutations across70public and2legal documents",
+    "four public failed cases retained",
+    "native and model table candidates retained with review flags"
+  ],
+  "publication_approval": false
+}

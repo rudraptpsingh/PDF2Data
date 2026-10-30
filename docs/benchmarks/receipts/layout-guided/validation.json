@@ -1,0 +1,134 @@
+{
+  "schema_version": "pdf2data.layout-evaluation.v1",
+  "suite_sha256": "a85780f812672738e228a0c93c09a611b41702d531ea9f34981737ae41fcb516",
+  "documents": 70,
+  "rules": 429,
+  "outcomes": 499,
+  "complete_public_dataset": false,
+  "scores": {
+    "auto-tables-release": 0.215336036887761,
+    "layout-vlm-v1": 0.6564787775089137,
+    "layout-vlm-v2": 0.7174813319397769,
+    "structured-release": 0.7174813319397769
+  },
+  "case_errors": {
+    "layout_v1": 8,
+    "visual_only_v2": 4,
+    "final": 4
+  },
+  "failed_region_reasons": {
+    "token_cap": 5
+  },
+  "pdf2data_tests_passed": 433,
+  "optional_tests_skipped": 1,
+  "legal_pipeline_tests_passed": 120,
+  "custom_legal_probes": {
+    "visual_only_pass": 6,
+    "source_reconciled_pass": 7,
+    "total": 7,
+    "baseline_pass": 8,
+    "baseline_total": 8,
+    "independent_blind_holdout": false
+  },
+  "legal_table_dimensions": [
+    [
+      2,
+      9
+    ],
+    [
+      2,
+      9
+    ]
+  ],
+  "legal_native_tables_selected": 2,
+  "native_public_tables_selected": 1,
+  "layout_regions": 1371,
+  "raw_readings": 1335,
+  "reused_readings": 396,
+  "visual_review_regions": 36,
+  "uncovered_ink": {
+    "median_fraction": 0.003781832868469837,
+    "max_fraction": 0.469726527089845,
+    "semantic_coverage_verified": false
+  },
+  "devices": {
+    "reader": "Device(gpu, 0)",
+    "detector_forward_inputs": [
+      "mps:0"
+    ]
+  },
+  "peak_reader_device_bytes": 2012300576,
+  "timings": {
+    "v1_fresh_processing_seconds": 1252.7548994589597,
+    "v2_incremental_processing_seconds": 1015.6558754170546,
+    "v2_fresh_extraction_run": false,
+    "reconciliation_seconds": 3.190956874983385,
+    "hardware_isolated": false,
+    "os_cache_controlled": false
+  },
+  "model": "mlx-community/PaddleOCR-VL-1.5-4bit",
+  "revision": "3404726b40ac30b6e4e3d37c504e3f96c9c6c984",
+  "detector_identity": {
+    "repo": "docling-project/docling-layout-heron",
+    "revision": "8f39ad3c0b4c58e9c2d2c84a38465abf757272d8",
+    "files_sha256": {
+      "model.safetensors": "00333a43451945aaf89db8ca9c0a17e75d1537c17db60fdb91aa95f4c7929e0c",
+      "docling_heron_400.png": "e7f78610372b32a7938e480d2c7fa1c3037ee170bd82282a5bd026232f6e6f9e",
+      "config.json": "fdea30805ce2f5666b147fca941dcdd27ad468e27d6ed21902207d3da056a97d",
+      "README.md": "175700839bc7808eac6af1d0c23e4f483606ab2276fe01122f4093e61a1a65b6",
+      ".gitattributes": "11ad7efa24975ee4b0c3c3a38ed18737f0658a5f75a0a96787b576a78a023361",
+      "preprocessor_config.json": "cd38cd59999e7a95d68e487fbe5132df3d4e5c32a0836add57e6126ba0c4eaf1"
+    },
+    "runtime": {
+      "docling": "2.144.0",
+      "docling-core": "2.105.0",
+      "torch": "2.14.1",
+      "transformers": "5.21.0"
+    },
+    "options": {
+      "keep_empty_clusters": true,
+      "skip_cell_assignment": true,
+      "create_orphan_clusters": false,
+      "engine_options": {
+        "engine_type": "transformers",
+        "score_threshold": 0.3
+      },
+      "model_spec": {
+        "name": "layout_heron",
+        "repo_id": "docling-project/docling-layout-heron",
+        "revision": "8f39ad3c0b4c58e9c2d2c84a38465abf757272d8",
+        "engine_overrides": {
+          "onnxruntime": {
+            "repo_id": "docling-project/docling-layout-heron-onnx",
+            "revision": null,
+            "torch_dtype": null,
+            "min_engine_version": null,
+            "extra_config": {
+              "model_filename": "model.onnx"
+            }
+          }
+        }
+      }
+    }
+  },
+  "cache_mutation_rejection": {
+    "command": [
+      "./pdf2data",
+      "pdf-region-read",
+      "--layout",
+      "out/benchmarks/legal-probes-layout-v2/layout/layout.json",
+      "--reuse-readings",
+      "out/benchmarks/cache-rejection",
+      "--output",
+      "out/benchmarks/cache-rejection/must-not-start",
+      "--json"
+    ],
+    "exit_code": 2,
+    "stderr": "{\"error\": \"inherited reader model/runtime/input contract changed: model\"}\n",
+    "stdout": "",
+    "rejected_before_output_creation": true
+  },
+  "source_review_required": true,
+  "cloudflare_operations": 0,
+  "legal_original_36_cells_preserved": true
+}

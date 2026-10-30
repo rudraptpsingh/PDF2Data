@@ -1,0 +1,8 @@
+# Tested macOS ARM64 layout environment; install PDF2Data separately.
+docling==2.144.0
+docling-core==2.105.0
+torch==2.14.1
+transformers==5.21.0
+pypdf==6.21.3
+pypdfium2==5.14.0
+pillow==13.0.0

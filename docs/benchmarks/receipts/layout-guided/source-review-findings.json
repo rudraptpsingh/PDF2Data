@@ -1,0 +1,46 @@
+{
+  "status": "diagnostic_findings",
+  "findings": [
+    {
+      "id": "12e81c6fcc470cd97485",
+      "pdf": "old_scans/43.pdf",
+      "source_sha256": "573ba9eacf6aee5ab35fe9a760b9c8e544403f1290be954eed12934ddc1bf99b",
+      "page": 1,
+      "observation": "Handwritten two-leaf scan: right leaf unboxed; left classified as a picture and retained for visual review rather than transcribed.",
+      "review": "independent source-image inspection; not a legal interpretation"
+    },
+    {
+      "id": "043643a7163393d0f0ab",
+      "pdf": "old_scans_math/1_pg40.pdf",
+      "source_sha256": "5cc9fa528540404003e21de83ec212c41d330cae7e873ac6aa780505e3a0e39d",
+      "page": 1,
+      "observation": "Lower formulas around PDF y340\u2013425 fall outside detector boxes.",
+      "review": "independent source-image inspection; not a legal interpretation"
+    },
+    {
+      "id": "45c0fc8f081b40425d83",
+      "pdf": "multi_column/09f801e3a2ec90ef456d34ad571a46f36fce_page_18_pg1.pdf",
+      "source_sha256": "7dd0ba7c8d80ba642a8538d3f99858b412f36d2f8010025fc90e028ead87bd12",
+      "page": 1,
+      "observation": "Headline source crop clips the final e from NOTRe.",
+      "review": "independent source-image inspection; not a legal interpretation"
+    },
+    {
+      "id": "8440e5d927c7ddbaca2c",
+      "pdf": "long_tiny_text/12_pg174_pg1.pdf",
+      "source_sha256": "3ac0820d1a3441c092625ce9d129a1c9e4ccc0c4063a5df07c3b3dc2aa2d9bfa",
+      "page": 1,
+      "observation": "High uncovered percentage is a two-pixel horizontal rule, not demonstrated missing body text.",
+      "review": "independent source-image inspection; not a legal interpretation"
+    },
+    {
+      "id": "ea7bd798f777b9488ae5",
+      "pdf": "old_scans/67.pdf",
+      "source_sha256": "08e9dedce22dfc447085c5226eb3a7bc3f29bed1f5ee2b4120f7c5f4cab31a93",
+      "page": 1,
+      "observation": "Most uncovered ink is the binding gutter/borders; pixel count alone overstates text loss.",
+      "review": "independent source-image inspection; not a legal interpretation"
+    }
+  ],
+  "source_quality_promoted": false
+}

@@ -176,6 +176,22 @@
     {
       "name": "serve",
       "purpose": "open the local PDF review and embedding webpage"
+    },
+    {
+      "name": "pdf-layout-detect",
+      "purpose": "detect source-bound original-page regions offline"
+    },
+    {
+      "name": "pdf-region-read",
+      "purpose": "read pinned local text/table/formula candidates from verified crops"
+    },
+    {
+      "name": "pdf-table-reconcile",
+      "purpose": "reconcile native tables with source geometry and visual content support"
+    },
+    {
+      "name": "benchmark-reconcile-tables",
+      "purpose": "evaluate source-table reconciliation without rerunning model inference"
     }
   ]
 }

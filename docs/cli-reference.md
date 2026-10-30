@@ -20,6 +20,10 @@ After installing the package, use `pdf2data` without `./`. For Qwen use the MLX-
 | `pdf2data benchmark-run` | run native or automatic OCR profiles through the PDF2Data CLI |
 | `pdf2data benchmark-score` | execute pinned upstream olmOCR-bench rule classes |
 | `pdf2data benchmark-compare` | compare reports from an identical frozen suite |
+| `pdf2data pdf-layout-detect` | detect source-bound original-page regions offline |
+| `pdf2data pdf-region-read` | read pinned local text/table/formula candidates from verified crops |
+| `pdf2data pdf-table-reconcile` | reconcile source native tables with independently read values and symbols |
+| `pdf2data benchmark-reconcile-tables` | compare source-table reconciliation without rerunning model inference |
 | `pdf2data doctor` | show installed backends and accelerator availability |
 | `pdf2data embed` | embed documents from JSONL |
 | `pdf2data verify` | check hashes, dimensions, and unique vector IDs |
@@ -1088,3 +1092,7 @@ The preparation command was already run; use a new workspace for another prepara
 ## External OCR benchmarks
 
 The four `benchmark-*` commands and their reproducible examples are documented in [benchmark guide](benchmarks/README.md). They write local JSON receipts and Markdown/HTML comparisons; they do not contact Cloudflare.
+
+## Layout-guided visual reading
+
+`pdf-layout-detect`, `pdf-region-read` and the `benchmark-run --profile layout-vlm` profile are documented in [local layout-guided reading](benchmarks/layout-guided-reading.md). Outputs remain review candidates; the original packages are preserved.

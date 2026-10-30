@@ -714,3 +714,5 @@ separately.
 ### Benchmark extraction
 
 Use the source-hashed, pinned olmOCR-bench adapter to compare native extraction and automatic OCR with text-only and table-preserving outputs. See the [benchmark guide](docs/benchmarks/README.md) and [measured results](docs/benchmarks/2026-10-31-results.md). Benchmark scores measure sampled output properties, not legal correctness.
+
+The [local layout-guided reader](docs/benchmarks/layout-guided-reading.md) adds opt-in GPU text/table/formula reading and source-table reconciliation. On the frozen 70-PDF sample it raises the adjusted benchmark macro from 21.53% to 71.75%; [results and limitations](docs/benchmarks/2026-10-31-layout-results.md) include the substantial processing-time tradeoff and remaining review requirements.

@@ -43,14 +43,26 @@ def parser() -> argparse.ArgumentParser:
     prep.add_argument("--custom", action="store_true", help="local rules with explicitly custom provenance, not the public dataset")
     prep.add_argument("--per-category", type=int);prep.add_argument("--seed", default="pdf2data-v1");prep.add_argument("--json", action="store_true")
     bench = sub.add_parser("benchmark-run", help="run source-only extraction profiles over a frozen suite")
-    bench.add_argument("--suite", type=Path, required=True);bench.add_argument("--profile", choices=("native","auto"), required=True)
+    bench.add_argument("--suite", type=Path, required=True);bench.add_argument("--profile", choices=("native","auto","layout-vlm"), required=True)
     bench.add_argument("--output", type=Path, required=True);bench.add_argument("--parser-python", type=Path, default=Path(sys.executable))
-    bench.add_argument("--workers", type=int, default=4);bench.add_argument("--resume", action="store_true");bench.add_argument("--json", action="store_true")
+    bench.add_argument("--reuse-readings",type=Path);bench.add_argument("--layout-python",type=Path);bench.add_argument("--workers", type=int, default=4);bench.add_argument("--resume", action="store_true");bench.add_argument("--json", action="store_true")
     scoring = sub.add_parser("benchmark-score", help="score predictions with the pinned official olmOCR rule classes")
     for key in ("suite","run","upstream","eval-python","output"):scoring.add_argument("--"+key,type=Path,required=True)
     scoring.add_argument("--mode",choices=("text","tables"),default="tables");scoring.add_argument("--json",action="store_true")
     comparison = sub.add_parser("benchmark-compare", help="compare matched external evaluation reports")
     comparison.add_argument("--score",type=Path,action="append",required=True);comparison.add_argument("--output",type=Path,required=True);comparison.add_argument("--json",action="store_true")
+    layout = sub.add_parser("pdf-layout-detect", help="detect source-bound page regions offline without changing existing extraction")
+    layout.add_argument("--manifest",type=Path,required=True);layout.add_argument("--output",type=Path,required=True)
+    layout.add_argument("--device",choices=("mps","cpu","cuda"),default="mps");layout.add_argument("--dpi",type=int,default=180);layout.add_argument("--json",action="store_true")
+    visual = sub.add_parser("pdf-region-read", help="read source-bound text table and formula crops with pinned local PaddleOCR-VL")
+    visual.add_argument("--layout",type=Path,required=True);visual.add_argument("--output",type=Path,required=True)
+    visual.add_argument("--reuse-readings",type=Path);visual.add_argument("--device",choices=("gpu","cpu"),default="gpu");visual.add_argument("--max-tokens",type=int,default=4096);visual.add_argument("--resume",action="store_true");visual.add_argument("--json",action="store_true")
+    reconcile = sub.add_parser("pdf-table-reconcile", help="retain native table cells only with source geometry and exact glyph evidence")
+    for key in ("layout","read","native-packages","output"):reconcile.add_argument("--"+key,type=Path,required=True)
+    reconcile.add_argument("--json",action="store_true")
+    derive = sub.add_parser("benchmark-reconcile-tables",help="reconcile native source tables without rerunning model inference")
+    for key in ("suite","run","native-run","output"):derive.add_argument("--"+key,type=Path,required=True)
+    derive.add_argument("--json",action="store_true")
     health = sub.add_parser("doctor", help="show installed backends and accelerator availability")
     health.add_argument("--json", action="store_true")
     embed = sub.add_parser("embed", help="embed documents from JSONL")
@@ -336,12 +348,24 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command == "benchmark-prepare":
+        if args.command == "pdf-table-reconcile":
+            from .table_reconcile import reconcile
+            result=reconcile(args.layout,args.read,args.native_packages,args.output)
+        elif args.command == "benchmark-reconcile-tables":
+            from .benchmark import reconcile_tables_run
+            result=reconcile_tables_run(args.suite,args.run,args.native_run,args.output)
+        elif args.command == "pdf-layout-detect":
+            from .structured import detect
+            result=detect(args.manifest,args.output,args.device,args.dpi)
+        elif args.command == "pdf-region-read":
+            from .structured import read_regions
+            result=read_regions(args.layout,args.output,args.device,args.max_tokens,args.resume,args.reuse_readings)
+        elif args.command == "benchmark-prepare":
             from .benchmark import prepare
             result = prepare(args.dataset_root,args.output,args.per_category,args.seed,args.custom)
         elif args.command == "benchmark-run":
             from .benchmark import run as benchmark_run
-            result = benchmark_run(args.suite,args.profile,args.output,args.parser_python,args.workers,args.resume)
+            result = benchmark_run(args.suite,args.profile,args.output,args.parser_python,args.workers,args.resume,args.layout_python,args.reuse_readings)
         elif args.command == "benchmark-score":
             from .benchmark import score
             result = score(args.suite,args.run,args.upstream,args.eval_python,args.output,args.mode)

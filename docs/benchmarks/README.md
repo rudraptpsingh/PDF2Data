@@ -4,7 +4,7 @@ The local adapter executes the **unmodified olmOCR-bench rule classes** against
 PDF2Data output. It does not run the olmOCR recognition model. It compares
 PDF2Data profiles and preserves every selected source in the denominator.
 
-[Measured results and remaining gaps](2026-10-31-results.md).
+[Latest layout-guided results](2026-10-31-layout-results.md) · [Original native/auto baseline](2026-10-31-results.md).
 
 ## Pinned inputs
 
@@ -118,3 +118,7 @@ independent legal holdouts, multilingual source review and a comparison against
 alternative recognition models remain future work. No external OCR engine
 performance is inferred from this adapter. No remote DB or Cloudflare action is
 part of the workflow.
+
+## Optional local layout-guided profile
+
+See [layout-guided reading](layout-guided-reading.md) for the offline GPU region reader, source/crop validation, structured outputs and comparison limits. It is an opt-in candidate pipeline; it does not replace the measured native or automatic baseline.
