@@ -71,6 +71,7 @@ def parser() -> argparse.ArgumentParser:
     pdf.add_argument("--ocr-device", choices=["auto", "cpu", "gpu"], default="auto",
                      help="Vision auto lets macOS schedule hardware; forced GPU is unsupported")
     pdf.add_argument("--ocr-language", default="eng", help="OCR language hint, such as eng, hin or eng+hin")
+    pdf.add_argument("--native-consensus", action="store_true", help="repair uniquely source-supported native lines using independent PDF readers")
     pdf.add_argument("--json", action="store_true")
     legal = sub.add_parser("legal-l1", help="run immutable offline legal-source extraction from a hash-bound manifest")
     legal.add_argument("--manifest", required=True, type=Path)
@@ -297,7 +298,7 @@ def main(argv: list[str] | None = None) -> int:
             result = extract_pdf(args.input, args.output, title=args.title,
                                  source_url=args.source_url, tables=args.tables,
                                  ocr=args.ocr, ocr_language=args.ocr_language,
-                                 ocr_device=args.ocr_device)
+                                 ocr_device=args.ocr_device, native_consensus=args.native_consensus)
         elif args.command == "pdf-batch":
             from .pdf_batch import extract_batch
             batch_report = extract_batch(args.input, args.output, workers=args.workers,

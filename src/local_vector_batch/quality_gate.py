@@ -165,6 +165,17 @@ def native_source_raster_evidence(page: dict, source_page, source_pdf_sha256: st
             if y0 < .85*raster.height:
                 body_bottom = max(body_bottom, y1)
         result["glyph_boxes_sha256"] = hashlib.sha256(json.dumps(glyph_boxes, separators=(",", ":")).encode()).hexdigest()
+        # Explicit native underline rectangles explain visible rule ink in gaps
+        # between glyph boxes. Retain these as style evidence; do not relax the
+        # zero-unaccounted-ink threshold or mask general graphics.
+        from .native_styles import source_underlines
+        underline_regions = source_underlines(source_page, table_count=table_count)
+        for region in underline_regions:
+            x0, y0, x1, y1 = region["source_bbox"]
+            left=max(0,int((x0-origin_x)*scale_x));right=min(raster.width,int((x1-origin_x)*scale_x)+1)
+            top=max(0,int((y0-origin_y)*scale_y));bottom=min(raster.height,int((y1-origin_y)*scale_y)+1)
+            covered[top:bottom,left:right]=True
+        result["source_style_regions"] = underline_regions
         body_limit = min(raster.height, body_bottom+int(.04*raster.height)) if body_bottom else raster.height
         outside = (ink & ~covered).astype("uint8")
         nlabels, _, stats, _ = cv2.connectedComponentsWithStats(outside, 8)
@@ -564,6 +575,7 @@ def assess_page(page: dict, *, source_pdf_sha256: str | None,
             "page_complete": page_complete,
             "text_region_verified": not failed and all(name not in missing for name in required),
             "unresolved_visual_regions": (source_geometry or {}).get("unresolved_visual_regions", []),
+            "source_style_regions": (source_geometry or {}).get("source_style_regions", []),
             "outcome": "repair_required" if missing or failed else "auto_accepted",
             "components": components, "missing_evidence": missing, "failed_components": failed,
             "acceptance_scope": "machine_verified_extraction" if not (missing or failed) else "none"}

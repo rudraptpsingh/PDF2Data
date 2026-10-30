@@ -146,6 +146,10 @@ def capture_layout(original: Path, pages: list[dict]) -> list[dict]:
             native=safe_text(page.extract_text)
             independent=safe_text(alternate.extract_text)
             independent_layout=safe_text(lambda:alternate.extract_text(extraction_mode='layout'))
+            from .native_consensus import read_source_lines,choose_witness
+            try:source_lines=read_source_lines(original,page,selected['page'])
+            except Exception as error:source_lines={'status':'unavailable','text':None,'glyph_coverage':False,'reason':type(error).__name__}
+            witness,witness_basis=choose_witness(selected['text'],independent_layout,source_lines) if selected['method']=='pdf_text' else (independent_layout,'pypdf_layout_for_ocr_comparison_only')
             glyphs=[]
             for c in page.chars:
                 glyphs.append({'text':c.get('text',''), 'bbox':[float(c[k]) for k in ('x0','top','x1','bottom')],
@@ -158,13 +162,17 @@ def capture_layout(original: Path, pages: list[dict]) -> list[dict]:
                 'native_text_raw':native, 'secondary_text_raw':independent,
                 'secondary_layout_text_raw':independent_layout,
                 'secondary_layout_text_sha256':text_hash(independent_layout) if independent_layout is not None else None,
-                'quality_independent_basis':'pypdf_layout_mode_fixed_before_comparison',
+                'quality_independent_basis':witness_basis,
+                'quality_independent_text':witness,
+                'quality_independent_text_sha256':text_hash(witness) if witness is not None else None,
+                'pdfium_source_lines':source_lines,
                 'native_text_sha256':text_hash(native) if native is not None else None,
                 'secondary_text_sha256':text_hash(independent) if independent is not None else None,
                 'glyph_stream_text':glyph_text,'glyphs':glyphs,'alignment':mapping,
                 'alignment_status':'observation_only_not_reviewed_reading_order',
                 'extraction_errors':errors,
                 'nontext_objects':{k:len(getattr(page,k,[]) or []) for k in ('images','curves','rects','lines')},
+                'source_vectors':{kind:[{'bbox':[float(shape[k]) for k in ('x0','top','x1','bottom')]} for shape in (getattr(page,kind,[]) or [])] for kind in ('rects','lines')},
                 'selected_method':selected['method'],
                 'geometry_status':'native_geometry_not_ocr_geometry' if selected['method']!='pdf_text' else 'native_glyphs_retained'})
     return result
@@ -287,7 +295,7 @@ def readiness_ledger(structure: dict, quality: dict) -> dict:
     for unit in structure['units']:
         physical_pages=sorted({a['page'] for a in unit['spans']})
         units.append({'unit_id':unit['id'],'pages':physical_pages,
-            'source_quality':'passed' if all(outcomes[n]=='auto_accepted' for n in physical_pages) else 'held',
+            'source_quality':'passed' if all(outcomes[n]=='auto_accepted' for n in physical_pages) else 'repair_required',
             'boundary_review':'candidate','legal_review':'not_run','eligible_for_legal_assertion':False})
     return {'schema_version':SCHEMA,'units':units,'publication_eligible':False,
         'consumer_rule':'Do not use legacy embedding readiness alone; require this L1 source-quality ledger plus separate legal review/publication gates.'}
@@ -310,6 +318,8 @@ def verify_document(output: Path) -> dict:
     for page,raw in zip(pages,layout):
         if raw['page']!=page['page'] or raw['page_text_sha256']!=page['text_sha256'] or ''.join(g['text'] for g in raw['glyphs'])!=raw['glyph_stream_text']:
             raise ValueError('layout source identity mismatch')
+        if 'quality_independent_text' in raw and raw.get('quality_independent_text_sha256')!=(text_hash(raw['quality_independent_text']) if raw['quality_independent_text'] is not None else None):
+            raise ValueError('independent native witness hash mismatch')
         if raw.get('secondary_layout_text_sha256')!=(text_hash(raw['secondary_layout_text_raw']) if raw.get('secondary_layout_text_raw') is not None else None):
             raise ValueError('raw layout-mode text hash mismatch')
         for glyph in raw['glyphs']:
@@ -337,7 +347,11 @@ def verify_document(output: Path) -> dict:
             raise ValueError('quality page identity mismatch')
     counts={outcome:sum(r['outcome']==outcome for r in quality['results']) for outcome in ('auto_accepted','repair_required','source_blocked')}
     if quality.get('counts')!=counts:raise ValueError('quality outcome counts mismatch')
-    if json.loads((output/'readiness.json').read_text())!=readiness_ledger(structure,quality):
+    saved_readiness=json.loads((output/'readiness.json').read_text())
+    # Older v1 packages used 'held' for the same source-quality outcome.
+    for unit in saved_readiness.get('units',[]):
+        if unit.get('source_quality')=='held':unit['source_quality']='repair_required'
+    if saved_readiness!=readiness_ledger(structure,quality):
         raise ValueError('unit readiness ledger mismatch or unsupported promotion')
     repair_queue=rows(output/'repair-queue.jsonl')
     held={r['page'] for r in quality['results'] if r['outcome']!='auto_accepted'}
@@ -380,7 +394,7 @@ def extract_document(source: dict, output: Path, *, ocr='off', language='eng', r
         shutil.copyfile(original,stage/'original.pdf')
         # Check the captured bytes too, eliminating source-change TOCTOU.
         if digest((stage/'original.pdf').read_bytes())!=sha:raise ValueError('source changed during acquisition')
-        report=extract_pdf(stage/'original.pdf',stage/'extraction',title=source.get('title') or source['id'],source_url=source.get('url'),ocr=ocr,ocr_language=language,tables=True)
+        report=extract_pdf(stage/'original.pdf',stage/'extraction',title=source.get('title') or source['id'],source_url=source.get('url'),ocr=ocr,ocr_language=language,tables=True,native_consensus=True)
         if source.get('expected_pages') is not None and source['expected_pages']!=report['pages']:raise ValueError('expected physical page count mismatch')
         pages=rows(stage/'extraction/pages.jsonl')
         layout=capture_layout(stage/'original.pdf',pages);write_rows(stage/'layout.jsonl',layout)
@@ -388,9 +402,10 @@ def extract_document(source: dict, output: Path, *, ocr='off', language='eng', r
         checked=validate_structure(structure,pages,sha)
         from .quality_gate import assess_package
         quality=assess_package(stage/'extraction',stage/'original.pdf',derive_ocr_source_raster=True,
-            independent_by_page={p['page']:p['secondary_layout_text_raw'] for p in layout if p['secondary_layout_text_raw'] is not None},
+            independent_by_page={p['page']:p['quality_independent_text'] for p in layout if p['quality_independent_text'] is not None},
             derive_independent_native=False)
-        quality['independent_extraction_mode']='pypdf_layout_fixed_for_all_native_pages'
+        quality['independent_extraction_mode']='pypdf_layout_or_exact_source_line_native_consensus'
+        quality['independent_basis_by_page']={str(p['page']):p['quality_independent_basis'] for p in layout}
         write_json(stage/'quality.json',quality)
         write_json(stage/'readiness.json',readiness_ledger(structure,quality))
         from .quality_routes import matching_routes

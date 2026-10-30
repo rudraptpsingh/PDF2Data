@@ -183,7 +183,7 @@ def _open_pdf_with_page_recovery(source: Path, secondary_pages, issues: list[dic
 def extract_pdf(
     source: Path, output: Path, *, title: str | None = None, source_url: str | None = None,
     tables: bool = True, ocr: str = "auto", ocr_language: str = "eng", ocr_device: str = "auto",
-    ocr_dpi: int = 180,
+    ocr_dpi: int = 180, native_consensus: bool = False,
     repair_pages: set[int] | None = None, reuse_package: Path | None = None,
     progress: Callable[[int, int], None] | None = None,
 ) -> dict:
@@ -338,6 +338,14 @@ def extract_pdf(
                             issues.append({"page": index, "kind": "low_confidence_ocr"})
                 except Exception as error:
                     issues.append({"page": index, "kind": "ocr_failed", "detail": str(error)[:180]})
+            native_line_repairs = []
+            if native_consensus and selected_method == "pdf_text" and secondary_pages is not None:
+                try:
+                    from .native_consensus import repair_source_lines
+                    layout_reference = secondary_pages[index-1].extract_text(extraction_mode="layout") or ""
+                    text, native_line_repairs = repair_source_lines(source, page, index, text, layout_reference)
+                except Exception as error:
+                    issues.append({"page": index, "kind": "native_consensus_unavailable", "detail": str(error)[:180]})
             selected_quality = text_quality(text)
             short_evidence = (short_native_page_evidence(page, text, secondary_text)
                               if selected_method == "pdf_text" and 0 < len(text) < 80 else None)
@@ -374,7 +382,8 @@ def extract_pdf(
                           "independent_coverage": independent_coverage,
                           **({"short_source_evidence": short_evidence} if short_evidence else {}),
                           **({"secondary_native_text": secondary_text} if parser_gap else {}),
-                          **({"native_text": native} if ocr_result is not None else {}),
+                          **({"native_text": native} if ocr_result is not None or native_line_repairs else {}),
+                          **({"native_line_repairs": native_line_repairs} if native_line_repairs else {}),
                           **({"ocr": ocr_result} if ocr_result else {})})
             from .structure_candidates import page_candidates, table_candidates
             structure_rows.extend(page_candidates(pages[-1]))

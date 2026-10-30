@@ -232,7 +232,14 @@ def serve(port: int = 8765, max_upload_mb: int = 150, *, review_manifest: Path |
                     with render_lock:
                         with lock:
                             receipt = record_decision(review_manifest, review_decisions, request)
-                    return self._json(200, {'saved': True, 'promotes_page': receipt['promotes_page']})
+                    native_rows = [json.loads(line) for line in review_manifest.read_text(encoding='utf-8').splitlines() if line.strip()]
+                    repair_jobs = None
+                    if any(row.get('l1_package') for row in native_rows):
+                        from .l1_review import sync_feedback_jobs
+                        repair_jobs = sync_feedback_jobs(review_manifest, review_decisions,
+                            review_decisions.with_name('repair-jobs.jsonl'))
+                    return self._json(200, {'saved': True, 'promotes_page': receipt['promotes_page'],
+                                           'repair_jobs': repair_jobs})
                 except (OSError, ValueError, KeyError, TypeError) as error:
                     return self._json(400, {'error': str(error)[:180]})
                 except Exception:

@@ -143,9 +143,9 @@ def test_source_layout_mode_fixed_and_both_raw_representations_retained(tmp_path
     raw=rows(out/'layout.jsonl')[0]
     assert raw['secondary_layout_text_raw'] is not None
     assert raw['secondary_text_raw'] is not None
-    assert raw['quality_independent_basis']=='pypdf_layout_mode_fixed_before_comparison'
+    assert raw['quality_independent_basis']=='pypdf_layout'
     q=json.loads((out/'quality.json').read_text())
-    assert q['independent_extraction_mode']=='pypdf_layout_fixed_for_all_native_pages'
+    assert q['independent_extraction_mode']=='pypdf_layout_or_exact_source_line_native_consensus'
     assert {r['page'] for r in rows(out/'repair-queue.jsonl')}=={r['page'] for r in q['results'] if r['outcome']!='auto_accepted'}
 
 
@@ -213,6 +213,6 @@ def test_unit_readiness_needs_every_page_and_never_implies_legal_review():
     p=pages('1. Subject to the condition','on the following page.')
     structure=structure_document(p,'a'*64,'interim_order')
     ledger=readiness_ledger(structure,{'results':[{'page':1,'outcome':'auto_accepted'},{'page':2,'outcome':'repair_required'}]})
-    assert ledger['units'][0]['source_quality']=='held'
+    assert ledger['units'][0]['source_quality']=='repair_required'
     assert not ledger['units'][0]['eligible_for_legal_assertion']
     assert not ledger['publication_eligible']
