@@ -33,6 +33,7 @@ After installing the package, use `pdf2data` without `./`. For Qwen use the MLX-
 | `pdf2data validate-evidence` | check structured candidate quotes and typed fields without verification |
 | `pdf2data verify-package` | verify a PDF evidence package and optional vector anchors |
 | `pdf2data render-package` | add linked Markdown/HTML and layout JSON to an existing verified PDF package without re-extracting |
+| `pdf2data export-readable` | full document Markdown/HTML/JSON, relationships, source previews and optional Word from an immutable L1 package |
 | `pdf2data import-paddle-layout` | attach PP-StructureV2/V3 page blocks as review-only candidates |
 | `pdf2data review-package` | export only explicitly reviewed PDF evidence units |
 | `pdf2data ocr-consensus` | dry-run independent RapidOCR audit of existing Vision pages |
@@ -456,6 +457,16 @@ options:
                         text is ready or blank
   --json
 ```
+
+### export-readable
+
+```bash
+pdf2data export-readable --package <l1-package-directory> --output <new-readable-directory> --json
+# Optional Word conversion through an explicitly selected runtime:
+pdf2data export-readable --package <l1-package-directory> --output <new-readable-directory> --docx-python <python-with-python-docx> --json
+```
+
+Produces one continuous `document.md`, `document.html`, optional `document.docx`, `data.json`, `relations.json`, `quality.json`, exact `pages.md`, `source.pdf`, rendered page images and an artifact hash manifest. Whole paragraph candidates are joined across page breaks, with exact page links. Table candidates retain cell ownership. Fact/role observations retain source spans and containing-unit links. No new legal interpretation or model call occurs. Open the HTML file; full document is the default view, source comparison is secondary. Source packages are never modified; existing destinations are rejected.
 
 ### render-package
 

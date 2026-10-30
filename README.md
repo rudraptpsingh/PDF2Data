@@ -6,6 +6,18 @@ The output is deterministic, checksum verified, and ready for a Vectorize import
 
 [Complete CLI reference, all commands and real outputs](docs/cli-reference.md).
 
+### Open a complete converted document
+
+After `legal-l1`, export a readable folder without reprocessing or altering the immutable package:
+
+```bash
+./pdf2data export-readable --package out/legal/source-id --output out/readable-source --json
+```
+
+Open `out/readable-source/document.html`. It starts with the continuous document, joining complete paragraph candidates across PDF pages. Source comparison shows each original page above its selected text. The folder contains `document.md`, `data.json`, `relations.json`, `quality.json`, `pages.md`, `source.pdf` and page images. Add `--docx-python /path/to/python-with-python-docx` to also create `document.docx`.
+
+Markdown is the human reading; JSON retains exact spans and relationships. Paragraph boundaries, table grids, roles and references remain candidates. Relationship edges describe provenance and exact containment, not verified legal applicability. This export adds a command and therefore changes the code profile of future extractions; existing captured packages remain unchanged and are verified against their captured hashes.
+
 The Python namespace `local_vector_batch` and the `local-vector-batch` entry point remain compatible. The active local checkout is `PDF2Data`; an old-path symlink keeps existing consumers running.
 
 ## Install

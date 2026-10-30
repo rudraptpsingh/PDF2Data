@@ -155,6 +155,11 @@ def parser() -> argparse.ArgumentParser:
     package.add_argument("--source-pdf", type=Path, help="optional original PDF for byte hash verification")
     package.add_argument("--require-ready", action="store_true", help="fail unless the original PDF is checked and every page text is ready or blank")
     package.add_argument("--json", action="store_true")
+    readable = sub.add_parser("export-readable", help="export a portable PDF, Markdown, HTML, JSON and optional Word output folder from immutable L1")
+    readable.add_argument('--package', required=True, type=Path)
+    readable.add_argument('--output', required=True, type=Path)
+    readable.add_argument('--docx-python', type=Path, help='optional Python runtime with python-docx installed')
+    readable.add_argument('--json', action='store_true')
     present = sub.add_parser("render-package", help="add linked Markdown/HTML and layout JSON to an existing verified PDF package without re-extracting")
     present.add_argument("--output", required=True, type=Path, help="pdf-extract output directory")
     present.add_argument("--json", action="store_true")
@@ -378,6 +383,9 @@ def main(argv: list[str] | None = None) -> int:
             result = verify_package(args.output, args.vectors, args.source_pdf)
             if args.require_ready and (not result["original_pdf_checked"] or result["page_text_readiness"] != "complete"):
                 raise ValueError("page text is not ready for retrieval: check original PDF and resolve review_required_pages")
+        elif args.command == "export-readable":
+            from .readable_export import export_readable
+            result = export_readable(args.package,args.output,args.docx_python)
         elif args.command == "render-package":
             from .evidence_package import create_package, verify_package
             verify_package(args.output)
