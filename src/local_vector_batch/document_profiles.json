@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "scope": "format_and_field_candidates_only",
+  "header_chars": 2400,
+  "ocr_date_review": {
+    "enabled": true,
+    "confusable_digits": {"O": "0", "o": "0", "I": "1", "l": "1"},
+    "min_year": 1,
+    "max_year": 9999
+  },
+  "profiles": [
+    {
+      "id": "official_letter",
+      "heading_patterns": [
+        "^\\s*(?:Subject|Sub\\.?|विषय)\\s*[:：-]",
+        "^\\s*(?:To\\s*[,.:]?|सेवा में\\s*[,.:]?)\\s*$",
+        "^\\s*Ref\\.?\\s*No\\.?\\s*[:：-]"
+      ],
+      "fields": [
+        {
+          "role": "reference_number",
+          "pattern": "^\\s*(?:Ref\\.?\\s*No\\.?|F\\.?\\s*No\\.?|File\\s*No\\.?|Letter\\s*No\\.?|पत्र\\s*संख्या|संदर्भ)\\s*[:.\\-/]?[^\\n]+"
+        },
+        {
+          "role": "printed_date_label",
+          "scope": "header",
+          "pattern": "(?:^|[ \\t]{2,})(?:(?:Date|दिनांक)\\s*[:：-]|Dated\\s+)[^\\n]+"
+        },
+        {
+          "role": "subject",
+          "pattern": "^\\s*(?:Subject|Sub\\.?|विषय)\\s*[:：-][^\\n]+"
+        },
+        {
+          "role": "enclosure",
+          "pattern": "^\\s*(?:Encl\\.?|Enclosures?|संलग्नक)\\s*[:：-]?[^\\n]*"
+        },
+        {
+          "role": "copy_recipient_label",
+          "pattern": "^\\s*(?:Copy\\s+to|प्रतिलिपि)\\s*[:：-]?[^\\n]*"
+        }
+      ]
+    },
+    {
+      "id": "gazette_or_regulation",
+      "heading_patterns": [
+        "^\\s*(?:THE\\s+GAZETTE\\s+OF\\s+INDIA|भारत\\s+का\\s+राजपत्र)\\b",
+        "^\\s*(?:NOTIFICATION|अधिसूचना)\\s*$",
+        "^\\s*\\d*[.)]?\\s*Short\\s+title\\s+and\\s+commencement\\b"
+      ],
+      "fields": [
+        {
+          "role": "notification_number",
+          "pattern": "^\\s*(?:G\\.?\\s*S\\.?\\s*R\\.?|S\\.?\\s*O\\.?|फा\\.?\\s*सं\\.?)[^\\n]+"
+        },
+        {
+          "role": "printed_date_label",
+          "scope": "header",
+          "pattern": "(?:^|[ \\t]{2,})(?:(?:Date|दिनांक)\\s*[:：-]|Dated\\s+)[^\\n]+"
+        },
+        {
+          "role": "commencement_clause",
+          "pattern": "^[^\\n]*(?:shall\\s+come\\s+into\\s+force|with\\s+effect\\s+from|प्रवृत्त\\s+होंगे|प्रभावी\\s+होंगे)[^\\n]*"
+        },
+        {
+          "role": "amendment_or_substitution",
+          "pattern": "^[^\\n]*(?:shall\\s+be\\s+substituted|shall\\s+be\\s+omitted|shall\\s+be\\s+inserted)[^\\n]*"
+        },
+        {
+          "role": "annexure_or_schedule_heading",
+          "pattern": "^\\s*(?:ANNEXURE|SCHEDULE|APPENDIX|अनुसूची|अनुलग्नक)\\b[^\\n]*"
+        },
+        {
+          "role": "instrument_reference",
+          "pattern": "^\\s*(?:No\\.|No\\s*:)[^\\n]{0,16}[/\\-][^\\n]+?(?=[ \\t]{2,}(?:Date|Dated|दिनांक)\\b|$)"
+        }
+      ]
+    },
+    {
+      "id": "judgment_or_order",
+      "heading_patterns": [
+        "^\\s*(?:JUDGMENT|ORDER|CORAM|आदेश|निर्णय)\\s*[:：]?(?:\\s|$)",
+        "^\\s*(?:BEFORE\\s+THE|IN\\s+THE)\\s+[^\\n]*(?:COMMISSION|TRIBUNAL|COURT)"
+      ],
+      "fields": [
+        {
+          "role": "matter_number",
+          "pattern": "^\\s*(?:Petition|Appeal|Case|Application|I\\.?\\s*A\\.?|Writ\\s+Petition)\\s*(?:No\\.?|Nos\\.?)\\s*[^\\n]+"
+        },
+        {
+          "role": "bench_label",
+          "pattern": "^\\s*(?:CORAM|PRESENT|पीठ)\\s*[:：]?[^\\n]*"
+        },
+        {
+          "role": "hearing_date_label",
+          "pattern": "^\\s*(?:Date\\s+of\\s+(?:Hearing|hearing)|Heard\\s+on)\\s*[:：]?[^\\n]+"
+        },
+        {
+          "role": "decision_date_label",
+          "pattern": "^\\s*(?:Date\\s+of\\s+(?:Order|Judgment|Decision)|Pronounced\\s+on)\\s*[:：]?[^\\n]+"
+        },
+        {
+          "role": "party_role_label",
+          "pattern": "^\\s*[^\\n]{1,160}\\s+(?:Petitioner|Respondent|Appellant|Applicant)\\s*$"
+        },
+        {
+          "role": "operative_direction_label",
+          "pattern": "^[^\\n]*(?:we\\s+(?:hereby\\s+)?(?:direct|order)|the\\s+Commission\\s+(?:directs|orders)|is\\s+hereby\\s+directed)[^\\n]*"
+        },
+        {
+          "role": "operative_section_heading",
+          "pattern": "^\\s*(?:ORDER|JUDGMENT|आदेश|निर्णय)\\s*$"
+        }
+      ]
+    },
+    {
+      "id": "tender",
+      "heading_patterns": [
+        "^\\s*(?:REQUEST\\s+FOR\\s+(?:SELECTION|PROPOSAL|QUALIFICATION)|NOTICE\\s+INVITING\\s+TENDER|INVITATION\\s+FOR\\s+BIDS|निविदा\\s+आमंत्रण)\\b",
+        "^\\s*(?:RfS|RfP|RFS|RFP|NIT|Tender)\\s*(?:No\\.?|Number|Reference|ID)\\b",
+        "^\\s*BID\\s+INFORMATION\\s+SHEET\\s*$"
+      ],
+      "fields": [
+        {
+          "role": "printed_date_label",
+          "scope": "header",
+          "pattern": "(?:^|[ \\t]{2,})(?:(?:Date|दिनांक)\\s*[:：-]|Dated\\s+)[^\\n]+"
+        },
+        {
+          "role": "tender_reference",
+          "pattern": "^\\s*(?:RfS|RfP|RFP|RFS|NIT|Tender|Bid)\\s*(?:No\\.?|Number|Reference|ID)\\s*[:：-]?[^\\n]+"
+        },
+        {
+          "role": "submission_deadline_label",
+          "pattern": "^[^\\n]*(?:last\\s+date[^\\n]{0,45}(?:submission|bid)|bid\\s+submission\\s+(?:deadline|end\\s+date|closing)|submission\\s+deadline)[^\\n]*"
+        },
+        {
+          "role": "prebid_meeting_label",
+          "pattern": "^[^\\n]*pre[ -]?bid\\s+(?:meeting|conference)[^\\n]*"
+        },
+        {
+          "role": "bid_security_label",
+          "pattern": "^[^\\n]*(?:earnest\\s+money\\s+deposit|bid\\s+security|\\bEMD\\b)[^\\n]*"
+        },
+        {
+          "role": "external_schedule_reference",
+          "pattern": "^[^\\n]*(?:as\\s+per\\s+(?:the\\s+)?NIT|as\\s+specified\\s+in\\s+(?:the\\s+)?NIT)[^\\n]*"
+        }
+      ]
+    },
+    {
+      "id": "amendment_notice",
+      "heading_patterns": [
+        "^\\s*(?:CORRIGENDUM|ADDENDUM)\\b"
+      ],
+      "fields": [
+        {
+          "role": "printed_date_label",
+          "scope": "header",
+          "pattern": "(?:^|[ \\t]{2,})(?:(?:Date|दिनांक)\\s*[:：-]|Dated\\s+)[^\\n]+"
+        },
+        {
+          "role": "corrigendum_heading",
+          "pattern": "^\\s*(?:CORRIGENDUM|ADDENDUM)\\b[^\\n]*"
+        },
+        {
+          "role": "explicit_replacement_label",
+          "pattern": "^[^\\n]*(?:shall\\s+be\\s+(?:replaced|substituted)|revised\\s+from[^\\n]{0,80}\\bto\\b)[^\\n]*"
+        },
+        {
+          "role": "old_new_table_heading",
+          "pattern": "^[^\\n]*(?:(?:Existing|Original)\\s+(?:Provision|Clause|Date)[^\\n]{0,100}(?:Revised|Amended|Modified)|(?:Revised|Amended|Modified)\\s+(?:Provision|Clause|Date)[^\\n]{0,100}(?:Existing|Original))[^\\n]*"
+        }
+      ]
+    }
+  ],
+  "unresolved_value_patterns": [
+    {
+      "state": "template_placeholder",
+      "pattern": "\\[\\s*Insert\\b[^\\]]*\\]"
+    },
+    {
+      "state": "external_reference",
+      "pattern": "\\bas\\s+(?:per|specified\\s+in)\\s+(?:the\\s+)?NIT\\b"
+    }
+  ],
+  "letter_sections": {
+    "recipient_start": "^\\s*(?:To\\s*[,.:]?|सेवा में\\s*[,.:]?)\\s*$",
+    "subject_start": "^\\s*(?:Subject|Sub\\.?|विषय)\\s*[:：-]?"
+  },
+  "quantity_lexicon": {
+    "money_scales": [
+      "lakh",
+      "lakhs",
+      "lac",
+      "lacs",
+      "crore",
+      "crores",
+      "Cr.",
+      "million",
+      "billion"
+    ],
+    "money_denominators": [
+      "MW",
+      "MWh",
+      "kW",
+      "kWh",
+      "project",
+      "projects",
+      "lot",
+      "lots",
+      "day",
+      "days",
+      "month",
+      "months",
+      "year",
+      "years",
+      "annum"
+    ]
+  }
+}

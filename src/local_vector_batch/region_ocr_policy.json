@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "two_reader_min_rapid_confidence": 0.95,
+  "three_reader_min_rapid_confidence": 0.85,
+  "three_reader_min_vision_confidence": 0.5,
+  "short_label_pattern": "^[A-Za-z]{1,3}[.)]$",
+  "require_literal_casefold_agreement": true,
+  "forbid_digits_in_short_label": true,
+  "composite_requires_exact_words": true
+}

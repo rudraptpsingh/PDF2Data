@@ -11,8 +11,9 @@ import os
 from pathlib import Path
 from typing import Callable, Iterator
 
-from .chunking import Passage, passages
-from .model import Encoder, make_encoder, select_backend
+from .chunking import Passage, exact_passage, passages
+from .model import Encoder, make_encoder, select_backend, load_split_tokenizer
+from .token_windows import TokenSplitter
 
 
 @dataclass(frozen=True)
@@ -24,6 +25,7 @@ class Config:
     device: str = "auto"
     pooling: str = "cls"
     format: str = "vectorize"
+    input_mode: str = "documents"
     batch_size: int = 32
     chunk_chars: int = 1500
     overlap: int = 150
@@ -35,6 +37,8 @@ class Config:
     threads_per_worker: int = 1
     offline: bool = False
     resume: bool = False
+    overflow_policy: str = "error"
+    token_overlap: int = 64
 
 
 def _sha(path: Path) -> str:
@@ -70,13 +74,17 @@ def _validate(config: Config) -> None:
         raise ValueError("require 0 <= overlap < chunk_chars and min_chars >= 1")
     if config.format not in {"vectorize", "generic"}:
         raise ValueError("format must be vectorize or generic")
+    if config.input_mode not in {"documents", "chunks", "passages"}:
+        raise ValueError("input_mode must be documents, chunks, or passages")
+    if config.overflow_policy not in {"error", "split"} or config.token_overlap < 0:
+        raise ValueError("require overflow_policy error or split and nonnegative token_overlap")
     if config.pooling not in {"cls", "mean"}:
         raise ValueError("pooling must be cls or mean")
     if config.workers > 1 and (select_backend(config.backend) != "torch" or config.device not in {"cpu"}):
         raise ValueError("parallel encoder workers require --backend torch --device cpu; GPU uses one batched encoder")
 
 
-def _batches(config: Config) -> Iterator[list[Passage]]:
+def _batches(config: Config, audit: dict | None = None) -> Iterator[list[Passage]]:
     batch: list[Passage] = []
     with config.input_path.open(encoding="utf-8") as stream:
         for line_number, line in enumerate(stream, 1):
@@ -91,12 +99,30 @@ def _batches(config: Config) -> Iterator[list[Passage]]:
                 metadata = record.get("metadata", {})
                 if not isinstance(metadata, dict):
                     raise ValueError("metadata must be an object")
-                for passage in passages(record["id"], record["text"], metadata, config.model,
-                                        config.chunk_chars, config.overlap, config.min_chars):
+                chunk_index = None
+                if config.input_mode in {"chunks", "passages"}:
+                    chunk_index = record.get("chunk_index")
+                    if not isinstance(chunk_index, int) or isinstance(chunk_index, bool) or chunk_index < 0:
+                        raise ValueError("chunk_index must be a nonnegative integer in chunks or passages mode")
+                selected = [exact_passage(record["id"], record["text"], metadata, config.model,
+                                          chunk_index, record.get("char_start"))] if config.input_mode == "passages" else passages(
+                    record["id"], record["text"], metadata, config.model, config.chunk_chars,
+                    config.overlap, config.min_chars, chunk_index=chunk_index)
+                produced = 0
+                for passage in selected:
+                    produced += 1
                     batch.append(passage)
                     if len(batch) == config.batch_size:
                         yield batch
                         batch = []
+                if audit is not None:
+                    audit["records"] += 1
+                    audit["passages"] += produced
+                    audit["records_with_passages"] += int(produced > 0)
+                    audit["records_without_passages"] += int(produced == 0)
+                    if not produced and len(audit["skipped_examples"]) < 20:
+                        audit["skipped_examples"].append({"id": record["id"], "line": line_number,
+                                                          "reason": "empty_or_below_min_chars"})
             except (TypeError, ValueError, KeyError) as error:
                 raise ValueError(f"input line {line_number}: {error}") from error
     if batch:
@@ -111,9 +137,9 @@ def _worker_init(options: dict) -> None:
     _worker_encoder = make_encoder(**options)
 
 
-def _worker_encode(texts: list[str]) -> list[list[float]]:
+def _worker_encode(texts: list[str]):
     assert _worker_encoder is not None
-    return _worker_encoder.encode(texts)
+    return _worker_encoder.encode(texts), getattr(_worker_encoder, "tokenizer_info", None)
 
 
 def _model_options(config: Config) -> dict:
@@ -122,16 +148,51 @@ def _model_options(config: Config) -> dict:
             "revision": config.revision, "threads": config.threads_per_worker, "offline": config.offline}
 
 
-def _emit_batches(config: Config, encoder_factory: Callable[[], Encoder] | None, skip: int):
-    batches = enumerate(_batches(config))
+def _split_batches(source, splitter, size, audit):
+    batch, source_count, total, overflow = [], 0, 0, 0
+    for original in source:
+        for passage in original:
+            children = splitter.split(passage)
+            source_count += 1
+            overflow += int(len(children) > 1)
+            for child in children:
+                total += 1
+                batch.append(child)
+                if len(batch) == size:
+                    yield batch
+                    batch = []
+    audit.update(source_windows=source_count, overflow_source_windows=overflow,
+                 extra_passages=total - source_count, passages=total)
+    if batch:
+        yield batch
+
+
+def _emit_batches(config: Config, encoder_factory: Callable[[], Encoder] | None, skip: int, audit: dict, processing: dict):
+    encoder = None
+    source = _batches(config, audit)
+    if config.overflow_policy == "split":
+        if config.workers == 1:
+            encoder = encoder_factory() if encoder_factory else make_encoder(**_model_options(config))
+            tokenizer = getattr(encoder, "tokenizer", None) or getattr(getattr(encoder, "model", None), "tokenizer", None)
+            limit = getattr(encoder, "max_tokens", None)
+            receipt = getattr(encoder, "tokenizer_info", None)
+            if tokenizer is None or limit is None or not receipt or not receipt.get("sha256"):
+                raise ValueError("split policy requires an encoder with a fast tokenizer and hashed tokenizer receipt")
+        else:
+            tokenizer, limit, receipt = load_split_tokenizer(backend=config.backend, model=config.model,
+                max_tokens=config.max_tokens, revision=config.revision, offline=config.offline)
+        splitter = TokenSplitter(tokenizer, limit, config.token_overlap, config.model)
+        processing.update(version=TokenSplitter.VERSION, policy="split", token_overlap=splitter.overlap,
+                          requested_overlap=config.token_overlap, tokenizer=receipt)
+        source = _split_batches(source, splitter, config.batch_size, audit)
+    batches = enumerate(source)
     if config.workers == 1:
-        encoder = None
         for index, batch in batches:
             if index < skip:
                 continue
             if encoder is None:
                 encoder = encoder_factory() if encoder_factory else make_encoder(**_model_options(config))
-            yield index, batch, encoder.encode([passage.text for passage in batch]), encoder.device
+            yield index, batch, encoder.encode([passage.text for passage in batch]), encoder.device, getattr(encoder, "tokenizer_info", None)
         return
     # A bounded queue prevents a large corpus from filling RAM while preserving input order.
     import multiprocessing as mp
@@ -151,13 +212,19 @@ def _emit_batches(config: Config, encoder_factory: Callable[[], Encoder] | None,
                 pending.append((index, batch, pool.submit(_worker_encode, [p.text for p in batch])))
             if pending:
                 index, batch, future = pending.popleft()
-                yield index, batch, future.result(), "torch:cpu"
+                vectors, tokenizer_info = future.result()
+                yield index, batch, vectors, "torch:cpu", tokenizer_info
 
 
 def _fingerprint(config: Config, input_hash: str) -> str:
     options = asdict(config)
     for key in ("input_path", "output_dir", "resume"):
         del options[key]
+    if config.overflow_policy == "error":
+        options.pop("overflow_policy")
+        options.pop("token_overlap")
+    else:
+        options["token_split_version"] = TokenSplitter.VERSION
     return hashlib.sha256(_json({"input_sha256": input_hash, "options": options})).hexdigest()
 
 
@@ -195,13 +262,29 @@ def run(config: Config, encoder_factory: Callable[[], Encoder] | None = None) ->
                     "fingerprint": fingerprint, "model": config.model,
                     "backend": select_backend(config.backend), "pooling": config.pooling,
                     "normalized": config.normalize, "format": config.format,
+                    "input_mode": config.input_mode,
+                    "requested_model_revision": config.revision,
+                    "requested_max_tokens": config.max_tokens,
+                    "tokenizer": None, "token_budget_validated": True,
                     "dimensions": None, "device": None, "batches": [], "complete": False}
         _atomic(manifest_path, _json(manifest))
     if manifest["complete"]:
         return manifest
     completed = len(manifest["batches"])
     count = completed
-    for index, batch, vectors, device in _emit_batches(config, encoder_factory, completed):
+    audit = {"records": 0, "records_with_passages": 0, "records_without_passages": 0,
+             "passages": 0, "skipped_examples": []}
+    processing = {}
+    def check_processing():
+        previous = manifest.get("token_splitter")
+        if previous and previous != processing:
+            raise ValueError("cannot resume: token splitter or tokenizer identity changed")
+        if processing:
+            manifest["token_splitter"] = dict(processing)
+    for index, batch, vectors, device, tokenizer_info in _emit_batches(config, encoder_factory, completed, audit, processing):
+        check_processing()
+        if processing and tokenizer_info != processing["tokenizer"]:
+            raise ValueError("splitter and encoder tokenizer receipts differ")
         if len(vectors) != len(batch):
             raise ValueError(f"encoder returned {len(vectors)} vectors for {len(batch)} passages")
         rows = []
@@ -218,14 +301,26 @@ def run(config: Config, encoder_factory: Callable[[], Encoder] | None = None) ->
                 rows.append({"id": passage.vector_id, "embedding": vector, "metadata": passage.metadata})
         name = f"batch-{index:06d}.ndjson"
         payload = b"".join(_json(row) for row in rows)
+        if manifest.get("tokenizer") and (not tokenizer_info or any(tokenizer_info.get(key) != value for key, value in manifest["tokenizer"].items())):
+            raise ValueError("encoder tokenizer configuration changed during run")
         _atomic(output / name, payload)
         manifest["device"] = device
+        manifest["tokenizer"] = tokenizer_info
+        manifest["token_budget_validated"] = bool(manifest.get("token_budget_validated", False) and
+                                                   tokenizer_info and tokenizer_info.get("truncation_policy") == "error")
         manifest["batches"].append({"file": name, "sha256": hashlib.sha256(payload).hexdigest(),
                                     "count": len(rows)})
         _atomic(manifest_path, _json(manifest))
         count += 1
+    check_processing()
     if count != len(manifest["batches"]):
         raise ValueError("resume failed: output contains batches past end of input")
+    if audit["passages"] != sum(item["count"] for item in manifest["batches"]):
+        raise ValueError("input passage count does not match the completed vector batches")
+    manifest["input_audit"] = audit
+    manifest["input_coverage_complete"] = audit["records"] > 0 and audit["records_without_passages"] == 0
+    if not audit["passages"]:
+        manifest["token_budget_validated"] = False
     manifest["complete"] = True
     _atomic(manifest_path, _json(manifest))
     return manifest
@@ -266,5 +361,21 @@ def verify(output_dir: Path) -> dict:
     unexpected = set(output.glob("batch-*.ndjson")) - {output / b["file"] for b in manifest["batches"]}
     if unexpected:
         raise ValueError("untracked batch files in output directory")
+    splitter = manifest.get("token_splitter")
+    if splitter and (splitter.get("version") != TokenSplitter.VERSION or
+                     splitter.get("tokenizer") != manifest.get("tokenizer") or
+                     not splitter.get("tokenizer", {}).get("sha256")):
+        raise ValueError("token splitter receipt is inconsistent with encoder receipt")
+    audit = manifest.get("input_audit")
+    if audit and "source_windows" in audit and (audit["passages"] != audit["source_windows"] + audit["extra_passages"] or
+            not 0 <= audit["overflow_source_windows"] <= audit["source_windows"]):
+        raise ValueError("token split coverage counters are inconsistent")
+    if manifest["complete"] and audit is not None and (audit["passages"] != total or
+                              audit["records"] != audit["records_with_passages"] + audit["records_without_passages"] or
+                              manifest.get("input_coverage_complete") != (audit["records"] > 0 and audit["records_without_passages"] == 0)):
+        raise ValueError("input coverage receipt is inconsistent with the vector batches")
     return {"complete": manifest["complete"], "batches": len(manifest["batches"]),
-            "vectors": total, "dimensions": dimension, "model": manifest["model"]}
+            "vectors": total, "dimensions": dimension, "model": manifest["model"],
+            "input_coverage_complete": manifest.get("input_coverage_complete"),
+            "token_budget_validated": manifest.get("token_budget_validated", False),
+            "tokenizer": manifest.get("tokenizer"), "token_splitter": manifest.get("token_splitter")}
