@@ -188,7 +188,7 @@ def unit_version_id(pdf_sha: str, family: str, label: str, spans: list[dict]) ->
     return f"pdf-{pdf_sha[:24]}:unit:{digest(json.dumps(payload,sort_keys=True,ensure_ascii=False).encode())[:24]}"
 
 
-def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=1000) -> dict:
+def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=1000, layout=None) -> dict:
     """Complete lexical navigation, not a claim of complete legal boundaries."""
     if family not in FAMILIES:raise ValueError('unknown document family')
     # Repeated long margin text is retained separately, never deleted.
@@ -198,6 +198,7 @@ def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=10
     repeated={line for line,count in first_lines.items() if count>=max(2,(len(pages)+1)//2)}
     numbered_footers=bool(len(pages)>1) and all(p['text'].splitlines() and p['text'].splitlines()[-1].strip()==str(p['page']) for p in pages)
     regions=[];body=[];family_regions=[]
+    by_layout={row['page']:row for row in (layout or [])}
     for p in pages:
         text=p['text'];lines=list(re.finditer(r'[^\n]*(?:\n|$)',text))
         lines=[m for m in lines if m.end()>m.start()]
@@ -210,6 +211,10 @@ def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=10
         for m in tail:
             if PAGE_FOOTER.match(m.group().strip()) or (numbered_footers and m==lines[-1] and m.group().strip()==str(p['page'])):
                 hi=m.start();break
+        if p['page'] in by_layout:
+            from .document_blocks import footer_start
+            observed=footer_start(p,by_layout[p['page']])
+            if observed is not None:hi=min(hi,observed)
         if hi<lo:hi=lo
         if hi>lo:
             b={'kind':'body_candidate','span':anchor(p,lo,hi)};regions.append(b);body.append((p,lo,hi))
@@ -402,7 +407,7 @@ def extract_document(source: dict, output: Path, *, ocr='off', language='eng', r
         if source.get('expected_pages') is not None and source['expected_pages']!=report['pages']:raise ValueError('expected physical page count mismatch')
         pages=rows(stage/'extraction/pages.jsonl')
         layout=capture_layout(stage/'original.pdf',pages);write_rows(stage/'layout.jsonl',layout)
-        structure=structure_document(pages,sha,source['family']);write_json(stage/'structure.json',structure)
+        structure=structure_document(pages,sha,source['family'],layout=layout);write_json(stage/'structure.json',structure)
         checked=validate_structure(structure,pages,sha)
         from .quality_gate import assess_package
         quality=assess_package(stage/'extraction',stage/'original.pdf',derive_ocr_source_raster=True,

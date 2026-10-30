@@ -29,10 +29,11 @@ def full_document(data):
     for i,table in enumerate(data['tables']):
         table_id=table['id'];nodes.append({'id':table_id,'kind':'table_candidate','status':table.get('status','review_required')})
         edges.append({'from':by_page[table['page']]['id'],'to':table_id,'type':'contains_table','basis':'extracted_candidate'})
-        for row,cells in enumerate(table.get('cells',[])):
-            for col,value in enumerate(cells):
-                cell_id=f'{table_id}:r{row}:c{col}';nodes.append({'id':cell_id,'kind':'cell_candidate','row':row,'column':col,'value':value})
-                edges.append({'from':table_id,'to':cell_id,'type':'contains_cell','basis':'extracted_grid'})
+        from .document_blocks import validated_cells
+        for cell in validated_cells(table):
+            row,col=cell['row'],cell['column'];cell_id=cell.get('id') or f'{table_id}:r{row}:c{col}'
+            nodes.append({'id':cell_id,'kind':'cell_candidate','row':row,'column':col,'value':cell.get('text'),'row_span':cell['row_span'],'column_span':cell['column_span'],'bbox':cell.get('bbox'),'role_candidate':cell.get('role_candidate')})
+            edges.append({'from':table_id,'to':cell_id,'type':'contains_cell','basis':'source_cell_metadata','table_version_id':table.get('table_version_id')})
         heading=f'Table candidate {i+1} on source page {table["page"]}'
         rendered=table_html(table);md+=f'## {heading}\n\n{rendered}\n\n'
         parts.append(f'<article><h2>{heading}</h2><div class="table-scroll">{rendered}</div><p class="muted">Candidate grid. See original source page {table["page"]}; no cell merges inferred.</p></article>')
@@ -55,12 +56,27 @@ def full_document(data):
                     edges.append({'from':candidate_id,'to':unit['id'],'type':'observed_within_unit','basis':'exact_span_containment'})
     if observations:md+='## Extracted observations\n\n'+'\n'.join(observations)+'\n\n'
     md+='## Source relationships\n\n[relations.json](relations.json) retains provenance and observed links. Legal relationships are unverified.\n'
+    if 'document_blocks' in data:
+        from .document_blocks import render_blocks
+        body,rendered=render_blocks(data)
+        md=f'# {data["title"]}\n\n[Original PDF](source.pdf) · [Structured JSON](data.json) · [Blocks](document-blocks.json) · [Exact page readings](pages.md)\n\n'+body
+        md+='\n[Source relationships](relations.json) · Candidate structure; legal interpretation unverified.\n'
+        parts=[rendered];previous=None
+        for block in data['document_blocks']['blocks']:
+            nodes.append({'id':block['id'],'kind':'document_block','block_kind':block['kind'],'semantic_state':'candidate'})
+            edges.append({'from':document_id,'to':block['id'],'type':'contains_block','order':block['order']})
+            for a in block['spans']:edges.append({'from':block['id'],'to':by_page[a['page']]['id'],'type':'anchored_in','char_start':a['char_start'],'char_length':a['char_length'],'page_text_sha256':a['page_text_sha256']})
+            for unit_id in block['parent_unit_ids']:edges.append({'from':block['id'],'to':unit_id,'type':'within_candidate_unit','review':'unverified'})
+            if block['kind'] not in ('footer','header','whitespace'):
+                if previous:edges.append({'from':previous,'to':block['id'],'type':'next_rendered_block','basis':'source_order_candidate'})
+                previous=block['id']
+            if block.get('table_id'):edges.append({'from':block['id'],'to':block['table_id'],'type':'renders_table_candidate'})
     graph={'schema_version':'pdf2data.relations.v1','source_pdf_sha256':data['source_pdf_sha256'],'nodes':nodes,'edges':edges,'legal_relationships':'unverified','publication_eligible':False}
     return md,''.join(parts),graph
 
 def table_html(table):
-    # Cell spans remain in data.json; never invent merged cells from whitespace.
-    return '<table><tbody>'+''.join('<tr>'+''.join('<td>'+escape('' if c is None else str(c))+'</td>' for c in row)+'</tr>' for row in table.get('cells',[]))+'</tbody></table>'
+    from .document_blocks import table_html as render_table
+    return render_table(table)
 
 def html_document(data,has_docx,continuous):
     pages=data['pages'];quality={r['page']:r for r in data['quality']['results']}
@@ -101,13 +117,18 @@ def export_readable(package:Path,output:Path,docx_python:Path|None=None):
       'fact_candidates':[json.loads(l) for l in (package/'extraction/fact-candidates.jsonl').read_text().splitlines() if l.strip()],
       'structure_candidates':[json.loads(l) for l in (package/'extraction/structure-candidates.jsonl').read_text().splitlines() if l.strip()],
       'flagged_pages':sum(q['outcome']!='auto_accepted' for q in quality['results']),
+      'layout':[json.loads(l) for l in (package/'layout.jsonl').read_text().splitlines() if l.strip()],
       'verification':verification,'publication_eligible':False}
+    from .document_blocks import build_blocks
+    data['document_blocks']=build_blocks(data)
     output.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.pdf2data-readable-',dir=output.parent) as temp:
         stage=Path(temp)/'bundle';stage.mkdir();(stage/'assets').mkdir()
         for name in ('ui.css','viewer.css'):shutil.copyfile(Path(__file__).with_name(name),stage/'assets'/name)
         shutil.copyfile(package/'original.pdf',stage/'source.pdf')
         for name,value in [('data.json',data),('quality.json',quality)]: (stage/name).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')
+        (stage/'document-blocks.json').write_text(json.dumps(data['document_blocks'],ensure_ascii=False,indent=2)+'\n')
+        shutil.copyfile(package/'layout.jsonl',stage/'layout.jsonl')
         import pypdfium2 as pdfium
         pdf=pdfium.PdfDocument(str(package/'original.pdf'))
         try:
