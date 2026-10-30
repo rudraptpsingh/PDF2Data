@@ -1,45 +1,26 @@
 {
-  "schema_version": "pdf2data.workspace-demo.v1",
-  "browser_started": true,
-  "job_id": "26ca5571318346d09b0a76dc45b8986a",
-  "source_pdf_sha256": "77a5884d98d8a9f1887825f94bbc68d39f130d682f789975387713ff9d359e77",
+  "schema_version": "pdf2data.workspace-demo.v2",
+  "generic_sample": "examples/sample-document.pdf",
+  "job_id": "d3a610e0535c44348c8a7dd132594470",
+  "source_pdf_sha256": "8776cfe4f40fcd97809950d0d79713d6ad389c94a31b8eaf941540b1fadbbd1f",
   "status": "processed_with_flags",
   "metrics": {
     "pages": 2,
-    "paragraphs": 3,
-    "quality_flags": 2,
-    "tables": 0,
+    "paragraphs": 5,
+    "quality_flags": 1,
+    "tables": 1,
     "withheld_pages": 0
   },
-  "stages": [
-    {
-      "id": "receive",
-      "status": "completed"
-    },
-    {
-      "id": "extract",
-      "status": "completed",
-      "exit_code": 0
-    },
-    {
-      "id": "verify",
-      "status": "completed",
-      "exit_code": 0
-    },
-    {
-      "id": "export",
-      "status": "completed",
-      "exit_code": 0
-    }
+  "live_transport": "server_sent_events",
+  "observed_available_file_counts": [
+    1,
+    4,
+    5,
+    10
   ],
-  "history_after_restart": "passed",
-  "all_seven_output_urls": "passed",
-  "zip_download": "passed",
-  "host_origin_token_and_path_checks": "passed",
-  "component_tests": {
-    "passed": 365,
-    "skipped_optional": 1
-  },
-  "scope": "single-user localhost PDF conversion workspace; no database import, LLM analysis or legal publication",
+  "artifact_access": "completed_stage_and_existing_source_file",
+  "tests_passed": 367,
+  "optional_skip": 1,
+  "publication_eligible": false,
   "remote_operations": 0
 }

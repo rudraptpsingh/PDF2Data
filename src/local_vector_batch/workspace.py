@@ -8,6 +8,18 @@ from urllib.parse import parse_qs,unquote,urlsplit
 
 def now():return datetime.now(timezone.utc).isoformat()
 
+ARTIFACTS=[
+    ('source','PDF','Original','receive','input.pdf'),
+    ('text','TXT','Page text','extract','l1/document/extraction/pages.jsonl'),
+    ('structure','{}','Structure','extract','l1/document/structure.json'),
+    ('tables','▦','Tables','extract','l1/document/extraction/tables.json'),
+    ('quality','✓','Checks','verify','l1/document/quality.json'),
+    ('markdown','MD','Markdown','export','readable/document.md'),
+    ('html','</>','Document','export','readable/document.html'),
+    ('word','W','Word','export','readable/document.docx'),
+    ('json','{}','JSON','export','readable/data.json'),
+    ('relations','⋈','Relations','export','readable/relations.json')]
+
 class Workspace:
     def __init__(self,root,docx_python=None):
         self.root=Path(root).resolve();self.root.mkdir(parents=True,exist_ok=True)
@@ -17,7 +29,8 @@ class Workspace:
             marker.write_text(json.dumps({'schema_version':'pdf2data.workspace.v1','created_at':now()}))
         if json.loads(marker.read_text()).get('schema_version')!='pdf2data.workspace.v1':raise ValueError('unknown workspace marker')
         self.jobs_dir=self.root/'jobs';self.jobs_dir.mkdir(exist_ok=True)
-        self.lock=threading.RLock();self.executor=ThreadPoolExecutor(max_workers=1);self.docx_python=docx_python
+        self.lock=threading.RLock();self.changed=threading.Condition(self.lock);self.revision=0
+        self.executor=ThreadPoolExecutor(max_workers=1);self.docx_python=docx_python
         for state in self.jobs():
             if state['status'] in ('queued','running'):
                 state.update(status='interrupted',error='Processing was interrupted. Retry creates a fresh attempt and preserves this run.')
@@ -33,6 +46,7 @@ class Workspace:
         with self.lock:
             state['updated_at']=now();directory=self.directory(state['id']);directory.mkdir(exist_ok=True)
             temp=directory/'state.tmp';temp.write_text(json.dumps(state,ensure_ascii=False,indent=2));temp.replace(directory/'state.json')
+            self.revision+=1;self.changed.notify_all()
 
     def get(self,job_id):
         with self.lock:return json.loads((self.directory(job_id)/'state.json').read_text())
@@ -40,6 +54,24 @@ class Workspace:
     def jobs(self):
         with self.lock:
             return sorted([json.loads(p.read_text()) for p in self.jobs_dir.glob('*/state.json')],key=lambda s:s['created_at'],reverse=True)
+
+    def describe(self,state):
+        stages={s['id']:s['status'] for s in state['steps']};base=self.directory(state['id']);items=[]
+        for key,icon,label,stage,relative in ARTIFACTS:
+            file=base/relative
+            if key=='word' and not state.get('word_requested',bool(self.docx_python)) and not file.is_file():continue
+            available=stages.get(stage)=='completed' and file.is_file() and base in file.resolve().parents
+            items.append({'id':key,'icon':icon,'label':label,'stage':stage,'available':available,
+              'bytes':file.stat().st_size if available else None,'url':f'/jobs/{state["id"]}/artifacts/{key}' if available else None})
+        return {**state,'artifacts':items}
+
+    def artifact_file(self,job_id,key):
+        state=self.describe(self.get(job_id));artifact=next((a for a in state['artifacts'] if a['id']==key),None)
+        if artifact is None or not artifact['available']:raise ValueError('artifact is not available yet')
+        spec=next(a for a in ARTIFACTS if a[0]==key)
+        file=self.directory(job_id)/spec[4]
+        if self.directory(job_id) not in file.resolve().parents:raise ValueError('invalid artifact path')
+        return file
 
     def submit(self,source,options,retry_of=None):
         from .legal_l1 import FAMILIES,read_manifest
@@ -58,7 +90,7 @@ class Workspace:
         state={'id':job_id,'title':title,'filename':Path(options.get('filename','document.pdf')).name,'family':family,'ocr':ocr,'source_url':url,
           'source_pdf_sha256':digest,'created_at':now(),'status':'queued','error':None,'retry_of':retry_of,
           'steps':[{'id':key,'label':label,'status':'completed' if key=='receive' else 'pending'} for key,label in [('receive','PDF received'),('extract','Extract text and structure'),('verify','Verify source and coverage'),('export','Create readable documents')]],
-          'metrics':None,'publication_eligible':False,'outputs':None}
+          'metrics':None,'publication_eligible':False,'outputs':None,'word_requested':bool(self.docx_python)}
         self.save(state);self.executor.submit(self.process,job_id);return state
 
     def retry(self,job_id):
@@ -118,13 +150,30 @@ def serve_workspace(root,port=8771,max_upload_mb=150,docx_python=None):
             path=unquote(urlsplit(self.path).path)
             try:
                 if path=='/':return self.send(200,page.encode(),'text/html; charset=utf-8')
-                if path=='/api/jobs':return self.json(200,{'jobs':workspace.jobs()[:100]})
+                if path=='/ui.css':return self.send(200,Path(__file__).with_name('ui.css').read_bytes(),'text/css')
+                if path=='/api/jobs':return self.json(200,{'jobs':[workspace.describe(j) for j in workspace.jobs()[:100]]})
+                if path=='/api/events':
+                    self.send_response(200);self.send_header('Content-Type','text/event-stream');self.send_header('Cache-Control','no-cache');self.send_header('X-Content-Type-Options','nosniff');self.end_headers()
+                    revision=-1
+                    try:
+                        while True:
+                            with workspace.changed:
+                                if revision==workspace.revision:workspace.changed.wait(timeout=12)
+                                revision=workspace.revision
+                                snapshot={'jobs':[workspace.describe(j) for j in workspace.jobs()[:100]]}
+                            self.wfile.write(('event: jobs\ndata: '+json.dumps(snapshot,ensure_ascii=False)+'\n\n').encode());self.wfile.flush()
+                    except (BrokenPipeError,ConnectionResetError,OSError):return
                 match=re.fullmatch(r'/api/jobs/([a-f0-9]{32})',path)
-                if match:return self.json(200,workspace.get(match[1]))
+                if match:return self.json(200,workspace.describe(workspace.get(match[1])))
+                match=re.fullmatch(r'/jobs/([a-f0-9]{32})/artifacts/([a-z]+)',path)
+                if match:
+                    file=workspace.artifact_file(match[1],match[2])
+                    if match[2]=='html':return self.send(302,b'',headers={'Location':f'/jobs/{match[1]}/files/document.html'})
+                    return self.send(200,file.read_bytes(),mimetypes.guess_type(file.name)[0] or 'application/octet-stream')
                 match=re.fullmatch(r'/jobs/([a-f0-9]{32})/files/(.+)',path)
                 if match:
                     state=workspace.get(match[1])
-                    if not state['outputs']:return self.json(409,{'error':'outputs are not available yet'})
+                    if not any(s['id']=='export' and s['status']=='completed' for s in state['steps']):return self.json(409,{'error':'outputs are not available yet'})
                     base=workspace.directory(match[1])/'readable';file=(base/match[2]).resolve()
                     if base not in file.parents:return self.json(403,{'error':'invalid output path'})
                     return self.send(200,file.read_bytes(),mimetypes.guess_type(file.name)[0] or 'application/octet-stream')

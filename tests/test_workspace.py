@@ -58,3 +58,31 @@ def test_cli_failure_is_visible_without_readable_output(tmp_path,monkeypatch):
         assert final['steps'][2]['status']=='pending'
         assert 'unavailable' in final['error']
     finally:workspace.executor.shutdown(wait=True)
+
+def test_artifacts_unlock_only_after_their_completed_stage_and_exist(tmp_path,monkeypatch):
+    source=source_fixture(tmp_path);workspace=Workspace(tmp_path/'workspace')
+    monkeypatch.setattr(workspace.executor,'submit',lambda *args:None)
+    try:
+        job=workspace.submit(Path(source['path']),{'title':'Generic sample','ocr':'off'})
+        items={a['id']:a for a in workspace.describe(job)['artifacts']}
+        assert items['source']['available'] and not items['structure']['available']
+        path=workspace.directory(job['id'])/'l1/document';path.mkdir(parents=True);(path/'structure.json').write_text('{}')
+        assert not next(a for a in workspace.describe(job)['artifacts'] if a['id']=='structure')['available']
+        job['steps'][1]['status']='completed';workspace.save(job)
+        assert next(a for a in workspace.describe(job)['artifacts'] if a['id']=='structure')['available']
+        assert workspace.artifact_file(job['id'],'structure')==path/'structure.json'
+        with pytest.raises(ValueError,match='not available'):workspace.artifact_file(job['id'],'word')
+        with pytest.raises(ValueError,match='not available'):workspace.artifact_file(job['id'],'../state.json')
+        (path/'structure.json').unlink()
+        assert not next(a for a in workspace.describe(job)['artifacts'] if a['id']=='structure')['available']
+    finally:workspace.executor.shutdown(wait=True)
+
+def test_artifact_symlink_escape_never_becomes_available(tmp_path,monkeypatch):
+    source=source_fixture(tmp_path);workspace=Workspace(tmp_path/'workspace')
+    monkeypatch.setattr(workspace.executor,'submit',lambda *args:None)
+    try:
+        job=workspace.submit(Path(source['path']),{'title':'Sample','ocr':'off'})
+        path=workspace.directory(job['id'])/'l1/document';path.mkdir(parents=True)
+        (path/'structure.json').symlink_to(source['path']);job['steps'][1]['status']='completed';workspace.save(job)
+        assert not next(a for a in workspace.describe(job)['artifacts'] if a['id']=='structure')['available']
+    finally:workspace.executor.shutdown(wait=True)
