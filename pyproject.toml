@@ -3,9 +3,9 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "local-vector-batch"
+name = "PDF2Data"
 version = "0.1.0"
-description = "Resumable, local passage embeddings for Mac GPU, Windows CUDA, and CPU"
+description = "Source-backed PDF extraction, structured data, validation and local AI repair"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -34,6 +34,7 @@ pdf-layout = ["docling>=2.144,<3", "onnxruntime>=1.22,<2", "pypdf>=5,<7"]
 test = ["pytest>=8,<10"]
 
 [project.scripts]
+pdf2data = "local_vector_batch.cli:main"
 local-vector-batch = "local_vector_batch.cli:main"
 
 [tool.hatch.build.targets.wheel]

@@ -1,0 +1,161 @@
+{
+  "tool": "PDF2Data",
+  "commands": [
+    {
+      "name": "doctor",
+      "purpose": "show installed backends and accelerator availability"
+    },
+    {
+      "name": "embed",
+      "purpose": "embed documents from JSONL"
+    },
+    {
+      "name": "verify",
+      "purpose": "check hashes, dimensions, and unique vector IDs"
+    },
+    {
+      "name": "pdf-extract",
+      "purpose": "extract and review PDF pages, tables, and candidate values locally"
+    },
+    {
+      "name": "legal-l1",
+      "purpose": "run immutable offline legal-source extraction from a hash-bound manifest"
+    },
+    {
+      "name": "verify-legal-l1",
+      "purpose": "verify original, extraction, layout and exact legal structure"
+    },
+    {
+      "name": "l1-qwen-prepare",
+      "purpose": "freeze unresolved L1 original pages for source-bound offline Qwen reading"
+    },
+    {
+      "name": "l1-qwen-run",
+      "purpose": "run pinned cached Qwen offline with resumable per-page receipts"
+    },
+    {
+      "name": "l1-qwen-validate",
+      "purpose": "compare source-bound readings without promoting unresolved content"
+    },
+    {
+      "name": "l1-qwen-reproof",
+      "purpose": "reassess exact source-raster Qwen witnesses into a new immutable L1 version; never replace text"
+    },
+    {
+      "name": "pdf-repair",
+      "purpose": "repair selected original physical pages without reprocessing the PDF"
+    },
+    {
+      "name": "pdf-native-repair",
+      "purpose": "atomically replace one page from a source-bound PDFium/pypdf/raster receipt"
+    },
+    {
+      "name": "pdf-batch",
+      "purpose": "extract a bounded manifest of local PDFs with resumable page receipts"
+    },
+    {
+      "name": "validate-evidence",
+      "purpose": "check structured candidate quotes and typed fields without verification"
+    },
+    {
+      "name": "verify-package",
+      "purpose": "verify a PDF evidence package and optional vector anchors"
+    },
+    {
+      "name": "render-package",
+      "purpose": "add linked Markdown/HTML and layout JSON to an existing verified PDF package without re-extracting"
+    },
+    {
+      "name": "import-paddle-layout",
+      "purpose": "attach PP-StructureV2/V3 page blocks as review-only candidates"
+    },
+    {
+      "name": "review-package",
+      "purpose": "export only explicitly reviewed PDF evidence units"
+    },
+    {
+      "name": "ocr-consensus",
+      "purpose": "dry-run independent RapidOCR audit of existing Vision pages"
+    },
+    {
+      "name": "audit-review",
+      "purpose": "inventory review-required PDF pages by reason and source"
+    },
+    {
+      "name": "audit-rendered-review",
+      "purpose": "inspect rendered originals for short or missing PDF pages"
+    },
+    {
+      "name": "pdf-compare",
+      "purpose": "compare review pages with optional local Docling OCR/layout"
+    },
+    {
+      "name": "pdf-quality",
+      "purpose": "score source-bound PDF extraction; auto-accept safe pages and list repair reasons"
+    },
+    {
+      "name": "pdf-quality-batch",
+      "purpose": "parallel quality gates over cached PDF extraction, without new OCR"
+    },
+    {
+      "name": "pdf-repair-queue",
+      "purpose": "resume source-bound staged page repairs without publishing unverified candidates"
+    },
+    {
+      "name": "pdf-auto-proof",
+      "purpose": "resume source-bound footnote proof and guarded local commits"
+    },
+    {
+      "name": "pdf-repair-status",
+      "purpose": "read repair queue status without starting work"
+    },
+    {
+      "name": "pdf-footnote-proof",
+      "purpose": "source-bound crop proof for linked printed footnote markers"
+    },
+    {
+      "name": "pdf-vision-merge",
+      "purpose": "opt-in local vision suggestions for source-bound OCR lines"
+    },
+    {
+      "name": "pdf-vision-merge-batch",
+      "purpose": "resumable source-bound local OCR merge proposals for held pages"
+    },
+    {
+      "name": "pdf-blank-commit",
+      "purpose": "CAS-mark exactly white source PDF pages blank from 180-DPI receipts"
+    },
+    {
+      "name": "pdf-footnote-repair",
+      "purpose": "reprove linked markers and stage only a fully gated page"
+    },
+    {
+      "name": "pdf-repair-commit",
+      "purpose": "atomically merge freshly verified staged page repairs; index publication is separate"
+    },
+    {
+      "name": "pdf-review-queue",
+      "purpose": "prepare a source-bound OCR disagreement review queue for held pages"
+    },
+    {
+      "name": "pdf-review-feedback",
+      "purpose": "summarize saved OCR disagreement review labels"
+    },
+    {
+      "name": "pdf-review-route",
+      "purpose": "revalidate focused OCR feedback and queue source crop proof work"
+    },
+    {
+      "name": "pdf-review-proposals",
+      "purpose": "attach source-crop observations as unverified review suggestions"
+    },
+    {
+      "name": "pdf-review-filter",
+      "purpose": "skip already reviewed exact source and OCR differences"
+    },
+    {
+      "name": "serve",
+      "purpose": "open the local PDF review and embedding webpage"
+    }
+  ]
+}

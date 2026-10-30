@@ -1,0 +1,86 @@
+usage: pdf2data [-h]
+                {doctor,embed,verify,pdf-extract,legal-l1,verify-legal-l1,l1-qwen-prepare,l1-qwen-run,l1-qwen-validate,pdf-repair,pdf-native-repair,pdf-batch,validate-evidence,verify-package,render-package,import-paddle-layout,review-package,ocr-consensus,audit-review,audit-rendered-review,pdf-compare,pdf-quality,pdf-quality-batch,pdf-repair-queue,pdf-auto-proof,pdf-repair-status,pdf-footnote-proof,pdf-vision-merge,pdf-vision-merge-batch,pdf-blank-commit,pdf-footnote-repair,pdf-repair-commit,pdf-review-queue,pdf-review-feedback,pdf-review-route,pdf-review-proposals,pdf-review-filter,serve}
+                ...
+
+PDF2Data: source-backed PDF extraction, structured data, quality, local AI
+repair and embeddings
+
+positional arguments:
+  {doctor,embed,verify,pdf-extract,legal-l1,verify-legal-l1,l1-qwen-prepare,l1-qwen-run,l1-qwen-validate,pdf-repair,pdf-native-repair,pdf-batch,validate-evidence,verify-package,render-package,import-paddle-layout,review-package,ocr-consensus,audit-review,audit-rendered-review,pdf-compare,pdf-quality,pdf-quality-batch,pdf-repair-queue,pdf-auto-proof,pdf-repair-status,pdf-footnote-proof,pdf-vision-merge,pdf-vision-merge-batch,pdf-blank-commit,pdf-footnote-repair,pdf-repair-commit,pdf-review-queue,pdf-review-feedback,pdf-review-route,pdf-review-proposals,pdf-review-filter,serve}
+    doctor              show installed backends and accelerator availability
+    embed               embed documents from JSONL
+    verify              check hashes, dimensions, and unique vector IDs
+    pdf-extract         extract and review PDF pages, tables, and candidate
+                        values locally
+    legal-l1            run immutable offline legal-source extraction from a
+                        hash-bound manifest
+    verify-legal-l1     verify original, extraction, layout and exact legal
+                        structure
+    l1-qwen-prepare     freeze unresolved L1 original pages for source-bound
+                        offline Qwen reading
+    l1-qwen-run         run pinned cached Qwen offline with resumable per-page
+                        receipts
+    l1-qwen-validate    compare source-bound readings without promoting
+                        unresolved content
+    pdf-repair          repair selected original physical pages without
+                        reprocessing the PDF
+    pdf-native-repair   atomically replace one page from a source-bound
+                        PDFium/pypdf/raster receipt
+    pdf-batch           extract a bounded manifest of local PDFs with
+                        resumable page receipts
+    validate-evidence   check structured candidate quotes and typed fields
+                        without verification
+    verify-package      verify a PDF evidence package and optional vector
+                        anchors
+    render-package      add linked Markdown/HTML and layout JSON to an
+                        existing verified PDF package without re-extracting
+    import-paddle-layout
+                        attach PP-StructureV2/V3 page blocks as review-only
+                        candidates
+    review-package      export only explicitly reviewed PDF evidence units
+    ocr-consensus       dry-run independent RapidOCR audit of existing Vision
+                        pages
+    audit-review        inventory review-required PDF pages by reason and
+                        source
+    audit-rendered-review
+                        inspect rendered originals for short or missing PDF
+                        pages
+    pdf-compare         compare review pages with optional local Docling
+                        OCR/layout
+    pdf-quality         score source-bound PDF extraction; auto-accept safe
+                        pages and list repair reasons
+    pdf-quality-batch   parallel quality gates over cached PDF extraction,
+                        without new OCR
+    pdf-repair-queue    resume source-bound staged page repairs without
+                        publishing unverified candidates
+    pdf-auto-proof      resume source-bound footnote proof and guarded local
+                        commits
+    pdf-repair-status   read repair queue status without starting work
+    pdf-footnote-proof  source-bound crop proof for linked printed footnote
+                        markers
+    pdf-vision-merge    opt-in local vision suggestions for source-bound OCR
+                        lines
+    pdf-vision-merge-batch
+                        resumable source-bound local OCR merge proposals for
+                        held pages
+    pdf-blank-commit    CAS-mark exactly white source PDF pages blank from
+                        180-DPI receipts
+    pdf-footnote-repair
+                        reprove linked markers and stage only a fully gated
+                        page
+    pdf-repair-commit   atomically merge freshly verified staged page repairs;
+                        index publication is separate
+    pdf-review-queue    prepare a source-bound OCR disagreement review queue
+                        for held pages
+    pdf-review-feedback
+                        summarize saved OCR disagreement review labels
+    pdf-review-route    revalidate focused OCR feedback and queue source crop
+                        proof work
+    pdf-review-proposals
+                        attach source-crop observations as unverified review
+                        suggestions
+    pdf-review-filter   skip already reviewed exact source and OCR differences
+    serve               open the local PDF review and embedding webpage
+
+options:
+  -h, --help            show this help message and exit

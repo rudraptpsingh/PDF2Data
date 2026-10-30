@@ -13,14 +13,19 @@ from .pipeline import Config, run, verify
 
 
 def doctor() -> dict:
-    result = {"platform": platform.platform(), "machine": platform.machine(),
+    result = {"tool": "PDF2Data", "platform": platform.platform(), "machine": platform.machine(),
               "mlx_installed": importlib.util.find_spec("mlx_embedding_models") is not None,
+              "mlx_core_installed": importlib.util.find_spec("mlx") is not None,
               "torch_installed": importlib.util.find_spec("torch") is not None,
               "pdf_installed": importlib.util.find_spec("pdfplumber") is not None,
               "rapidocr_installed": importlib.util.find_spec("rapidocr") is not None,
               "docling_installed": importlib.util.find_spec("docling") is not None,
               "vision_ocr_available": platform.system() == "Darwin" and shutil.which("swiftc") is not None,
               "tesseract_available": shutil.which("tesseract") is not None}
+    if importlib.util.find_spec("mlx") is not None:
+        import mlx.core as mx
+        result["mlx_default_device"] = str(mx.default_device())
+        result["mlx_metal_available"] = mx.metal.is_available()
     if result["torch_installed"]:
         import torch
         result["cuda_available"] = bool(torch.cuda.is_available())
@@ -29,8 +34,8 @@ def doctor() -> dict:
 
 
 def parser() -> argparse.ArgumentParser:
-    main = argparse.ArgumentParser(prog="local-vector-batch",
-                                   description="Generate verifiable local embeddings from JSONL")
+    main = argparse.ArgumentParser(prog="pdf2data",
+                                   description="PDF2Data: source-backed PDF extraction, structured data, quality, local AI repair and embeddings")
     sub = main.add_subparsers(dest="command", required=True)
     health = sub.add_parser("doctor", help="show installed backends and accelerator availability")
     health.add_argument("--json", action="store_true")
@@ -84,6 +89,29 @@ def parser() -> argparse.ArgumentParser:
     legal_verify = sub.add_parser("verify-legal-l1", help="verify original, extraction, layout and exact legal structure")
     legal_verify.add_argument("--output", required=True, type=Path)
     legal_verify.add_argument("--json", action="store_true")
+    qprep = sub.add_parser("l1-qwen-prepare", help="freeze unresolved L1 original pages for source-bound offline Qwen reading")
+    qprep.add_argument("--packages", required=True, type=Path)
+    qprep.add_argument("--output", required=True, type=Path)
+    qprep.add_argument("--json", action="store_true")
+    qrun = sub.add_parser("l1-qwen-run", help="run pinned cached Qwen offline with resumable per-page receipts")
+    qrun.add_argument("--cases", required=True, type=Path)
+    qrun.add_argument("--output", required=True, type=Path)
+    qrun.add_argument("--resume", action="store_true")
+    qrun.add_argument("--max-tokens", type=int, default=4096)
+    qrun.add_argument("--model-path", type=Path)
+    qrun.add_argument("--device", choices=["gpu", "cpu"], default="gpu", help="MLX Metal GPU by default; fail rather than silently fall back")
+    qrun.add_argument("--json", action="store_true")
+    qvalid = sub.add_parser("l1-qwen-validate", help="compare source-bound readings without promoting unresolved content")
+    qvalid.add_argument("--cases", required=True, type=Path)
+    qvalid.add_argument("--readings", required=True, type=Path)
+    qvalid.add_argument("--output", required=True, type=Path)
+    qvalid.add_argument("--json", action="store_true")
+    qproof = sub.add_parser("l1-qwen-reproof", help="reassess exact source-raster Qwen witnesses into a new immutable L1 version; never replace text")
+    qproof.add_argument("--cases", required=True, type=Path)
+    qproof.add_argument("--readings", required=True, type=Path)
+    qproof.add_argument("--packages", required=True, type=Path)
+    qproof.add_argument("--output", required=True, type=Path)
+    qproof.add_argument("--json", action="store_true")
     repair = sub.add_parser("pdf-repair", help="repair selected original physical pages without reprocessing the PDF")
     repair.add_argument("--input", required=True, type=Path, help="original source PDF")
     repair.add_argument("--package", required=True, type=Path, help="existing verified extraction package")
@@ -293,6 +321,18 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "verify-legal-l1":
             from .legal_l1 import verify_document
             result = verify_document(args.output)
+        elif args.command == "l1-qwen-prepare":
+            from .l1_qwen import prepare
+            result = prepare(args.packages, args.output)
+        elif args.command == "l1-qwen-run":
+            from .l1_qwen import run as qwen_run
+            result = qwen_run(args.cases, args.output, resume=args.resume, max_tokens=args.max_tokens, model_path=args.model_path, device=args.device)
+        elif args.command == "l1-qwen-validate":
+            from .l1_qwen import validate
+            result = validate(args.cases, args.readings, args.output)
+        elif args.command == "l1-qwen-reproof":
+            from .l1_qwen import reproof
+            result = reproof(args.cases, args.readings, args.packages, args.output)
         elif args.command == "pdf-extract":
             from .pdf_ingest import extract_pdf
             result = extract_pdf(args.input, args.output, title=args.title,

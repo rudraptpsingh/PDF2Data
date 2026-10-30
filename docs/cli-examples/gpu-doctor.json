@@ -1,0 +1,1 @@
+{"tool": "PDF2Data", "platform": "macOS-27.0.1-arm64-arm-64bit", "machine": "arm64", "mlx_installed": false, "mlx_core_installed": true, "torch_installed": false, "pdf_installed": false, "rapidocr_installed": true, "docling_installed": false, "vision_ocr_available": true, "tesseract_available": false, "mlx_default_device": "Device(gpu, 0)", "mlx_metal_available": true}

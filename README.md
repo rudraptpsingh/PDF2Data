@@ -1,8 +1,12 @@
-# local-vector-batch
+# PDF2Data
 
-A small, local, resumable embedding CLI for JSONL documents, with an optional PDF review webpage. It runs on Apple Silicon with MLX, Windows/Linux with PyTorch CUDA, or CPU. GPU encoding is batched in one process; CPU encoding can use a bounded number of worker processes. The base package has no ML dependencies and does not download a model merely by importing it.
+A local CLI for source-backed PDF extraction, structured evidence packages, quality checks, review, guarded repair and passage embeddings. It runs on Apple Silicon with MLX, Windows/Linux with PyTorch CUDA, or CPU. GPU encoding is batched in one process; CPU encoding can use a bounded number of worker processes. The base package has no ML dependencies and does not download a model merely by importing it.
 
-The output is deterministic, checksum verified, and ready for a Vectorize import step. This project generates embeddings; it does not upload data, create an index, or assert that a retrieved passage supports an answer.
+The output is deterministic, checksum verified, and ready for a Vectorize import step. PDF2Data preserves original sources, text and layout provenance. Extraction and model agreement do not establish legal correctness. Index publication and database ingestion remain separate stages.
+
+[Complete CLI reference, all commands and real outputs](docs/cli-reference.md).
+
+The Python namespace `local_vector_batch` and the `local-vector-batch` entry point remain compatible. The active local checkout is `PDF2Data`; an old-path symlink keeps existing consumers running.
 
 ## Install
 
@@ -13,7 +17,7 @@ python -m venv .venv
 source .venv/bin/activate # Windows: .venv\Scripts\activate
 pip install -e '.[mlx,test]'   # Apple Silicon GPU
 # or: pip install -e '.[torch,test]'  # Windows CUDA / Linux CUDA / CPU
-local-vector-batch doctor --json
+pdf2data doctor --json
 ```
 
 ## Local PDF webpage
@@ -22,7 +26,7 @@ Install PDF support alongside the desired encoder, then start the loopback-only 
 
 ```bash
 pip install -e '.[pdf,mlx]'       # Mac GPU; use pdf,torch on Windows/Linux
-local-vector-batch serve
+pdf2data serve
 # Open http://127.0.0.1:8765
 ```
 
@@ -93,14 +97,14 @@ keyed local cache, then reused across PDF jobs.
 The same extraction is available to agents and scripts:
 
 ```bash
-local-vector-batch pdf-extract --input document.pdf --output extracted \
+pdf2data pdf-extract --input document.pdf --output extracted \
   --source-url https://example.org/document.pdf --ocr auto --json
 # Inspect report.json: complete_for_embedding must be true.
-local-vector-batch verify-package --output extracted --source-pdf document.pdf --json
-local-vector-batch embed --input extracted/embedding-input.jsonl --output vectors \
+pdf2data verify-package --output extracted --source-pdf document.pdf --json
+pdf2data embed --input extracted/embedding-input.jsonl --output vectors \
   --backend mlx --device gpu --min-chars 1 --json
-local-vector-batch verify --output vectors --json
-local-vector-batch verify-package --output extracted --vectors vectors --json
+pdf2data verify --output vectors --json
+pdf2data verify-package --output extracted --vectors vectors --json
 ```
 
 For many **already downloaded** PDFs, provide JSONL rows with `document_id`,
@@ -112,9 +116,9 @@ the source bytes, and writes a stable receipt under `batch-reports/`. Failed or 
 remain explicit in the report. It does not crawl URLs or upload to a database.
 
 ```bash
-local-vector-batch pdf-batch --input source-receipts.jsonl --output extracted-pdfs \
+pdf2data pdf-batch --input source-receipts.jsonl --output extracted-pdfs \
   --workers 6 --limit 500 --ocr auto --ocr-device auto --json
-local-vector-batch pdf-batch --input source-receipts.jsonl --output extracted-pdfs \
+pdf2data pdf-batch --input source-receipts.jsonl --output extracted-pdfs \
   --workers 6 --limit 500 --resume --json
 ```
 
@@ -136,9 +140,9 @@ that source separately with a higher timeout. Windows uses the default zero
 (no per-document signal timeout).
 
 ```bash
-local-vector-batch pdf-batch --input source-receipts.jsonl --output extracted-pdfs \
+pdf2data pdf-batch --input source-receipts.jsonl --output extracted-pdfs \
   --workers 8 --ocr off --document-timeout 120 --resume --json
-local-vector-batch pdf-batch --input source-receipts.jsonl --output extracted-pdfs \
+pdf2data pdf-batch --input source-receipts.jsonl --output extracted-pdfs \
   --workers 6 --ocr auto --ocr-device auto --resume --repair-ocr --json
 ```
 
@@ -182,7 +186,7 @@ Each extraction also writes `presentation/index.html`, per-page Markdown/HTML,
 and `presentation/layout.jsonl`. The layout preserves text and table candidate
 blocks under physical PDF page IDs and hashes; every page links to the original
 PDF page. Table grids remain labelled as candidates until their cells are
-reviewed. For an older package, `local-vector-batch render-package --output
+reviewed. For an older package, `pdf2data render-package --output
 extracted --json` generates these views from its verified artifacts without
 reparsing the PDF or changing the embedding input. The presentation manifest
 and rendered files are hash checked by `verify-package`.
@@ -213,7 +217,7 @@ review. It never changes source packages or promotes OCR to verified evidence.
 It supports bounded parallel workers and resume:
 
 ```bash
-local-vector-batch ocr-consensus --input manifest.jsonl --output audit.jsonl \
+pdf2data ocr-consensus --input manifest.jsonl --output audit.jsonl \
   --limit 5000 --workers 6 --dpi 180 --resume --json
 ```
 
@@ -231,7 +235,7 @@ larger layout models out of the normal embedding runtime. Then compare a
 difficult page with the existing immutable extraction package:
 
 ```bash
-local-vector-batch pdf-compare --package extracted/document \
+pdf2data pdf-compare --package extracted/document \
   --source-pdf document.pdf --output comparisons/document-page3 \
   --pages 3 --language iso:hi --device mps --json
 ```
@@ -254,7 +258,7 @@ necessary for legal claims and tables.
 Repair a known physical page while preserving all other page artifacts:
 
 ```bash
-local-vector-batch pdf-repair --input document.pdf --package extracted/document \
+pdf2data pdf-repair --input document.pdf --package extracted/document \
   --pages 234 --ocr rapidocr --json
 ```
 
@@ -270,7 +274,7 @@ After checking the **original PDF visually**, a reviewer can supply a separate
 `review-decisions.json` and run:
 
 ```bash
-local-vector-batch review-package --output extracted \
+pdf2data review-package --output extracted \
   --decisions review-decisions.json --source-pdf document.pdf --json
 ```
 
@@ -299,8 +303,8 @@ Input is one JSON object per line. `id` and `text` are required. `metadata` is o
 Run a small chunk first:
 
 ```bash
-local-vector-batch embed --input examples/documents.jsonl --output /tmp/vector-demo --backend mlx --device gpu --batch-size 8 --chunk-chars 1500 --overlap 150 --json
-local-vector-batch verify --output /tmp/vector-demo --json
+pdf2data embed --input examples/documents.jsonl --output /tmp/vector-demo --backend mlx --device gpu --batch-size 8 --chunk-chars 1500 --overlap 150 --json
+pdf2data verify --output /tmp/vector-demo --json
 ```
 
 If the application already stores document text in numbered chunks (for example, D1 `docket_text_chunks`), use `--input-mode chunks`. Each row must carry its own nonnegative `chunk_index`; repeat the document `id` across its chunks. The output's `char_start` and `char_length` then refer to that chunk's exact original text, and `chunk_index` is included in both metadata and the vector ID. Do not pre-trim the input text unless the stored chunk has been changed in the same way.
@@ -311,8 +315,8 @@ If the application already stores document text in numbered chunks (for example,
 ```
 
 ```bash
-local-vector-batch embed --input /tmp/chunks.jsonl --input-mode chunks --output /tmp/chunk-vectors --backend mlx --device gpu --chunk-chars 1500 --overlap 300 --json
-local-vector-batch verify --output /tmp/chunk-vectors --json
+pdf2data embed --input /tmp/chunks.jsonl --input-mode chunks --output /tmp/chunk-vectors --backend mlx --device gpu --chunk-chars 1500 --overlap 300 --json
+pdf2data verify --output /tmp/chunk-vectors --json
 ```
 
 The document and chunk modes use different ID namespaces; changing mode, model, or window settings requires a coordinated reindex. Cosine indexes can compare normalized output with unnormalized vectors from the same encoder, but dot-product indexes cannot. Check a small set of passage and query vectors against the existing index before bulk insertion.
@@ -328,7 +332,7 @@ namespace and is useful when adding missing windows to an existing index.
 ```
 
 ```bash
-local-vector-batch embed --input selected-passages.jsonl --input-mode passages \
+pdf2data embed --input selected-passages.jsonl --input-mode passages \
   --output passage-vectors --backend mlx --device gpu --json
 ```
 
@@ -378,7 +382,7 @@ Check typed extraction/model candidates against the original selected page text
 without calling a model or promoting facts:
 
 ```bash
-local-vector-batch validate-evidence --pages extracted/pages.jsonl --candidates typed-candidates.jsonl --json
+pdf2data validate-evidence --pages extracted/pages.jsonl --candidates typed-candidates.jsonl --json
 ```
 
 A candidate has `kind` (`number`, `date`, or `contact`) and `evidence`, an array
@@ -402,7 +406,7 @@ Quality checks are separate from source-visual reviews. Reuse existing independe
 OCR receipts instead of running OCR again:
 
 ```bash
-local-vector-batch pdf-quality \
+pdf2data pdf-quality \
   --package parsed/document \
   --source-pdf originals/document.pdf \
   --independent ocr-consensus.jsonl \
@@ -427,7 +431,7 @@ For a whole queue, use one manifest row per source PDF with `package`,
 `source_pdf`, and optional `pages` (physical page numbers):
 
 ```bash
-local-vector-batch pdf-quality-batch --input review-queue.jsonl \
+pdf2data pdf-quality-batch --input review-queue.jsonl \
   --independent ocr-consensus.jsonl --output quality --workers 12 --json
 ```
 
@@ -466,9 +470,9 @@ remain held as visual evidence. This path never substitutes a model guess for
 the source PDF.
 
 ```bash
-local-vector-batch pdf-repair-queue --input held-pages.jsonl \
+pdf2data pdf-repair-queue --input held-pages.jsonl \
   --output repaired-staging --workers 4 --limit 20 --json
-local-vector-batch pdf-repair-status --output repaired-staging --json
+pdf2data pdf-repair-status --output repaired-staging --json
 ```
 
 Each assessed attempt retains `candidates/<job-key>/quality.json`, including
@@ -483,7 +487,7 @@ commit. It rechecks the original PDF and current page versions, merges only
 accepted physical pages, and leaves remote publication to the adapter:
 
 ```bash
-local-vector-batch pdf-repair-commit --package extracted/PDF_SHA \
+pdf2data pdf-repair-commit --package extracted/PDF_SHA \
   --source-pdf source.pdf --results repaired-staging/results.json \
   --independent source-bound-ocr.jsonl --quality-output quality/PDF_SHA.json \
   --review-sidecar reviews/PDF_SHA.jsonl --json
@@ -606,7 +610,7 @@ page: `source_pdf` (path), `source_pdf_sha256`, physical `page` (one-based),
 Then run:
 
 ```bash
-local-vector-batch serve --port 8765 --review-manifest /path/to/review.jsonl
+pdf2data serve --port 8765 --review-manifest /path/to/review.jsonl
 ```
 
 Open `http://127.0.0.1:8765/review`. The page image is rendered directly from
@@ -624,9 +628,9 @@ For an existing held-page batch with independent OCR receipts, create a new
 queue without manually writing review rows:
 
 ```bash
-local-vector-batch pdf-review-queue --input held-pages.jsonl \
+pdf2data pdf-review-queue --input held-pages.jsonl \
   --independent ocr-consensus.jsonl --output review-queue --limit 100 --json
-local-vector-batch serve --port 8765 --review-manifest review-queue/review-manifest.jsonl
+pdf2data serve --port 8765 --review-manifest review-queue/review-manifest.jsonl
 ```
 
 The input rows are the same `package`, `source_pdf`, `pages`, and optional
@@ -648,7 +652,7 @@ facts. Where the selected OCR has a unique line with normalized page geometry,
 the review shows an original-page crop; otherwise use full-page zoom. Pass
 `--reviewed PATH` (repeatable) to skip only the same source, page, OCR text,
 question and focus hashes. A new difference on the same page remains eligible.
-Use `local-vector-batch pdf-review-feedback --input feedback.jsonl --json`
+Use `pdf2data pdf-review-feedback --input feedback.jsonl --json`
 with repeatable `--input` to summarize review labels. These labels do not approve
 pages or measure overall OCR accuracy. Hindi clause number line wraps can be
 tidied in the comparison view; uncheck the display toggle to see raw OCR. The

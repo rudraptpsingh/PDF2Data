@@ -306,6 +306,7 @@ def verify_document(output: Path) -> dict:
     receipt=json.loads((output/'l1-package.json').read_text())
     if receipt.get('schema_version')!=SCHEMA:raise ValueError('unknown L1 schema')
     required={'original.pdf','source-receipt.json','layout.jsonl','structure.json','validation.json','quality.json','repair-queue.jsonl','readiness.json'}
+    if 'vision-evidence.json' in receipt.get('artifacts',{}):required.add('vision-evidence.json')
     if set(receipt.get('artifacts',{}))!=required:raise ValueError('incomplete L1 artifact manifest')
     for name,sha in receipt['artifacts'].items():
         if digest((output/name).read_bytes())!=sha:raise ValueError(f'L1 artifact hash mismatch: {name}')
@@ -337,6 +338,9 @@ def verify_document(output: Path) -> dict:
         if (a,b)!=(len(raw['glyph_stream_text']),len(page['text'])):raise ValueError('alignment clipping')
     structure=json.loads((output/'structure.json').read_text())
     checked=validate_structure(structure,pages,pdf_sha)
+    if 'vision-evidence.json' in receipt['artifacts']:
+        from .l1_qwen import verify_vision_evidence
+        verify_vision_evidence(output,pages,pdf_sha)
     quality=json.loads((output/'quality.json').read_text())
     if quality.get('source_pdf_sha256')!=pdf_sha or quality.get('pages_assessed')!=len(pages) or quality.get('source_verified') is not True:
         raise ValueError('quality receipt lacks complete source-bound assessment')
