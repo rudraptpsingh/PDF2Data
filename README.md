@@ -8,6 +8,15 @@ The output is deterministic, checksum verified, and ready for a Vectorize import
 
 ### Open a complete converted document
 
+For a visual workflow with local PDF upload, persistent run history and stage tracking:
+
+```bash
+./pdf2data workspace --workspace out/document-workspace --port 8771
+# Add --docx-python /path/to/python-with-python-docx for Word outputs.
+```
+
+Open `http://127.0.0.1:8771/`. Choose a PDF, enter its title and document type, and start processing. Each run invokes the CLI for extraction, integrity verification and readable export. Completed runs expose Markdown, HTML, JSON, relations and a ZIP. Interrupted runs remain visible and can be retried as fresh attempts. Files persist under the workspace directory. This is a single-user localhost workspace; it does not deploy or write to Cloudflare, ingest into the legal database, or certify legal review.
+
 After `legal-l1`, export a readable folder without reprocessing or altering the immutable package:
 
 ```bash

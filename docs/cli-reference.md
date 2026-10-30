@@ -57,6 +57,15 @@ After installing the package, use `pdf2data` without `./`. For Qwen use the MLX-
 | `pdf2data pdf-review-proposals` | attach source-crop observations as unverified review suggestions |
 | `pdf2data pdf-review-filter` | skip already reviewed exact source and OCR differences |
 | `pdf2data serve` | open the local PDF review and embedding webpage |
+| `pdf2data workspace` | persistent local PDF intake, CLI processing, stage tracking, run history and output downloads |
+
+### workspace
+
+```bash
+pdf2data workspace --workspace <new-or-existing-workspace> --port 8771
+```
+
+Optional flags: `--max-upload-mb 150`, `--docx-python <python-with-python-docx>`. Access through `127.0.0.1`, not a public network interface. Mutations require the local page token. Jobs run sequentially through the same CLI and preserve raw command receipts. Quality flags are displayed separately from completed processing. Restart marks unfinished jobs interrupted; retry creates a fresh attempt. Existing `serve`/OCR review sessions are unaffected.
 
 ## Exact flags and runnable command templates
 

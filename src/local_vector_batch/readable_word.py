@@ -1,5 +1,5 @@
 """Optional Word exporter, executed with an explicitly selected document runtime."""
-import json,sys
+import json,re,sys
 from pathlib import Path
 
 def main():
@@ -10,7 +10,8 @@ def main():
     normal=doc.styles['Normal'];normal.font.name='Arial';normal.font.size=Pt(10);normal.paragraph_format.space_after=Pt(5)
     for name in ['Title','Heading 1','Heading 2']:
         doc.styles[name].font.name='Arial';doc.styles[name].font.color.rgb=RGBColor(0,0,0)
-    doc.add_paragraph('Serentica CERC record of proceedings' if value['source_id']=='serentica-cerc-rop' else 'Extracted PDF content','Title')
+    title=re.sub(r'[^\w\s]',' ',value['title']);title=' '.join(title.split()) or 'Extracted PDF content'
+    doc.add_paragraph(title,'Title')
     doc.add_paragraph('Continuous extracted source text with paragraph boundaries and source page references. Quality flags are retained. Legal interpretation and currentness have not been verified.')
     for unit in value['structure']['units']:
         doc.add_paragraph('Paragraph '+unit['label'] if unit['label'].isdigit() else 'Document heading and opening text','Heading 1')
@@ -25,7 +26,7 @@ def main():
             for col,text in enumerate(row):cells[col].text='' if text is None else str(text)
     for root in (doc.styles.element,doc.element):
         for border in list(root.xpath('.//w:pBdr')):border.getparent().remove(border)
-    doc.core_properties.author='PDF2Data';doc.core_properties.title='Extracted PDF content'
+    doc.core_properties.author='PDF2Data';doc.core_properties.title=title
     doc.save(sys.argv[2]);body='\n'.join(p.text for p in Document(sys.argv[2]).paragraphs)
     if any(''.join(s['exact_quote'] for s in unit['spans']) not in body for unit in value['structure']['units']):raise ValueError('Word output lost source text')
 

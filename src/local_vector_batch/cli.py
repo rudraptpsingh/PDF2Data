@@ -306,6 +306,11 @@ def parser() -> argparse.ArgumentParser:
     review_filter.add_argument("--reviewed", required=True, action="append", type=Path, help="saved review feedback JSONL; repeatable")
     review_filter.add_argument("--output", required=True, type=Path, help="new filtered review manifest")
     review_filter.add_argument("--json", action="store_true")
+    workspace = sub.add_parser('workspace', help='start a persistent local document workspace with upload, CLI processing, status and readable outputs')
+    workspace.add_argument('--workspace', type=Path, required=True)
+    workspace.add_argument('--port', type=int, default=8771)
+    workspace.add_argument('--max-upload-mb', type=int, default=150)
+    workspace.add_argument('--docx-python', type=Path)
     web = sub.add_parser("serve", help="open the local PDF review and embedding webpage")
     web.add_argument("--port", type=int, default=8765)
     web.add_argument("--max-upload-mb", type=int, default=150)
@@ -539,6 +544,10 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "audit-rendered-review":
             from .review_audit import audit_rendered_review_pages
             result = audit_rendered_review_pages(args.input, args.output, args.workers)
+        elif args.command == 'workspace':
+            from .workspace import serve_workspace
+            serve_workspace(args.workspace,args.port,args.max_upload_mb,args.docx_python)
+            return 0
         elif args.command == "serve":
             from .web import serve
             serve(args.port, args.max_upload_mb, review_manifest=args.review_manifest,
