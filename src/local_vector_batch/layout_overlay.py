@@ -10,7 +10,8 @@ PALETTE = {
     'heading': ('Heading', '#8b5cf6'), 'text': ('Text', '#2563eb'),
     'table': ('Table', '#059669'), 'list': ('List', '#d97706'),
     'formula': ('Formula', '#db2777'), 'figure': ('Figure', '#ca8a04'),
-    'caption': ('Caption', '#0891b2'), 'footer': ('Furniture', '#64748b'),
+    'caption': ('Caption', '#0891b2'), 'header': ('Header', '#0e7490'),
+    'footer': ('Footer', '#64748b'), 'page_number': ('Page no.', '#475569'),
     'unresolved': ('Review region', '#e11d48'),
 }
 
@@ -26,7 +27,9 @@ def category(kind):
     if kind in ('formula','equation','formula_number'):return 'formula'
     if kind in ('picture','chart','image','figure'):return 'figure'
     if kind in ('caption','figure_title','table_caption'):return 'caption'
-    if kind in ('header','footer','page_header','page_footer','page_number'):return 'footer'
+    if kind in ('header','page_header'):return 'header'
+    if kind in ('footer','page_footer'):return 'footer'
+    if kind=='page_number':return 'page_number'
     if kind in ('unresolved','unresolved_full_page','document_index'):return 'unresolved'
     return 'text'
 
@@ -48,6 +51,8 @@ def build_overlays(data,source_document=None):
     pages=[];blocks=data.get('document_blocks',{}).get('blocks',[])
     layouts={p['page']:p for p in (source_document['pages'] if source_document else data.get('layout',[]))}
     quality={r['page']:r for r in data.get('quality',{}).get('results',[])}
+    from .layout_furniture import PAGE_LABEL,observed_margins,furniture_candidates,formatting
+    repeated=observed_margins(data.get('layout',[]))
     def preview(block,text,kind):
         if block and block['kind'] not in ('footer','header','alternative_reading'):
             shown={**block}
@@ -98,7 +103,17 @@ def build_overlays(data,source_document=None):
                 if not box:
                     unlocated.append(block['id']);continue
                 add(block['id'],block['kind'],box,text,block_id=block['id'],order=block.get('order'),
-                    preview_html=preview(block,text,block['kind']),geometry_basis=basis,state='candidate',confidence=None)
+                    preview_html=preview(block,text,block['kind']),geometry_basis=basis,state='candidate',confidence=None,
+                    font_names=block.get('font_names',[]),bold_candidate=block.get('bold_candidate'))
+        for r in regions:
+            if r['type'] in ('header','footer') and PAGE_LABEL.fullmatch(r['text'].strip()):r['type']='page_number'
+        if not source_document:
+            for i,observation in enumerate(furniture_candidates(layout,regions,repeated,page.get('text',''))):
+                add(f'margin-p{number}-{i}',observation['kind'],observation['bbox'],observation['text'],
+                    preview_html='<p class="source-paragraph">'+escape(observation['text'])+'</p>',
+                    geometry_basis=observation['basis'],state='candidate' if observation['parsed_text_aligned'] else 'source_glyph_observation_unaligned',
+                    confidence=None,order=None,parsed_text_aligned=observation['parsed_text_aligned'],font_names=observation['font_names'])
+        formatting(regions,width,height)
         for i,region in enumerate(quality.get(number,{}).get('unresolved_visual_regions',[])):
             box=region.get('bbox_normalized')
             if box:
@@ -107,6 +122,7 @@ def build_overlays(data,source_document=None):
                     reason=region.get('classification') or 'unaccounted_source_region')
         pages.append(dict(page=number,width=width,height=height,regions=regions,unlocated_blocks=unlocated))
     return dict(schema_version='pdf2data.overlays.v1',source_pdf_sha256=data['source_pdf_sha256'],
+                document_type=data.get('source',{}).get('declared',{}).get('family','unknown'),
                 palette={k:dict(label=v[0],color=v[1]) for k,v in PALETTE.items()},pages=pages,
                 classification_verified=False,recognition_rerun=False,publication_eligible=False)
 

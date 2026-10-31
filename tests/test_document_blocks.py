@@ -2,7 +2,7 @@ from copy import deepcopy
 from hashlib import sha256
 import re
 import pytest
-from local_vector_batch.document_blocks import build_blocks,render_blocks,validate_blocks,table_html,validated_cells,footer_start
+from local_vector_batch.document_blocks import build_blocks,render_blocks,validate_blocks,table_html,validated_cells,footer_start,line_evidence
 from local_vector_batch.legal_l1 import structure_document,validate_structure
 
 def data_fixture(lines,table=None):
@@ -83,6 +83,32 @@ def test_realistic_footer_continuation_does_not_glue_page_marker_to_next_list():
     data['document_blocks']=build_blocks(data);md,_=render_blocks(data)
     assert 'Page 1(a)' not in md and 'Instrument title' not in md and '(a) Suppose' in md
     validate_blocks(data['document_blocks'],pages)
+
+def test_footer_geometry_ignores_invisible_trailing_spaces_outside_page():
+    from local_vector_batch.layout_overlay import build_overlays
+    data=data_fixture([('Body.',50,False),('Instrument footer',955,False),('Instrument name Page 1',972,False)])
+    original=deepcopy(data['pages']);layout=data['layout'][0]
+    layout['glyphs'].append(dict(text=' '*40,bbox=[590,972,790,982],font='Arial',size=10))
+    data['document_blocks']=build_blocks(data)
+    footer=next(b for b in data['document_blocks']['blocks'] if b['kind']=='footer')
+    assert footer['bbox']==[10,955,120,982]
+    assert footer['geometry_state']=='exact_unique_physical_lines'
+    assert footer['spans'][0]['exact_quote']=='Instrument footer\nInstrument name Page 1'
+    overlay=build_overlays(data)['pages'][0]
+    assert any(r['type']=='footer' and r['block_id']==footer['id'] for r in overlay['regions'])
+    assert footer['id'] not in overlay['unlocated_blocks']
+    assert data['pages']==original
+    validate_blocks(data['document_blocks'],data['pages'])
+
+def test_visible_out_of_page_glyph_is_not_clamped_or_ignored():
+    from local_vector_batch.layout_overlay import build_overlays
+    data=data_fixture([('Instrument footer Page 1',972,False)])
+    data['layout'][0]['glyphs'][-1]['bbox']=[610,972,615,982]
+    data['document_blocks']=build_blocks(data)
+    assert line_evidence(data['pages'][0]['text'],data['layout'][0])['bbox'][2]==615
+    overlay=build_overlays(data)['pages'][0]
+    footer=next(b for b in data['document_blocks']['blocks'] if b['kind']=='footer')
+    assert footer['id'] in overlay['unlocated_blocks']
 
 def test_retained_merged_cells_and_header_roles_are_rendered_without_filling_blanks():
     table={'cells':[['Group',''],['A','B']],'cell_spans':[

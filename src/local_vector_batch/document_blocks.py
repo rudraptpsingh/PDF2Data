@@ -31,9 +31,23 @@ def glyph_lines(layout):
 def line_evidence(text,layout):
     matches=[group for group in glyph_lines(layout) if compact(''.join(g['text'] for g in group))==compact(text)]
     if len(matches)!=1:return {'bbox':None,'geometry_state':'unresolved','font_names':[],'max_font_size':None,'bold_candidate':False}
-    glyphs=matches[0];fonts=sorted({g.get('font') or '' for g in glyphs});sizes=[g.get('size',0) for g in glyphs]
+    # PDF producers can place invisible trailing spaces beyond the physical
+    # page. Match the complete literal line, but bound its visible glyphs only;
+    # never clamp a visible glyph or rewrite the selected source text.
+    glyphs=[g for g in matches[0] if g.get('text','').strip()]
+    fonts=sorted({g.get('font') or '' for g in glyphs});sizes=[g.get('size',0) for g in glyphs]
     return {'bbox':union([g['bbox'] for g in glyphs]),'geometry_state':'exact_unique_physical_line',
       'font_names':fonts,'max_font_size':max(sizes,default=0),'bold_candidate':all('bold' in (g.get('font') or '').lower() for g in glyphs if g['text'].strip())}
+
+def margin_block_evidence(text,layout):
+    """Locate every literal line of a known header/footer, without guessing."""
+    lines=[line_evidence(value,layout) for value in text.splitlines() if value.strip()]
+    if not lines or any(not line['bbox'] for line in lines):return {}
+    return {'bbox':union([line['bbox'] for line in lines]),
+      'geometry_state':'exact_unique_physical_lines',
+      'font_names':sorted({font for line in lines for font in line['font_names']}),
+      'max_font_size':max(line['max_font_size'] or 0 for line in lines),
+      'bold_candidate':all(line['bold_candidate'] for line in lines)}
 
 def footer_start(page,layout):
     """Only terminal page-numbered text wholly observed in the bottom margin."""
@@ -132,7 +146,8 @@ def build_blocks(data):
             if found:
                 a,b,kind,table=found
                 if lo!=a:continue
-                chunks.append((a,b,kind,table,{}));continue
+                meta=margin_block_evidence(text[a:b],layout) if kind in ('header','footer') else {}
+                chunks.append((a,b,kind,table,meta));continue
             value=text[lo:hi];evidence=line_evidence(value,layout);kind='paragraph';meta={}
             if not value.strip():kind='whitespace'
             else:

@@ -318,7 +318,7 @@ def export_regions(document_path, layout_path, output,reuse_existing=False):
     output = Path(output).absolute()
     implementation={name:sha(Path(__file__).with_name(name).read_bytes()) for name in
                     ('region_document.py','document_blocks.py','readable_export.py','page_map.py',
-                     'layout_overlay.py','overlays.js','overlays.css','viewer.css')}
+                     'layout_overlay.py','layout_furniture.py','overlays.js','overlays.css','viewer.css','ui.css')}
     if output.exists() and reuse_existing:
         receipt=load(output/'manifest.json')
         if (receipt['input_document_sha256']!=sha(Path(document_path).read_bytes()) or
