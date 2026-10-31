@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "PDF2Data"
-version = "0.2.0rc1"
+version = "0.2.0rc2"
 description = "Source-backed PDF extraction, structured data, validation and local AI repair"
 readme = "README.md"
 requires-python = ">=3.10"
