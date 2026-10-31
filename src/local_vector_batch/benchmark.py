@@ -275,6 +275,43 @@ def reconcile_tables_run(suite_path,parent_path,native_path,output):
     write(output/'run.json',record);return {'output':str(output/'run.json'),'documents':len(completed),'errors':record['errors'],'native_tables_selected':record['projection']['native_tables_selected'],'model_inference_rerun':False}
 
 
+def structure_projection_run(suite_path,parent_path,structured_root,output):
+    """Derive new source-structure predictions; preserve all parent OCR failures."""
+    from .document_blocks import render_blocks,validate_blocks
+    output=output.resolve()
+    suite=load(suite_path);validate_suite(suite);parent=load(parent_path/'run.json')
+    if output.exists():raise ValueError('structured benchmark output exists')
+    if parent['config']['suite_sha256']!=suite['suite_sha256']:raise ValueError('structure benchmark suite differs')
+    if {c['id'] for c in parent['cases']}!={c['id'] for c in suite['cases']}:raise ValueError('parent source inventory differs')
+    for case in parent['cases']:
+        for artifact in case.get('artifacts',[]):
+            if sha(safe(parent_path,artifact['path']).read_bytes())!=artifact['sha256']:raise ValueError('parent benchmark prediction changed')
+    output.mkdir(parents=True);start=time.perf_counter();completed=[];bindings=[]
+    for case in parent['cases']:
+        dest=structured_root/case['id'];manifest=load(dest/'manifest.json')
+        if manifest['source_pdf_sha256']!=case['source_sha256']:raise ValueError('structure source differs')
+        for name,expected in manifest['files'].items():
+            if sha(safe(dest,name).read_bytes())!=expected:raise ValueError('structured export changed')
+        data=load(dest/'data.json');validate_blocks(data['document_blocks'],data['pages'])
+        item={**case,'artifacts':[]}
+        for page in data['pages']:
+            selected=[b for b in data['document_blocks']['blocks'] if b['spans'][0]['page']==page['page']]
+            display={**data,'document_blocks':{**data['document_blocks'],'blocks':selected}}
+            for mode in ('text','tables'):
+                body=render_blocks(display)[0] if mode=='tables' else '\n\n'.join(''.join(a['exact_quote'] for a in b['spans']) for b in selected if b['kind'] not in ('footer','header','whitespace','alternative_reading'))
+                name=str(Path(case['pdf']).with_suffix(''))+f'_pg{page["page"]}_repeat1.md'
+                path=safe(output/mode,name);path.parent.mkdir(parents=True,exist_ok=True);path.write_text(body)
+                item['artifacts'].append(dict(mode=mode,path=str(path.relative_to(output)),sha256=sha(path.read_bytes()),page=page['page']))
+        completed.append(item);bindings.append(dict(id=case['id'],manifest_sha256=sha((dest/'manifest.json').read_bytes()),source_pdf_sha256=manifest['source_pdf_sha256']))
+    record={**parent,'config':{**parent['config'],'profile':'layout-vlm-document-structure','implementation_sha256':implementation_hashes()},
+            'cases':completed,'errors':sum(c['status']=='error' for c in completed),'fresh_extraction_run':False,'reused_cases':len(completed),
+            'projection':dict(kind='shared_document_structure_export',parent_run_sha256=sha((parent_path/'run.json').read_bytes()),
+                              structured_manifests=bindings,model_inference_rerun=False,projection_seconds=time.perf_counter()-start),
+            'timing_scope':'inherited OCR timing; structure projection reported separately; not a fresh recognition run'}
+    write(output/'run.json',record)
+    return dict(output=str(output/'run.json'),documents=len(completed),errors=record['errors'],model_inference_rerun=False)
+
+
 def score(suite_path,run_path,upstream,eval_python,output,mode='tables'):
     suite=load(suite_path);validate_suite(suite)
     if output.exists():raise ValueError('score output exists')

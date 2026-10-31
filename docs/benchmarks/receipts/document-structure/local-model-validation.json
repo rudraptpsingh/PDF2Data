@@ -1,0 +1,48 @@
+{
+  "cases": [
+    {
+      "case": "conditions",
+      "status": "validation_failed",
+      "error": "answer introduced an uncited number/date",
+      "model": "mlx-community/Qwen3-VL-8B-Instruct-4bit",
+      "revision": "defcdea7cc7a4b0858fea563cbbce171d328e457",
+      "device": "Device(gpu, 0)",
+      "generated_tokens": 434,
+      "generation_seconds": 8.093,
+      "token_cap": false,
+      "prompt_version": "powerlex.source-answer-prompt.v3",
+      "raw_sha256": "ba038d40d045436e8c4e831c3e81b8512682ae4e56d984bb2bbbce0b9ff9daf2"
+    },
+    {
+      "case": "minimum",
+      "status": "validation_failed",
+      "error": "citation is not a unique exact source quote after whitespace alignment",
+      "model": "mlx-community/Qwen3-VL-8B-Instruct-4bit",
+      "revision": "defcdea7cc7a4b0858fea563cbbce171d328e457",
+      "device": "Device(gpu, 0)",
+      "generated_tokens": 173,
+      "generation_seconds": 3.269,
+      "token_cap": false,
+      "prompt_version": "powerlex.source-answer-prompt.v3",
+      "raw_sha256": "22b463710630a1fa0e260728ce4f7e130745868a504b39e5db40c673960fbd77"
+    },
+    {
+      "case": "submission",
+      "status": "validation_failed",
+      "error": "citation is not a unique exact source quote after whitespace alignment",
+      "model": "mlx-community/Qwen3-VL-8B-Instruct-4bit",
+      "revision": "defcdea7cc7a4b0858fea563cbbce171d328e457",
+      "device": "Device(gpu, 0)",
+      "generated_tokens": 642,
+      "generation_seconds": 11.398,
+      "token_cap": false,
+      "prompt_version": "powerlex.source-answer-prompt.v3",
+      "raw_sha256": "ff7e1b78e105b34f8c778adeb5e7289fcd1ab0ed7160c9b8e20b56781b817e62"
+    }
+  ],
+  "accepted": 0,
+  "rejected": 3,
+  "publication_eligible": false,
+  "remote_operations": 0,
+  "scope": "three source-citation diagnostics; not a legal answer benchmark"
+}

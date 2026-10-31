@@ -1,0 +1,922 @@
+{
+  "suite_sha256": "a85780f812672738e228a0c93c09a611b41702d531ea9f34981737ae41fcb516",
+  "documents": 70,
+  "outcomes": 499,
+  "before_macro": 0.7174813319397769,
+  "after_macro": 0.7174813319397769,
+  "improved_outcomes": 0,
+  "regressed_outcomes": 0,
+  "recognition_rerun": false,
+  "rows": [
+    {
+      "id": "a7e8e0ebd0754d6ae5df",
+      "pdf": "arxiv_math/2503.04917_pg1.pdf",
+      "categories": [
+        "arxiv_math"
+      ],
+      "tests": 2,
+      "before_pass": 2,
+      "after_pass": 2,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "92d0596d3a921f488115",
+      "pdf": "arxiv_math/2503.04932_pg20.pdf",
+      "categories": [
+        "arxiv_math"
+      ],
+      "tests": 5,
+      "before_pass": 4,
+      "after_pass": 4,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 3
+    },
+    {
+      "id": "ad4cabefc8e4938480cc",
+      "pdf": "arxiv_math/2503.05685_pg4.pdf",
+      "categories": [
+        "arxiv_math"
+      ],
+      "tests": 3,
+      "before_pass": 3,
+      "after_pass": 3,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "24c3315900c1a824ff91",
+      "pdf": "arxiv_math/2503.06070_pg1.pdf",
+      "categories": [
+        "arxiv_math"
+      ],
+      "tests": 4,
+      "before_pass": 3,
+      "after_pass": 3,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "a05a8c7d8d745315a2ad",
+      "pdf": "arxiv_math/2503.06476_pg11.pdf",
+      "categories": [
+        "arxiv_math"
+      ],
+      "tests": 7,
+      "before_pass": 6,
+      "after_pass": 6,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "0ef782f4c2bae8166f36",
+      "pdf": "arxiv_math/2503.07875_pg21.pdf",
+      "categories": [
+        "arxiv_math"
+      ],
+      "tests": 2,
+      "before_pass": 2,
+      "after_pass": 2,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "9bafae92032fcc575f1a",
+      "pdf": "arxiv_math/2503.07910_pg7.pdf",
+      "categories": [
+        "arxiv_math"
+      ],
+      "tests": 10,
+      "before_pass": 8,
+      "after_pass": 8,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "bbad770db5b6836e2640",
+      "pdf": "arxiv_math/2503.08649_pg4.pdf",
+      "categories": [
+        "arxiv_math"
+      ],
+      "tests": 9,
+      "before_pass": 7,
+      "after_pass": 7,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "db4059ab5394c2c7566d",
+      "pdf": "arxiv_math/2503.08949_pg8.pdf",
+      "categories": [
+        "arxiv_math"
+      ],
+      "tests": 6,
+      "before_pass": 5,
+      "after_pass": 5,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "d33098543f2978a33ebb",
+      "pdf": "arxiv_math/2503.09121_pg4.pdf",
+      "categories": [
+        "arxiv_math"
+      ],
+      "tests": 11,
+      "before_pass": 10,
+      "after_pass": 10,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "37b171f199727c0d6b1a",
+      "pdf": "headers_footers/038704b29be26b6d45233e5e11218273d372957e_page_2.pdf",
+      "categories": [
+        "headers_footers"
+      ],
+      "tests": 3,
+      "before_pass": 2,
+      "after_pass": 2,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "9598ffe2bc146b539863",
+      "pdf": "headers_footers/056544decf9498b6bf7949a1edddc6d58829df82_page_5_processed.pdf",
+      "categories": [
+        "headers_footers"
+      ],
+      "tests": 8,
+      "before_pass": 8,
+      "after_pass": 8,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "4279fdff047bd1ae1c2f",
+      "pdf": "headers_footers/0e0a30f12921972f7af4f475dde567609d647d25_page_2_processed.pdf",
+      "categories": [
+        "headers_footers"
+      ],
+      "tests": 4,
+      "before_pass": 4,
+      "after_pass": 4,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "1e8486d0b6f92a56e956",
+      "pdf": "headers_footers/11c366821f12fc6ed2ab424475f9626602b8915e_page_10.pdf",
+      "categories": [
+        "headers_footers"
+      ],
+      "tests": 3,
+      "before_pass": 3,
+      "after_pass": 3,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "84ce2811ec88e2410cf9",
+      "pdf": "headers_footers/189831e217cff468a410a9d07f666f8d0d6adfbe_page_40.pdf",
+      "categories": [
+        "headers_footers"
+      ],
+      "tests": 4,
+      "before_pass": 4,
+      "after_pass": 4,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "bdb61cd0ebe2d1a7df2d",
+      "pdf": "headers_footers/1fbe22f08958fb7d1a071b42b940f7d273f8c165_page_6.pdf",
+      "categories": [
+        "headers_footers"
+      ],
+      "tests": 5,
+      "before_pass": 5,
+      "after_pass": 5,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "666570d6b882e6043e61",
+      "pdf": "headers_footers/275579590090bf114f27e3f7ce3939cece9a7b25_page_1.pdf",
+      "categories": [
+        "headers_footers"
+      ],
+      "tests": 5,
+      "before_pass": 5,
+      "after_pass": 5,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "fcb755a14b8fe8d38470",
+      "pdf": "headers_footers/5be349767dcbdc846508dfc2b18a93336485ba3c_page_1.pdf",
+      "categories": [
+        "headers_footers"
+      ],
+      "tests": 4,
+      "before_pass": 4,
+      "after_pass": 4,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "20e8c65e827cddd427b4",
+      "pdf": "headers_footers/7fdd893376dc5416d936e33fc19829a7cd04e76a_page_9.pdf",
+      "categories": [
+        "headers_footers"
+      ],
+      "tests": 3,
+      "before_pass": 3,
+      "after_pass": 3,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "3764d52520906a2c6458",
+      "pdf": "headers_footers/ba10222e40f05d76e2bf1d51c39066a4b1fe82ed_page_11.pdf",
+      "categories": [
+        "headers_footers"
+      ],
+      "tests": 3,
+      "before_pass": 3,
+      "after_pass": 3,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "12cfab4e7e6a34050b52",
+      "pdf": "long_tiny_text/10c_pg1.pdf",
+      "categories": [
+        "long_tiny_text"
+      ],
+      "tests": 7,
+      "before_pass": 7,
+      "after_pass": 7,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "2cb216cbabc91e8fddc2",
+      "pdf": "long_tiny_text/11_pg418_pg1.pdf",
+      "categories": [
+        "long_tiny_text"
+      ],
+      "tests": 4,
+      "before_pass": 4,
+      "after_pass": 4,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "1c28cd81eaa0f3040358",
+      "pdf": "long_tiny_text/11_pg421_pg1.pdf",
+      "categories": [
+        "long_tiny_text"
+      ],
+      "tests": 3,
+      "before_pass": 3,
+      "after_pass": 3,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "8440e5d927c7ddbaca2c",
+      "pdf": "long_tiny_text/12_pg174_pg1.pdf",
+      "categories": [
+        "long_tiny_text"
+      ],
+      "tests": 7,
+      "before_pass": 6,
+      "after_pass": 6,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "8eedbded5bf13676da3c",
+      "pdf": "long_tiny_text/13_pg531_pg1.pdf",
+      "categories": [
+        "long_tiny_text"
+      ],
+      "tests": 12,
+      "before_pass": 11,
+      "after_pass": 11,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "23e4a3b25cf4d1af175a",
+      "pdf": "long_tiny_text/13_pg857_pg1.pdf",
+      "categories": [
+        "long_tiny_text"
+      ],
+      "tests": 5,
+      "before_pass": 4,
+      "after_pass": 4,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "a6d51c6cafc9a1de58d4",
+      "pdf": "long_tiny_text/14b_pg1.pdf",
+      "categories": [
+        "long_tiny_text"
+      ],
+      "tests": 9,
+      "before_pass": 9,
+      "after_pass": 9,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "9336f0117d0007eb7d8a",
+      "pdf": "long_tiny_text/15b_pg1.pdf",
+      "categories": [
+        "long_tiny_text"
+      ],
+      "tests": 5,
+      "before_pass": 5,
+      "after_pass": 5,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "1a7af2b151c8b0b0c1bc",
+      "pdf": "long_tiny_text/15c_pg1.pdf",
+      "categories": [
+        "long_tiny_text"
+      ],
+      "tests": 5,
+      "before_pass": 5,
+      "after_pass": 5,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "6aa83274f870e59896d1",
+      "pdf": "long_tiny_text/20_pg48_pg1.pdf",
+      "categories": [
+        "long_tiny_text"
+      ],
+      "tests": 7,
+      "before_pass": 7,
+      "after_pass": 7,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 7
+    },
+    {
+      "id": "07f467dcb0227f128ae1",
+      "pdf": "multi_column/00945e98ea0970dcffb8f548336df3a0137f_page_4_pg1.pdf",
+      "categories": [
+        "multi_column"
+      ],
+      "tests": 4,
+      "before_pass": 4,
+      "after_pass": 4,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 3
+    },
+    {
+      "id": "aed6d5cd22010c7da801",
+      "pdf": "multi_column/027c390510b2fd3364f5a382f2bc304af018_page_2_pg1.pdf",
+      "categories": [
+        "multi_column"
+      ],
+      "tests": 6,
+      "before_pass": 5,
+      "after_pass": 5,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "85aa799722f9f7781a7b",
+      "pdf": "multi_column/02a3e23da54b82c414d272051b0b5d8f44d8_page_12_pg1.pdf",
+      "categories": [
+        "multi_column"
+      ],
+      "tests": 5,
+      "before_pass": 3,
+      "after_pass": 3,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "35c945d10dc1521d4c54",
+      "pdf": "multi_column/065d792cf3923fc76a17183cfd13480cd51d_page_9_pg1.pdf",
+      "categories": [
+        "multi_column"
+      ],
+      "tests": 6,
+      "before_pass": 0,
+      "after_pass": 0,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "8b2dc50f310767db4a1e",
+      "pdf": "multi_column/081875a1035e34dee439b9a2a3a55e319405_page_19_pg1.pdf",
+      "categories": [
+        "multi_column"
+      ],
+      "tests": 5,
+      "before_pass": 5,
+      "after_pass": 5,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "c47cc5d50205388d646f",
+      "pdf": "multi_column/081875a1035e34dee439b9a2a3a55e319405_page_4_pg1.pdf",
+      "categories": [
+        "multi_column"
+      ],
+      "tests": 5,
+      "before_pass": 3,
+      "after_pass": 3,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 2
+    },
+    {
+      "id": "45c0fc8f081b40425d83",
+      "pdf": "multi_column/09f801e3a2ec90ef456d34ad571a46f36fce_page_18_pg1.pdf",
+      "categories": [
+        "multi_column"
+      ],
+      "tests": 6,
+      "before_pass": 2,
+      "after_pass": 2,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "7178e3265b2cd797aa5f",
+      "pdf": "multi_column/09f801e3a2ec90ef456d34ad571a46f36fce_page_40_pg1.pdf",
+      "categories": [
+        "multi_column"
+      ],
+      "tests": 6,
+      "before_pass": 6,
+      "after_pass": 6,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "4cdf93beb442b6418d86",
+      "pdf": "multi_column/09f90a8fad0997f7cf454cbcbe79cab3bc0f_page_2_pg1.pdf",
+      "categories": [
+        "multi_column"
+      ],
+      "tests": 5,
+      "before_pass": 4,
+      "after_pass": 4,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "6fd9122cdd063afecad9",
+      "pdf": "multi_column/0d7f2cbc54e1b8e58b42a867c3f7620bcd29_page_8_pg1.pdf",
+      "categories": [
+        "multi_column"
+      ],
+      "tests": 6,
+      "before_pass": 6,
+      "after_pass": 6,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "68ce02045bff458fcaee",
+      "pdf": "old_scans/33.pdf",
+      "categories": [
+        "old_scans"
+      ],
+      "tests": 7,
+      "before_pass": 0,
+      "after_pass": 0,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "e3879be01e49d29ea793",
+      "pdf": "old_scans/34.pdf",
+      "categories": [
+        "old_scans"
+      ],
+      "tests": 5,
+      "before_pass": 1,
+      "after_pass": 1,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "b8ba278750839245d699",
+      "pdf": "old_scans/42.pdf",
+      "categories": [
+        "old_scans"
+      ],
+      "tests": 8,
+      "before_pass": 0,
+      "after_pass": 0,
+      "changes": [],
+      "failed_reading_regions": 1,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "12e81c6fcc470cd97485",
+      "pdf": "old_scans/43.pdf",
+      "categories": [
+        "old_scans"
+      ],
+      "tests": 8,
+      "before_pass": 0,
+      "after_pass": 0,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "d6b5cfc70c994bad609a",
+      "pdf": "old_scans/52.pdf",
+      "categories": [
+        "old_scans"
+      ],
+      "tests": 4,
+      "before_pass": 0,
+      "after_pass": 0,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "80077a66c378b6fe1e49",
+      "pdf": "old_scans/60.pdf",
+      "categories": [
+        "old_scans"
+      ],
+      "tests": 8,
+      "before_pass": 6,
+      "after_pass": 6,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "71fb7710a4570d6e35a0",
+      "pdf": "old_scans/64.pdf",
+      "categories": [
+        "old_scans"
+      ],
+      "tests": 10,
+      "before_pass": 9,
+      "after_pass": 9,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "ea7bd798f777b9488ae5",
+      "pdf": "old_scans/67.pdf",
+      "categories": [
+        "old_scans"
+      ],
+      "tests": 4,
+      "before_pass": 0,
+      "after_pass": 0,
+      "changes": [],
+      "failed_reading_regions": 2,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "154b85bf121050852617",
+      "pdf": "old_scans/84.pdf",
+      "categories": [
+        "old_scans"
+      ],
+      "tests": 7,
+      "before_pass": 0,
+      "after_pass": 0,
+      "changes": [],
+      "failed_reading_regions": 1,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "21aed854333b7b062885",
+      "pdf": "old_scans/92.pdf",
+      "categories": [
+        "old_scans"
+      ],
+      "tests": 7,
+      "before_pass": 0,
+      "after_pass": 0,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 2
+    },
+    {
+      "id": "9214060db1f7ddc3afb5",
+      "pdf": "old_scans_math/1_pg10.pdf",
+      "categories": [
+        "old_scans_math"
+      ],
+      "tests": 10,
+      "before_pass": 9,
+      "after_pass": 9,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "a6c24938afa1b4e99518",
+      "pdf": "old_scans_math/1_pg113.pdf",
+      "categories": [
+        "old_scans_math"
+      ],
+      "tests": 15,
+      "before_pass": 4,
+      "after_pass": 4,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 2
+    },
+    {
+      "id": "79b09a89264628ac53c8",
+      "pdf": "old_scans_math/1_pg131.pdf",
+      "categories": [
+        "old_scans_math"
+      ],
+      "tests": 12,
+      "before_pass": 6,
+      "after_pass": 6,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "043643a7163393d0f0ab",
+      "pdf": "old_scans_math/1_pg40.pdf",
+      "categories": [
+        "old_scans_math"
+      ],
+      "tests": 11,
+      "before_pass": 6,
+      "after_pass": 6,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "d6cf38d965f1d97f0362",
+      "pdf": "old_scans_math/3_pg199.pdf",
+      "categories": [
+        "old_scans_math"
+      ],
+      "tests": 16,
+      "before_pass": 10,
+      "after_pass": 10,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "bc4adf710ca29ac0d208",
+      "pdf": "old_scans_math/3_pg634.pdf",
+      "categories": [
+        "old_scans_math"
+      ],
+      "tests": 31,
+      "before_pass": 22,
+      "after_pass": 22,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "2f35600149ec2a988ff8",
+      "pdf": "old_scans_math/3_pg94.pdf",
+      "categories": [
+        "old_scans_math"
+      ],
+      "tests": 9,
+      "before_pass": 4,
+      "after_pass": 4,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "c927a4e48c288a6d93b5",
+      "pdf": "old_scans_math/4_pg281.pdf",
+      "categories": [
+        "old_scans_math"
+      ],
+      "tests": 7,
+      "before_pass": 7,
+      "after_pass": 7,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "4e6fe361db941d355312",
+      "pdf": "old_scans_math/4_pg48.pdf",
+      "categories": [
+        "old_scans_math"
+      ],
+      "tests": 25,
+      "before_pass": 18,
+      "after_pass": 18,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "f5a661d46d7260f2bcfd",
+      "pdf": "old_scans_math/5_pg558.pdf",
+      "categories": [
+        "old_scans_math"
+      ],
+      "tests": 10,
+      "before_pass": 1,
+      "after_pass": 1,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "31f20cdbf05b1a980743",
+      "pdf": "tables/0953927d7a3f032c46a2e6d0ead837398a0b_pg20.pdf",
+      "categories": [
+        "table_tests"
+      ],
+      "tests": 15,
+      "before_pass": 11,
+      "after_pass": 11,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "7fba52812c1ef1e22669",
+      "pdf": "tables/23dc9c0db39d1b6c519a8fa31c672ff41aac_pg3_pg1.pdf",
+      "categories": [
+        "table_tests"
+      ],
+      "tests": 6,
+      "before_pass": 5,
+      "after_pass": 5,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 2
+    },
+    {
+      "id": "144a285a00d9f886a641",
+      "pdf": "tables/240cc9b2701d8110eac95cc55b06c8198f54_pg10_pg1.pdf",
+      "categories": [
+        "table_tests"
+      ],
+      "tests": 5,
+      "before_pass": 5,
+      "after_pass": 5,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "bc1ba74c9df53535768f",
+      "pdf": "tables/58ad80719a0d3473e065a3ead02d758e08b6_pg10_pg1.pdf",
+      "categories": [
+        "table_tests"
+      ],
+      "tests": 6,
+      "before_pass": 5,
+      "after_pass": 5,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "3eccf7755cb1780338ad",
+      "pdf": "tables/58feed658a770073c88cb54453b21a056796_pg42.pdf",
+      "categories": [
+        "table_tests"
+      ],
+      "tests": 5,
+      "before_pass": 5,
+      "after_pass": 5,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "10d28d6a003ce9f1a19d",
+      "pdf": "tables/904a1b4e9f7cdc2169509e570c03b5e6507a_pg141.pdf",
+      "categories": [
+        "table_tests"
+      ],
+      "tests": 10,
+      "before_pass": 9,
+      "after_pass": 9,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 0
+    },
+    {
+      "id": "781aef11bdbd6dc93a5b",
+      "pdf": "tables/bdb0c0697f6c45d77aac622a70b375d5b999_pg42.pdf",
+      "categories": [
+        "table_tests"
+      ],
+      "tests": 4,
+      "before_pass": 4,
+      "after_pass": 4,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "7d5625fce3963f17196a",
+      "pdf": "tables/d22cfda9b7cf678a7996008fb8faa82209fe_pg10.pdf",
+      "categories": [
+        "table_tests"
+      ],
+      "tests": 3,
+      "before_pass": 3,
+      "after_pass": 3,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "829598110f4495dcd543",
+      "pdf": "tables/f5e5d540d2d21fb259a00bbbfbed7abacdf2_pg12.pdf",
+      "categories": [
+        "table_tests"
+      ],
+      "tests": 6,
+      "before_pass": 1,
+      "after_pass": 1,
+      "changes": [],
+      "failed_reading_regions": 0,
+      "visual_review_regions": 1
+    },
+    {
+      "id": "ac25482518653043b6b0",
+      "pdf": "tables/ff19f6fe9ce187ea79f84df52004534e6ff7_pg4.pdf",
+      "categories": [
+        "table_tests"
+      ],
+      "tests": 6,
+      "before_pass": 0,
+      "after_pass": 0,
+      "changes": [],
+      "failed_reading_regions": 1,
+      "visual_review_regions": 0
+    }
+  ]
+}

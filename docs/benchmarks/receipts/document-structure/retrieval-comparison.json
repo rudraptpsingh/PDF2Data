@@ -1,0 +1,963 @@
+{
+  "schema_version": "pdf2data.structure-retrieval-eval.v1",
+  "raw_sha256": "94dedf1e2222b7cda0dbd014da572048e9d1dcb8c37ec9787c429943e4a0f818",
+  "structured_manifest_sha256": "5da9293e4bad380a3ef35b0ebce47d6afc9ac3c565c179011d24edd3b584474c",
+  "cases_sha256": "fcc4f06108fdb131ba3c2f4cc4401e1dffaf87373d92f67a5bf28a5781f24dbb",
+  "implementation_sha256": "76890766ebc21c16ff2c3d5c4783a4d75b4949c5fbe9227b9e966f3e20ec7a47",
+  "max_context_chars": 6000,
+  "seed_k": 2,
+  "method": "same_BM25_k1_1.2_b_0.75_with_budget_filling_no_clipping",
+  "annotation_provenance": "source-reviewed development queries, not an independent legal holdout",
+  "summary": {
+    "A_flat": {
+      "complete_evidence": 5,
+      "cases": 10,
+      "mean_required_region_recall": 0.7083333333333333,
+      "mean_context_chars": 5430.0
+    },
+    "B_projection": {
+      "complete_evidence": 8,
+      "cases": 10,
+      "mean_required_region_recall": 0.9583333333333334,
+      "mean_context_chars": 5499.7
+    },
+    "C_structure_expansion": {
+      "complete_evidence": 10,
+      "cases": 10,
+      "mean_required_region_recall": 1.0,
+      "mean_context_chars": 5545.5
+    }
+  },
+  "results": [
+    {
+      "id": "conditions",
+      "question": "What conditions accompany the April OM graded waiver proposal?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p1:r8",
+        "56bebe798f88ed13c0d7:p2:r0",
+        "56bebe798f88ed13c0d7:p2:r1",
+        "56bebe798f88ed13c0d7:p2:r2"
+      ],
+      "variants": {
+        "A_flat": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p3:r1",
+            "56bebe798f88ed13c0d7:p3:r0",
+            "56bebe798f88ed13c0d7:p2:r3",
+            "56bebe798f88ed13c0d7:p1:r5",
+            "56bebe798f88ed13c0d7:p2:r8",
+            "56bebe798f88ed13c0d7:p2:r5",
+            "56bebe798f88ed13c0d7:p1:r8",
+            "56bebe798f88ed13c0d7:p4:r1",
+            "56bebe798f88ed13c0d7:p3:r5",
+            "56bebe798f88ed13c0d7:p1:r7",
+            "56bebe798f88ed13c0d7:p3:r6",
+            "56bebe798f88ed13c0d7:p2:r12",
+            "56bebe798f88ed13c0d7:p3:r2"
+          ],
+          "chars": 5938,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p1:r8"
+          ],
+          "required_region_recall": 0.25,
+          "complete_evidence": false
+        },
+        "B_projection": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p2:r3",
+            "56bebe798f88ed13c0d7:p1:r8",
+            "56bebe798f88ed13c0d7:p1:r7",
+            "56bebe798f88ed13c0d7:p3:r1",
+            "56bebe798f88ed13c0d7:p1:r6",
+            "56bebe798f88ed13c0d7:p3:r0",
+            "56bebe798f88ed13c0d7:p2:r0",
+            "56bebe798f88ed13c0d7:p2:r1",
+            "56bebe798f88ed13c0d7:p2:r2",
+            "56bebe798f88ed13c0d7:p2:r4",
+            "56bebe798f88ed13c0d7:p4:r1",
+            "56bebe798f88ed13c0d7:p3:r5",
+            "56bebe798f88ed13c0d7:p2:r12",
+            "56bebe798f88ed13c0d7:p1:r5",
+            "56bebe798f88ed13c0d7:p2:r8",
+            "56bebe798f88ed13c0d7:p2:r7"
+          ],
+          "chars": 5923,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p1:r8",
+            "56bebe798f88ed13c0d7:p2:r0",
+            "56bebe798f88ed13c0d7:p2:r1",
+            "56bebe798f88ed13c0d7:p2:r2"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "C_structure_expansion": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p2:r3",
+            "56bebe798f88ed13c0d7:p1:r8",
+            "56bebe798f88ed13c0d7:p1:r6",
+            "56bebe798f88ed13c0d7:p1:r7",
+            "56bebe798f88ed13c0d7:p2:r0",
+            "56bebe798f88ed13c0d7:p2:r1",
+            "56bebe798f88ed13c0d7:p2:r2",
+            "56bebe798f88ed13c0d7:p2:r4",
+            "56bebe798f88ed13c0d7:p1:r5",
+            "56bebe798f88ed13c0d7:p3:r1",
+            "56bebe798f88ed13c0d7:p3:r0",
+            "56bebe798f88ed13c0d7:p4:r1",
+            "56bebe798f88ed13c0d7:p3:r5",
+            "56bebe798f88ed13c0d7:p2:r12",
+            "56bebe798f88ed13c0d7:p2:r8",
+            "56bebe798f88ed13c0d7:p2:r7"
+          ],
+          "chars": 5923,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p1:r8",
+            "56bebe798f88ed13c0d7:p2:r0",
+            "56bebe798f88ed13c0d7:p2:r1",
+            "56bebe798f88ed13c0d7:p2:r2"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        }
+      }
+    },
+    {
+      "id": "intermediary",
+      "question": "Under clause 1.7, can a project with a trader PPA but no back-to-back PSA seek the proposed waiver?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p3:r6",
+        "56bebe798f88ed13c0d7:p4:r0"
+      ],
+      "variants": {
+        "A_flat": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p4:r0",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p4:r3",
+            "56bebe798f88ed13c0d7:p3:r6",
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p1:r5",
+            "56bebe798f88ed13c0d7:p4:r1",
+            "56bebe798f88ed13c0d7:p1:r2",
+            "56bebe798f88ed13c0d7:p3:r3",
+            "56bebe798f88ed13c0d7:p4:r4",
+            "56bebe798f88ed13c0d7:p2:r0"
+          ],
+          "chars": 5995,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p3:r6",
+            "56bebe798f88ed13c0d7:p4:r0"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "B_projection": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p4:r0",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p3:r6",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p4:r3",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p1:r5",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p4:r1",
+            "56bebe798f88ed13c0d7:p1:r2",
+            "56bebe798f88ed13c0d7:p3:r3"
+          ],
+          "chars": 5914,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p3:r6",
+            "56bebe798f88ed13c0d7:p4:r0"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "C_structure_expansion": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p4:r0",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p3:r6",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p4:r4",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p4:r2"
+          ],
+          "chars": 5967,
+          "required_candidate_omissions": [
+            "56bebe798f88ed13c0d7:p5:r2"
+          ],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p3:r6",
+            "56bebe798f88ed13c0d7:p4:r0"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        }
+      }
+    },
+    {
+      "id": "illustration-one",
+      "question": "For Illustration 1, what do the GNA effectiveness date and the late COD scenario show?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p4:r5",
+        "56bebe798f88ed13c0d7:p5:r0",
+        "56bebe798f88ed13c0d7:p5:r3"
+      ],
+      "variants": {
+        "A_flat": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p3:r5",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p1:r3",
+            "56bebe798f88ed13c0d7:p1:r7",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p1:r2",
+            "56bebe798f88ed13c0d7:p2:r2",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p3:r0"
+          ],
+          "chars": 5883,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r3"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "B_projection": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p3:r5",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p1:r3",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p1:r2",
+            "56bebe798f88ed13c0d7:p2:r2"
+          ],
+          "chars": 5903,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r3"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "C_structure_expansion": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p4:r4",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p3:r5",
+            "56bebe798f88ed13c0d7:p1:r3",
+            "56bebe798f88ed13c0d7:p1:r2"
+          ],
+          "chars": 5851,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r3"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        }
+      }
+    },
+    {
+      "id": "illustration-two",
+      "question": "In Illustration 2, what is the GNA effectiveness status and how do the explanations treat the project?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p5:r4",
+        "56bebe798f88ed13c0d7:p5:r5",
+        "56bebe798f88ed13c0d7:p6:r0",
+        "56bebe798f88ed13c0d7:p6:r1"
+      ],
+      "variants": {
+        "A_flat": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p3:r5",
+            "56bebe798f88ed13c0d7:p2:r12",
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p6:r1"
+          ],
+          "chars": 5791,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r1"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "B_projection": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p3:r5",
+            "56bebe798f88ed13c0d7:p4:r2"
+          ],
+          "chars": 5866,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r1"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "C_structure_expansion": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p4:r4",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p3:r5",
+            "56bebe798f88ed13c0d7:p4:r2"
+          ],
+          "chars": 5991,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r1"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        }
+      }
+    },
+    {
+      "id": "termination",
+      "question": "Does termination of the original PPA eliminate every waiver, or is a fallback trajectory described?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p4:r3",
+        "56bebe798f88ed13c0d7:p5:r2"
+      ],
+      "variants": {
+        "A_flat": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p4:r3",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p3:r6",
+            "56bebe798f88ed13c0d7:p4:r1",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p2:r13",
+            "56bebe798f88ed13c0d7:p3:r3"
+          ],
+          "chars": 5964,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p4:r3",
+            "56bebe798f88ed13c0d7:p5:r2"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "B_projection": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p4:r3",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p3:r6",
+            "56bebe798f88ed13c0d7:p4:r1",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p3:r3",
+            "56bebe798f88ed13c0d7:p2:r0"
+          ],
+          "chars": 5903,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p4:r3",
+            "56bebe798f88ed13c0d7:p5:r2"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "C_structure_expansion": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p4:r3",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p4:r1",
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p4:r4",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p3:r3",
+            "56bebe798f88ed13c0d7:p2:r0"
+          ],
+          "chars": 5945,
+          "required_candidate_omissions": [
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p6:r4"
+          ],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p4:r3",
+            "56bebe798f88ed13c0d7:p5:r2"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        }
+      }
+    },
+    {
+      "id": "hypothetical",
+      "question": "Does the memorandum establish 1.12.2026 as the actual effective date?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p6:r0"
+      ],
+      "variants": {
+        "A_flat": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p1:r11",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p3:r0",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p2:r1",
+            "56bebe798f88ed13c0d7:p2:r11",
+            "56bebe798f88ed13c0d7:p2:r12",
+            "56bebe798f88ed13c0d7:p2:r3",
+            "56bebe798f88ed13c0d7:p1:r7",
+            "56bebe798f88ed13c0d7:p2:r10"
+          ],
+          "chars": 5759,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p6:r0"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "B_projection": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p1:r11",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p3:r0",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p2:r11",
+            "56bebe798f88ed13c0d7:p2:r12",
+            "56bebe798f88ed13c0d7:p2:r1",
+            "56bebe798f88ed13c0d7:p1:r7",
+            "56bebe798f88ed13c0d7:p2:r3"
+          ],
+          "chars": 5854,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p6:r0"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "C_structure_expansion": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p3:r3",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p4:r4",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p1:r11",
+            "56bebe798f88ed13c0d7:p2:r1",
+            "56bebe798f88ed13c0d7:p2:r3"
+          ],
+          "chars": 5995,
+          "required_candidate_omissions": [
+            "56bebe798f88ed13c0d7:p5:r3"
+          ],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p6:r0"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        }
+      }
+    },
+    {
+      "id": "submission",
+      "question": "In Illustration 2, how do already furnished and later furnished contracts affect the described waiver start?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p5:r4",
+        "56bebe798f88ed13c0d7:p5:r5",
+        "56bebe798f88ed13c0d7:p6:r1",
+        "56bebe798f88ed13c0d7:p6:r2",
+        "56bebe798f88ed13c0d7:p6:r3",
+        "56bebe798f88ed13c0d7:p6:r4"
+      ],
+      "variants": {
+        "A_flat": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p2:r11",
+            "56bebe798f88ed13c0d7:p2:r3",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p3:r0",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p4:r0",
+            "56bebe798f88ed13c0d7:p2:r12",
+            "56bebe798f88ed13c0d7:p5:r1"
+          ],
+          "chars": 5920,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r2"
+          ],
+          "required_region_recall": 0.5,
+          "complete_evidence": false
+        },
+        "B_projection": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p2:r11",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p3:r0",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p2:r3",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p2:r1",
+            "56bebe798f88ed13c0d7:p3:r4"
+          ],
+          "chars": 5964,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p6:r4"
+          ],
+          "required_region_recall": 0.8333333333333334,
+          "complete_evidence": false
+        },
+        "C_structure_expansion": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p4:r4",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p2:r11"
+          ],
+          "chars": 5988,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p6:r4"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        }
+      }
+    },
+    {
+      "id": "tenure",
+      "question": "What do the memorandum and Illustration 1 say about a ten-year PPA extended with the same consumer?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p4:r1",
+        "56bebe798f88ed13c0d7:p4:r2",
+        "56bebe798f88ed13c0d7:p5:r0",
+        "56bebe798f88ed13c0d7:p5:r2"
+      ],
+      "variants": {
+        "A_flat": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p1:r11",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p3:r6",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p4:r3",
+            "56bebe798f88ed13c0d7:p4:r0",
+            "56bebe798f88ed13c0d7:p1:r3",
+            "56bebe798f88ed13c0d7:p1:r2",
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p1:r7",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p3:r3",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p2:r0",
+            "56bebe798f88ed13c0d7:p6:r4"
+          ],
+          "chars": 5993,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p5:r2"
+          ],
+          "required_region_recall": 0.5,
+          "complete_evidence": false
+        },
+        "B_projection": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p1:r11",
+            "56bebe798f88ed13c0d7:p3:r6",
+            "56bebe798f88ed13c0d7:p4:r3",
+            "56bebe798f88ed13c0d7:p4:r0",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p1:r3",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p5:r4"
+          ],
+          "chars": 5947,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r2"
+          ],
+          "required_region_recall": 0.75,
+          "complete_evidence": false
+        },
+        "C_structure_expansion": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p4:r1",
+            "56bebe798f88ed13c0d7:p4:r3",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p4:r4",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p1:r11",
+            "56bebe798f88ed13c0d7:p1:r3",
+            "56bebe798f88ed13c0d7:p1:r2",
+            "56bebe798f88ed13c0d7:p3:r3"
+          ],
+          "chars": 5973,
+          "required_candidate_omissions": [
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p6:r4"
+          ],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p4:r1",
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r2"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        }
+      }
+    },
+    {
+      "id": "minimum",
+      "question": "Which two requirements are listed under paragraph 1.5?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p3:r2",
+        "56bebe798f88ed13c0d7:p3:r3",
+        "56bebe798f88ed13c0d7:p3:r4"
+      ],
+      "variants": {
+        "A_flat": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p4:r0"
+          ],
+          "chars": 1643,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p3:r2"
+          ],
+          "required_region_recall": 0.3333333333333333,
+          "complete_evidence": false
+        },
+        "B_projection": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p3:r3",
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p4:r0"
+          ],
+          "chars": 1835,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p3:r3",
+            "56bebe798f88ed13c0d7:p3:r4"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "C_structure_expansion": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p3:r3",
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p4:r0"
+          ],
+          "chars": 1835,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p3:r3",
+            "56bebe798f88ed13c0d7:p3:r4"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        }
+      }
+    },
+    {
+      "id": "different-tables",
+      "question": "Is Table 1 of Regulation 13(2)(a) the same object as the first illustration table?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p5:r0",
+        "56bebe798f88ed13c0d7:p5:r1"
+      ],
+      "variants": {
+        "A_flat": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p1:r5",
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p1:r3",
+            "56bebe798f88ed13c0d7:p1:r2",
+            "56bebe798f88ed13c0d7:p3:r4",
+            "56bebe798f88ed13c0d7:p2:r3",
+            "56bebe798f88ed13c0d7:p1:r7",
+            "56bebe798f88ed13c0d7:p1:r8",
+            "56bebe798f88ed13c0d7:p2:r11"
+          ],
+          "chars": 5414,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p5:r1"
+          ],
+          "required_region_recall": 0.5,
+          "complete_evidence": false
+        },
+        "B_projection": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p1:r5",
+            "56bebe798f88ed13c0d7:p3:r2",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p4:r2",
+            "56bebe798f88ed13c0d7:p1:r3",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p1:r2",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p3:r4"
+          ],
+          "chars": 5888,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r1"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        },
+        "C_structure_expansion": {
+          "selected_regions": [
+            "56bebe798f88ed13c0d7:p6:r0",
+            "56bebe798f88ed13c0d7:p5:r3",
+            "56bebe798f88ed13c0d7:p5:r4",
+            "56bebe798f88ed13c0d7:p5:r5",
+            "56bebe798f88ed13c0d7:p6:r1",
+            "56bebe798f88ed13c0d7:p6:r2",
+            "56bebe798f88ed13c0d7:p6:r3",
+            "56bebe798f88ed13c0d7:p6:r4",
+            "56bebe798f88ed13c0d7:p4:r4",
+            "56bebe798f88ed13c0d7:p4:r5",
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r1",
+            "56bebe798f88ed13c0d7:p5:r2",
+            "56bebe798f88ed13c0d7:p1:r5",
+            "56bebe798f88ed13c0d7:p4:r2"
+          ],
+          "chars": 5987,
+          "required_candidate_omissions": [],
+          "required_regions_retrieved": [
+            "56bebe798f88ed13c0d7:p5:r0",
+            "56bebe798f88ed13c0d7:p5:r1"
+          ],
+          "required_region_recall": 1.0,
+          "complete_evidence": true
+        }
+      }
+    }
+  ],
+  "generator_used": false,
+  "semantic_retrieval_used": false,
+  "answer_accuracy_measured": false,
+  "independent_holdout": false,
+  "publication_eligible": false
+}

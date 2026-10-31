@@ -1,5 +1,11 @@
 # Local layout-guided reading
 
+Region reading and source-table reconciliation now also write a `structured/`
+package using the shared block/span exporter. It retains raw alternatives and
+unreviewed structural relationships. [Implementation, source maps and measured results](2026-10-31-structure-validation.md)
+separate the unchanged OCR score from the development retrieval gains and rejected
+local-model answers.
+
 For a source-to-output review, use `pdf-document-map --document document.json
 --layout layout.json --notes review-notes.json --output out/page-map --json`.
 It checks existing PDF/raster hashes and page/block bindings, then writes a separate

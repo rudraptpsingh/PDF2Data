@@ -1,0 +1,2044 @@
+{
+  "documents": 70,
+  "successful": 70,
+  "errors": 0,
+  "all_inputs_unchanged": true,
+  "wall_seconds": 4.148278333013877,
+  "semantic_fidelity_evaluated": false,
+  "results": [
+    {
+      "id": "043643a7163393d0f0ab",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "4072c36a8917040ca601c29cfb89d373f782ce02c5f0f8b67ab667331cfcdcb4",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "5cc9fa528540404003e21de83ec212c41d330cae7e873ac6aa780505e3a0e39d",
+        "input_document_sha256": "4072c36a8917040ca601c29cfb89d373f782ce02c5f0f8b67ab667331cfcdcb4",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 11,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "07f467dcb0227f128ae1",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "0dc966d74748b59128d55df08f4c329095c4e3411ebaf7bb607106e16f7c02b7",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "d5ed5801415d3444c947527376c7b428ed23b70a11764700914b1ec1ccb84768",
+        "input_document_sha256": "0dc966d74748b59128d55df08f4c329095c4e3411ebaf7bb607106e16f7c02b7",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 24,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 3,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "0ef782f4c2bae8166f36",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "80708baa1fc001a17d6b5b19f0b0a37397294a9f513045d3e462f2f0e92bdeea",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "6a19349961cfa7b40412e8938f3e54d101b8ba1f3eaf5948b2900468e8fa19dc",
+        "input_document_sha256": "80708baa1fc001a17d6b5b19f0b0a37397294a9f513045d3e462f2f0e92bdeea",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 7,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "10d28d6a003ce9f1a19d",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "a83f93d21bfca12681fd371bab09eaefceffe5559f07d64e0f14c31a0fc1b2f0",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "ad37dce7419f547462ae244e1e635b116b687de9f956e23598bbc88390831208",
+        "input_document_sha256": "a83f93d21bfca12681fd371bab09eaefceffe5559f07d64e0f14c31a0fc1b2f0",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 5,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "12cfab4e7e6a34050b52",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "5cf44bca5871eff9a81aa94b7be487ee6ad4cc8976006a0bdacc0f69a72e015c",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "9b4477326521fc7cc6ac0b57d06a5320838efab1ebf081064120294b94e4033e",
+        "input_document_sha256": "5cf44bca5871eff9a81aa94b7be487ee6ad4cc8976006a0bdacc0f69a72e015c",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 37,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "12e81c6fcc470cd97485",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "881203577eab96d11af380aa0e48c5513d160bda34edeb03e0cbfa117698e933",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "573ba9eacf6aee5ab35fe9a760b9c8e544403f1290be954eed12934ddc1bf99b",
+        "input_document_sha256": "881203577eab96d11af380aa0e48c5513d160bda34edeb03e0cbfa117698e933",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 0,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "144a285a00d9f886a641",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "2d434fde0e48b2a7161f4bf096909f4039e1122f68fc71783b67f339207b0d0c",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "66c97fedebaa4caf80df72b393b0840d28f437b863cda68c819f068b166308cd",
+        "input_document_sha256": "2d434fde0e48b2a7161f4bf096909f4039e1122f68fc71783b67f339207b0d0c",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 14,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "154b85bf121050852617",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "72f4e1deaf1b2db117e6b0fd2b5ea1caff98851e7a9b96a61abfb7560851de0e",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "8baef0dae173530e0835a13aadd1f4f4c816dd16b8cc11d28e4a21a901b09036",
+        "input_document_sha256": "72f4e1deaf1b2db117e6b0fd2b5ea1caff98851e7a9b96a61abfb7560851de0e",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 4,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 1,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "1a7af2b151c8b0b0c1bc",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "b9186e478fee9234667f83a8c3b68922465f71bb3f4328bb609fe8641fe0f612",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "21789dd264ebc85d9f97a581fca014299871f7245d767d423b5cab12e57c850f",
+        "input_document_sha256": "b9186e478fee9234667f83a8c3b68922465f71bb3f4328bb609fe8641fe0f612",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 18,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "1c28cd81eaa0f3040358",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "ad56ee73c77f1446fb4c3ee33e65fce129bd5f8fae1d6477e4ae639a3dd3dcd7",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "478760d16210891b6e86e5191328a8feb11eea41d778af073f9d0eb38c5ed6bc",
+        "input_document_sha256": "ad56ee73c77f1446fb4c3ee33e65fce129bd5f8fae1d6477e4ae639a3dd3dcd7",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 96,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "1e8486d0b6f92a56e956",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "1cda9791fb1c36936621034376d9b9fa0614a6a619015ebe803422a50014565a",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "32035beee2d7d13c5e356da72ebc70a0f0931a86bdd5f7fd761a8d430b476555",
+        "input_document_sha256": "1cda9791fb1c36936621034376d9b9fa0614a6a619015ebe803422a50014565a",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 22,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "20e8c65e827cddd427b4",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "a5410dcb31a65023450d474e1ba113b3d5f053513c41746518d99399c08ca429",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "bedbda75c160ce112751d2cf11359651a362da1af2427bbc36e265076a3f5b81",
+        "input_document_sha256": "a5410dcb31a65023450d474e1ba113b3d5f053513c41746518d99399c08ca429",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 54,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "21aed854333b7b062885",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "99c632f8585f892d0dfe17d345260317ad0c2d880a9b19a4f384a1034fcd03fb",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "26ab4fb5b708f59f005b9a9f8494676ef521aae8d0663be522dc6850d83bb746",
+        "input_document_sha256": "99c632f8585f892d0dfe17d345260317ad0c2d880a9b19a4f384a1034fcd03fb",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 5,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 2,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "23e4a3b25cf4d1af175a",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "5707f7ece5fcb28321a896777440137629ec7c8bf8b69765f62da86e9a07ee36",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "18d940d2f86f808c07b92d8b7b11d31178dc0a88a4464265695d6c113fb7d953",
+        "input_document_sha256": "5707f7ece5fcb28321a896777440137629ec7c8bf8b69765f62da86e9a07ee36",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 15,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "24c3315900c1a824ff91",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "42cee7ef081ab9c33df38e51f2ce4edc5654a7f635c3ec93066a9b65f8f21801",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "c28f2b5dceaae8a755cde4b6356252c394f4b153d054c7d900bf7204d116a524",
+        "input_document_sha256": "42cee7ef081ab9c33df38e51f2ce4edc5654a7f635c3ec93066a9b65f8f21801",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 19,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "2cb216cbabc91e8fddc2",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "b55ae8dccda21a665467ec32ec17a5da67d06485459ef9ef37d4520e5afd210e",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "e016078659d2cbc39231415295056fe79970762e80c6d6ed50b8486e93bff704",
+        "input_document_sha256": "b55ae8dccda21a665467ec32ec17a5da67d06485459ef9ef37d4520e5afd210e",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 88,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "2f35600149ec2a988ff8",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "625c82be83f1aacccd4652a3b6319595f44c72b760bf9db66efa9830485fda30",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "0842d029e735a57ee1828aec6e6ab23ca0684d9f87f8a1a439227639be5ae3c5",
+        "input_document_sha256": "625c82be83f1aacccd4652a3b6319595f44c72b760bf9db66efa9830485fda30",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 9,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "31f20cdbf05b1a980743",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "8f6559523bea546c6d2c2b45a322fbdf1d7c1cd179bc9700e4547267f607a3c0",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "7d4cf08f9a8a33ec118cbd3f3afc5a811b23a1d61d0ec18bd620a1d10a85447a",
+        "input_document_sha256": "8f6559523bea546c6d2c2b45a322fbdf1d7c1cd179bc9700e4547267f607a3c0",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 9,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "35c945d10dc1521d4c54",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "ce3a32655331f685fac5a5172c0e87ceabf308d64d892d77924df42f30386ed3",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "30d34b198d50e01c1d2616b83060bc5eaf79895b14f1ebc24a96080bd04bf050",
+        "input_document_sha256": "ce3a32655331f685fac5a5172c0e87ceabf308d64d892d77924df42f30386ed3",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 2,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "3764d52520906a2c6458",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "8396bdb94e45780a0609f2207304425442fa93882fc69585b93bf8a41802da07",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "6a08970e2ad99cbd67379ed26f2cf92a7f2a3070b967127597bcfdeda2c01fa3",
+        "input_document_sha256": "8396bdb94e45780a0609f2207304425442fa93882fc69585b93bf8a41802da07",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 8,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "37b171f199727c0d6b1a",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "55b9824191a795af9ba1a89503ef7167d7831c72e328dcd6b8673d536d323d26",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "ef7b8c6275d5d04d2b9b811b33c4825737c563e84972f64be9f9334a8bc3c174",
+        "input_document_sha256": "55b9824191a795af9ba1a89503ef7167d7831c72e328dcd6b8673d536d323d26",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 22,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "3eccf7755cb1780338ad",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "55d06253a9b3451665097dab8e312b2a27a9f8986680f4ed5d8e310073489429",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "c65bbe35df9880f8c80c732620d681d1122ee30aa7e89bcf4e5ff428dd731bcd",
+        "input_document_sha256": "55d06253a9b3451665097dab8e312b2a27a9f8986680f4ed5d8e310073489429",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 3,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "4279fdff047bd1ae1c2f",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "80f140ef6c20d1b9efef9985ca858381d371635b70b08e759849444474ae2aa8",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "ad366d59604f91100f40ef8b866618c8769d43a5d36c46f00f72a25a4bf4d2f9",
+        "input_document_sha256": "80f140ef6c20d1b9efef9985ca858381d371635b70b08e759849444474ae2aa8",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 14,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "45c0fc8f081b40425d83",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "71dcc3fe16b31dfcc0845fa4ff9f4d55999e0ecef597ccb9d7cc5a16544e13d5",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "7dd0ba7c8d80ba642a8538d3f99858b412f36d2f8010025fc90e028ead87bd12",
+        "input_document_sha256": "71dcc3fe16b31dfcc0845fa4ff9f4d55999e0ecef597ccb9d7cc5a16544e13d5",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 19,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "4cdf93beb442b6418d86",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "9d1ca25aacf948a03d93e0709f0adf9ece6c624e6ae329a5b9c9403b48a944e4",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "c4f98d467c50d8f76595c3241c76deabbb5841eb2a0d99dc1e99e9a09e3e60d1",
+        "input_document_sha256": "9d1ca25aacf948a03d93e0709f0adf9ece6c624e6ae329a5b9c9403b48a944e4",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 7,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "4e6fe361db941d355312",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "f7bf07cb9d2976696f64d05999f8774e663f24269789a641ce5f55698dd6ed5d",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "2409a320a933e781c1c18bd06fe608309c5215dc5618ab786907f7f601c8f513",
+        "input_document_sha256": "f7bf07cb9d2976696f64d05999f8774e663f24269789a641ce5f55698dd6ed5d",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 25,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "666570d6b882e6043e61",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "b7fb0e7857b6273bde829d675ba972f46b4e6967b5d07d720c032541dc4fe5ed",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "5033dd63635e3975b1a0c7724f0b5a5c4fcd8a9d1073eec58697ec65202bedfa",
+        "input_document_sha256": "b7fb0e7857b6273bde829d675ba972f46b4e6967b5d07d720c032541dc4fe5ed",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 30,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "68ce02045bff458fcaee",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "87b8945519925614092ce927c24b4c206bd6bf8416df65be327eae90037a9317",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "faa1dd9667c7c23f82ff14d91835722bc90966f11f17b0eae6d65c6610ba3f2f",
+        "input_document_sha256": "87b8945519925614092ce927c24b4c206bd6bf8416df65be327eae90037a9317",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 1,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "6aa83274f870e59896d1",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "bc2a70768ab27d1cb708cbeb7f102e2d2ce21438206a2c1dd266e0fd45f25ad3",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "db058c76975f8b319331098dea71d9d1ba8d0680c52211b8caf29f6e9b06ce2c",
+        "input_document_sha256": "bc2a70768ab27d1cb708cbeb7f102e2d2ce21438206a2c1dd266e0fd45f25ad3",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 48,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 7,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "6fd9122cdd063afecad9",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "d9273921d3e041a2e819f9c6258ad53fb753bd33d5b8ae219fff324a7379f14e",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "e78563f46648308b2db38856ffa80437f2025e72953b2ce3815047ad6298f7d8",
+        "input_document_sha256": "d9273921d3e041a2e819f9c6258ad53fb753bd33d5b8ae219fff324a7379f14e",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 51,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "7178e3265b2cd797aa5f",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "9ed245a80d786310abecdf4bcc4027e56fcb1e6ec2634b843afeb4b221bf8325",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "adff34855ab00fa1ae6debceb9549015d697572387c4b8a19a434d2217e815b5",
+        "input_document_sha256": "9ed245a80d786310abecdf4bcc4027e56fcb1e6ec2634b843afeb4b221bf8325",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 14,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "71fb7710a4570d6e35a0",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "759b05a4b97296c848ae67ee7c8f5c9bcb001bb72a309dc10b65714bf569d93b",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "a3cb5e9cbfb234562b5a1376be5a170eb31c31d095833bab3ea23f88ec54db80",
+        "input_document_sha256": "759b05a4b97296c848ae67ee7c8f5c9bcb001bb72a309dc10b65714bf569d93b",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 27,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "781aef11bdbd6dc93a5b",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "24c2c68758ab84ec75d0815864069ea30d9f4585ee78f251490a77195456a3db",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "60e589b3bdc4e78f989eb8179cac1fd5ea8db8659af7da734aa22f9b654f9e82",
+        "input_document_sha256": "24c2c68758ab84ec75d0815864069ea30d9f4585ee78f251490a77195456a3db",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 3,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "79b09a89264628ac53c8",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "11f370b82d808463e83e51ba46f6a78fbfbfca1a3b85056abedb1b195dfe50d7",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "86183f4a7f04ae8646cf53acd32bbec5450623c281b9a18087640d322fe99212",
+        "input_document_sha256": "11f370b82d808463e83e51ba46f6a78fbfbfca1a3b85056abedb1b195dfe50d7",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 3,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "7d5625fce3963f17196a",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "38468808e47c3be1a041ad30d4f68ab3e959cd9904dfdc9146d582e0436e501b",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "ad740ff857c6c3522d3de7608f45fdc25618e627341db6b0b92a45bcf11414bd",
+        "input_document_sha256": "38468808e47c3be1a041ad30d4f68ab3e959cd9904dfdc9146d582e0436e501b",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 6,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "7fba52812c1ef1e22669",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "2c5bfed1fd61c326b824f787d5e90745370396289a87ec59ab6e3424ed8b1971",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "4bb47f6eb4479e72478fafaf36400e3e3847d28a410e6f776f57b761b6b13d5a",
+        "input_document_sha256": "2c5bfed1fd61c326b824f787d5e90745370396289a87ec59ab6e3424ed8b1971",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 21,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 2,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "80077a66c378b6fe1e49",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "1ad822565685f6315b676fbc85fd7c380eb8afe467fb531c656dff0da9906bc5",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "b40f3c56b0bb2db60855b54b9dacf4fdbcd9a25407d19f18c6f52220430aee38",
+        "input_document_sha256": "1ad822565685f6315b676fbc85fd7c380eb8afe467fb531c656dff0da9906bc5",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 13,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "829598110f4495dcd543",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "8919064fb7cef416868425131cbe3afbeb99bcb3a5e53c447898372a175357cb",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "5eef8a98879115336f5b3c5306fb9273fc88d40e90c0d79ca7117a49f67597d4",
+        "input_document_sha256": "8919064fb7cef416868425131cbe3afbeb99bcb3a5e53c447898372a175357cb",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 9,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "8440e5d927c7ddbaca2c",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "36406bf8218f15733d47ba816af8f73acdddcc64681d0880037ee9262acb9b89",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "3ac0820d1a3441c092625ce9d129a1c9e4ccc0c4063a5df07c3b3dc2aa2d9bfa",
+        "input_document_sha256": "36406bf8218f15733d47ba816af8f73acdddcc64681d0880037ee9262acb9b89",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 56,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "84ce2811ec88e2410cf9",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "9894909dc5aa351419d7232bab9dfd66604481774f79e5c568b864bc37b205c3",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "48a0dd3f0d149698aa5f75447cf4ddc13ec1c06a1542b2850e848d0c53761604",
+        "input_document_sha256": "9894909dc5aa351419d7232bab9dfd66604481774f79e5c568b864bc37b205c3",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 11,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "85aa799722f9f7781a7b",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "00a8db11ebe5a2b9c4d6ac41ddf177b0712434705221f1b8967c418e0bbeb2e4",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "b750fae4d75a1c321645916e0d9b7ce28e1c51da0d22d1e3bc856c9e8943aa96",
+        "input_document_sha256": "00a8db11ebe5a2b9c4d6ac41ddf177b0712434705221f1b8967c418e0bbeb2e4",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 18,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "8b2dc50f310767db4a1e",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "46fe9cfc9288e70cad7aadbfa357b2354e303de7dc80fcf0bac4513ab7d5065b",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "382a90f646126c1569df780f7082dec3a5c78792f4135bdb31427af96939c35d",
+        "input_document_sha256": "46fe9cfc9288e70cad7aadbfa357b2354e303de7dc80fcf0bac4513ab7d5065b",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 13,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "8eedbded5bf13676da3c",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "973f68614fa0399a959478b77c1b7414092ea3e144c05334dfa26fbeb4b8520e",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "3b0ba23e06932486183ce53224df4ebe710026674ae12deb057547453d3a6b79",
+        "input_document_sha256": "973f68614fa0399a959478b77c1b7414092ea3e144c05334dfa26fbeb4b8520e",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 6,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "9214060db1f7ddc3afb5",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "b5001d43b6fbb4076ee832879c71a6437aff70af7521f7d8380a5c45da843c25",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "8e966415e8f18ea89aba2b8116a5f7fea76277737c22b1edb9fc7af9a025eed1",
+        "input_document_sha256": "b5001d43b6fbb4076ee832879c71a6437aff70af7521f7d8380a5c45da843c25",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 6,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "92d0596d3a921f488115",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "122ec47623da19c06022365fb6c5f11aed9f3389364ae424f3920bfbf5713bad",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "6f704a84d7fe516efb1e82c5913bcef5e39b6a3de61714df398513567ee964df",
+        "input_document_sha256": "122ec47623da19c06022365fb6c5f11aed9f3389364ae424f3920bfbf5713bad",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 14,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 3,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "9336f0117d0007eb7d8a",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "ee683ed9a8906a40497aa9d325f6bcb62166ec99793452d2ea2ffca88cf725fa",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "64ab07e981cabb615d5eb9a304a455fc9fce96a668023b40e945275887a58663",
+        "input_document_sha256": "ee683ed9a8906a40497aa9d325f6bcb62166ec99793452d2ea2ffca88cf725fa",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 19,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "9598ffe2bc146b539863",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "d030dcc1c7e299fb76df9b77ae304d5edc8a38a42a21c3550474b22bf7718d22",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "1de0ac9b45a7d83e193d91eb30364b430a64c50a9d8ca426fa63841eb7ed9b1f",
+        "input_document_sha256": "d030dcc1c7e299fb76df9b77ae304d5edc8a38a42a21c3550474b22bf7718d22",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 12,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "9bafae92032fcc575f1a",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "3d393c03da669c01d251aef932bbaf06581b509f0a47e373ef23c09fb5c5aa93",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "1d01f1b2e747cfdbea8242ff2a633211c7a8c4215d135cb8d71d5f72a1afa5d1",
+        "input_document_sha256": "3d393c03da669c01d251aef932bbaf06581b509f0a47e373ef23c09fb5c5aa93",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 20,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "a05a8c7d8d745315a2ad",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "2fdcf3a79755acdc63af555ba4ec325037617039e6613d0eea32f2e576e84f8a",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "f50682f2860a73c36b4f814c0f9f44105b0472e444c6b300be35d211cf702c67",
+        "input_document_sha256": "2fdcf3a79755acdc63af555ba4ec325037617039e6613d0eea32f2e576e84f8a",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 17,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "a6c24938afa1b4e99518",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "f09d585ca4f1e09f85795833f71c8af635d561fa097ac17eaef99f036b47a747",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "ce15e7ce4089c9e3e2ae734d2560bb607b62a5525e41f1bbae796b55a08763a9",
+        "input_document_sha256": "f09d585ca4f1e09f85795833f71c8af635d561fa097ac17eaef99f036b47a747",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 14,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 2,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "a6d51c6cafc9a1de58d4",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "be8c84d96d4691bb7fd62bb0be083e209544b91f663243ca233896617228b604",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "a39fa98a478abe25d1834854d874267201eca1ab754441f8c2964a61605e48ba",
+        "input_document_sha256": "be8c84d96d4691bb7fd62bb0be083e209544b91f663243ca233896617228b604",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 41,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "a7e8e0ebd0754d6ae5df",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "eae7ef25c6e54df8233ebc80003ed70288e8704d588567e09014b8c1f0907aec",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "a73546293cb93ea2e8daf4bfc5a4db46ac53cbf76cc02654aefddd7f7258daf7",
+        "input_document_sha256": "eae7ef25c6e54df8233ebc80003ed70288e8704d588567e09014b8c1f0907aec",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 17,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "ac25482518653043b6b0",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "5c65a4acc95035790f9c7e7b6b9477dcdda2818eeb117397eab7715a1717055e",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "6b14914684de8fef4335a238c3d8db632a72b58d695b2fc332af51e7fdfbdae7",
+        "input_document_sha256": "5c65a4acc95035790f9c7e7b6b9477dcdda2818eeb117397eab7715a1717055e",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 15,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 1,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "ad4cabefc8e4938480cc",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "000d5c74f607bae988ecc4fc3e9208ca9ecc86baef5978293e3f5111a36f0379",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "a225881fba5369e25e3826e414ad162332bf32403876ad87e4f78c3934be4ac0",
+        "input_document_sha256": "000d5c74f607bae988ecc4fc3e9208ca9ecc86baef5978293e3f5111a36f0379",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 12,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "aed6d5cd22010c7da801",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "f931800840cafe5d1e373eedfbfebc32a65d390ed92055e54ed8de097c47aaf1",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "28d2db9c90c4c873161f5be4e33e78d393f8ec4a0e25f98a37194447680ec562",
+        "input_document_sha256": "f931800840cafe5d1e373eedfbfebc32a65d390ed92055e54ed8de097c47aaf1",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 20,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "b8ba278750839245d699",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "4398ec7effa69cbb3630a385bc8000960095debcbc4429843e0fb09ff8e9887f",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "6f9aa1335919404843de1564e76ba020803f091c0a26fc858cdef353469a9b55",
+        "input_document_sha256": "4398ec7effa69cbb3630a385bc8000960095debcbc4429843e0fb09ff8e9887f",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 0,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 1,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "bbad770db5b6836e2640",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "d2561c43cc03c8a5d104142b6b9f423376026f209fcf6ccf0dd8f1c7ef915dea",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "d7846c540e9ecc7bb44624ed6a0ef91f2814b24ef5d652741bc61fce6a349ab6",
+        "input_document_sha256": "d2561c43cc03c8a5d104142b6b9f423376026f209fcf6ccf0dd8f1c7ef915dea",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 26,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "bc1ba74c9df53535768f",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "8e239113e50d532a32377dc07edbd7e91cb61c73e4cfceee9e8dd38505e42233",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "c0dff7b493f5bd51729029458fbdde46a1a0a6951a8cd971ad6fa4d9d6e7318f",
+        "input_document_sha256": "8e239113e50d532a32377dc07edbd7e91cb61c73e4cfceee9e8dd38505e42233",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 12,
+        "alternative_readings": 4,
+        "structural_edge_counts": {
+          "alternative_reading_of": 4
+        },
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "bc4adf710ca29ac0d208",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "2aacdedff60405349f50edfef53d51248d54567ec1c1a71192e2d2f0e86e4c51",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "c6817819a70cf0f147ff08f0a5c6e25e6690387008e38cd931a60592b92aa7ec",
+        "input_document_sha256": "2aacdedff60405349f50edfef53d51248d54567ec1c1a71192e2d2f0e86e4c51",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 19,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "bdb61cd0ebe2d1a7df2d",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "430a41b5d75233b98bd5266769a18bed4c7151f4cc41946643ee85e95375be5e",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "faf225e02cc5e6b486b42471b2af363ef058611b2527ce8245be6e31671294b2",
+        "input_document_sha256": "430a41b5d75233b98bd5266769a18bed4c7151f4cc41946643ee85e95375be5e",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 40,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "c47cc5d50205388d646f",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "144a1caa2210ca09981d228429eeb70a8f5f928241d9f0d1d906cefaa44754a5",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "9b03383f16d44f51e0853440f296e7ef5aa6f86458d6c9aed9256f1b23c99b68",
+        "input_document_sha256": "144a1caa2210ca09981d228429eeb70a8f5f928241d9f0d1d906cefaa44754a5",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 12,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 2,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "c927a4e48c288a6d93b5",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "6a408f951bb0347031fb970758af78cc9824af773a6dad9b7d7a322bbbe9f115",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "696452c1b767f2faf3720ffa2959441696ba107c967e018fd4bbd4108c93f7c2",
+        "input_document_sha256": "6a408f951bb0347031fb970758af78cc9824af773a6dad9b7d7a322bbbe9f115",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 13,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "d33098543f2978a33ebb",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "ff7c96e14e6a01a600d44d93d95ae839dabd8e34436bf33b4b43f0027b057dcf",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "e9c747cfa4f24882ef920fc8486644de7013469ee138e27da4c8de6a86434c12",
+        "input_document_sha256": "ff7c96e14e6a01a600d44d93d95ae839dabd8e34436bf33b4b43f0027b057dcf",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 19,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "d6b5cfc70c994bad609a",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "173c5ab3eec3bf4bba90bba98e18a3d8dc3ef414f9762f7088dfc625a91f08e7",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "4a0c5065d6c20bff78fd701b482d77629c635e37e74232f25c88e2baf26cd295",
+        "input_document_sha256": "173c5ab3eec3bf4bba90bba98e18a3d8dc3ef414f9762f7088dfc625a91f08e7",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 0,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "d6cf38d965f1d97f0362",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "85370915661cd167f0283e7a4b8a7d77beca2e99276e141e4b4de45791d9b4b9",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "2c545ca9776b99f81101a4d159defa22b694d63a3c495a8ec9075502b2cea891",
+        "input_document_sha256": "85370915661cd167f0283e7a4b8a7d77beca2e99276e141e4b4de45791d9b4b9",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 18,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "db4059ab5394c2c7566d",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "547b0ac04980501d669b1496288fafbf177ec5460906cebd511a651cf9701aea",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "b9eaa8b8320f004ecd051556e92b88bf4285e957d1145dff934522ecc6481a9a",
+        "input_document_sha256": "547b0ac04980501d669b1496288fafbf177ec5460906cebd511a651cf9701aea",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 18,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "e3879be01e49d29ea793",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "2adf9e349c4fd91d79ac6fc1d24c78c7acce2bcdb16dd72ff3a571c05b8d5d4c",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "fca2affd955a70e2272b284bd18811f87b74b277af82127c883542328f48717d",
+        "input_document_sha256": "2adf9e349c4fd91d79ac6fc1d24c78c7acce2bcdb16dd72ff3a571c05b8d5d4c",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 1,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "ea7bd798f777b9488ae5",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "6a1be48ed64c089aed4be57fcefc4783370a4cc185eeb89534d395dc4db2c4ad",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "08e9dedce22dfc447085c5226eb3a7bc3f29bed1f5ee2b4120f7c5f4cab31a93",
+        "input_document_sha256": "6a1be48ed64c089aed4be57fcefc4783370a4cc185eeb89534d395dc4db2c4ad",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 11,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 2,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "f5a661d46d7260f2bcfd",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "8956e6eba1708fa62649c1c94fc8df9d052b56d6e5a33812429eceab7b7575d0",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "f7a819976115e43a498a94222642305561cd91d181f900f85c6211cfe3b13e0e",
+        "input_document_sha256": "8956e6eba1708fa62649c1c94fc8df9d052b56d6e5a33812429eceab7b7575d0",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 7,
+        "alternative_readings": 0,
+        "structural_edge_counts": {},
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "fcb755a14b8fe8d38470",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "e182f62230520c70598d0e6cef71014d4b020381054241ffe7b8c258f3c187b4",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "eb67320ddf60fe48fef2f39ce3f75a1773417f5977c7b52a2b950d97aa3c124b",
+        "input_document_sha256": "e182f62230520c70598d0e6cef71014d4b020381054241ffe7b8c258f3c187b4",
+        "layout_sha256": "1f729e0e10e59ac034cfa4eacca2a9671909dc34a81d4f16cd0a86211f028cb4",
+        "pages": 1,
+        "raw_regions": 60,
+        "alternative_readings": 10,
+        "structural_edge_counts": {
+          "alternative_reading_of": 10
+        },
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    }
+  ]
+}

@@ -84,11 +84,18 @@ def html_document(data,has_docx,continuous):
     sections=[]
     for p in pages:
         number=p['page'];q=quality[number];tables=[t for t in data['tables'] if t['page']==number]
+        reading='<pre class="parsed">'+escape(p['text'])+'</pre>'
+        if data.get('region_adapter'):
+            from .document_blocks import render_blocks
+            subset={**data,'document_blocks':{**data['document_blocks'],'blocks':[b for b in data['document_blocks']['blocks'] if b['spans'][0]['page']==number]}}
+            reading=render_blocks(subset,id_prefix='page-view-')[1]
+            reading+='<details><summary>Raw region transcript, including alternative readings</summary><pre class="parsed">'+escape(p['text'])+'</pre></details>'
+            tables=[]  # already placed by the same shared source renderer
         sections.append(f'''<section class="page" id="page-{number}" {'hidden' if number!=pages[0]['page'] else ''}>
 <div class="label">Original PDF · page {number}</div>
 <div class="source"><img src="assets/page-{number:04d}.png" alt="Original PDF page {number}"></div>
 <div class="reading"><div class="reading-head"><h2>Parsed content</h2><span class="badge">{escape(q['outcome'].replace('_',' '))}</span></div>
-<pre class="parsed">{escape(p['text'])}</pre>
+{reading}
 {('<h3>Reconstructed table candidates</h3><p class="muted">Check rows, columns and values against the original above. Merged cell semantics are retained in JSON when available.</p>'+''.join('<div class="table-scroll">'+table_html(t)+'</div>' for t in tables)) if tables else ''}
 <details><summary>Extraction details</summary><p>Reader: {escape(p['method'])} · {len(p['text'])} characters</p><p>Page SHA256 <code>{escape(p['text_sha256'])}</code></p><pre>{escape(json.dumps({'failed_components':q.get('failed_components',[]),'missing_evidence':q.get('missing_evidence',[])},indent=2))}</pre></details></div></section>''')
     options=''.join(f'<option value="{p["page"]}">Page {p["page"]} of {len(pages)}</option>' for p in pages)

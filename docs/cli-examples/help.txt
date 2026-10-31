@@ -1,12 +1,12 @@
 usage: pdf2data [-h]
-                {benchmark-prepare,benchmark-run,benchmark-score,benchmark-compare,pdf-layout-detect,pdf-region-read,pdf-table-reconcile,pdf-document-map,benchmark-reconcile-tables,doctor,embed,verify,pdf-extract,legal-l1,verify-legal-l1,l1-qwen-prepare,l1-qwen-run,l1-qwen-validate,l1-qwen-reproof,export-l1-data,pdf-repair,pdf-native-repair,pdf-batch,validate-evidence,verify-package,export-readable,render-package,import-paddle-layout,review-package,ocr-consensus,audit-review,audit-rendered-review,pdf-compare,pdf-quality,pdf-quality-batch,pdf-repair-queue,pdf-auto-proof,pdf-repair-status,pdf-footnote-proof,pdf-vision-merge,pdf-vision-merge-batch,pdf-blank-commit,pdf-footnote-repair,pdf-repair-commit,pdf-review-queue,pdf-review-feedback,pdf-review-route,pdf-review-proposals,pdf-review-filter,workspace,serve}
+                {benchmark-prepare,benchmark-run,benchmark-score,benchmark-compare,pdf-layout-detect,pdf-region-read,pdf-table-reconcile,pdf-document-map,pdf-structure-export,pdf-structure-evaluate,benchmark-structure-run,benchmark-reconcile-tables,doctor,embed,verify,pdf-extract,legal-l1,verify-legal-l1,l1-qwen-prepare,l1-qwen-run,l1-qwen-validate,l1-qwen-reproof,export-l1-data,pdf-repair,pdf-native-repair,pdf-batch,validate-evidence,verify-package,export-readable,render-package,import-paddle-layout,review-package,ocr-consensus,audit-review,audit-rendered-review,pdf-compare,pdf-quality,pdf-quality-batch,pdf-repair-queue,pdf-auto-proof,pdf-repair-status,pdf-footnote-proof,pdf-vision-merge,pdf-vision-merge-batch,pdf-blank-commit,pdf-footnote-repair,pdf-repair-commit,pdf-review-queue,pdf-review-feedback,pdf-review-route,pdf-review-proposals,pdf-review-filter,workspace,serve}
                 ...
 
 PDF2Data: source-backed PDF extraction, structured data, quality, local AI
 repair and embeddings
 
 positional arguments:
-  {benchmark-prepare,benchmark-run,benchmark-score,benchmark-compare,pdf-layout-detect,pdf-region-read,pdf-table-reconcile,pdf-document-map,benchmark-reconcile-tables,doctor,embed,verify,pdf-extract,legal-l1,verify-legal-l1,l1-qwen-prepare,l1-qwen-run,l1-qwen-validate,l1-qwen-reproof,export-l1-data,pdf-repair,pdf-native-repair,pdf-batch,validate-evidence,verify-package,export-readable,render-package,import-paddle-layout,review-package,ocr-consensus,audit-review,audit-rendered-review,pdf-compare,pdf-quality,pdf-quality-batch,pdf-repair-queue,pdf-auto-proof,pdf-repair-status,pdf-footnote-proof,pdf-vision-merge,pdf-vision-merge-batch,pdf-blank-commit,pdf-footnote-repair,pdf-repair-commit,pdf-review-queue,pdf-review-feedback,pdf-review-route,pdf-review-proposals,pdf-review-filter,workspace,serve}
+  {benchmark-prepare,benchmark-run,benchmark-score,benchmark-compare,pdf-layout-detect,pdf-region-read,pdf-table-reconcile,pdf-document-map,pdf-structure-export,pdf-structure-evaluate,benchmark-structure-run,benchmark-reconcile-tables,doctor,embed,verify,pdf-extract,legal-l1,verify-legal-l1,l1-qwen-prepare,l1-qwen-run,l1-qwen-validate,l1-qwen-reproof,export-l1-data,pdf-repair,pdf-native-repair,pdf-batch,validate-evidence,verify-package,export-readable,render-package,import-paddle-layout,review-package,ocr-consensus,audit-review,audit-rendered-review,pdf-compare,pdf-quality,pdf-quality-batch,pdf-repair-queue,pdf-auto-proof,pdf-repair-status,pdf-footnote-proof,pdf-vision-merge,pdf-vision-merge-batch,pdf-blank-commit,pdf-footnote-repair,pdf-repair-commit,pdf-review-queue,pdf-review-feedback,pdf-review-route,pdf-review-proposals,pdf-review-filter,workspace,serve}
     benchmark-prepare   freeze the pinned public olmOCR suite without label-
                         based selection
     benchmark-run       run source-only extraction profiles over a frozen
@@ -23,6 +23,16 @@ positional arguments:
                         and exact glyph evidence
     pdf-document-map    map existing extracted pages and supplied review notes
                         to verified original rasters
+    pdf-structure-export
+                        adapt immutable region readings to shared source-
+                        linked structure, readable exports and search
+                        projections
+    pdf-structure-evaluate
+                        compare fixed-budget lexical retrieval of raw versus
+                        structured source evidence
+    benchmark-structure-run
+                        derive shared-structure predictions on a frozen
+                        benchmark without rerunning OCR
     benchmark-reconcile-tables
                         reconcile native source tables without rerunning model
                         inference

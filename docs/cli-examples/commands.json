@@ -196,6 +196,18 @@
     {
       "name": "pdf-document-map",
       "purpose": "map existing page/block exports and supplied review notes to verified original rasters"
+    },
+    {
+      "name": "pdf-structure-export",
+      "purpose": "adapt region readings into shared source-linked blocks, relations and search projections"
+    },
+    {
+      "name": "pdf-structure-evaluate",
+      "purpose": "compare fixed-budget lexical retrieval on source-reviewed development cases"
+    },
+    {
+      "name": "benchmark-structure-run",
+      "purpose": "derive shared-structure benchmark predictions without rerunning OCR"
     }
   ]
 }

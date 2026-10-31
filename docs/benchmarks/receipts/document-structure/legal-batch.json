@@ -1,0 +1,81 @@
+{
+  "documents": 2,
+  "successful": 2,
+  "errors": 0,
+  "all_inputs_unchanged": true,
+  "wall_seconds": 0.1357596250018105,
+  "semantic_fidelity_evaluated": false,
+  "results": [
+    {
+      "id": "0bb718f69b9e7ff5939a",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "afca534dfb37671fa0ff978fefe269d5db9b31155be597beee711871689ca7b2",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "77a5884d98d8a9f1887825f94bbc68d39f130d682f789975387713ff9d359e77",
+        "input_document_sha256": "afca534dfb37671fa0ff978fefe269d5db9b31155be597beee711871689ca7b2",
+        "layout_sha256": "1fd786015a3bac14e8f84e2c05c8fc170ef64b955cb7cd69a1211c6d7fbfa2f8",
+        "pages": 2,
+        "raw_regions": 24,
+        "alternative_readings": 0,
+        "structural_edge_counts": {
+          "continues": 1
+        },
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 1,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    },
+    {
+      "id": "56bebe798f88ed13c0d7",
+      "returncode": 0,
+      "input_unchanged": true,
+      "raw_document_sha256": "94dedf1e2222b7cda0dbd014da572048e9d1dcb8c37ec9787c429943e4a0f818",
+      "receipt": {
+        "schema_version": "pdf2data.region-structure-export.v1",
+        "source_pdf_sha256": "17b7dd0fe13e4e4f1ca5d4793c7485d66bb5e1b527f9b846a44564577f4d49ff",
+        "input_document_sha256": "94dedf1e2222b7cda0dbd014da572048e9d1dcb8c37ec9787c429943e4a0f818",
+        "layout_sha256": "1fd786015a3bac14e8f84e2c05c8fc170ef64b955cb7cd69a1211c6d7fbfa2f8",
+        "pages": 6,
+        "raw_regions": 62,
+        "alternative_readings": 2,
+        "structural_edge_counts": {
+          "alternative_reading_of": 2,
+          "introduced_by": 2,
+          "within_quote": 16,
+          "list_child_of": 3,
+          "continues": 5,
+          "member_of_illustration": 12,
+          "within_scenario": 8,
+          "references": 3,
+          "caption_of": 2,
+          "explains": 8
+        },
+        "structure_diagnostics": [],
+        "source_review_required": true,
+        "failed_reading_regions": 0,
+        "visual_review_regions": 0,
+        "source_completeness_verified": false,
+        "recognition_rerun": false,
+        "publication_eligible": false,
+        "implementation_sha256": {
+          "region_document.py": "a18d92e1c0d8dcd44ad58225664f9bb7983a9ddc58ca97983d6ef7f759d1d106",
+          "document_blocks.py": "18efe0e73e1e5a6374c75d852e6e964f73bb9c1714ef0cade5d8d3aa42db1686",
+          "readable_export.py": "ea07fed169539de1127c81fa1f5991edda30730018579b2ca04dd5e1d465c76b",
+          "page_map.py": "61c8438c8e851769cfeeb1463d674b4d16a1aeefcaa87025868ccf7cef76d875"
+        }
+      }
+    }
+  ]
+}

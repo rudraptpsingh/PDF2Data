@@ -30,6 +30,9 @@ legal relationships or rerun OCR. Use a new output folder.
 | `pdf2data pdf-region-read` | read pinned local text/table/formula candidates from verified crops |
 | `pdf2data pdf-table-reconcile` | reconcile source native tables with independently read values and symbols |
 | `pdf2data pdf-document-map` | map existing page/block exports and supplied review notes to original source rasters |
+| `pdf2data pdf-structure-export` | adapt region readings to shared blocks/spans, readable views, source relations and search projections |
+| `pdf2data pdf-structure-evaluate` | compare fixed-character-budget lexical retrieval over raw and structured evidence |
+| `pdf2data benchmark-structure-run` | derive shared-structure benchmark predictions without rerunning OCR |
 | `pdf2data benchmark-reconcile-tables` | compare source-table reconciliation without rerunning model inference |
 | `pdf2data doctor` | show installed backends and accelerator availability |
 | `pdf2data embed` | embed documents from JSONL |

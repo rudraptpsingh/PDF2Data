@@ -98,3 +98,24 @@ def test_relative_run_path_produces_hash_bound_predictions(tmp_path,monkeypatch)
     assert result['status']=='completed'
     assert all((tmp_path/'relative-run'/a['path']).is_file() for a in result['artifacts'])
     assert len(result['artifacts'])==2
+
+
+def test_structure_projection_keeps_failed_cases_and_binds_relative_prediction_paths(tmp_path,monkeypatch):
+    from local_vector_batch.benchmark import structure_projection_run
+    from local_vector_batch.region_document import assemble
+    root=fixture_suite(tmp_path);prepare(root,tmp_path/'suite',custom=True);suite=load(tmp_path/'suite/suite.json')
+    parent=tmp_path/'parent';structured=tmp_path/'structured';cases=[]
+    for index,case in enumerate(suite['cases']):
+        text='Unverified source body.'
+        raw=dict(source_pdf_sha256=case['sha256'],pages=[dict(page=1,text=text,text_sha256=sha(text.encode()),
+            blocks=[dict(region_id=case['id']+':p1:r0',kind='text',scope='body',bbox=[1,1,99,20],text=text)])],tables=[])
+        dest=structured/case['id'];write(dest/'data.json',assemble(raw))
+        write(dest/'manifest.json',dict(source_pdf_sha256=case['sha256'],files={'data.json':sha((dest/'data.json').read_bytes())}))
+        cases.append(dict(id=case['id'],pdf=case['pdf'],source_sha256=case['sha256'],status='error' if index==0 else 'completed',artifacts=[]))
+    write(parent/'run.json',dict(config=dict(suite_sha256=suite['suite_sha256']),cases=cases))
+    monkeypatch.chdir(tmp_path)
+    result=structure_projection_run(tmp_path/'suite/suite.json',parent,structured,Path('relative-structure-run'))
+    record=load(Path(result['output']))
+    assert result['errors']==1 and len(record['cases'])==2 and result['model_inference_rerun'] is False
+    assert all((tmp_path/'relative-structure-run'/a['path']).is_file() for c in record['cases'] for a in c['artifacts'])
+    assert all('manifest_sha256' in binding for binding in record['projection']['structured_manifests'])

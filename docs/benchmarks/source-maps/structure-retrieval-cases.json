@@ -1,0 +1,98 @@
+{
+  "schema_version": "pdf2data.structure-retrieval-cases.v1",
+  "source_pdf_sha256": "17b7dd0fe13e4e4f1ca5d4793c7485d66bb5e1b527f9b846a44564577f4d49ff",
+  "provenance": "source-reviewed development queries, not an independent legal holdout",
+  "cases": [
+    {
+      "id": "conditions",
+      "question": "What conditions accompany the April OM graded waiver proposal?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p1:r8",
+        "56bebe798f88ed13c0d7:p2:r0",
+        "56bebe798f88ed13c0d7:p2:r1",
+        "56bebe798f88ed13c0d7:p2:r2"
+      ]
+    },
+    {
+      "id": "intermediary",
+      "question": "Under clause 1.7, can a project with a trader PPA but no back-to-back PSA seek the proposed waiver?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p3:r6",
+        "56bebe798f88ed13c0d7:p4:r0"
+      ]
+    },
+    {
+      "id": "illustration-one",
+      "question": "For Illustration 1, what do the GNA effectiveness date and the late COD scenario show?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p4:r5",
+        "56bebe798f88ed13c0d7:p5:r0",
+        "56bebe798f88ed13c0d7:p5:r3"
+      ]
+    },
+    {
+      "id": "illustration-two",
+      "question": "In Illustration 2, what is the GNA effectiveness status and how do the explanations treat the project?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p5:r4",
+        "56bebe798f88ed13c0d7:p5:r5",
+        "56bebe798f88ed13c0d7:p6:r0",
+        "56bebe798f88ed13c0d7:p6:r1"
+      ]
+    },
+    {
+      "id": "termination",
+      "question": "Does termination of the original PPA eliminate every waiver, or is a fallback trajectory described?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p4:r3",
+        "56bebe798f88ed13c0d7:p5:r2"
+      ]
+    },
+    {
+      "id": "hypothetical",
+      "question": "Does the memorandum establish 1.12.2026 as the actual effective date?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p6:r0"
+      ]
+    },
+    {
+      "id": "submission",
+      "question": "In Illustration 2, how do already furnished and later furnished contracts affect the described waiver start?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p5:r4",
+        "56bebe798f88ed13c0d7:p5:r5",
+        "56bebe798f88ed13c0d7:p6:r1",
+        "56bebe798f88ed13c0d7:p6:r2",
+        "56bebe798f88ed13c0d7:p6:r3",
+        "56bebe798f88ed13c0d7:p6:r4"
+      ]
+    },
+    {
+      "id": "tenure",
+      "question": "What do the memorandum and Illustration 1 say about a ten-year PPA extended with the same consumer?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p4:r1",
+        "56bebe798f88ed13c0d7:p4:r2",
+        "56bebe798f88ed13c0d7:p5:r0",
+        "56bebe798f88ed13c0d7:p5:r2"
+      ]
+    },
+    {
+      "id": "minimum",
+      "question": "Which two requirements are listed under paragraph 1.5?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p3:r2",
+        "56bebe798f88ed13c0d7:p3:r3",
+        "56bebe798f88ed13c0d7:p3:r4"
+      ]
+    },
+    {
+      "id": "different-tables",
+      "question": "Is Table 1 of Regulation 13(2)(a) the same object as the first illustration table?",
+      "required_regions": [
+        "56bebe798f88ed13c0d7:p5:r0",
+        "56bebe798f88ed13c0d7:p5:r1"
+      ]
+    }
+  ]
+}

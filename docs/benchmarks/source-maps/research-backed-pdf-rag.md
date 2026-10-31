@@ -1,5 +1,10 @@
 # Source structure required for legal-PDF RAG
 
+Implementation follow-up: [shared exporter and measured validation results](../2026-10-31-structure-validation.md).
+The adapter and local retrieval diagnostic below have now been implemented. OCR
+score remains 71.75%; annotated retrieval sets improve, while local answer checks
+still reject incorrect citations. The original plan remains below for context.
+
 Reviewed 31 October 2026. Scope: the six-page supplementary explanatory memorandum
 dated 26 October 2026 and the existing local PDF2Data implementation. The source
 is not the final notification, the complete fifth-amendment draft or the principal

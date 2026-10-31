@@ -195,18 +195,25 @@ def validate_blocks(document,pages):
             cursor=hi
         if cursor!=len(page['text']):raise ValueError('document block lost source text')
 
-def render_blocks(data):
+def render_blocks(data,id_prefix=''):
     document=data.get('document_blocks') or build_blocks(data);tables={t['id']:t for t in data['tables']};md=[];html=[]
-    list_depth=-1
+    list_depth=-1;active_quote=None
     def close_list():
         nonlocal list_depth
         while list_depth>=0:html.append('</li></ol>');list_depth-=1
     for block in document['blocks']:
         kind=block['kind']
-        if kind in ('footer','header','whitespace'):continue
+        if kind in ('footer','header','whitespace','alternative_reading'):continue
+        quote=block.get('quote_id')
+        if quote!=active_quote:
+            close_list()
+            if active_quote:html.append('</blockquote>')
+            if quote:html.append('<blockquote data-source-quote="'+escape(quote,quote=True)+'">')
+            active_quote=quote
+        md_start=len(md)
         text='\n'.join(s['exact_quote'].rstrip('\n') for s in block['spans']).strip('\n');page=block['spans'][0]['page']
         if kind!='list_item':close_list()
-        attrs=f'id="{block["id"]}" data-source-page="{page}" data-semantic-state="candidate"'
+        attrs=f'id="{escape(id_prefix+block["id"],quote=True)}" data-source-page="{page}" data-semantic-state="candidate"'
         cite=f'<a class="block-source" href="source.pdf#page={page}" aria-label="Source page {page}">p{page}</a>'
         if kind=='table':
             rendered=table_html(tables[block['table_id']]);md.append(rendered);html.append(f'<figure {attrs}>{rendered}<figcaption>{cite} · Table structure candidate</figcaption></figure>')
@@ -224,7 +231,10 @@ def render_blocks(data):
             md.append('**'+text+'**' if block.get('bold_candidate') else text)
             rendered='<strong>'+escape(text)+'</strong>' if block.get('bold_candidate') else escape(text)
             html.append(f'<p {attrs} class="source-paragraph">{rendered} {cite}</p>')
+        if quote:
+            for i in range(md_start,len(md)):md[i]='\n'.join('> '+line for line in md[i].split('\n'))
     close_list()
+    if active_quote:html.append('</blockquote>')
     if document['unresolved_tables']:
         md.append('## Unresolved table candidates\n\nRaw text remains above because exact inline replacement was not proved.')
         html.append('<details><summary>Unresolved table candidates</summary><p>Raw text retained; inline replacement unproved.</p>')

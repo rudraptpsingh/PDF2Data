@@ -36,7 +36,7 @@ def main():
     validate_blocks(blocks,value['pages']);tables={t['id']:t for t in value['tables']}
     for block in blocks['blocks']:
         kind=block['kind']
-        if kind in ('footer','header','whitespace'):continue
+        if kind in ('footer','header','whitespace','alternative_reading'):continue
         if kind=='table':add_table(tables[block['table_id']]);continue
         text='\n'.join(s['exact_quote'].rstrip('\n') for s in block['spans']).strip('\n')
         style='Heading '+str(min(3,block.get('heading_level_candidate',1)+1)) if kind=='heading' else 'List Paragraph' if kind=='list_item' else 'Normal'
@@ -53,7 +53,7 @@ def main():
     doc.core_properties.author='PDF2Data';doc.core_properties.title=title
     doc.save(sys.argv[2]);body='\n'.join(p.text for p in Document(sys.argv[2]).paragraphs)
     for block in blocks['blocks']:
-        if block['kind'] in ('footer','header','whitespace','table'):continue
+        if block['kind'] in ('footer','header','whitespace','table','alternative_reading'):continue
         text='\n'.join(s['exact_quote'].rstrip('\n') for s in block['spans']).strip('\n')
         if text not in body:raise ValueError('Word output lost structured source text')
     rendered_cells=[c.text for table in Document(sys.argv[2]).tables for row in table.rows for c in row.cells]

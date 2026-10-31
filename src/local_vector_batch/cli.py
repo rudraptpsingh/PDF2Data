@@ -63,6 +63,15 @@ def parser() -> argparse.ArgumentParser:
     mapping = sub.add_parser("pdf-document-map", help="map existing extracted pages and supplied review notes to verified original rasters")
     for key in ("document", "layout", "output"):mapping.add_argument("--"+key,type=Path,required=True)
     mapping.add_argument("--notes",type=Path);mapping.add_argument("--json",action="store_true")
+    structure_export=sub.add_parser("pdf-structure-export",help="adapt immutable region readings to shared source-linked structure, readable exports and search projections")
+    for key in ("document","layout","output"):structure_export.add_argument("--"+key,type=Path,required=True)
+    structure_export.add_argument("--json",action="store_true")
+    structure_eval=sub.add_parser("pdf-structure-evaluate",help="compare fixed-budget lexical retrieval of raw versus structured source evidence")
+    for key in ("raw","structured","cases","output"):structure_eval.add_argument("--"+key,type=Path,required=True)
+    structure_eval.add_argument("--max-chars",type=int,default=6000);structure_eval.add_argument("--seed-k",type=int,default=2);structure_eval.add_argument("--json",action="store_true")
+    structure_bench=sub.add_parser("benchmark-structure-run",help="derive shared-structure predictions on a frozen benchmark without rerunning OCR")
+    for key in ("suite","run","structured","output"):structure_bench.add_argument("--"+key,type=Path,required=True)
+    structure_bench.add_argument("--json",action="store_true")
     derive = sub.add_parser("benchmark-reconcile-tables",help="reconcile native source tables without rerunning model inference")
     for key in ("suite","run","native-run","output"):derive.add_argument("--"+key,type=Path,required=True)
     derive.add_argument("--json",action="store_true")
@@ -351,7 +360,16 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command == "pdf-document-map":
+        if args.command == "benchmark-structure-run":
+            from .benchmark import structure_projection_run
+            result=structure_projection_run(args.suite,args.run,args.structured,args.output)
+        elif args.command == "pdf-structure-evaluate":
+            from .structure_evaluation import evaluate
+            result=evaluate(args.raw,args.structured,args.cases,args.output,args.max_chars,args.seed_k)
+        elif args.command == "pdf-structure-export":
+            from .region_document import export_regions
+            result=export_regions(args.document,args.layout,args.output)
+        elif args.command == "pdf-document-map":
             from .page_map import build_page_map
             result=build_page_map(args.document,args.layout,args.output,args.notes)
         elif args.command == "pdf-table-reconcile":
