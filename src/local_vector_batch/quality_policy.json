@@ -61,5 +61,7 @@
     "devnagari-chanakyanormala": "devanagari",
     "devnagari-chanakyabolda": "devanagari"
   },
-  "require_exact_marked_word_tokens": true
+  "require_exact_marked_word_tokens": true,
+  "native_raster_region_min_page_fraction": 0.0,
+  "table_geometry_containment_tolerance_points": 0.25
 }
