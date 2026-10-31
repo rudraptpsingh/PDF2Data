@@ -10,7 +10,11 @@ def canonical(value):return json.dumps(value,ensure_ascii=False,sort_keys=True,s
 
 
 def inspect_pdf2data_profile(parser_root):
-    root=Path(parser_root).resolve();src=root/'src/local_vector_batch'
+    root=Path(parser_root).resolve()
+    candidates=[root/'src/local_vector_batch',root/'local_vector_batch',root/'site-packages/local_vector_batch']
+    if root.name=='local_vector_batch':candidates.append(root)
+    src=next((p for p in candidates if (p/'legal_l1.py').is_file() and (p/'pdf_ingest.py').is_file()),None)
+    if src is None:raise ValueError('PDF2Data source checkout or installed package directory not found')
     files=sorted(p for p in src.iterdir()if p.suffix in{'.py','.json'})
     expected={'pdfplumber':version('pdfplumber'),'pypdf':version('pypdf'),
               'implementation_sha256':sha((src/'legal_l1.py').read_bytes()),
