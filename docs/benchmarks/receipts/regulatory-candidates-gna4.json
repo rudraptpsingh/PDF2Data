@@ -1,0 +1,343 @@
+{
+  "schema_version": "pdf2data.regulatory-candidates.v1",
+  "source_pdf_sha256": "d4c691b36a175c2a8207310e65cd28da3033273a7bbadd8a026465fa4dd23e79",
+  "source_package_sha256": "a7c9f487381dbeb12d694a444b5d2c9f12feb0608dfe651ace958460f1b29f03",
+  "profile_sha256": "67c8978dc74a1c100c11dce6b674c83a8db1ea9e924d7bf325bcdb1d92c3a26e",
+  "profile_id": "english-regulatory-candidates",
+  "profile_version": "1.0.0",
+  "producer_implementation": {
+    "regulatory_candidates.py": "726455ea27b8e6b1980b26432ac0838d19f0b38431a1a0a32c69e6f4449228f9",
+    "document_blocks.py": "71d65a1bd76ad50f5e8454fb903bd71fa3c45f7f6cc857ffda5f4925695da728",
+    "field_rules.py": "f3265f5957958c1de3bcf25a485d384e920849b1299635b0aad5cecfe78a3cb2",
+    "formula_observations.py": "606d42bb716bfdd7809e59a2c53ef708a24b4310a2dbef095734b0b56ad0a550",
+    "legal_l1.py": "0693ca0b0892e5229207b15da09b6a4dcca95548ca42ee5f6758fd16382eaf67",
+    "table_contexts.py": "d0e211fb5c58db5f4da7b8cd4f2b814ffd3699be802ef6bf8661c0c572e669ea",
+    "hashing.py": "069ae5b43b7194c9e1da24f9d00c2b898ecb87742e797828195e39b88b0dab52",
+    "jsonl.py": "d71c957c36566cee5a7bbd3600e11dfd35b93ebae1e57df92c59266b10eccee7"
+  },
+  "development_evaluation": {
+    "schema_version": "pdf2data.regulatory-evaluation.v1",
+    "source_pdf_sha256": "d4c691b36a175c2a8207310e65cd28da3033273a7bbadd8a026465fa4dd23e79",
+    "source_package_sha256": "a7c9f487381dbeb12d694a444b5d2c9f12feb0608dfe651ace958460f1b29f03",
+    "profile_sha256": "67c8978dc74a1c100c11dce6b674c83a8db1ea9e924d7bf325bcdb1d92c3a26e",
+    "references_sha256": "5f7b1e83b6bff45cd20a7bb56d9d9dd82535924c138a50996563d4db159a0278",
+    "reference_scope": "agent_development",
+    "reviewer": "Source/raster review by PDF2Data owner agent; not independent human gold",
+    "cases": 57,
+    "passed": 57,
+    "failed": 0,
+    "results": [
+      {
+        "id": "operations-2.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-3.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-4.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-5.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-6.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-7.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-7.2",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-7.3",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-7.4",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-8.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-9.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-10.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-10.2",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-10.3",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-11.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-12.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-13.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-13.2",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-14.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-14.2",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-14.3",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-14.4",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-14.5",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-14.6",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-14.7",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-14.8",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-15.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-16.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-17.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-18.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-19.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-19.2",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-19.3",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-20.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-21.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-22.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-23.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-24.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-25.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-26.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "operations-27.1",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "old-new-months",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "do-not-substitute-quoted-anchor",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "missing-quote-visible",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "new-instrument-literal",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "semantic-coverage-not-approval",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "table-blank-not-zero",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "no-transition-in-deletion",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "publication-not-issued-date",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "rates-preserve-scale-and-printed-currency",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "source-change-fee-no-scaling",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "threshold-and-election-window",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "land-document-window",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "procedure-window",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "transition-retains-qualification",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "explicit-any-not-global-eligibility",
+        "passed": true,
+        "errors": []
+      },
+      {
+        "id": "explicit-all-still-candidate",
+        "passed": true,
+        "errors": []
+      }
+    ],
+    "independent_corpus_accuracy_measured": false,
+    "semantic_completeness": "not_established",
+    "source_quality_changed": false,
+    "publication_eligible": false
+  },
+  "record_counts": {
+    "values": 34,
+    "references": 262,
+    "commencements": 1,
+    "amendments": 42,
+    "conditions": 54,
+    "transitions": 1
+  },
+  "native_units_accounted": 28,
+  "native_tables_accounted": 1,
+  "condition_tree_counts": {
+    "unknown": 52,
+    "any": 1,
+    "all": 1
+  },
+  "native_page_quality_counts": {
+    "auto_accepted": 9,
+    "repair_required": 1
+  },
+  "semantic_completeness": "not_established",
+  "source_quality_changed": false,
+  "publication_eligible": false
+}

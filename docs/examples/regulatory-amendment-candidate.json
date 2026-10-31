@@ -1,0 +1,537 @@
+{
+  "id": "regobs-3e464fb68200ec84703723a145b8",
+  "group": "amendments",
+  "source_pdf_sha256": "d4c691b36a175c2a8207310e65cd28da3033273a7bbadd8a026465fa4dd23e79",
+  "source_package_sha256": "a7c9f487381dbeb12d694a444b5d2c9f12feb0608dfe651ace958460f1b29f03",
+  "native_unit_id": "pdf-d4c691b36a175c2a8207310e:unit:819412fcc52bbf6655098456",
+  "native_unit_label": "13",
+  "native_unit_pointer": "/units/13",
+  "native_child_ids": [
+    "3f265d95e880997a9a5fdad99fbd54f9879c8443d56fec27bf9fc1e9ec62c384"
+  ],
+  "literal": "13.1. The words “or 18 months prior to the firm start date of Connectivity”\nshall be substituted with the words “6 months prior to the firm start\ndate of Connectivity” in sub Regulation 9.3.1 of Regulation 9.3 of the\nPrincipal Regulations.\n",
+  "source_spans": [
+    {
+      "page": 5,
+      "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+      "char_start": 1368,
+      "char_length": 240,
+      "offset_encoding": "codepoint",
+      "exact_quote": "13.1. The words “or 18 months prior to the firm start date of Connectivity”\nshall be substituted with the words “6 months prior to the firm start\ndate of Connectivity” in sub Regulation 9.3.1 of Regulation 9.3 of the\nPrincipal Regulations.\n"
+    }
+  ],
+  "profile_id": "english-regulatory-candidates",
+  "profile_version": "1.0.0",
+  "profile_sha256": "67c8978dc74a1c100c11dce6b674c83a8db1ea9e924d7bf325bcdb1d92c3a26e",
+  "status": "candidate",
+  "assertion_role": {
+    "candidate": "proposed",
+    "evidence": [
+      {
+        "literal": "DRAFT NOTIFICATION",
+        "source_spans": [
+          {
+            "page": 1,
+            "page_text_sha256": "d94acd463f8293d1213eaa3d442fba9861ac5bee499704d3f10e65ef03a605ea",
+            "char_start": 92,
+            "char_length": 18,
+            "offset_encoding": "codepoint",
+            "exact_quote": "DRAFT NOTIFICATION"
+          }
+        ]
+      }
+    ],
+    "reviewed": false
+  },
+  "source_document_role": {
+    "candidate": "draft",
+    "evidence": [
+      {
+        "literal": "DRAFT NOTIFICATION",
+        "source_spans": [
+          {
+            "page": 1,
+            "page_text_sha256": "d94acd463f8293d1213eaa3d442fba9861ac5bee499704d3f10e65ef03a605ea",
+            "char_start": 92,
+            "char_length": 18,
+            "offset_encoding": "codepoint",
+            "exact_quote": "DRAFT NOTIFICATION"
+          }
+        ]
+      }
+    ],
+    "reviewed": false
+  },
+  "required_native_unit_ids": [
+    "pdf-d4c691b36a175c2a8207310e:unit:819412fcc52bbf6655098456",
+    "pdf-d4c691b36a175c2a8207310e:unit:401303e0720f08a4c7260dd4"
+  ],
+  "native_declared_dependencies": [],
+  "source_quality_observations": [
+    {
+      "source_pdf_sha256": "d4c691b36a175c2a8207310e65cd28da3033273a7bbadd8a026465fa4dd23e79",
+      "page": 5,
+      "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+      "page_complete": true,
+      "text_region_verified": true,
+      "unresolved_visual_regions": [],
+      "source_style_regions": [],
+      "outcome": "auto_accepted",
+      "components": {
+        "source_identity": {
+          "state": "pass"
+        },
+        "text_content": {
+          "state": "pass",
+          "chars": 2523
+        },
+        "language": {
+          "state": "pass",
+          "detected_script": "latin",
+          "reader": "native_pdf_text",
+          "independent_model_confirmed": false
+        },
+        "source_render": {
+          "state": "pass",
+          "ink_pixels": 96785,
+          "unaccounted_ink_pixels": 0,
+          "receipt_sha256": "a5dcc598a665dc3d83180684fd427266ad72aebfc093bcb32b6b568cd15e721d",
+          "rendered_image_sha256": "73c54c2c154b2860f81781f8a8b12a2f9618d66f83a9ddb2cc91922afaab82f0",
+          "page_complete": true,
+          "unresolved_visual_regions": []
+        },
+        "words_and_order": {
+          "state": "pass",
+          "word_recall": 1.0,
+          "word_precision": 1.0,
+          "word_order": 1.0,
+          "marked_word_tokens_exact": true
+        },
+        "ordered_numbers": {
+          "state": "pass",
+          "selected": [
+            "24.6",
+            "1",
+            "10.2",
+            "5.8",
+            "5",
+            "10.3",
+            "5.8",
+            "11",
+            "6.3",
+            "11.1",
+            "7.2",
+            "6.3",
+            "12",
+            "7.2",
+            "12.1",
+            "7.2",
+            "13",
+            "9.3",
+            "13.1",
+            "18",
+            "6",
+            "9.3.1",
+            "9.3",
+            "13.2",
+            "9.3.5",
+            "9.3",
+            "50,000",
+            "14",
+            "14.1",
+            "1",
+            "14.2",
+            "1",
+            "5",
+            "2026"
+          ],
+          "independent": [
+            "24.6",
+            "1",
+            "10.2",
+            "5.8",
+            "5",
+            "10.3",
+            "5.8",
+            "11",
+            "6.3",
+            "11.1",
+            "7.2",
+            "6.3",
+            "12",
+            "7.2",
+            "12.1",
+            "7.2",
+            "13",
+            "9.3",
+            "13.1",
+            "18",
+            "6",
+            "9.3.1",
+            "9.3",
+            "13.2",
+            "9.3.5",
+            "9.3",
+            "50,000",
+            "14",
+            "14.1",
+            "1",
+            "14.2",
+            "1",
+            "5",
+            "2026"
+          ]
+        },
+        "ordered_operators": {
+          "state": "pass",
+          "selected": [
+            "shall",
+            "or",
+            "shall",
+            "shall",
+            "or",
+            "shall",
+            "or",
+            "shall",
+            "or",
+            "shall",
+            "or",
+            "shall",
+            "shall",
+            "shall",
+            "-",
+            "or",
+            "shall",
+            "shall",
+            "and",
+            "-"
+          ],
+          "independent": [
+            "shall",
+            "or",
+            "shall",
+            "shall",
+            "or",
+            "shall",
+            "or",
+            "shall",
+            "or",
+            "shall",
+            "or",
+            "shall",
+            "shall",
+            "shall",
+            "-",
+            "or",
+            "shall",
+            "shall",
+            "and",
+            "-"
+          ]
+        },
+        "layout": {
+          "state": "pass",
+          "tables": 0,
+          "basis": "source_raster_line_order_and_decoration"
+        }
+      },
+      "missing_evidence": [],
+      "failed_components": [],
+      "acceptance_scope": "machine_verified_extraction",
+      "policy_sha256": "60180f3820673f5505d30c5d8994e83bf6926c792c107a060c70897dc818a2ad",
+      "source_url": "https://cercind.gov.in/2026/draft_reg/DN-GNA-4Amnd-Regulations.pdf",
+      "independent_text_sha256": "25b937fe8ece6db730479d015acfe7004e396404fb4efd4819ce15a71572869f",
+      "independent_reader_basis": "caller_supplied_or_plain_native_fallback"
+    }
+  ],
+  "semantic_review_required": true,
+  "source_quality_approval_granted": false,
+  "legal_answer_eligible": false,
+  "calculation_allowed": false,
+  "publication_eligible": false,
+  "subitem_label": "13.1",
+  "operation": "substitute",
+  "operation_evidence": {
+    "literal": "shall be substituted",
+    "source_spans": [
+      {
+        "page": 5,
+        "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+        "char_start": 1444,
+        "char_length": 20,
+        "offset_encoding": "codepoint",
+        "exact_quote": "shall be substituted"
+      }
+    ]
+  },
+  "target_reference_candidates": [
+    {
+      "literal": "Regulation 9.3.1",
+      "source_spans": [
+        {
+          "page": 5,
+          "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+          "char_start": 1543,
+          "char_length": 16,
+          "offset_encoding": "codepoint",
+          "exact_quote": "Regulation 9.3.1"
+        }
+      ],
+      "target_id": null,
+      "resolution": "unresolved",
+      "role_candidate": "unclassified_operation_frame_reference",
+      "relation_evidence": null
+    },
+    {
+      "literal": "Regulation 9.3",
+      "source_spans": [
+        {
+          "page": 5,
+          "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+          "char_start": 1563,
+          "char_length": 14,
+          "offset_encoding": "codepoint",
+          "exact_quote": "Regulation 9.3"
+        }
+      ],
+      "target_id": null,
+      "resolution": "unresolved",
+      "role_candidate": "container_reference_candidate",
+      "relation_evidence": {
+        "literal": "of ",
+        "source_spans": [
+          {
+            "page": 5,
+            "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+            "char_start": 1560,
+            "char_length": 3,
+            "offset_encoding": "codepoint",
+            "exact_quote": "of "
+          }
+        ]
+      }
+    },
+    {
+      "literal": "the\nPrincipal Regulations",
+      "source_spans": [
+        {
+          "page": 5,
+          "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+          "char_start": 1581,
+          "char_length": 25,
+          "offset_encoding": "codepoint",
+          "exact_quote": "the\nPrincipal Regulations"
+        }
+      ],
+      "target_id": null,
+      "resolution": "unresolved",
+      "role_candidate": "container_reference_candidate",
+      "relation_evidence": {
+        "literal": "of ",
+        "source_spans": [
+          {
+            "page": 5,
+            "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+            "char_start": 1578,
+            "char_length": 3,
+            "offset_encoding": "codepoint",
+            "exact_quote": "of "
+          }
+        ]
+      }
+    }
+  ],
+  "heading_reference_candidates": [
+    {
+      "literal": "Regulations 9.3",
+      "source_spans": [
+        {
+          "page": 5,
+          "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+          "char_start": 1322,
+          "char_length": 15,
+          "offset_encoding": "codepoint",
+          "exact_quote": "Regulations 9.3"
+        }
+      ],
+      "target_id": null,
+      "resolution": "unresolved",
+      "role_candidate": "provision_or_instrument_mention"
+    },
+    {
+      "literal": "the Principal Regulations",
+      "source_spans": [
+        {
+          "page": 5,
+          "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+          "char_start": 1341,
+          "char_length": 25,
+          "offset_encoding": "codepoint",
+          "exact_quote": "the Principal Regulations"
+        }
+      ],
+      "target_id": null,
+      "resolution": "unresolved",
+      "role_candidate": "provision_or_instrument_mention"
+    }
+  ],
+  "target_instrument_candidates": [
+    {
+      "native_unit_id": "pdf-d4c691b36a175c2a8207310e:unit:401303e0720f08a4c7260dd4",
+      "instrument": {
+        "literal": "Central\nElectricity Regulatory Commission (Connectivity and General Network Access to\nthe inter-State Transmission System) Regulations, 2022",
+        "source_spans": [
+          {
+            "page": 1,
+            "page_text_sha256": "d94acd463f8293d1213eaa3d442fba9861ac5bee499704d3f10e65ef03a605ea",
+            "char_start": 592,
+            "char_length": 140,
+            "offset_encoding": "codepoint",
+            "exact_quote": "Central\nElectricity Regulatory Commission (Connectivity and General Network Access to\nthe inter-State Transmission System) Regulations, 2022"
+          }
+        ]
+      },
+      "alias_declaration": {
+        "literal": "hereinafter referred to as\n“the Principal Regulations”",
+        "source_spans": [
+          {
+            "page": 1,
+            "page_text_sha256": "d94acd463f8293d1213eaa3d442fba9861ac5bee499704d3f10e65ef03a605ea",
+            "char_start": 734,
+            "char_length": 54,
+            "offset_encoding": "codepoint",
+            "exact_quote": "hereinafter referred to as\n“the Principal Regulations”"
+          }
+        ]
+      },
+      "target_id": null,
+      "resolution": "declared_document_alias_candidate_external_version_unresolved"
+    }
+  ],
+  "target_instrument_resolution": "unresolved",
+  "old_fragment": {
+    "literal": "or 18 months prior to the firm start date of Connectivity",
+    "source_spans": [
+      {
+        "page": 5,
+        "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+        "char_start": 1385,
+        "char_length": 57,
+        "offset_encoding": "codepoint",
+        "exact_quote": "or 18 months prior to the firm start date of Connectivity"
+      }
+    ],
+    "quote_state": "closed_literal_not_semantic_approval"
+  },
+  "new_fragment": {
+    "literal": "6 months prior to the firm start\ndate of Connectivity",
+    "source_spans": [
+      {
+        "page": 5,
+        "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+        "char_start": 1481,
+        "char_length": 53,
+        "offset_encoding": "codepoint",
+        "exact_quote": "6 months prior to the firm start\ndate of Connectivity"
+      }
+    ],
+    "quote_state": "closed_literal_not_semantic_approval"
+  },
+  "location_relation_candidate": null,
+  "limitations": [
+    "heading_and_operation_references_differ_not_reconciled"
+  ],
+  "operation_ownership": "lexical_amendment_frame_not_reviewed",
+  "dependency_requirements": [
+    {
+      "kind": "target_instrument_or_provision",
+      "reference": {
+        "literal": "Regulation 9.3.1",
+        "source_spans": [
+          {
+            "page": 5,
+            "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+            "char_start": 1543,
+            "char_length": 16,
+            "offset_encoding": "codepoint",
+            "exact_quote": "Regulation 9.3.1"
+          }
+        ],
+        "target_id": null,
+        "resolution": "unresolved",
+        "role_candidate": "unclassified_operation_frame_reference",
+        "relation_evidence": null
+      },
+      "resolution": "unresolved",
+      "reason": "principal_version_and_affected_provision_require_readback"
+    },
+    {
+      "kind": "target_instrument_or_provision",
+      "reference": {
+        "literal": "Regulation 9.3",
+        "source_spans": [
+          {
+            "page": 5,
+            "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+            "char_start": 1563,
+            "char_length": 14,
+            "offset_encoding": "codepoint",
+            "exact_quote": "Regulation 9.3"
+          }
+        ],
+        "target_id": null,
+        "resolution": "unresolved",
+        "role_candidate": "container_reference_candidate",
+        "relation_evidence": {
+          "literal": "of ",
+          "source_spans": [
+            {
+              "page": 5,
+              "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+              "char_start": 1560,
+              "char_length": 3,
+              "offset_encoding": "codepoint",
+              "exact_quote": "of "
+            }
+          ]
+        }
+      },
+      "resolution": "unresolved",
+      "reason": "principal_version_and_affected_provision_require_readback"
+    },
+    {
+      "kind": "target_instrument_or_provision",
+      "reference": {
+        "literal": "the\nPrincipal Regulations",
+        "source_spans": [
+          {
+            "page": 5,
+            "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+            "char_start": 1581,
+            "char_length": 25,
+            "offset_encoding": "codepoint",
+            "exact_quote": "the\nPrincipal Regulations"
+          }
+        ],
+        "target_id": null,
+        "resolution": "unresolved",
+        "role_candidate": "container_reference_candidate",
+        "relation_evidence": {
+          "literal": "of ",
+          "source_spans": [
+            {
+              "page": 5,
+              "page_text_sha256": "333ed5a8090ff84456d256c9e192721c2fa78e51740e5bd57ea8d91458f94ec3",
+              "char_start": 1578,
+              "char_length": 3,
+              "offset_encoding": "codepoint",
+              "exact_quote": "of "
+            }
+          ]
+        }
+      },
+      "resolution": "unresolved",
+      "reason": "principal_version_and_affected_provision_require_readback"
+    }
+  ]
+}

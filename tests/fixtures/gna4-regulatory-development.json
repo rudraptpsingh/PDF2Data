@@ -1,0 +1,937 @@
+{
+  "source_pdf_sha256": "d4c691b36a175c2a8207310e65cd28da3033273a7bbadd8a026465fa4dd23e79",
+  "reference_scope": "agent_development",
+  "reviewer": "Source/raster review by PDF2Data owner agent; not independent human gold",
+  "cases": [
+    {
+      "id": "operations-2.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "2.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "insert"
+        }
+      ]
+    },
+    {
+      "id": "operations-3.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "3.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-4.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "4.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-5.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "5.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-6.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "6.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-7.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "7.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "insert"
+        }
+      ]
+    },
+    {
+      "id": "operations-7.2",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "7.2"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "insert"
+        }
+      ]
+    },
+    {
+      "id": "operations-7.3",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "7.3"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-7.4",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "7.4"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-8.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "8.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-9.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "9.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "delete"
+        }
+      ]
+    },
+    {
+      "id": "operations-10.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "10.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "substitute"
+        }
+      ]
+    },
+    {
+      "id": "operations-10.2",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "10.2"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-10.3",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "10.3"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "insert"
+        }
+      ]
+    },
+    {
+      "id": "operations-11.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "11.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "insert"
+        }
+      ]
+    },
+    {
+      "id": "operations-12.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "12.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-13.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "13.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "substitute"
+        }
+      ]
+    },
+    {
+      "id": "operations-13.2",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "13.2"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-14.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "14.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "insert"
+        }
+      ]
+    },
+    {
+      "id": "operations-14.2",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "14.2"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-14.3",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "14.3"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "substitute"
+        }
+      ]
+    },
+    {
+      "id": "operations-14.4",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "14.4"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "substitute"
+        }
+      ]
+    },
+    {
+      "id": "operations-14.5",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "14.5"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "delete"
+        }
+      ]
+    },
+    {
+      "id": "operations-14.6",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "14.6"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "insert"
+        }
+      ]
+    },
+    {
+      "id": "operations-14.7",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "14.7"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "substitute"
+        }
+      ]
+    },
+    {
+      "id": "operations-14.8",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "14.8"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "substitute"
+        }
+      ]
+    },
+    {
+      "id": "operations-15.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "15.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-16.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "16.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "substitute"
+        }
+      ]
+    },
+    {
+      "id": "operations-17.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "17.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "delete"
+        }
+      ]
+    },
+    {
+      "id": "operations-18.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "18.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-19.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "19.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "delete"
+        }
+      ]
+    },
+    {
+      "id": "operations-19.2",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "19.2"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "delete"
+        }
+      ]
+    },
+    {
+      "id": "operations-19.3",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "19.3"
+      },
+      "expected_count": 2,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "substitute"
+        },
+        {
+          "pointer": "/1/operation",
+          "equals": "insert"
+        }
+      ]
+    },
+    {
+      "id": "operations-20.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "20.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-21.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "21.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-22.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "22.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "delete"
+        }
+      ]
+    },
+    {
+      "id": "operations-23.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "23.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "delete"
+        }
+      ]
+    },
+    {
+      "id": "operations-24.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "24.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "substitute"
+        }
+      ]
+    },
+    {
+      "id": "operations-25.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "25.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-26.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "26.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "operations-27.1",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "27.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/operation",
+          "equals": "add"
+        }
+      ]
+    },
+    {
+      "id": "old-new-months",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "13.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/old_fragment/literal",
+          "equals": "or 18 months prior to the firm start date of Connectivity"
+        },
+        {
+          "pointer": "/0/new_fragment/literal",
+          "contains": "6 months prior to"
+        },
+        {
+          "pointer": "/0/assertion_role/candidate",
+          "equals": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "do-not-substitute-quoted-anchor",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "14.6"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/new_fragment/literal",
+          "equals": "PPA or"
+        },
+        {
+          "pointer": "/0/old_fragment",
+          "equals": null
+        }
+      ]
+    },
+    {
+      "id": "missing-quote-visible",
+      "selector": {
+        "group": "amendments",
+        "subitem_label": "7.3"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/new_fragment",
+          "equals": null
+        },
+        {
+          "pointer": "/0/limitations/1",
+          "equals": "unbalanced_source_quote_not_repaired"
+        }
+      ]
+    },
+    {
+      "id": "new-instrument-literal",
+      "scope": "bundle",
+      "checks": [
+        {
+          "pointer": "/parent_instrument_candidates/0/instrument/literal",
+          "contains": "Regulations, 2022"
+        },
+        {
+          "pointer": "/parent_instrument_candidates/0/target_id",
+          "equals": null
+        }
+      ]
+    },
+    {
+      "id": "semantic-coverage-not-approval",
+      "scope": "bundle",
+      "checks": [
+        {
+          "pointer": "/coverage/native_units_accounted",
+          "equals": 28
+        },
+        {
+          "pointer": "/coverage/native_tables_accounted",
+          "equals": 1
+        },
+        {
+          "pointer": "/coverage/semantic_completeness",
+          "equals": "not_established"
+        },
+        {
+          "pointer": "/legal_answer_eligible",
+          "equals": false
+        },
+        {
+          "pointer": "/source_quality_approval_granted",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "table-blank-not-zero",
+      "scope": "bundle",
+      "checks": [
+        {
+          "pointer": "/coverage/tables/0/raw_table/cells/3/4",
+          "equals": ""
+        },
+        {
+          "pointer": "/coverage/tables/0/raw_table/cells/2/1",
+          "equals": "500 MW\nWind"
+        },
+        {
+          "pointer": "/coverage/tables/0/coverage_status",
+          "equals": "review_gap"
+        }
+      ]
+    },
+    {
+      "id": "no-transition-in-deletion",
+      "selector": {
+        "group": "transitions",
+        "native_unit_label": "17"
+      },
+      "expected_count": 0
+    },
+    {
+      "id": "publication-not-issued-date",
+      "selector": {
+        "group": "commencements",
+        "subitem_label": "1.2"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/event_candidate",
+          "equals": "publication"
+        },
+        {
+          "pointer": "/0/actual_publication_date",
+          "equals": null
+        },
+        {
+          "pointer": "/0/effectiveness_proved",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "rates-preserve-scale-and-printed-currency",
+      "selector": {
+        "group": "values",
+        "subitem_label": "10.2"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/value/raw_value/literal",
+          "equals": "5"
+        },
+        {
+          "pointer": "/0/value/typed_candidate/numerator",
+          "equals": "5"
+        },
+        {
+          "pointer": "/0/value/unit/literal",
+          "equals": "/MW"
+        },
+        {
+          "pointer": "/0/value/currency_literal",
+          "equals": "Rs."
+        },
+        {
+          "pointer": "/0/value/currency_code_candidate",
+          "equals": null
+        },
+        {
+          "pointer": "/0/value/scale_candidate/numerator",
+          "equals": "100000"
+        },
+        {
+          "pointer": "/0/calculation_allowed",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "source-change-fee-no-scaling",
+      "selector": {
+        "group": "values",
+        "subitem_label": "13.2"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/value/raw_value/literal",
+          "equals": "50,000"
+        },
+        {
+          "pointer": "/0/value/typed_candidate/numerator",
+          "equals": "50000"
+        },
+        {
+          "pointer": "/0/value/unit/literal",
+          "equals": "/MW"
+        }
+      ]
+    },
+    {
+      "id": "threshold-and-election-window",
+      "selector": {
+        "group": "values",
+        "subitem_label": "3.1"
+      },
+      "expected_count": 2,
+      "checks": [
+        {
+          "pointer": "/0/value/raw_value/literal",
+          "equals": "two"
+        },
+        {
+          "pointer": "/0/value/typed_candidate/numerator",
+          "equals": "2"
+        },
+        {
+          "pointer": "/0/value/unit/literal",
+          "equals": "years"
+        },
+        {
+          "pointer": "/1/value/raw_value/literal",
+          "equals": "30"
+        },
+        {
+          "pointer": "/1/value/unit/literal",
+          "equals": "days"
+        },
+        {
+          "pointer": "/1/value/absolute_date",
+          "equals": null
+        }
+      ]
+    },
+    {
+      "id": "land-document-window",
+      "selector": {
+        "group": "values",
+        "subitem_label": "14.2"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/value/typed_candidate/numerator",
+          "equals": "15"
+        },
+        {
+          "pointer": "/0/value/unit/literal",
+          "equals": "days"
+        },
+        {
+          "pointer": "/0/value/absolute_date",
+          "equals": null
+        }
+      ]
+    },
+    {
+      "id": "procedure-window",
+      "selector": {
+        "group": "values",
+        "subitem_label": "26.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/value/typed_candidate/numerator",
+          "equals": "60"
+        },
+        {
+          "pointer": "/0/value/unit/literal",
+          "equals": "days"
+        }
+      ]
+    },
+    {
+      "id": "transition-retains-qualification",
+      "selector": {
+        "group": "transitions",
+        "subitem_label": "25.1"
+      },
+      "expected_count": 1,
+      "checks": [
+        {
+          "pointer": "/0/qualified_consequence/literal",
+          "contains": "dues of transmission charges"
+        },
+        {
+          "pointer": "/0/cohort_resolution",
+          "equals": "unresolved"
+        },
+        {
+          "pointer": "/0/actual_deadline",
+          "equals": null
+        },
+        {
+          "pointer": "/0/deadline_window_candidates/0/typed_candidate/numerator",
+          "equals": "1"
+        },
+        {
+          "pointer": "/0/deadline_window_candidates/0/unit/literal",
+          "equals": "month"
+        }
+      ]
+    },
+    {
+      "id": "explicit-any-not-global-eligibility",
+      "selector": {
+        "group": "conditions",
+        "subitem_label": "7.4"
+      },
+      "expected_count": 4,
+      "checks": [
+        {
+          "pointer": "/0/predicate_tree/kind",
+          "equals": "any"
+        },
+        {
+          "pointer": "/0/predicate_tree/connector/literal",
+          "equals": "or"
+        },
+        {
+          "pointer": "/0/predicate_tree/children/0/ownership",
+          "equals": "unresolved"
+        }
+      ]
+    },
+    {
+      "id": "explicit-all-still-candidate",
+      "selector": {
+        "group": "conditions",
+        "subitem_label": "21.1"
+      },
+      "expected_count": 5,
+      "checks": [
+        {
+          "pointer": "/0/predicate_tree/kind",
+          "equals": "all"
+        },
+        {
+          "pointer": "/0/predicate_tree/connector/literal",
+          "equals": "and"
+        }
+      ]
+    }
+  ],
+  "source_package_sha256": "a7c9f487381dbeb12d694a444b5d2c9f12feb0608dfe651ace958460f1b29f03",
+  "profile_sha256": "67c8978dc74a1c100c11dce6b674c83a8db1ea9e924d7bf325bcdb1d92c3a26e"
+}

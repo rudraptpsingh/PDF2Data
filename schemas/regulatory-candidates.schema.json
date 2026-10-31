@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PDF2Data native regulatory candidates v1",
+  "type": "object",
+  "required": ["schema_version", "source_pdf_sha256", "source_package_sha256", "profile_sha256", "records", "coverage", "producer_implementation", "legal_answer_eligible", "publication_eligible"],
+  "properties": {
+    "schema_version": {"const": "pdf2data.regulatory-candidates.v1"},
+    "source_pdf_sha256": {"$ref": "#/$defs/sha"},
+    "source_package_sha256": {"$ref": "#/$defs/sha"},
+    "profile_sha256": {"$ref": "#/$defs/sha"},
+    "profile_id": {"type": "string"},
+    "profile_version": {"type": "string"},
+    "native_source_id": {"type": "string"},
+    "records": {"type": "array", "items": {"$ref": "#/$defs/record"}},
+    "coverage": {
+      "type": "object", "required": ["units", "tables", "physical_pages", "semantic_completeness"],
+      "properties": {
+        "units": {"type": "array", "items": {"type": "object", "required": ["native_unit_id", "source_spans", "groups", "review_gaps", "semantic_completeness"]}},
+        "tables": {"type": "array", "items": {"type": "object", "required": ["native_table_id", "raw_table", "coverage_status", "reason"], "properties": {"coverage_status": {"const": "review_gap"}, "calculation_allowed": {"const": false}}}},
+        "physical_pages": {"type": "array"},
+        "semantic_completeness": {"const": "not_established"}
+      }
+    },
+    "source_quality_approval_granted": {"const": false},
+    "legal_answer_eligible": {"const": false},
+    "publication_eligible": {"const": false}
+  },
+  "$defs": {
+    "sha": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "span": {
+      "type": "object", "required": ["page", "page_text_sha256", "char_start", "char_length", "exact_quote", "offset_encoding"],
+      "properties": {"page": {"type": "integer", "minimum": 1}, "page_text_sha256": {"$ref": "#/$defs/sha"}, "char_start": {"type": "integer", "minimum": 0}, "char_length": {"type": "integer", "minimum": 1}, "exact_quote": {"type": "string", "minLength": 1}, "offset_encoding": {"const": "codepoint"}}
+    },
+    "part": {"type": "object", "required": ["literal", "source_spans"], "properties": {"literal": {"type": "string", "minLength": 1}, "source_spans": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/span"}}}},
+    "tree": {
+      "type": "object", "required": ["kind", "source"],
+      "properties": {"source": {"$ref": "#/$defs/part"}},
+      "oneOf": [
+        {"required": ["reason"], "properties": {"kind": {"const": "unknown"}, "reason": {"type": "string", "minLength": 1}, "observed_components": {"type": "array", "items": {"$ref": "#/$defs/tree"}}}},
+        {"required": ["connector", "children"], "properties": {"kind": {"enum": ["all", "any"]}, "connector": {"$ref": "#/$defs/part"}, "children": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/tree"}}}},
+        {"required": ["child"], "properties": {"kind": {"const": "not"}, "child": {"$ref": "#/$defs/tree"}}},
+        {"required": ["subject_candidate", "property_candidate", "comparison", "operand", "ownership"], "properties": {"kind": {"const": "atom"}}}
+      ]
+    },
+    "record": {
+      "type": "object", "required": ["id", "group", "source_pdf_sha256", "source_package_sha256", "native_unit_id", "native_unit_pointer", "native_child_ids", "literal", "source_spans", "required_native_unit_ids", "assertion_role", "status", "legal_answer_eligible", "publication_eligible"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^regobs-[a-f0-9]{28}$"},
+        "source_pdf_sha256": {"$ref": "#/$defs/sha"},
+        "source_package_sha256": {"$ref": "#/$defs/sha"},
+        "native_unit_id": {"type": "string", "minLength": 1},
+        "native_unit_pointer": {"type": "string", "pattern": "^/units/[0-9]+$"},
+        "native_child_ids": {"type": "array", "items": {"type": "string"}},
+        "required_native_unit_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "literal": {"type": "string", "minLength": 1},
+        "source_spans": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/span"}},
+        "status": {"const": "candidate"},
+        "source_quality_approval_granted": {"const": false}, "legal_answer_eligible": {"const": false}, "calculation_allowed": {"const": false}, "publication_eligible": {"const": false}
+      },
+      "oneOf": [
+        {"required": ["operation", "operation_evidence", "target_reference_candidates", "old_fragment", "new_fragment", "dependency_requirements"], "properties": {"group": {"const": "amendments"}, "operation": {"enum": ["insert", "add", "substitute", "delete", "unknown"]}, "operation_evidence": {"$ref": "#/$defs/part"}, "old_fragment": {"anyOf": [{"$ref": "#/$defs/part"}, {"type": "null"}]}, "new_fragment": {"anyOf": [{"$ref": "#/$defs/part"}, {"type": "null"}]}}},
+        {"required": ["predicate_tree", "introducer", "association_state"], "properties": {"group": {"const": "conditions"}, "predicate_tree": {"$ref": "#/$defs/tree"}, "introducer": {"$ref": "#/$defs/part"}}},
+        {"required": ["value", "amendment_value_roles"], "properties": {"group": {"const": "values"}, "value": {"allOf": [{"$ref": "#/$defs/part"}], "required": ["kind", "raw_value", "typed_candidate", "absolute_date"], "properties": {"kind": {"enum": ["rate", "duration", "quantity", "ratio", "factor", "date"]}, "absolute_date": {"type": "null"}}}}},
+        {"required": ["condition_candidate_ids", "event_candidates", "cohort_resolution", "qualified_consequence", "actual_deadline"], "properties": {"group": {"const": "transitions"}, "actual_deadline": {"type": "null"}}},
+        {"required": ["reference_kind", "target_native_id", "resolution"], "properties": {"group": {"const": "references"}, "target_native_id": {"type": "null"}, "resolution": {"const": "unresolved"}}},
+        {"required": ["proposed_trigger", "actual_publication_date", "effectiveness_proved"], "properties": {"group": {"const": "commencements"}, "actual_publication_date": {"type": "null"}, "effectiveness_proved": {"const": false}}}
+      ]
+    }
+  }
+}

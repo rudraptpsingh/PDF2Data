@@ -40,6 +40,8 @@ def parser() -> argparse.ArgumentParser:
     from . import __version__
     main.add_argument('--version',action='version',version='PDF2Data '+__version__)
     sub = main.add_subparsers(dest="command", required=True)
+    from .regulatory_candidates import configure as regulatory_parser
+    regulatory_parser(sub.add_parser('regulatory',help='source-bound amendment, condition, value, reference and transition candidates'))
     from .field_rules import configure as field_parser
     field_parser(sub.add_parser('fields',help='extract, catalog, query and evaluate configurable source-bound metadata rules'))
     controller=sub.add_parser('pdf-control',help='inventory, measure, repair and recheck documents through a durable local feedback loop')
@@ -455,7 +457,10 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command == 'fields':
+        if args.command == 'regulatory':
+            from .regulatory_candidates import execute
+            result=execute(args)
+        elif args.command == 'fields':
             from .field_rules import execute
             result=execute(args)
         elif args.command == "pdf-layout-recover":
@@ -802,6 +807,7 @@ def main(argv: list[str] | None = None) -> int:
                       "token_budget_validated": result.get("token_budget_validated", False),
                       "skipped_input_records": result.get("input_audit", {}).get("records_without_passages")}
         print(json.dumps(result, ensure_ascii=False) if args.json else json.dumps(result, indent=2, ensure_ascii=False))
+        if args.command=='regulatory'and args.regulatory_operation=='evaluate'and result.get('failed'):return 3
         if args.command=='fields'and args.field_operation=='evaluate'and not result.get('passed'):return 3
         if args.command=='native-table-cell-revalidate'and result.get('status')!='validated':return 3
         if args.command=='native-table-region-reproof'and result.get('status')!='passed':return 3

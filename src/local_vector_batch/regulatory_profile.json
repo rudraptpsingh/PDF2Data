@@ -1,0 +1,41 @@
+{
+  "schema_version": "pdf2data.regulatory-profile.v1",
+  "id": "english-regulatory-candidates",
+  "version": "1.0.0",
+  "language_scope": ["en"],
+  "operation_pattern": "\\bshall\\s+be\\s+(?P<operation>inserted|added|substituted|deleted)\\b",
+  "operation_names": {"inserted":"insert","added":"add","substituted":"substitute","deleted":"delete"},
+  "subitem_pattern": "(?m)^[ \\t]*(?P<label>\\d{1,3}\\.\\d{1,3})\\.[ \\t]+",
+  "reference_pattern": "\\b(?:Regulations?,?\\s+\\d+[A-Z]?(?:\\.\\d+[A-Z]?)*(?:\\([^()\\s]+\\))*|Sections?\\s+\\d+[A-Z]?(?:\\([^()\\s]+\\))*|(?:sub-)?clauses?\\s+\\([^\\n)]{1,30}\\)|Annexure[-– ]+[IVX0-9]+|No\\.[ \\t]*[A-Z0-9/.-]+|(?:the\\s+)?Principal\\s+Regulations?)",
+  "condition_pattern": "(?<![A-Za-z])(?:subject\\s+to(?:\\s+the\\s+condition\\s+that)?|provided(?:\\s+also)?\\s+that|notwithstanding|in\\s+case|where|unless|except|excluding|other\\s+than|if)(?![A-Za-z])",
+  "quantity_pattern": "(?<![\\w.])(?P<value>\\d[\\d,]*(?:\\.\\d+)?|one|two|three|four|five|six|seven|eight|nine|ten|fifteen|thirty|sixty|twice)\\s*(?P<scale>lakh|crore)?\\s*(?P<unit>years?|months?|weeks?|days?|MWhr|MWh|MW|kWh|kW|%|/MW|/kWh|/MWh)(?!\\w)",
+  "factor_pattern": "\\b(?P<value>twice)\\s+(?:the\\s+)?(?P<basis>Connectivity\\s+quantum)\\b",
+  "date_pattern": "(?<!\\w)(?P<value>\\d{1,2}\\.\\d{1,2}\\.\\d{4})(?!\\w)",
+  "date_format": "%d.%m.%Y",
+  "boolean_patterns": [
+    "(?P<left>\\(i\\)[\\s\\S]{1,400}?)\\s+(?P<operator>or|and)\\s+(?P<right>\\(ii\\)[\\s\\S]{1,400}?)(?=,\\s*sub-clauses)",
+    "(?P<left>where\\s+[\\s\\S]{1,500}?)\\s+(?P<operator>and)\\s+(?P<right>where\\s+[\\s\\S]{1,500}?)(?=,\\s*the\\s+GNA)"
+  ],
+  "word_numbers": {"one":"1","two":"2","three":"3","four":"4","five":"5","six":"6","seven":"7","eight":"8","nine":"9","ten":"10","fifteen":"15","thirty":"30","sixty":"60","twice":"2"},
+  "scale_candidates": {"lakh":{"numerator":"100000","denominator":"1"},"crore":{"numerator":"10000000","denominator":"1"}},
+  "comparisons": [
+    {"pattern":"not\\s+less\\s+than|at\\s+least","candidate":"gte"},
+    {"pattern":"not\\s+more\\s+than|at\\s+most|up\\s+to|upto","candidate":"lte"},
+    {"pattern":"less\\s+than","candidate":"lt"},
+    {"pattern":"more\\s+than|exceed(?:s|ing)?","candidate":"gt"},
+    {"pattern":"or\\s+more","candidate":"gte"},
+    {"pattern":"whichever\\s+is\\s+lower","candidate":"minimum_selector"},
+    {"pattern":"whichever\\s+is\\s+(?:higher|later)","candidate":"maximum_selector"},
+    {"pattern":"within","candidate":"within_window"}
+  ],
+  "actor_pattern": "\\b(?:the\\s+)?(?:Nodal\\s+Agency|applicants?|entities|entity|generating\\s+station|Connectivity\\s+Grantee|REGS|ESS|Pumped\\s+Storage\\s+Plant|PSP|Renewable\\s+power\\s+park\\s+developer)\\b",
+  "event_pattern": "\\b(?:from|after|prior\\s+to|as\\s+on|of)\\s+(?:the\\s+)?(?:date\\s+of\\s+)?(?:intimation|declaration|notification|effectiveness|effective\\s+date|publication|expiry|CoD|COD)[^,.;”]{0,180}",
+  "transition_pattern": "\\btransition\\s+provisions?\\b",
+  "transition_cohort_pattern": "For\\s+(?:the\\s+)?cases,?\\s+where\\s+(?P<cohort>[\\s\\S]{1,800}?)(?=,\\s*the\\s+(?:Nodal\\s+Agency|Commission))",
+  "commencement_pattern": "\\bshall\\s+come\\s+into\\s+force[^.;”]{0,600}",
+  "draft_marker_pattern": "\\bDRAFT\\s+NOTIFICATION\\b",
+  "parent_instrument_pattern": "to\\s+amend\\s+the\\s+(?P<instrument>[\\s\\S]{1,1200}?Regulations,\\s*\\d{4})\\s*\\((?P<alias>hereinafter[\\s\\S]{1,160}?Principal\\s+Regulations[”\"]?)\\)",
+  "title_pattern": "These\\s+regulations\\s+may\\s+be\\s+called\\s+the\\s+(?P<title>[\\s\\S]{1,1200}?Regulations,\\s*\\d{4})",
+  "max_records": 20000,
+  "scope_note": "Bounded lexical/quote/frame candidates. No semantic completeness, legal force, client applicability, source-quality approval or calculation permission."
+}
