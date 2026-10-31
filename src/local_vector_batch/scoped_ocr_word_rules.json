@@ -1,0 +1,17 @@
+{
+  "contract_version": "pdf2data.scoped-ocr-word-mark.v1",
+  "allowed_rule": "independent_crop_supported_devanagari_mark_only",
+  "allowed_rules": ["independent_crop_supported_devanagari_mark_only", "independent_crop_supported_mixed_script_duplicate_digit"],
+  "maximum_word_codepoints": 48,
+  "minimum_word_box_iou": 0.3,
+  "crop_containment_tolerance_points": 2,
+  "allowed_review_origin": "assistant_visual_source_review_plus_actual_local_Qwen_candidate",
+  "permitted_model_profiles": [
+    {"model": "mlx-community/Qwen3-VL-8B-Instruct-4bit", "revision": "defcdea7cc7a4b0858fea563cbbce171d328e457"}
+  ],
+  "require_exact_independent_word": true,
+  "require_unique_model_target": true,
+  "whole_page_gates_unchanged": true,
+  "human_review_required": false,
+  "publication_eligible": false
+}

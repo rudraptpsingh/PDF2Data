@@ -70,6 +70,47 @@ def test_whitespace_is_retained_without_calling_advance_box_visible_ink():
     assert not r['excluded_from_visible_candidate'] and r['visibility_state']=='retained_raw_whitespace'
 
 
+def test_whole_source_text_ink_proves_metric_only_underline_overlap():
+    fills,_=opaque_fills([paint(rect=[9,19,21,20])],POLICY)
+    g=glyph(ink_bounds_basis='advance_only',source_text_paint_kind='fill-text',source_text_paint_bbox=[9,9,21,18])
+    actual=classify_glyphs([g],fills,POLICY)[0]
+    assert actual['visibility_state']=='retained_visible_or_unproven'
+    assert actual['source_ink_disjoint_later_fill_seqnos']==[2]
+    assert not actual['excluded_from_visible_candidate']
+
+
+@pytest.mark.parametrize('edit',['overlap','wrong_paint_kind','invalid_bounds','unsupported_text'])
+def test_text_ink_disjoint_proof_never_waives_real_or_unsupported_paint(edit):
+    fills,_=opaque_fills([paint(rect=[9,19,21,20])],POLICY)
+    g=glyph(ink_bounds_basis='advance_only',source_text_paint_kind='fill-text',source_text_paint_bbox=[9,9,21,18])
+    if edit=='overlap':g['source_text_paint_bbox']=[9,9,21,19.5]
+    elif edit=='wrong_paint_kind':g['source_text_paint_kind']='stroke-text'
+    elif edit=='invalid_bounds':g['source_text_paint_bbox']=[9,9,float('nan'),18]
+    else:g['type']=1
+    if edit=='invalid_bounds':
+        with pytest.raises(ValueError):classify_glyphs([g],fills,POLICY)
+    else:assert classify_glyphs([g],fills,POLICY)[0]['visibility_state'].startswith('held_')
+
+
+def test_real_source_underline_does_not_cover_source_text_ink(tmp_path):
+    import pymupdf
+    from local_vector_batch.native_paint_visibility import analyze
+    source=tmp_path/'underline.pdf'
+    with pymupdf.open()as document:
+        page=document.new_page(width=200,height=200)
+        page.insert_text((40,60),'INDEX',fontname='tibo',fontsize=13.2)
+        trace=page.get_texttrace()[0];ink=page.get_bboxlog()[trace['seqno']][1]
+        assert ink[3]<trace['bbox'][3]
+        top=(ink[3]+trace['bbox'][3])/2
+        page.draw_rect(pymupdf.Rect(39,top,100,top+0.1),fill=(0,0,0),color=None,overlay=True)
+        document.save(source)
+    before=source.read_bytes();actual=analyze(source,1,[])
+    assert ''.join(g['text']for g in actual['classified_glyphs'])=='INDEX'
+    assert all(g['visibility_state']=='retained_visible_or_unproven'for g in actual['classified_glyphs'])
+    assert any(g['source_ink_disjoint_later_fill_seqnos']for g in actual['classified_glyphs'])
+    assert source.read_bytes()==before
+
+
 def make_pdf(path):
     import pymupdf
     d=pymupdf.open();p=d.new_page(width=200,height=200)

@@ -53,8 +53,12 @@ def capture_source(package, parser_root, page):
     preview=l1_review.preview_tables(source,page,source_sha,selected_page_text=selected['text'])
     tables=json.loads((package/'extraction/tables.json').read_text())
     quality=quality_gate.assess_package(package/'extraction',source,pages=[page],derive_ocr_source_raster=True)
-    return {'source_pdf_sha256':source_sha,'page':page,'page_text_sha256':selected['text_sha256'],
+    result={'source_pdf_sha256':source_sha,'page':page,'page_text_sha256':selected['text_sha256'],
             'tables':preview,'raw_tables':[t for t in tables if t['page']==page],'fresh_quality':quality}
+    from .native_source_table_inventory import build_inventory_view
+    view=build_inventory_view(result,parser_root)
+    if view is not None:result['source_table_inventory_view']=view
+    return result
 
 
 def _geometry(table):
@@ -72,6 +76,9 @@ def validate_feedback(snapshot, decisions, raster_reviews):
     source_sha, page = snapshot['source_pdf_sha256'], snapshot['page']
     tables = snapshot['tables']
     raw_tables = snapshot['raw_tables']
+    if isinstance(tables,list)and isinstance(raw_tables,list)and snapshot.get('source_table_inventory_view')is not None:
+        from .native_source_table_inventory import effective_source_tables
+        raw_tables=effective_source_tables(snapshot)
     if not isinstance(decisions,list)or not isinstance(raster_reviews,dict):raise ValueError('Explicit feedback list and raster-review mapping required')
     if not isinstance(tables,list)or not isinstance(raw_tables,list)or len(tables)!=len(raw_tables):
         raise ValueError('Raw native table cardinality disagrees with independent re-extraction')

@@ -1,0 +1,32 @@
+{
+  "contract_version": "pdf2data.literal-footer-source-rules.v1",
+  "literal_diamond": {
+    "minimum_top_fraction": 0.93,
+    "maximum_width_fraction": 0.9,
+    "maximum_height_points": 4,
+    "independent_coordinate_tolerance_points": 0.001,
+    "audit_dpi": 144,
+    "audit_crop_padding_pixels": 2,
+    "requires_straight_closed_four_vertex_diamond": true,
+    "requires_independent_opaque_grayscale_fill": true,
+    "requires_no_original_object_overlap": true,
+    "bounding_box_mask_authorized": false
+  },
+  "printed_page_number_footer": {
+    "minimum_top_fraction": 0.93,
+    "minimum_right_fraction": 0.85,
+    "requires_below_every_source_table": true,
+    "requires_terminal_literal_physical_page_number": true,
+    "independent_exact_text_numbers_operators_required_after_classification": true
+  },
+  "framed_printed_page_footer": {
+    "minimum_top_fraction": 0.9,
+    "maximum_frame_height_points": 30,
+    "minimum_frame_width_fraction": 0.6,
+    "maximum_stroke_width_points": 1,
+    "printed_terminal_page_pattern": "(?:\\bPage\\s+)?([0-9]{1,4})\\s*$",
+    "requires_full_line_inside_original_rectangle": true,
+    "printed_label_may_differ_from_physical_page": true,
+    "independent_exact_text_numbers_operators_required_after_classification": true
+  }
+}

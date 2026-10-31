@@ -143,8 +143,10 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
             # checked on every use. Nothing is cached across decoder jobs.
             raster_cache=_VerifiedSourceRenderCache(source,snapshot,policy);render=native.to_image
             native.to_image=lambda **options:raster_cache.image(render,**options)
+            literal_footer_paths=[]
             if native.images or native.curves:
-                raise ValueError('Images/curved source objects need separate source proof')
+                from .native_literal_footer_paths import prove_literal_footer_paths
+                literal_footer_paths=prove_literal_footer_paths(native,view,policy)
             zero_table_source_proof=None
             if not tables:
                 from .native_zero_table_prose import prove_zero_table_source
@@ -209,7 +211,9 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
             for index,line in enumerate(lines):
                 box=bbox(line)
                 ordered=sorted((g for g in line['chars']if g['text'].strip()),key=lambda g:g['x0'])
-                footer=box[1]>=native.height*.95 and re.search(r'\bPage\s+'+str(n)+r'\s*$',line['text'],re.I)is not None
+                from .native_literal_footer_paths import footer_page_number_layout
+                footer_layout=footer_page_number_layout(line,native.width,native.height,n,[t['bbox']for t in tables],native.rects)
+                footer=(box[1]>=native.height*.95 and re.search(r'\bPage\s+'+str(n)+r'\s*$',line['text'],re.I)is not None)or footer_layout is not None
                 metadata_proof=None
                 if not footer and any(b['x0']-a['x1']>max(36,4*max(a.get('size',0),b.get('size',0)))for a,b in zip(ordered,ordered[1:])):
                     from .native_header_registry import prove_header_gap
@@ -239,6 +243,7 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                               'ordered_numbers':NUMBER.findall(_normalized(line['text'])),
                               'ordered_operators':_operators(line['text'],policy),'source_glyph_count':len(line['chars']),
                               **({'header_metadata_block_proof':metadata_proof}if metadata_proof else{}),
+                              **({'source_footer_layout_candidate':footer_layout}if footer_layout else{}),
                               **({'outside_prose_reader_mapping':prose_reader_proof}if prose_reader_proof else{})})
             if Counter(chars(''.join(line['text']for line in lines)))!=Counter(chars(''.join(g['text']for g in outside))):
                 raise ValueError('Outside prose line registry omits or duplicates source glyphs')
@@ -299,7 +304,11 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                                   'classification':'native_table_ruling_retained_as_structure'})
             from .literal_path_frames import derive_literal_path_mask
             literal_mask,literal_paths=derive_literal_path_mask(native,view,ink,image.bbox)
-            remaining=residual&~grid&~literal_mask
+            from .native_literal_footer_paths import literal_footer_mask
+            footer_mask=literal_footer_mask(native,image.bbox,ink.shape,literal_footer_paths)
+            from .native_zero_length_path_components import retained_footer_rectangle_mask
+            footer_frame_mask,footer_frames=retained_footer_rectangle_mask(native,image.bbox,ink,literal_footer_paths)
+            remaining=residual&~grid&~literal_mask&~footer_mask&~footer_frame_mask
             count,_,stats,_=cv2.connectedComponentsWithStats(remaining.astype('uint8'),8)
             uncovered=[{'bbox_pixels':[int(x),int(y),int(x+width),int(y+height)],'ink_pixels':int(area)}for x,y,width,height,area in stats[1:]]
             if uncovered:
@@ -314,6 +323,7 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                    'source_render_dpi':base['render_dpi'],'source_style_regions':base.get('source_style_regions',[]),
                    'existing_decorative_regions':base.get('decorative_regions',[]),'native_grid_paths':paths,
                    'literal_source_paths':literal_paths,
+                   **({'literal_footer_paths':literal_footer_paths,'literal_footer_mask_sha256':sha(footer_mask.tobytes()),'literal_footer_frames':footer_frames,'literal_footer_frame_mask_sha256':sha(footer_frame_mask.tobytes())}if literal_footer_paths else{}),
                    'native_grid_snap_tolerance_points':snap,'native_grid_snap_basis':'selected_pdfplumber_TableSettings_default',
                    'source_residual_mask_sha256':sha(residual.tobytes()),'native_grid_mask_sha256':sha(grid.tobytes()),
                    'accounted_residual_ink_pixels':int(residual.sum()),'remaining_unaccounted_ink_pixels':0,

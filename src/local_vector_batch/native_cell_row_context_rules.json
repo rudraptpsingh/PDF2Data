@@ -1,0 +1,10 @@
+{
+  "contract_version": "pdf2data.independent-cell-row-context-rules.v1",
+  "coordinate_tolerance_points": 0.01,
+  "row_anchor_pattern": "(?:[ivxlcdmIVXLCDM]+|[A-Za-z]|[0-9]+)\\.",
+  "ascii_plain_line_only": true,
+  "scope": "Single complete source-operator line with an independently positioned same-row identifier; no multi-line or mathematical notation relaxation",
+  "raw_source_or_selected_page_edits": false,
+  "source_quality_clearance": false,
+  "legal_review": "not_run"
+}

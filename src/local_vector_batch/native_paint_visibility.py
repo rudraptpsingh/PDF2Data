@@ -106,6 +106,21 @@ def classify_glyphs(glyphs, fills, policy, *, use_spatial_index=True):
     for glyph in glyphs:
         candidates=index.candidates(glyph.get('proof_bbox',glyph['bbox']))if index is not None else range(len(fills))
         later = [fills[i]for i in candidates if fills[i]['seqno'] > glyph['seqno']]
+        # Font metric boxes include unpainted descender space. A source text
+        # paint's complete ink bounds can prove a later underline does not
+        # touch any glyph in that paint, without inventing tighter per-character
+        # bounds or removing any visible glyph. Only the actual fill-text paint
+        # log is accepted; overlapping paint remains subject to normal proof.
+        disjoint=[]
+        if glyph.get('source_text_paint_kind')=='fill-text':
+            ink=glyph.get('source_text_paint_bbox')
+            if not isinstance(ink,list)or len(ink)!=4:
+                raise ValueError('Complete source text paint bounds required')
+            retained=[]
+            for fill in later:
+                if intersect(ink,fill['effective_bbox'])is None:disjoint.append(fill['seqno'])
+                else:retained.append(fill)
+            later=retained
         proof = coverage(glyph.get('proof_bbox',glyph['bbox']),later)
         supported = (glyph['type'] in policy['allowed_text_paint_types'] and glyph['opacity'] == 1.0 and
                      not glyph['layer'] and glyph['direction'] == [1.0,0.0] and glyph['wmode'] == 0)
@@ -123,6 +138,7 @@ def classify_glyphs(glyphs, fills, policy, *, use_spatial_index=True):
         else:
             state = 'retained_visible_or_unproven'
         result.append({**glyph, 'visibility_state': state, 'coverage': proof,
+                       'source_ink_disjoint_later_fill_seqnos':disjoint,
                        'excluded_from_visible_candidate': state == 'fully_occluded'})
     return result
 
@@ -165,6 +181,8 @@ def capture(source, page_number):
                 proof_bbox=[min(bbox[0],ink_bbox[0]),min(bbox[1],ink_bbox[1]),
                             max(bbox[2],ink_bbox[2]),max(bbox[3],ink_bbox[3])] if single else list(bbox)
                 glyphs.append({'glyph_key':f"{trace['seqno']}:{index}", 'seqno':trace['seqno'],
+                               'source_text_paint_kind':paint_kind,
+                               'source_text_paint_bbox':list(ink_bbox),
                                'index':index,'codepoint':codepoint,'text':chr(codepoint), 'glyph_id':glyph_id,
                                'origin':list(origin),'bbox':list(bbox),'font':trace['font'],
                                'size':trace['size'],'type':trace['type'],'opacity':trace['opacity'],

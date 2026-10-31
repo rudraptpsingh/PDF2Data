@@ -11,7 +11,7 @@
   "minimum_length_points": 72.0,
   "raster_rounding_padding_pixels": 1,
   "required_alpha": 255,
-  "rules_version": 4,
+  "rules_version": 6,
   "semantic_role": "unresolved_literal_path",
   "top_header_black_separator": {
     "maximum_bottom_page_fraction": 0.15,
@@ -23,5 +23,10 @@
       0
     ],
     "required_alpha": 255
+  },
+  "header_baseline_bottom_tolerance_points": 0.1,
+  "wide_literal_body_separator": {
+    "maximum_thickness_points": 1.5,
+    "minimum_width_page_fraction": 0.7
   }
 }

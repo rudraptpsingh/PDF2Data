@@ -168,6 +168,7 @@ def preview_tables(source_pdf: Path, physical_page: int, source_sha: str, *, sel
             all_source_cells=[cell for _,_,_,shape in prepared for cell in shape.get('cell_spans',[])]
             with page_source_cell_context(source_pdf,physical_page,page,source_sha,all_source_cells,pdfium_page=other_page,text_page=text_page,third_layout=third_layout):
                 for index,found,cells,shape in prepared:
+                    identity=f'{source_sha[:16]}:p{physical_page}:table{index}'
                     caption=None;caption_page=physical_page
                     preceding=[line for line in source_lines if line['bottom']<found.bbox[1] and re.search(r'Illustration\s+\d+',line['text'],re.I)]
                     if preceding:caption=preceding[-1]['text'].strip().rstrip(':')
@@ -191,14 +192,17 @@ def preview_tables(source_pdf: Path, physical_page: int, source_sha: str, *, sel
                         cell['independent_glyph_audit']=glyph_audit(mapping['mapped_text'])
                         if not cell['readers_agree']and not cell.get('glyph_audit',{}).get('issues')and not cell['independent_glyph_audit'].get('issues'):
                             from .native_cell_space_projection import prove_processed_cell
+                            context_diagnostic={}
                             processed=prove_processed_cell(page,other_page,text_page,
                                 {**cell,'table_geometry_sha256':shape['table_geometry_sha256']},
-                                value,third_layout,selected_source_page,source_sha)
+                                value,third_layout,selected_source_page,source_sha,context_diagnostic=context_diagnostic)
+                            if context_diagnostic:cell['processed_cell_context_diagnostic']=context_diagnostic
                             if processed is not None:
                                 # Retain raw text/readers_agree; the distinct
                                 # processed version is not a raw-table rewrite.
                                 cell['processed_cell_version']=processed
                     result.append({'id':identity,'page':physical_page,'source_pdf_sha256':source_sha,
+                        'native_raw_matrix':json.loads(json.dumps(cells)),
                         'bbox':[float(x) for x in found.bbox],'page_width':page.width,'page_height':page.height,
                         'caption':caption or f'Source table {index+1}', 'caption_source_page':caption_page,**shape,
                         'status':'repair_preview_not_approved','source_unchanged':True})

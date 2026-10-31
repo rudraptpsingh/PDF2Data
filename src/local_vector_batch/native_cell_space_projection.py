@@ -65,7 +65,7 @@ def _context(value, full):
 
 def propose_processed_cell(raw, independent, page_glyphs, third, selected_page, *,
                            cell_bbox, source_pdf_sha256, page, cell_id,
-                           table_geometry_sha256, raw_native_page=None):
+                           table_geometry_sha256, raw_native_page=None, row_context=None, row_context_factory=None):
     """Pure candidate proof. A fresh raster/paint ownership check is additional.
 
     Original glyph order is retained. Any nonblank glyph crossing the cell,
@@ -154,9 +154,30 @@ def propose_processed_cell(raw, independent, page_glyphs, third, selected_page, 
     if not agrees(processed, independent, exact_characters=True):
         return None
     selected_context = _context(processed, selected_page); third_context = _context(processed, third)
+    used_row_context = None
     if not selected_context or not third_context:
-        return None
-    if not agrees(processed, selected_context['exact_quote'], exact_characters=True) or not agrees(processed, third_context['exact_quote'], exact_characters=True):
+        context_cell={'id':cell_id,'bbox':list(cell_bbox),'text':raw,'table_geometry_sha256':table_geometry_sha256}
+        if row_context is None and row_context_factory is not None:row_context=row_context_factory(processed)
+        if isinstance(row_context,dict)and row_context.get('contract_version')=='pdf2data.independent-multiline-cell-context.v1':
+            from .native_cell_multiline_context import validate_multiline_context
+            context_valid=validate_multiline_context(row_context,context_cell,processed,selected_page,raw_native_page,third,source_pdf_sha256,page)
+        else:
+            from .native_cell_row_context import validate_row_context
+            context_valid=validate_row_context(row_context,context_cell,processed,selected_page,raw_native_page,third,source_pdf_sha256,page)
+        if not context_valid:
+            return None
+        used_row_context=row_context
+        selected_context=row_context['selected_page_context']
+        third_context={'kind':'independent_source_operator_cell_row_context',
+            'operator_capture_sha256':row_context['operator_capture_sha256'],
+            'independent_cell':row_context['independent_cell'],
+            'independent_row_anchor':row_context['independent_row_anchor'],
+            'exact_quote':row_context['independent_cell']['text'],
+            'exact_quote_sha256':sha(row_context['independent_cell']['text']),
+            'source_pdf_sha256':source_pdf_sha256,'page':page,
+            'whole_layout_text_sha256':sha(third),'no_contiguous_whole_cell_layout_span_claim':True}
+    selected_reading=selected_context.get('assembled_cell_text',selected_context.get('exact_quote'))
+    if not agrees(processed, selected_reading, exact_characters=True) or not agrees(processed, third_context['exact_quote'], exact_characters=True):
         return None
     proof = {'contract_version': 'pdf2data.source-bound-processed-cell.v1',
              'operation': 'misplaced_leading_source_SPACE_projection', 'status': 'candidate_pending_source_ink_ownership',
@@ -172,11 +193,12 @@ def propose_processed_cell(raw, independent, page_glyphs, third, selected_page, 
              'rule_configuration_sha256': policy_sha, 'implementation_sha256': sha(Path(__file__).read_bytes()),
              'raw_matrix_modified': False, 'page_text_modified': False, 'source_objects_modified': False,
              'source_quality_clearance': False, 'legal_review': 'not_run', 'answer_publication_eligible': False}
+    if used_row_context is not None:proof['source_row_context']=used_row_context
     proof['processed_cell_version_id'] = sha(canonical(proof))
     return proof
 
 
-def prove_processed_cell(native_page, pdfium_page, text_page, cell, independent, third, selected_page, source_sha):
+def prove_processed_cell(native_page, pdfium_page, text_page, cell, independent, third, selected_page, source_sha, *, context_diagnostic=None):
     """Registered fresh-source wrapper; no supplied proof skips ink/paint checks."""
     from .native_tight_cell_ownership import _complete_source_cells, _PAGE_SOURCE_CELLS, _prepare_ownership_page
     proposal = propose_processed_cell(cell['text'] or '', independent, native_page.chars, third, selected_page,
@@ -185,7 +207,26 @@ def prove_processed_cell(native_page, pdfium_page, text_page, cell, independent,
                                       table_geometry_sha256=cell['table_geometry_sha256'],
                                       raw_native_page=native_page.extract_text() or '')
     if proposal is None:
-        return None
+        from .native_cell_row_context import capture_source_row_context,RowContextUnavailable
+        def context_for(processed):
+            if '\n'in(cell['text']or'')or'\r'in(cell['text']or''):
+                from .native_cell_multiline_context import capture_source_multiline_context
+                return capture_source_multiline_context(native_page,cell,processed,selected_page,native_page.extract_text()or'',third,source_sha)
+            return capture_source_row_context(native_page,cell,independent,selected_page,native_page.extract_text()or'',third,source_sha)
+        try:
+            proposal=propose_processed_cell(cell['text']or'',independent,native_page.chars,third,selected_page,
+                cell_bbox=cell['bbox'],source_pdf_sha256=source_sha,page=native_page.page_number,cell_id=cell['id'],
+                table_geometry_sha256=cell['table_geometry_sha256'],raw_native_page=native_page.extract_text()or'',row_context_factory=context_for)
+        except RowContextUnavailable as error:
+            if context_diagnostic is not None:
+                context_diagnostic.update(kind='independent_row_context_not_proved',reason=str(error),
+                    source_pdf_sha256=source_sha,page=native_page.page_number,cell_id=cell['id'],
+                    source_quality_clearance=False,answer_publication_eligible=False)
+            return None
+        if proposal is None:
+            if context_diagnostic is not None:context_diagnostic.update(kind='source_projection_predicate_still_not_proved',
+                source_quality_clearance=False,answer_publication_eligible=False)
+            return None
     source_name = getattr(getattr(getattr(native_page, 'pdf', None), 'stream', None), 'name', None)
     if not source_name:
         return None
@@ -308,6 +349,9 @@ def project_page_text(raw_native_page, projections, expected_selected_page):
     for projection in projections:
         if projection.get('raw_native_page_sha256') != source_sha:
             raise ValueError('Processed-cell raw page identity differs')
+        if projection.get('source_row_context',{}).get('contract_version')=='pdf2data.independent-multiline-cell-context.v1':
+            from .native_cell_multiline_context import mapped_space_deletions
+            changes.extend(mapped_space_deletions(projection,raw_native_page));continue
         context = projection.get('raw_native_page_context')
         if context is None:
             # A table-only extraction artifact may already be absent from the

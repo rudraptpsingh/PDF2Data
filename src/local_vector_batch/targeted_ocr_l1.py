@@ -64,7 +64,9 @@ def derive(folder):
         if (selected!=regenerated['proposed_page']or independent!=expected_independent or
             regenerated['proof']!=load(proof/'heading-row-proof.json')):
             raise ValueError('Heading source geometry/order/raw readings differ from fresh derivation')
-    metadata={**independent,'version':'macOS_AppleVision_system_API'}
+    from .scoped_independent_reading import consume as consume_independent
+    independent=consume_independent(proof,selected,folder/'original.pdf',config.get('scoped_independent_correction'))
+    metadata={**independent,'version':'macOS_AppleVision_system_API'if independent['engine']=='vision'else'source_review_corrected_AppleVision_with_raw_reading_retained'}
     quality=assess_package(folder/'extraction',folder/'original.pdf',pages=[number],
         independent_by_page={number:independent['text']},independent_metadata_by_page={number:metadata},derive_ocr_source_raster=True)
     actual=quality['results'][0]
@@ -95,6 +97,12 @@ def build(parent,source_runtime,experiment,orientation_review,output):
             if not all(heading_present)or result.get('representation_repair_kind')!='same_baseline_heading_label_order':
                 raise ValueError('Complete typed heading raw-provider evidence required')
             for name in heading_files:shutil.copyfile(experiment/name,provenance/name)
+        from .scoped_independent_reading import configuration as independent_configuration
+        independent_files=('independent-correction-decision.json','independent-corrected-reading.json','independent-correction-proof.json')
+        independent_present=[(experiment/name).is_file()for name in independent_files]
+        if any(independent_present):
+            if not all(independent_present):raise ValueError('Complete typed independent correction evidence required')
+            for name in independent_files:shutil.copyfile(experiment/name,provenance/name)
         save(provenance/'orientation-review.json',orientation_review)
         shutil.rmtree(stage/'extraction');shutil.copytree(experiment/'extraction',stage/'extraction')
         verify_package(stage/'extraction',source_pdf=stage/'original.pdf')
@@ -104,10 +112,12 @@ def build(parent,source_runtime,experiment,orientation_review,output):
             original_native_readers_modified=False,selected_page_representation_changed=True,
             provenance_files={str(p.relative_to(stage)):sha(p.read_bytes())for p in sorted(provenance.rglob('*'))if p.is_file()})
         if all(heading_present):config['ocr_heading_row_order']={'kind':'same_baseline_heading_label_order','raw_provider_page':'OCR-source-provenance/heading-original-page.json','raw_independent_reading':'OCR-source-provenance/heading-original-independent.json','source_geometric_order_proof':'OCR-source-provenance/heading-row-proof.json'}
+        if all(independent_present):config['scoped_independent_correction']=independent_configuration()
         source=load(stage/'source-receipt.json');source['quality_repair_configuration']=config;save(stage/'source-receipt.json',source)
         number,quality,selection=derive(stage)
         selected_pages=rows(stage/'extraction/pages.jsonl');selected=next(r for r in selected_pages if r['page']==number)
-        layout=rows(stage/'layout.jsonl');independent=load(provenance/'independent-reading.json')
+        from .scoped_independent_reading import consume as consume_independent
+        layout=rows(stage/'layout.jsonl');independent=consume_independent(provenance,selected,stage/'original.pdf',config.get('scoped_independent_correction'))
         for row in layout:
             if row['page']!=number:continue
             row.update(page_text_sha256=selected['text_sha256'],selected_method=selected['method'],
