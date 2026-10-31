@@ -405,9 +405,9 @@
       "quality_flagged_pages": 1
     }
   ],
-  "keyword_matrix_sha256": "5715dbccb97155abebbf37d097250562cbe31da7683b839dde8f3cbd281e9bb1",
+  "keyword_matrix_sha256": "1c7c6b573b09f892ba9455bf452b3bd11ea0392741343b450a773857b4b2e5fa",
   "implementation_sha256": {
     "document_metadata.py": "2e7df0a0a894d0e6a39e92f5015edfc5f3acf499c3acadcd47565c1b5f8a1398",
-    "document_profiles.py": "3e1f528b2f0c27996db3436192a7b7b0e50072730966ec5335a2839b6e532008"
+    "document_profiles.py": "5eb0e3220760caa026cd4a5c7222aa9cf5f3831499d271d85e89e1240db2fb18"
   }
 }

@@ -87,7 +87,7 @@ def profile_documents(manifest,output):
         (stage/'profiles.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
         for s in sources:(stage/'metadata'/f'{s["source_pdf_sha256"]}.json').write_text(json.dumps(s['metadata'],ensure_ascii=False,indent=2)+'\n')
         with (stage/'keyword-frequencies.csv').open('w',newline='') as stream:
-            writer=csv.writer(stream);writer.writerow(['document_type','concept','language','documents_with_keyword','documents_in_type','occurrences_including_furniture','first_page_occurrences','occurrences_per_1000_whitespace_tokens'])
+            writer=csv.writer(stream,lineterminator='\n');writer.writerow(['document_type','concept','language','documents_with_keyword','documents_in_type','occurrences_including_furniture','first_page_occurrences','occurrences_per_1000_whitespace_tokens'])
             for group in groups:
                 for concept,langs in group['keywords'].items():
                     for lang,stats in langs.items():writer.writerow([group['document_type'],concept,lang,*stats.values()])
