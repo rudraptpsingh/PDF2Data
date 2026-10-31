@@ -169,6 +169,12 @@ def parser() -> argparse.ArgumentParser:
     export_l1.add_argument("--output", required=True, type=Path)
     export_l1.add_argument("--json", action="store_true")
     export_l1.add_argument("--region-packets", type=Path, help="include verified mixed native/raster candidates without clearing quality flags")
+    locations = sub.add_parser('source-locations', help='export every physical PDF page/region, including held or textless pages; no model approval')
+    locations.add_argument('--input', type=Path, required=True, help='original PDF; reads geometry without rerunning extraction')
+    locations.add_argument('--output', type=Path, required=True, help='new JSONL output outside the immutable source package')
+    locations.add_argument('--package', type=Path, help='optional existing L1 or PDF extraction package for hash-bound cached Unicode text/quality')
+    locations.add_argument('--bbox', type=float, nargs=4, default=(0, 0, 1, 1), help='normalized x0 y0 x1 y1 in the rotated declared CropBox; defaults to whole page')
+    locations.add_argument('--json', action='store_true')
     observations=sub.add_parser('structured-table-observations',help='source-bound FY range, quantity, caption and header candidates; no legal applicability')
     for option in ('package','output'):observations.add_argument('--'+option,type=Path,required=True)
     observations.add_argument('--pages',type=int,nargs='+',required=True)
@@ -489,6 +495,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "export-l1-data":
             from .l1_export import export_processed
             result = export_processed(args.packages, args.output, args.region_packets)
+        elif args.command == 'source-locations':
+            from .source_locations import export_source_locations
+            result = export_source_locations(args.input, args.output, package=args.package, bbox=args.bbox)
         elif args.command=='native-logical-repair':
             from .native_quality_repair import repair_review_queue
             result=repair_review_queue(args.manifest,args.source_runtime,args.output)
