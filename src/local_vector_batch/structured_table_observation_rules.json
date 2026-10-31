@@ -1,0 +1,16 @@
+{
+  "schema_version": "pdf2data.structured-table-observation-rules.v1",
+  "financial_year_range": {
+    "prefixes": ["FY", "F.Y.", "वि.व.", "जि.ि."],
+    "separators": ["to", "से"],
+    "year_minimum": 1900,
+    "year_maximum": 2200,
+    "maximum_inclusive_years": 100
+  },
+  "table_associations": {"header_row": 0, "range_column": 0, "maximum_caption_gap_points": 40, "require_single_slot_cells": true},
+  "units": [
+    {"id": "INR_lakh_per_MW", "patterns": ["\\(in\\s+Rs\\s+Lakh/MW\\)", "\\(रु\\.\\s*लाख/मेग[ाि]वाट\\s*में\\)", "\\(रु\\.\\s*लाख/मेगािाट\\s*में\\)"], "currency": "INR", "scale": "lakh", "denominator": "MW"}
+  ],
+  "calendar_policies": {"india_april_financial_year": {"start_month": 4, "start_day": 1, "end_month": 3, "end_day": 31, "end_year_offset": 1}},
+  "inference_limits": {"deadline": false, "period_total": false, "multiply_by_duration": false, "client_fact": false, "legal_applicability": false}
+}

@@ -1,0 +1,17 @@
+{
+  "contract_version": "pdf2data.independent-multiline-cell-context-rules.v1",
+  "baseline_tolerance_points": 0.01,
+  "maximum_lines": 32,
+  "maximum_cell_codepoints": 4096,
+  "maximum_anchor_gap_rows": 4,
+  "row_anchor_pattern": "[0-9]+\\.",
+  "adjacent_foreign_delimiters": [":"],
+  "allow_bound_intercell_delimiter_space_joins": true,
+  "boundary_whitespace_codepoints": [32, 160],
+  "scope": "Single-column multiline field bounded by independently positioned same-grid current and next numeric row identifiers",
+  "font_advances_are_not_ink_bboxes": true,
+  "whole_source_operator_pieces_only": true,
+  "exact_final_selected_page_equality_required": true,
+  "source_quality_clearance": false,
+  "legal_review": "not_run"
+}

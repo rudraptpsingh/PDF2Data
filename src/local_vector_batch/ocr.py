@@ -19,20 +19,23 @@ import uuid
 
 
 @lru_cache(maxsize=2)
-def _rapidocr_reader(recognition_model: str = "en"):
+def _rapidocr_reader(recognition_model: str = "en", cpu_threads: int = 2):
     """Use a real language-specific PP-OCRv5 recognizer, cached per worker."""
     from rapidocr import RapidOCR
     from rapidocr.utils.typings import LangRec, ModelType, OCRVersion
     models = {"en": LangRec.EN, "devanagari": LangRec.DEVANAGARI}
     if recognition_model not in models:
         raise ValueError(f"unsupported RapidOCR recognition model: {recognition_model}")
+    if type(cpu_threads)is not int or not 1<=cpu_threads<=8:
+        raise ValueError('RapidOCR CPU threads must be1..8')
     return RapidOCR(params={"Rec.lang_type": models[recognition_model],
                             "Rec.ocr_version": OCRVersion.PPOCRV5,
                             "Rec.model_type": ModelType.MOBILE,
-                            "EngineConfig.onnxruntime.intra_op_num_threads": 2})
+                            "EngineConfig.onnxruntime.intra_op_num_threads": cpu_threads})
 
 
-def _rapidocr_lines(image, recognition_model: str = "en") -> tuple[list[dict], int] | None:
+def _rapidocr_lines(image, recognition_model: str = "en", *,
+                    use_angle_classifier: bool | None = None, cpu_threads: int = 2) -> tuple[list[dict], int] | None:
     """Independent candidate reader for visibly nonblank Vision-empty pages.
 
     RapidOCR output is still unverified OCR. Word boxes preserve source geometry
@@ -41,10 +44,14 @@ def _rapidocr_lines(image, recognition_model: str = "en") -> tuple[list[dict], i
     """
     started = time.monotonic()
     try:
-        reader = _rapidocr_reader(recognition_model)
+        reader = (_rapidocr_reader(recognition_model)if cpu_threads==2 else
+                  _rapidocr_reader(recognition_model,cpu_threads))
     except ImportError:
         return None
-    result = reader(image, return_word_box=True)
+    options = {"return_word_box": True}
+    if use_angle_classifier is not None:
+        options['use_cls'] = use_angle_classifier
+    result = reader(image, **options)
     lines = []
     polygons = result.boxes if result.boxes is not None else ()
     values = result.txts if result.txts is not None else ()
@@ -171,7 +178,8 @@ def vision_crop_lines(image) -> list[dict]:
 
 class LocalOCR:
     def __init__(self, engine: str = "auto", language: str = "eng", device: str = "auto",
-                 render_dpi: int = OCR_BASE_DPI):
+                 render_dpi: int = OCR_BASE_DPI, *, use_angle_classifier: bool | None = None,
+                 cpu_threads: int = 2):
         if engine not in {"auto", "off", "vision", "tesseract", "rapidocr"}:
             raise ValueError("OCR engine must be auto, off, vision, tesseract, or rapidocr")
         if not language.replace("+", "").replace("_", "").isalnum():
@@ -180,6 +188,12 @@ class LocalOCR:
             raise ValueError("OCR device must be auto, cpu, or gpu")
         if type(render_dpi) is not int or not 72 <= render_dpi <= 300:
             raise ValueError("OCR render DPI must be 72..300")
+        if use_angle_classifier is not None and type(use_angle_classifier)is not bool:
+            raise ValueError('OCR angle classifier must be an explicit boolean or None')
+        self.use_angle_classifier = use_angle_classifier
+        if type(cpu_threads)is not int or not 1<=cpu_threads<=8:
+            raise ValueError('OCR CPU threads must be1..8')
+        self.cpu_threads=cpu_threads
         vision = platform.system() == "Darwin" and shutil.which("swiftc")
         tesseract = shutil.which("tesseract")
         self.engine = ("vision" if vision else "tesseract" if tesseract else "off") if engine == "auto" else engine
@@ -256,7 +270,10 @@ class LocalOCR:
             if (not lines and self.engine_requested == "auto" and
                     self.language in {"eng", "en"} and
                     image.convert("L").getextrema()[0] < 250):
-                alternative = _rapidocr_lines(image, "en")
+                angle_options = ({'use_angle_classifier':self.use_angle_classifier}
+                                 if self.use_angle_classifier is not None else {})
+                if self.cpu_threads!=2:angle_options['cpu_threads']=self.cpu_threads
+                alternative = _rapidocr_lines(image, "en", **angle_options)
                 if alternative is not None and alternative[0]:
                     lines, alternate_ms = alternative
                     self.fallback_pages += 1
@@ -274,7 +291,10 @@ class LocalOCR:
                                 "alternate_execution_ms": alternate_ms}
                     execution_ms += alternate_ms
         elif self.engine == "rapidocr":
-            alternative = _rapidocr_lines(image, self.rapidocr_model)
+            angle_options = ({'use_angle_classifier':self.use_angle_classifier}
+                             if self.use_angle_classifier is not None else {})
+            if self.cpu_threads!=2:angle_options['cpu_threads']=self.cpu_threads
+            alternative = _rapidocr_lines(image, self.rapidocr_model, **angle_options)
             if alternative is None:
                 raise RuntimeError("RapidOCR is not installed; install local-vector-batch[ocr]")
             lines, execution_ms = alternative
@@ -308,6 +328,10 @@ class LocalOCR:
                                         for word in words]})
         selected_engine = "rapidocr" if fallback else self.engine
         return {"engine": selected_engine, "device_requested": self.device_requested,
+                "cpu_intra_op_threads":self.cpu_threads if selected_engine=='rapidocr'else None,
+                "angle_classifier_requested": self.use_angle_classifier,
+                "angle_classifier_mode": ("provider_default" if self.use_angle_classifier is None else
+                                          "enabled" if self.use_angle_classifier else "disabled"),
                 "device_used": "cpu" if fallback else self.device_used,
                 "engine_package_version": _rapidocr_version() if selected_engine == "rapidocr" else None,
                 "recognition_model": (f"{self.rapidocr_model}_PP-OCRv5_rec_mobile" if self.engine == "rapidocr" else

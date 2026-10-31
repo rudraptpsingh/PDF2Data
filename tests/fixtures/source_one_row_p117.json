@@ -1,0 +1,444 @@
+{
+  "observation_basis": "actual_fresh_source_capture_saved_diagnostic_not_quality_clearance",
+  "source_snapshot_sha256": "ace374c692c259c8dd5f97e64177d83c9737afacfb4abab39fbc7fc064b289af",
+  "source_pdf_sha256": "543f04ecae08239e215350f7db7cf40f4a6d6909b8fc934b9e3b43115e1fc655",
+  "page": 117,
+  "table": {
+    "id": "543f04ecae08239e:p117:table2",
+    "page": 117,
+    "source_pdf_sha256": "543f04ecae08239e215350f7db7cf40f4a6d6909b8fc934b9e3b43115e1fc655",
+    "bbox": [
+      72.264,
+      72.2399999999999,
+      523.1800200000001,
+      121.69999999999993
+    ],
+    "table_version_id": "543f04ecae08239e:p117:table0:v54f899777385af1d10eec0cf",
+    "table_geometry_sha256": "54f899777385af1d10eec0cf1365a1befeac397d2617794513b1020c98a70245",
+    "row_count": 1,
+    "column_count": 5,
+    "unresolved_grid_slots": [],
+    "cell_spans": [
+      {
+        "bbox": [
+          72.26,
+          72.24,
+          117.02,
+          121.7
+        ],
+        "column": 0,
+        "column_span": 1,
+        "glyph_audit": {
+          "issues": [],
+          "non_ascii_characters": 0,
+          "status": "no_invalid_codepoints_detected",
+          "unicode_policy": "Preserve valid scripts/currency/mathematics; non-ASCII alone is not an error."
+        },
+        "id": "543f04ecae08239e:p117:table0:v54f899777385af1d10eec0cf:r0:c0",
+        "independent_cell_sha256": "d3dad31bcabd674b0a9d5a708ac397908625f9279a1cc6d45a4d55e20b1407c1",
+        "independent_engine": "pdfium_source_cell",
+        "independent_glyph_audit": {
+          "issues": [],
+          "non_ascii_characters": 0,
+          "status": "no_invalid_codepoints_detected",
+          "unicode_policy": "Preserve valid scripts/currency/mathematics; non-ASCII alone is not an error."
+        },
+        "independent_reader_mapping": {
+          "contract_version": "pdf2data.source-bound-cell-reader-mapping.v1",
+          "legal_review": "not_run",
+          "mapped_sha256": "d3dad31bcabd674b0a9d5a708ac397908625f9279a1cc6d45a4d55e20b1407c1",
+          "mapped_text": "16. ",
+          "native_glyphs_sha256": "8aaa2a82daf3d4b94875ce57eb16ee8d4f4a8d992a243223b2d84849d8e38865",
+          "page_quality_cleared": false,
+          "raw_sha256": "d3dad31bcabd674b0a9d5a708ac397908625f9279a1cc6d45a4d55e20b1407c1",
+          "raw_text": "16. ",
+          "repairs": [],
+          "secondary_layout_sha256": "8fa07f892dcff30623cae769c18d09382b9f721b4d1803e41863dec267ddfbf1",
+          "selected_text_modified": false,
+          "source_bbox": [
+            72.26,
+            72.24,
+            117.02,
+            121.7
+          ]
+        },
+        "independent_source_rectangle": {
+          "cell_or_page_approval": false,
+          "contract_version": "pdf2data.metadata-bound-source-rectangle.v1",
+          "native_view_bbox": [
+            72.46000000000001,
+            72.44,
+            116.82,
+            121.5
+          ],
+          "native_view_dimensions": [
+            595.32,
+            841.92
+          ],
+          "page_rotation_degrees": 0,
+          "pdfium_read_bbox": [
+            72.46000000000001,
+            720.4199829101562,
+            116.82,
+            769.4799829101562
+          ],
+          "raw_pdf_bbox": [
+            0.0,
+            0.0,
+            595.3200073242188,
+            841.9199829101562
+          ],
+          "text_modified": false,
+          "transformation_basis": "declared_PDF_Rotate_inverse_only"
+        },
+        "independent_text": "16. ",
+        "readers_agree": true,
+        "role_candidate": "header",
+        "row": 0,
+        "row_span": 1,
+        "selected_cell_sha256": "3ec1d1e80d46e73bc4cdd8ffbefd465585ac8d88692825c5572babb285e8c436",
+        "status": "source_cell_candidate",
+        "text": "16."
+      },
+      {
+        "bbox": [
+          117.02,
+          72.24,
+          364.63,
+          121.7
+        ],
+        "column": 1,
+        "column_span": 1,
+        "glyph_audit": {
+          "issues": [],
+          "non_ascii_characters": 0,
+          "status": "no_invalid_codepoints_detected",
+          "unicode_policy": "Preserve valid scripts/currency/mathematics; non-ASCII alone is not an error."
+        },
+        "id": "543f04ecae08239e:p117:table0:v54f899777385af1d10eec0cf:r0:c1",
+        "independent_cell_sha256": "e6b1549cf8efdadf325d7d16beaacee68765e8c84ece8001058e7ff108cd9bd5",
+        "independent_engine": "pdfium_source_cell",
+        "independent_glyph_audit": {
+          "issues": [],
+          "non_ascii_characters": 0,
+          "status": "no_invalid_codepoints_detected",
+          "unicode_policy": "Preserve valid scripts/currency/mathematics; non-ASCII alone is not an error."
+        },
+        "independent_reader_mapping": {
+          "contract_version": "pdf2data.source-bound-cell-reader-mapping.v1",
+          "legal_review": "not_run",
+          "mapped_sha256": "e6b1549cf8efdadf325d7d16beaacee68765e8c84ece8001058e7ff108cd9bd5",
+          "mapped_text": "Normal Maximum Leading MVAR at rated \r\nMW output ",
+          "native_glyphs_sha256": "11bd53476a127d72790a9066c31fd55223e76700db903f89253167e7b8b41c95",
+          "page_quality_cleared": false,
+          "raw_sha256": "e6b1549cf8efdadf325d7d16beaacee68765e8c84ece8001058e7ff108cd9bd5",
+          "raw_text": "Normal Maximum Leading MVAR at rated \r\nMW output ",
+          "repairs": [],
+          "secondary_layout_sha256": "8fa07f892dcff30623cae769c18d09382b9f721b4d1803e41863dec267ddfbf1",
+          "selected_text_modified": false,
+          "source_bbox": [
+            117.02,
+            72.24,
+            364.63,
+            121.7
+          ]
+        },
+        "independent_source_rectangle": {
+          "cell_or_page_approval": false,
+          "contract_version": "pdf2data.metadata-bound-source-rectangle.v1",
+          "native_view_bbox": [
+            117.22,
+            72.44,
+            364.43,
+            121.5
+          ],
+          "native_view_dimensions": [
+            595.32,
+            841.92
+          ],
+          "page_rotation_degrees": 0,
+          "pdfium_read_bbox": [
+            117.22,
+            720.4199829101562,
+            364.43,
+            769.4799829101562
+          ],
+          "raw_pdf_bbox": [
+            0.0,
+            0.0,
+            595.3200073242188,
+            841.9199829101562
+          ],
+          "text_modified": false,
+          "transformation_basis": "declared_PDF_Rotate_inverse_only"
+        },
+        "independent_text": "Normal Maximum Leading MVAR at rated \r\nMW output ",
+        "readers_agree": true,
+        "role_candidate": "header",
+        "row": 0,
+        "row_span": 1,
+        "selected_cell_sha256": "3c2fb01ded2f85d8aa9532b678e707910daff447cce421d5c6efba89421c8429",
+        "status": "source_cell_candidate",
+        "text": "Normal Maximum Leading MVAR at rated\nMW output"
+      },
+      {
+        "bbox": [
+          364.63,
+          72.24,
+          418.63,
+          121.7
+        ],
+        "column": 2,
+        "column_span": 1,
+        "glyph_audit": {
+          "issues": [],
+          "non_ascii_characters": 0,
+          "status": "no_invalid_codepoints_detected",
+          "unicode_policy": "Preserve valid scripts/currency/mathematics; non-ASCII alone is not an error."
+        },
+        "id": "543f04ecae08239e:p117:table0:v54f899777385af1d10eec0cf:r0:c2",
+        "independent_cell_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "independent_engine": "pdfium_source_cell",
+        "independent_glyph_audit": {
+          "issues": [],
+          "non_ascii_characters": 0,
+          "status": "no_invalid_codepoints_detected",
+          "unicode_policy": "Preserve valid scripts/currency/mathematics; non-ASCII alone is not an error."
+        },
+        "independent_reader_mapping": {
+          "contract_version": "pdf2data.source-bound-cell-reader-mapping.v1",
+          "hold": "native_cell_glyph_order_disagrees",
+          "legal_review": "not_run",
+          "mapped_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mapped_text": "",
+          "native_glyphs_sha256": "ece44a6a1a469da9fb7c8782cef1bde8010beb747cabf9a2d8175069579e50ad",
+          "page_quality_cleared": false,
+          "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "raw_text": "",
+          "repairs": [],
+          "secondary_layout_sha256": "8fa07f892dcff30623cae769c18d09382b9f721b4d1803e41863dec267ddfbf1",
+          "selected_text_modified": false,
+          "source_bbox": [
+            364.63,
+            72.24,
+            418.63,
+            121.7
+          ]
+        },
+        "independent_source_rectangle": {
+          "cell_or_page_approval": false,
+          "contract_version": "pdf2data.metadata-bound-source-rectangle.v1",
+          "native_view_bbox": [
+            364.83,
+            72.44,
+            418.43,
+            121.5
+          ],
+          "native_view_dimensions": [
+            595.32,
+            841.92
+          ],
+          "page_rotation_degrees": 0,
+          "pdfium_read_bbox": [
+            364.83,
+            720.4199829101562,
+            418.43,
+            769.4799829101562
+          ],
+          "raw_pdf_bbox": [
+            0.0,
+            0.0,
+            595.3200073242188,
+            841.9199829101562
+          ],
+          "text_modified": false,
+          "transformation_basis": "declared_PDF_Rotate_inverse_only"
+        },
+        "independent_text": "",
+        "readers_agree": true,
+        "role_candidate": "header",
+        "row": 0,
+        "row_span": 1,
+        "selected_cell_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "source_cell_candidate",
+        "text": ""
+      },
+      {
+        "bbox": [
+          418.63,
+          72.24,
+          471.22,
+          121.7
+        ],
+        "column": 3,
+        "column_span": 1,
+        "glyph_audit": {
+          "issues": [],
+          "non_ascii_characters": 0,
+          "status": "no_invalid_codepoints_detected",
+          "unicode_policy": "Preserve valid scripts/currency/mathematics; non-ASCII alone is not an error."
+        },
+        "id": "543f04ecae08239e:p117:table0:v54f899777385af1d10eec0cf:r0:c3",
+        "independent_cell_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "independent_engine": "pdfium_source_cell",
+        "independent_glyph_audit": {
+          "issues": [],
+          "non_ascii_characters": 0,
+          "status": "no_invalid_codepoints_detected",
+          "unicode_policy": "Preserve valid scripts/currency/mathematics; non-ASCII alone is not an error."
+        },
+        "independent_reader_mapping": {
+          "contract_version": "pdf2data.source-bound-cell-reader-mapping.v1",
+          "hold": "native_cell_glyph_order_disagrees",
+          "legal_review": "not_run",
+          "mapped_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mapped_text": "",
+          "native_glyphs_sha256": "adea0b5d54d215bbf70179749dbdc41f2d77c7680d7075ad56fd2e86227b71be",
+          "page_quality_cleared": false,
+          "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "raw_text": "",
+          "repairs": [],
+          "secondary_layout_sha256": "8fa07f892dcff30623cae769c18d09382b9f721b4d1803e41863dec267ddfbf1",
+          "selected_text_modified": false,
+          "source_bbox": [
+            418.63,
+            72.24,
+            471.22,
+            121.7
+          ]
+        },
+        "independent_source_rectangle": {
+          "cell_or_page_approval": false,
+          "contract_version": "pdf2data.metadata-bound-source-rectangle.v1",
+          "native_view_bbox": [
+            418.83,
+            72.44,
+            471.02000000000004,
+            121.5
+          ],
+          "native_view_dimensions": [
+            595.32,
+            841.92
+          ],
+          "page_rotation_degrees": 0,
+          "pdfium_read_bbox": [
+            418.83,
+            720.4199829101562,
+            471.02000000000004,
+            769.4799829101562
+          ],
+          "raw_pdf_bbox": [
+            0.0,
+            0.0,
+            595.3200073242188,
+            841.9199829101562
+          ],
+          "text_modified": false,
+          "transformation_basis": "declared_PDF_Rotate_inverse_only"
+        },
+        "independent_text": "",
+        "readers_agree": true,
+        "role_candidate": "header",
+        "row": 0,
+        "row_span": 1,
+        "selected_cell_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "source_cell_candidate",
+        "text": ""
+      },
+      {
+        "bbox": [
+          471.22,
+          72.24,
+          523.18,
+          121.7
+        ],
+        "column": 4,
+        "column_span": 1,
+        "glyph_audit": {
+          "issues": [],
+          "non_ascii_characters": 0,
+          "status": "no_invalid_codepoints_detected",
+          "unicode_policy": "Preserve valid scripts/currency/mathematics; non-ASCII alone is not an error."
+        },
+        "id": "543f04ecae08239e:p117:table0:v54f899777385af1d10eec0cf:r0:c4",
+        "independent_cell_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "independent_engine": "pdfium_source_cell",
+        "independent_glyph_audit": {
+          "issues": [],
+          "non_ascii_characters": 0,
+          "status": "no_invalid_codepoints_detected",
+          "unicode_policy": "Preserve valid scripts/currency/mathematics; non-ASCII alone is not an error."
+        },
+        "independent_reader_mapping": {
+          "contract_version": "pdf2data.source-bound-cell-reader-mapping.v1",
+          "hold": "native_cell_glyph_order_disagrees",
+          "legal_review": "not_run",
+          "mapped_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "mapped_text": "",
+          "native_glyphs_sha256": "40f0ec27285af53d2597c6cc60e040bc376d50c20ea41201a05496ed9194b5d5",
+          "page_quality_cleared": false,
+          "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "raw_text": "",
+          "repairs": [],
+          "secondary_layout_sha256": "8fa07f892dcff30623cae769c18d09382b9f721b4d1803e41863dec267ddfbf1",
+          "selected_text_modified": false,
+          "source_bbox": [
+            471.22,
+            72.24,
+            523.18,
+            121.7
+          ]
+        },
+        "independent_source_rectangle": {
+          "cell_or_page_approval": false,
+          "contract_version": "pdf2data.metadata-bound-source-rectangle.v1",
+          "native_view_bbox": [
+            471.42,
+            72.44,
+            522.9799999999999,
+            121.5
+          ],
+          "native_view_dimensions": [
+            595.32,
+            841.92
+          ],
+          "page_rotation_degrees": 0,
+          "pdfium_read_bbox": [
+            471.42,
+            720.4199829101562,
+            522.9799999999999,
+            769.4799829101562
+          ],
+          "raw_pdf_bbox": [
+            0.0,
+            0.0,
+            595.3200073242188,
+            841.9199829101562
+          ],
+          "text_modified": false,
+          "transformation_basis": "declared_PDF_Rotate_inverse_only"
+        },
+        "independent_text": "",
+        "readers_agree": true,
+        "role_candidate": "header",
+        "row": 0,
+        "row_span": 1,
+        "selected_cell_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "source_cell_candidate",
+        "text": ""
+      }
+    ],
+    "page_width": 595.32,
+    "page_height": 841.92,
+    "native_raw_matrix": [
+      [
+        "16.",
+        "Normal Maximum Leading MVAR at rated\nMW output",
+        "",
+        "",
+        ""
+      ]
+    ]
+  },
+  "source_quality_clearance": false
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "pdf2data.native-cell-space-rules.v1",
+  "allowed_source_space_codepoints": [
+    32,
+    160
+  ],
+  "coordinate_tolerance_points": 0.3,
+  "minimum_vertical_overlap_fraction": 0.5,
+  "maximum_context_codepoints": 4000,
+  "inserted_reader_separator": " ",
+  "scope": "restore only independently omitted explicit native source space glyphs; no source text mutation",
+  "space_position_basis": "explicit_space_advance_center_in_positive_interglyph_gap",
+  "maximum_space_advance_width_em": 1.0
+}

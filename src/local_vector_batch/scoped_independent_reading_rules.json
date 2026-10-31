@@ -1,0 +1,83 @@
+{
+  "contract_version": "pdf2data.scoped-independent-source-correction.v1",
+  "rule": "pinned_original_crop_reviewed_independent_literal",
+  "review_origin": "assistant_visual_original_source_crop",
+  "minimum_word_box_iou": 0.3,
+  "whole_page_gates_unchanged": true,
+  "human_review_required": false,
+  "publication_eligible": false,
+  "cases": [
+    {
+      "id": "capital-cost-61",
+      "source_pdf_sha256": "e18ff3f16d0856e4e6a979be0a29a810206adc6ba4e03b9a21dc5f4c7155c6d9",
+      "page": 2,
+      "raw_independent_sha256": "65e5457b0183b36ef3ce16b56fca85d98c59e0417734c973ac03cf2bfb57ed56",
+      "selected_page_sha256": "2070fb5c7357b3681a88896d53a44c1328fb47f5603b95e42dd858373a781ea3",
+      "selected_model_profile": {
+        "engine": "rapidocr",
+        "engine_package_version": "3.10.0",
+        "recognition_model": "devanagari_PP-OCRv5_rec_mobile",
+        "recognition_model_sha256": "d6f0a906580e3fa6b324a318718f1f31f268b6ea8ef985f91c2012a37f52c91e"
+      },
+      "independent_line_index": 5,
+      "independent_word_index": 5,
+      "primary_line_index": 5,
+      "primary_word_index": 8,
+      "primary_literal": "6१",
+      "original_literal": "51",
+      "reviewed_literal": "61",
+      "original_span": {
+        "char_start": 311,
+        "char_length": 2,
+        "exact_quote": "51",
+        "offset_encoding": "codepoint"
+      },
+      "crop": {
+        "bbox": [
+          149.00000000000003,
+          126.78250516221186,
+          517.4,
+          172.71248563096196
+        ],
+        "dpi": 240,
+        "sha256": "a5b942bbc02d9d2b7fb376ca59db36dac1b83486d51b18c4d2dc67a52017fdcf"
+      }
+    },
+    {
+      "id": "solar-75-percent",
+      "source_pdf_sha256": "e18ff3f16d0856e4e6a979be0a29a810206adc6ba4e03b9a21dc5f4c7155c6d9",
+      "page": 2,
+      "raw_independent_sha256": "65e5457b0183b36ef3ce16b56fca85d98c59e0417734c973ac03cf2bfb57ed56",
+      "selected_page_sha256": "2070fb5c7357b3681a88896d53a44c1328fb47f5603b95e42dd858373a781ea3",
+      "selected_model_profile": {
+        "engine": "rapidocr",
+        "engine_package_version": "3.10.0",
+        "recognition_model": "devanagari_PP-OCRv5_rec_mobile",
+        "recognition_model_sha256": "d6f0a906580e3fa6b324a318718f1f31f268b6ea8ef985f91c2012a37f52c91e"
+      },
+      "independent_line_index": 25,
+      "independent_word_index": 2,
+      "primary_line_index": 25,
+      "primary_word_index": 2,
+      "primary_literal": "75%",
+      "original_literal": "759",
+      "reviewed_literal": "75%",
+      "original_span": {
+        "char_start": 1347,
+        "char_length": 3,
+        "exact_quote": "759",
+        "offset_encoding": "codepoint"
+      },
+      "crop": {
+        "bbox": [
+          138.6,
+          561.4000000000001,
+          395.0,
+          597.4206866935459
+        ],
+        "dpi": 240,
+        "sha256": "250aebc4e3b7d4f52b124f31b9c02453bc43255ae4b4a5a6964a6217cae4401f"
+      }
+    }
+  ]
+}

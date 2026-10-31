@@ -59,8 +59,13 @@ def text_hash(text: str) -> str:
     return digest(text.encode('utf-8'))
 
 
+# Auxiliary Unicode receipts remain a distinct contract from legal UTF8 text.
+from .lossless_text import (auxiliary_text_receipt,validate_auxiliary_text_receipts,
+                            verify_invalid_auxiliary_readers,lossless_json_dumps)
+
+
 def write_json(path: Path, value) -> None:
-    path.write_text(json.dumps(value, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+    path.write_text(lossless_json_dumps(value, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 
 
 def rows(path: Path) -> list[dict]:
@@ -68,7 +73,7 @@ def rows(path: Path) -> list[dict]:
 
 
 def write_rows(path: Path, values: list[dict]) -> None:
-    path.write_text(''.join(json.dumps(v, ensure_ascii=False)+'\n' for v in values), encoding='utf-8')
+    path.write_text(''.join(lossless_json_dumps(v, ensure_ascii=False)+'\n' for v in values), encoding='utf-8')
 
 
 def read_manifest(path: Path) -> dict:
@@ -133,6 +138,7 @@ def capture_layout(original: Path, pages: list[dict]) -> list[dict]:
     import pdfplumber
     from pypdf import PdfReader
     from .pdf_ingest import _open_pdf_with_page_recovery
+    source_pdf_sha=digest(original.read_bytes())
     secondary = PdfReader(original).pages
     result=[]
     with _open_pdf_with_page_recovery(original, secondary, []) as pdf:
@@ -151,6 +157,10 @@ def capture_layout(original: Path, pages: list[dict]) -> list[dict]:
             try:source_lines=read_source_lines(original,page,selected['page'],secondary_layout_text=independent_layout)
             except Exception as error:source_lines={'status':'unavailable','text':None,'glyph_coverage':False,'reason':type(error).__name__}
             witness,witness_basis=choose_witness(selected['text'],independent_layout,source_lines) if selected['method']=='pdf_text' else (independent_layout,'pypdf_layout_for_ocr_comparison_only')
+            if witness is not None and any(0xD800<=ord(c)<=0xDFFF for c in witness):
+                witness=None;witness_basis='invalid_auxiliary_reader_witness_excluded'
+            reader_receipts={key:auxiliary_text_receipt(value,source_pdf_sha256=source_pdf_sha,page=selected['page'],page_text_sha256=selected['text_sha256']) for key,value in {'native_text_raw':native,'secondary_text_raw':independent,'secondary_layout_text_raw':independent_layout}.items()}
+            errors.extend('invalid_unicode_auxiliary_reader:'+key for key,receipt in reader_receipts.items()if receipt['state']=='invalid_unicode_scalar_sequence')
             glyphs=[]
             for c in page.chars:
                 glyphs.append({'text':c.get('text',''), 'bbox':[float(c[k]) for k in ('x0','top','x1','bottom')],
@@ -162,13 +172,14 @@ def capture_layout(original: Path, pages: list[dict]) -> list[dict]:
                 'coordinate_system':'PDF points, top-left', 'width':float(page.width),'height':float(page.height),
                 'native_text_raw':native, 'secondary_text_raw':independent,
                 'secondary_layout_text_raw':independent_layout,
-                'secondary_layout_text_sha256':text_hash(independent_layout) if independent_layout is not None else None,
+                'secondary_layout_text_sha256':reader_receipts['secondary_layout_text_raw']['utf8_text_sha256'],
+                'auxiliary_reader_receipts':reader_receipts,
                 'quality_independent_basis':witness_basis,
                 'quality_independent_text':witness,
                 'quality_independent_text_sha256':text_hash(witness) if witness is not None else None,
                 'pdfium_source_lines':source_lines,
-                'native_text_sha256':text_hash(native) if native is not None else None,
-                'secondary_text_sha256':text_hash(independent) if independent is not None else None,
+                'native_text_sha256':reader_receipts['native_text_raw']['utf8_text_sha256'],
+                'secondary_text_sha256':reader_receipts['secondary_text_raw']['utf8_text_sha256'],
                 'glyph_stream_text':glyph_text,'glyphs':glyphs,'alignment':mapping,
                 'alignment_status':'observation_only_not_reviewed_reading_order',
                 'extraction_errors':errors,
@@ -308,6 +319,12 @@ def readiness_ledger(structure: dict, quality: dict) -> dict:
 
 
 def verify_document(output: Path) -> dict:
+    from .native_verification_session import active_session
+    session=active_session()
+    return session.verify(output,_verify_document_uncached)if session is not None else _verify_document_uncached(output)
+
+
+def _verify_document_uncached(output: Path) -> dict:
     output=Path(output)
     receipt=json.loads((output/'l1-package.json').read_text())
     if receipt.get('schema_version')!=SCHEMA:raise ValueError('unknown L1 schema')
@@ -327,7 +344,9 @@ def verify_document(output: Path) -> dict:
             raise ValueError('layout source identity mismatch')
         if 'quality_independent_text' in raw and raw.get('quality_independent_text_sha256')!=(text_hash(raw['quality_independent_text']) if raw['quality_independent_text'] is not None else None):
             raise ValueError('independent native witness hash mismatch')
-        if raw.get('secondary_layout_text_sha256')!=(text_hash(raw['secondary_layout_text_raw']) if raw.get('secondary_layout_text_raw') is not None else None):
+        validate_auxiliary_text_receipts(raw,pdf_sha)
+        verify_invalid_auxiliary_readers(original,raw)
+        if raw.get('secondary_layout_text_sha256')!=auxiliary_text_receipt(raw.get('secondary_layout_text_raw'),source_pdf_sha256=pdf_sha,page=raw['page'],page_text_sha256=raw['page_text_sha256'])['utf8_text_sha256']:
             raise ValueError('raw layout-mode text hash mismatch')
         for glyph in raw['glyphs']:
             box=glyph.get('bbox')
@@ -335,7 +354,7 @@ def verify_document(output: Path) -> dict:
                 raise ValueError('invalid native glyph geometry')
         for key in ('native','secondary'):
             text=raw[f'{key}_text_raw']
-            if raw[f'{key}_text_sha256']!=(text_hash(text) if text is not None else None):raise ValueError('raw text hash mismatch')
+            if raw[f'{key}_text_sha256']!=auxiliary_text_receipt(text,source_pdf_sha256=pdf_sha,page=raw['page'],page_text_sha256=raw['page_text_sha256'])['utf8_text_sha256']:raise ValueError('raw text hash mismatch')
         a=b=0
         for op in raw['alignment']:
             if op['glyph_start']!=a or op['selected_start']!=b:raise ValueError('alignment gap')

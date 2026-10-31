@@ -1,0 +1,21 @@
+{
+  "contract_version": "pdf2data.literal-source-form-row-rules.v1",
+  "minimum_gap_points": 36,
+  "minimum_gap_font_multiple": 4,
+  "maximum_line_height_points": 24,
+  "maximum_marker_characters": 100,
+  "marker_pattern": "[._…]+",
+  "label_patterns": {
+    "fax_label": "Fax\\s*:",
+    "date_label": "Date\\s*:",
+    "place_label": "Place\\s*:",
+    "telephone_label": "(?:Telephone|Phone|Tel|Mobile)(?:\\s+No\\.?)?\\s*:",
+    "email_label": "E[ -]?mail(?:\\s+ID)?\\s*:",
+    "signature_label": "(?:Signature|Name|Designation)\\s*:"
+  },
+  "layout_separator_min_spaces": 2,
+  "source_box_padding_points": 0.2,
+  "literal_markers_preserved": true,
+  "field_value_inferred": false,
+  "source_quality_cleared_by_this_rule": false
+}

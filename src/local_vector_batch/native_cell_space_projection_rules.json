@@ -1,0 +1,15 @@
+{
+  "schema_version": "pdf2data.misplaced-source-space-projection-rules.v1",
+  "maximum_cell_codepoints": 2000,
+  "maximum_removed_separators": 8,
+  "maximum_gap_em": 0.02,
+  "maximum_gap_points": 0.25,
+  "maximum_overlap_em": 0.05,
+  "minimum_vertical_overlap_fraction": 0.9,
+  "coordinate_tolerance_points": 0.01,
+  "maximum_space_width_em": 0.5,
+  "source_space_codepoints": [32],
+  "raw_separator_codepoints": [32],
+  "required_adjacent_character_class": "ASCII_letters_only",
+  "scope": "additive_processed_cell_view; original_page_and_raw_table_unchanged"
+}

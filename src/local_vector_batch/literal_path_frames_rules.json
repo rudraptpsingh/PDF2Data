@@ -1,0 +1,32 @@
+{
+  "contract_version": "powerlex.literal-source-paths.v1",
+  "glyph_clearance_points": 0.3,
+  "maximum_closed_frame_margin_fraction": 0.1,
+  "maximum_closed_frame_thickness_points": 3.0,
+  "maximum_coordinate_error_points": 0.02,
+  "maximum_corner_side_points": 1.0,
+  "maximum_thickness_points": 1.0,
+  "minimum_closed_frame_span_fraction": 0.75,
+  "minimum_length_page_fraction": 0.2,
+  "minimum_length_points": 72.0,
+  "raster_rounding_padding_pixels": 1,
+  "required_alpha": 255,
+  "rules_version": 6,
+  "semantic_role": "unresolved_literal_path",
+  "top_header_black_separator": {
+    "maximum_bottom_page_fraction": 0.15,
+    "maximum_thickness_points": 1.5,
+    "minimum_width_page_fraction": 0.7,
+    "required_RGB": [
+      0,
+      0,
+      0
+    ],
+    "required_alpha": 255
+  },
+  "header_baseline_bottom_tolerance_points": 0.1,
+  "wide_literal_body_separator": {
+    "maximum_thickness_points": 1.5,
+    "minimum_width_page_fraction": 0.7
+  }
+}

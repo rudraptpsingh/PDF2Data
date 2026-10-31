@@ -56,5 +56,10 @@
   "native_scripts_requiring_raster_linguistic_proof": [
     "devanagari"
   ],
-  "native_complex_script_min_characters": 1
+  "native_complex_script_min_characters": 1,
+  "native_font_families_requiring_raster_proof": {
+    "devnagari-chanakyanormala": "devanagari",
+    "devnagari-chanakyabolda": "devanagari"
+  },
+  "require_exact_marked_word_tokens": true
 }

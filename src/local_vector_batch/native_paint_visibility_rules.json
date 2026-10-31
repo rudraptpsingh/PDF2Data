@@ -1,0 +1,18 @@
+{
+  "contract_version": "pdf2data.native-paint-visibility-rules.v1",
+  "rules": {
+    "later_opaque_rectangular_fill": {
+      "enabled": true,
+      "required_fill_opacity": 1.0,
+      "required_group_opacity": 1.0,
+      "allowed_group_blend_modes": ["Normal"],
+      "allowed_text_paint_types": [0],
+      "allow_partial_glyph_removal": false,
+      "allow_nonrectangular_clip": false,
+      "allow_optional_content_layers": false,
+      "allow_rotated_pages": false,
+      "geometry_tolerance_points": 0.0,
+      "whole_page_approval": false
+    }
+  }
+}

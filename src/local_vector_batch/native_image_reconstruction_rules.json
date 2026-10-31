@@ -1,0 +1,21 @@
+{
+  "schema_version": "pdf2data.mixed-native-raster-rules.v1",
+  "audit_dpi": 120,
+  "native_footer_fill": {
+    "minimum_top_fraction": 0.9,
+    "minimum_width_fraction": 0.5,
+    "maximum_height_points": 3.5,
+    "color_rounding_tolerance": 2
+  },
+  "inverted_header_single_row_grid": {
+    "minimum_width_fraction": 0.5,
+    "minimum_component_pixels": 1000,
+    "minimum_dark_row_fraction": 0.55,
+    "minimum_panel_height_pixels": 10,
+    "maximum_data_row_height_fraction": 0.15,
+    "minimum_bottom_rule_fraction": 0.9,
+    "maximum_ruling_width_pixels": 3
+  },
+  "source_rule_scope": "Actual source glyphs, image pixels and source paint only. No legal, client or table semantic approval.",
+  "maximum_OCR_line_height_fraction": 0.12
+}
