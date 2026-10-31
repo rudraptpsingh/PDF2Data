@@ -111,7 +111,7 @@ def test_official_sdk_stdio_roundtrip_runs_real_pdf(tmp_path):
             async with ClientSession(reader, writer, read_timeout_seconds=30) as session:
                 await session.initialize()
                 tools = await session.list_tools()
-                assert {t.name for t in tools.tools} == {'pdf2data_parse', 'pdf2data_status', 'pdf2data_read'}
+                assert {t.name for t in tools.tools} == {'pdf2data_parse', 'pdf2data_status', 'pdf2data_read', 'pdf2data_graph'}
                 started = await session.call_tool('pdf2data_parse', dict(source_path=source['path'], ocr='off'))
                 assert not started.is_error
                 run_id = started.structured_content['run_id']
@@ -129,4 +129,8 @@ def test_official_sdk_stdio_roundtrip_runs_real_pdf(tmp_path):
                 context=await session.call_tool('pdf2data_read',dict(run_id=run_id,artifact='continuations',page=1,max_chars=200000))
                 assert not context.is_error
                 assert context.structured_content['data']['publication_eligible'] is False
+                graph = await session.call_tool('pdf2data_graph', dict(run_id=run_id, operation='build'))
+                assert not graph.is_error
+                assert graph.structured_content['by_kind']['Page'] == 2
+                assert graph.structured_content['semantic_review_required'] is True
     asyncio.run(exercise())
