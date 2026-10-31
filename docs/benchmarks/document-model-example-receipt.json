@@ -1,0 +1,48 @@
+{
+  "schema_version": "pdf2data.document-model-example.v1",
+  "source_pdf_sha256": "17b7dd0fe13e4e4f1ca5d4793c7485d66bb5e1b527f9b846a44564577f4d49ff",
+  "source_pages": 6,
+  "word_pages": 5,
+  "roles": {
+    "masthead": 2,
+    "title": 1,
+    "metadata": 2,
+    "subtitle": 1,
+    "heading": 1,
+    "numbered_paragraph": 15,
+    "quotation": 2,
+    "paragraph": 8,
+    "footer": 6,
+    "list_item": 14,
+    "caption": 2,
+    "table": 2
+  },
+  "inline_candidates": {
+    "date": 46,
+    "citation": 19,
+    "quantity": 33
+  },
+  "raw_page_payloads_unchanged": true,
+  "table_payloads_unchanged": true,
+  "quality_outcomes_unchanged": true,
+  "editable_tables": 2,
+  "repeating_table_headers": 2,
+  "source_footer_pages": 6,
+  "word_footer_story": true,
+  "source_pagination_preserved": false,
+  "rendered_word_sha256": "a68aa92ce8482f46070ec029a7c0609d110cc20cc22c4afd349dc541d7e5e2a4",
+  "classification_verified": false,
+  "publication_eligible": false,
+  "visual_review": {
+    "all_pages_inspected": true,
+    "page_count": 5,
+    "clipped_text_or_tables_observed": false,
+    "review": "source text preserved with editable reflow; not a pixel replica"
+  },
+  "source_model": "document-model.json",
+  "tests": {
+    "passed": 1085,
+    "skipped": 1,
+    "skip_reason": "optional docling_core dependency unavailable"
+  }
+}

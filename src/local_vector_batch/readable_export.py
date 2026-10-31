@@ -131,6 +131,8 @@ def export_readable(package:Path,output:Path,docx_python:Path|None=None):
       'verification':verification,'publication_eligible':False}
     from .document_blocks import build_blocks
     data['document_blocks']=build_blocks(data)
+    from .document_model import build_document_model
+    data['document_model']=build_document_model(data)
     output.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.pdf2data-readable-',dir=output.parent) as temp:
         stage=Path(temp)/'bundle';stage.mkdir();(stage/'assets').mkdir()
@@ -138,6 +140,7 @@ def export_readable(package:Path,output:Path,docx_python:Path|None=None):
         shutil.copyfile(package/'original.pdf',stage/'source.pdf')
         for name,value in [('data.json',data),('quality.json',quality)]: (stage/name).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')
         (stage/'document-blocks.json').write_text(json.dumps(data['document_blocks'],ensure_ascii=False,indent=2)+'\n')
+        (stage/'document-model.json').write_text(json.dumps(data['document_model'],ensure_ascii=False,indent=2)+'\n')
         shutil.copyfile(package/'layout.jsonl',stage/'layout.jsonl')
         import pypdfium2 as pdfium
         pdf=pdfium.PdfDocument(str(package/'original.pdf'))
@@ -170,5 +173,6 @@ def export_readable(package:Path,output:Path,docx_python:Path|None=None):
         if output.exists():raise ValueError('readable output appeared during export')
         stage.rename(output)
     return {'output':str(output),'open':str(output/'document.html'),'markdown':str(output/'document.md'),
+      'model':str(output/'document-model.json'),
       'word':str(output/'document.docx') if docx_python else None,'json':str(output/'data.json'),
       'pages':len(pages),'quality_flagged_pages':data['flagged_pages'],'withheld_pages':0,'source_integrity':'passed','publication_eligible':False}

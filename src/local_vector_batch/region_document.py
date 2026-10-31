@@ -318,7 +318,7 @@ def export_regions(document_path, layout_path, output,reuse_existing=False):
     output = Path(output).absolute()
     implementation={name:sha(Path(__file__).with_name(name).read_bytes()) for name in
                     ('region_document.py','document_blocks.py','readable_export.py','page_map.py',
-                     'layout_overlay.py','layout_furniture.py','overlays.js','overlays.css','viewer.css','ui.css')}
+                     'layout_overlay.py','layout_furniture.py','document_model.py','overlays.js','overlays.css','viewer.css','ui.css')}
     if output.exists() and reuse_existing:
         receipt=load(output/'manifest.json')
         if (receipt['input_document_sha256']!=sha(Path(document_path).read_bytes()) or
@@ -338,6 +338,9 @@ def export_regions(document_path, layout_path, output,reuse_existing=False):
     original = load(document_path);layout = load(layout_path)
     source = next(d for d in layout['documents'] if d['source_pdf_sha256'] == original['source_pdf_sha256'])
     data = assemble(original)
+    data['layout']=[dict(page=p['page'],width=p['page_size_points'][0],height=p['page_size_points'][1],glyphs=[]) for p in source['pages']]
+    from .document_model import build_document_model
+    data['document_model']=build_document_model(data)
     md, continuous, graph = full_document(data)
     existing = {n['id'] for n in graph['nodes']}
     # Clause groups already have paragraph-candidate nodes in the shared graph.
@@ -357,6 +360,7 @@ def export_regions(document_path, layout_path, output,reuse_existing=False):
         for name in ('ui.css','viewer.css'):
             shutil.copyfile(Path(__file__).with_name(name),stage/'assets'/name)
         for name,value in [('data.json',data),('document-blocks.json',data['document_blocks']),
+                           ('document-model.json',data['document_model']),
                            ('relations.json',graph),('search-projections.json',projections),
                            ('quality.json',data['quality']),('raw-region-document.json',original)]:
             (stage/name).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')

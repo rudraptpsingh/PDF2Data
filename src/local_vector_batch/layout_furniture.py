@@ -76,7 +76,7 @@ def formatting(regions,width,height):
         a,b,c,d=region['bbox'];dl=a-left;dr=right-c;tol=max(3,width*.012)
         align='unresolved'
         if abs((a+c)-(left+right))<=tol*2 and dl>tol and dr>tol:align='center_candidate'
-        elif abs(dr)<=tol and dl>tol*2:align='right_candidate'
+        elif abs(dr)<=tol and dl>tol*2 and c-a<(right-left)*.6:align='right_candidate'
         elif abs(dl)<=tol:align='left_or_justified_unresolved' if abs(dr)<=tol else 'left_candidate'
         elif dl>tol and dr>0:align='indented_candidate'
         region['formatting']=dict(alignment_candidate=align,left_indent_points=round(dl,2),right_indent_points=round(dr,2),

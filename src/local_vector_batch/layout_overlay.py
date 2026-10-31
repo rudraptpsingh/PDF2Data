@@ -7,6 +7,9 @@ import math
 import shutil
 
 PALETTE = {
+    'title': ('Title', '#7c3aed'), 'subtitle': ('Subtitle', '#a855f7'),
+    'metadata': ('Metadata', '#0d9488'), 'quotation': ('Quotation', '#b45309'),
+    'numbered_paragraph': ('Numbered paragraph', '#1d4ed8'),
     'heading': ('Heading', '#8b5cf6'), 'text': ('Text', '#2563eb'),
     'table': ('Table', '#059669'), 'list': ('List', '#d97706'),
     'formula': ('Formula', '#db2777'), 'figure': ('Figure', '#ca8a04'),
@@ -21,7 +24,12 @@ def digest(path):
 
 
 def category(kind):
-    if kind in ('title','section_header','heading','doc_title','paragraph_title'):return 'heading'
+    if kind in ('title','doc_title'):return 'title'
+    if kind=='subtitle':return 'subtitle'
+    if kind in ('metadata','masthead'):return 'metadata'
+    if kind=='quotation':return 'quotation'
+    if kind=='numbered_paragraph':return 'numbered_paragraph'
+    if kind in ('section_header','heading','paragraph_title'):return 'heading'
     if kind in ('table','table_cell'):return 'table'
     if kind in ('list_item','list'):return 'list'
     if kind in ('formula','equation','formula_number'):return 'formula'
@@ -49,6 +57,7 @@ def build_overlays(data,source_document=None):
     if source_document and source_document.get('source_pdf_sha256',data['source_pdf_sha256'])!=data['source_pdf_sha256']:
         raise ValueError('overlay layout belongs to a different source PDF')
     pages=[];blocks=data.get('document_blocks',{}).get('blocks',[])
+    model={n['id']:n for n in data.get('document_model',{}).get('elements',[])}
     layouts={p['page']:p for p in (source_document['pages'] if source_document else data.get('layout',[]))}
     quality={r['page']:r for r in data.get('quality',{}).get('results',[])}
     from .layout_furniture import PAGE_LABEL,observed_margins,furniture_candidates,formatting
@@ -102,8 +111,10 @@ def build_overlays(data,source_document=None):
                     if evidence and all(evidence):box=union(evidence);basis='exact_unique_source_lines'
                 if not box:
                     unlocated.append(block['id']);continue
-                add(block['id'],block['kind'],box,text,block_id=block['id'],order=block.get('order'),
+                candidate=model.get(block['id'],{});shown_kind=candidate.get('role_candidate',block['kind'])
+                add(block['id'],shown_kind,box,text,block_id=block['id'],order=block.get('order'),
                     preview_html=preview(block,text,block['kind']),geometry_basis=basis,state='candidate',confidence=None,
+                    role_candidate=shown_kind,inline_candidates=candidate.get('inline_candidates',[]),
                     font_names=block.get('font_names',[]),bold_candidate=block.get('bold_candidate'))
         for r in regions:
             if r['type'] in ('header','footer') and PAGE_LABEL.fullmatch(r['text'].strip()):r['type']='page_number'

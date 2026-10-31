@@ -151,14 +151,14 @@ def build_blocks(data):
             value=text[lo:hi];evidence=line_evidence(value,layout);kind='paragraph';meta={}
             if not value.strip():kind='whitespace'
             else:
-                marker=re.match(r'^\s*(\([a-zivx]+\)|[a-z]\)|[•▪●]|[-–]\s)(?=\s|\S)',value,re.I)
+                marker=re.match(r'^\s*(\([a-zivx]+\)|[a-z]\)|[ivxlcdm]+\.(?=\s)|[•▪●]|[-–]\s)(?=\s|\S)',value,re.I)
                 if text[:lo].rstrip().endswith('-'):marker=None
                 if marker:kind='list_item';meta={'marker':marker.group(1).strip(),'list_depth_candidate':0,'nesting_state':'unresolved'}
                 elif len(value.strip())<160 and evidence.get('bold_candidate') and (
                     (evidence.get('max_font_size') or 0)>body_size+1 or page['page']==1 and lo==0 or
                     re.match(r'^\s*\d+[.)]\s+\S',value) and len(value.split())<=8 and len(value.strip())<80 and value.rstrip()[-1] not in '.,;”"'):
                     kind='heading';meta={'heading_level_candidate':1,'hierarchy_state':'unresolved'}
-                elif len(value.strip())<100 and value.strip().endswith(':') and evidence.get('bbox'):
+                elif len(value.strip())<100 and value.strip().endswith(':') and evidence.get('bbox') and value.lstrip()[:1].isupper():
                     kind='heading';meta={'heading_level_candidate':2,'hierarchy_state':'unresolved'}
             chunks.append((lo,hi,kind,None,{**evidence,**meta}))
         for lo,hi,kind,table,meta in chunks:
@@ -167,6 +167,9 @@ def build_blocks(data):
             # source parent. Physical page boundaries remain separate spans.
             previous=blocks[-1] if blocks else None
             continuation=kind=='paragraph' and previous and previous['kind'] in ('paragraph','list_item') and previous['parent_unit_ids']==unit_ids and previous.get('bold_candidate',False)==meta.get('bold_candidate',False) and previous['spans'][-1]['page']==page['page'] and previous['spans'][-1]['char_start']+previous['spans'][-1]['char_length']==lo
+            if continuation:
+                from .document_model import paragraph_break
+                continuation=not paragraph_break(previous,meta,text[lo:hi])
             if continuation:
                 prior=previous['spans'][-1];prior['char_length']=hi-prior['char_start'];prior['exact_quote']=text[prior['char_start']:hi]
                 previous['bbox']=union([b for b in (previous.get('bbox'),meta.get('bbox')) if b]);continue
