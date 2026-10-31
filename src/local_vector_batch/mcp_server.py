@@ -80,6 +80,14 @@ class Bridge:
             body=dict(page=selected if region_id is None else dict(page=page,text_sha256=selected['text_sha256']),blocks=blocks,tables=tables,
                       quality=next(q for q in data['quality']['results'] if q['page']==page),continuations=continuations(page))
         elif artifact=='continuations':body=continuations(page)
+        elif artifact=='fields':
+            if 'configured-fields/fields.json'not in manifest['files']:body=dict(status='not_configured_reexport_with_rules',observations=[])
+            else:
+                body=json.loads(checked('configured-fields/fields.json'))
+                if body['source_pdf_sha256']!=state['source_pdf_sha256']:raise ValueError('Configured fields/source identity changed')
+                if page is not None:
+                    if type(page)is not int or page<1:raise ValueError('A positive physical page number is required')
+                    body['observations']=[r for r in body['observations']if r['source_span']['page']==page]
         elif artifact=='document_parts':
             if 'document-parts.json' not in manifest['files']:
                 body=dict(status='not_available_reexport_required')
@@ -168,7 +176,7 @@ def create_server(bridge):
         return bridge.status(run_id)
 
     @server.tool(annotations=ToolAnnotations(readOnlyHint=True,openWorldHint=False),structured_output=True)
-    def pdf2data_read(run_id:str,artifact:Literal['page','tables','table_contexts','continuations','document_parts','quality','markdown','manifest','overlays']='page',page:int|None=None,region_id:str|None=None,table_id:str|None=None,max_chars:int=30000,cell_id:str|None=None)->dict[str,Any]:
+    def pdf2data_read(run_id:str,artifact:Literal['page','fields','tables','table_contexts','continuations','document_parts','quality','markdown','manifest','overlays']='page',page:int|None=None,region_id:str|None=None,table_id:str|None=None,max_chars:int=30000,cell_id:str|None=None)->dict[str,Any]:
         """Read complete source-scoped text, typed blocks, tables or diagnostics. Oversized results request narrower scope; content is never silently clipped."""
         return bridge.read(run_id,artifact,page,region_id,table_id,max_chars,cell_id)
 

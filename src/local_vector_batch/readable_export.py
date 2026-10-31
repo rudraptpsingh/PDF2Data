@@ -118,7 +118,7 @@ select.onchange=()=>show(true);prev.onclick=()=>{select.selectedIndex--;show(tru
 const initial=location.hash.replace('#page-','');if([...select.options].some(o=>o.value===initial))select.value=initial;show();if('''+('true' if layout_mode else 'false')+''' || ['source','layout'].includes(new URLSearchParams(location.search).get('mode')))document.getElementById('compare-mode').click();
 </script></body></html>'''
 
-def export_readable(package:Path,output:Path,docx_python:Path|None=None):
+def export_readable(package:Path,output:Path,docx_python:Path|None=None,rules_path:Path|None=None):
     from .legal_l1 import verify_document
     package=Path(package).resolve();output=Path(output).absolute()
     if output.exists() or output.is_symlink():raise ValueError('readable output must be a new directory')
@@ -141,6 +141,12 @@ def export_readable(package:Path,output:Path,docx_python:Path|None=None):
     output.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.pdf2data-readable-',dir=output.parent) as temp:
         stage=Path(temp)/'bundle';stage.mkdir();(stage/'assets').mkdir()
+        import os
+        configured=rules_path or os.environ.get('PDF2DATA_RULES')
+        if configured:
+            from .field_rules import extract
+            extract(package,Path(configured),stage/'configured-fields')
+            data['configured_fields_manifest']='configured-fields/manifest.json'
         for name in ('ui.css','viewer.css'):shutil.copyfile(Path(__file__).with_name(name),stage/'assets'/name)
         shutil.copyfile(package/'original.pdf',stage/'source.pdf')
         for name,value in [('data.json',data),('quality.json',quality)]: (stage/name).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')

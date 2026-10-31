@@ -40,6 +40,8 @@ def parser() -> argparse.ArgumentParser:
     from . import __version__
     main.add_argument('--version',action='version',version='PDF2Data '+__version__)
     sub = main.add_subparsers(dest="command", required=True)
+    from .field_rules import configure as field_parser
+    field_parser(sub.add_parser('fields',help='extract, catalog, query and evaluate configurable source-bound metadata rules'))
     controller=sub.add_parser('pdf-control',help='inventory, measure, repair and recheck documents through a durable local feedback loop')
     operations=controller.add_subparsers(dest='operation',required=True)
     for operation in ('init','run','status','feedback','tasks'):
@@ -285,6 +287,7 @@ def parser() -> argparse.ArgumentParser:
     readable.add_argument('--package', required=True, type=Path)
     readable.add_argument('--output', required=True, type=Path)
     readable.add_argument('--docx-python', type=Path, help='optional Python runtime with python-docx installed')
+    readable.add_argument('--rules',type=Path,help='versioned extraction rules; also configurable with PDF2DATA_RULES')
     readable.add_argument('--json', action='store_true')
     profiles=sub.add_parser('profile-documents',help='measure bilingual keyword and metadata patterns in verified L1 packages')
     profiles.add_argument('--manifest',required=True,type=Path)
@@ -452,7 +455,10 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command == "pdf-layout-recover":
+        if args.command == 'fields':
+            from .field_rules import execute
+            result=execute(args)
+        elif args.command == "pdf-layout-recover":
             from .region_recovery import recover_layout
             result=recover_layout(args.layout,args.read,args.output,args.max_rows,args.max_parts)
         elif args.command == "benchmark-structure-run":
@@ -617,7 +623,7 @@ def main(argv: list[str] | None = None) -> int:
                 raise ValueError("page text is not ready for retrieval: check original PDF and resolve review_required_pages")
         elif args.command == "export-readable":
             from .readable_export import export_readable
-            result = export_readable(args.package,args.output,args.docx_python)
+            result = export_readable(args.package,args.output,args.docx_python,args.rules)
         elif args.command == 'profile-documents':
             from .document_profiles import profile_documents
             result=profile_documents(args.manifest,args.output)
@@ -796,6 +802,7 @@ def main(argv: list[str] | None = None) -> int:
                       "token_budget_validated": result.get("token_budget_validated", False),
                       "skipped_input_records": result.get("input_audit", {}).get("records_without_passages")}
         print(json.dumps(result, ensure_ascii=False) if args.json else json.dumps(result, indent=2, ensure_ascii=False))
+        if args.command=='fields'and args.field_operation=='evaluate'and not result.get('passed'):return 3
         if args.command=='native-table-cell-revalidate'and result.get('status')!='validated':return 3
         if args.command=='native-table-region-reproof'and result.get('status')!='passed':return 3
         if args.command=='exact-white-blank-reproof'and result.get('status')!='passed':return 3

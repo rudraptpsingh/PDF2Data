@@ -34,6 +34,18 @@ The output is deterministic, checksum verified, and ready for a Vectorize import
 
 [Complete CLI reference, all commands and real outputs](docs/cli-reference.md).
 
+Use [configurable field rules](docs/configurable-fields.md) to add metadata for
+different document categories without changing parser code:
+
+```bash
+./pdf2data fields init --output ./document-rules.json
+./pdf2data fields extract --package ./l1/source-id --rules ./document-rules.json --output ./fields/source-id
+```
+
+Rules support source-anchored metadata, dates, quantities and formula candidates,
+search across document bundles, reviewed-reference evaluation, readable exports
+and MCP reads. This feature is available on Git `main`, outside npm `0.2.0-rc.1`.
+
 The [feedback controller](docs/feedback-controller.md) inventories originals,
 measures per-page errors, stages bounded repairs and rechecks the full document.
 Machine checks and source review have separate progress counts. This feature is

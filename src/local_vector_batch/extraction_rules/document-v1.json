@@ -1,0 +1,40 @@
+{
+  "schema_version": "pdf2data.extraction-rules.v1",
+  "id": "document-basics",
+  "version": "1.0.0",
+  "description": "Source observations, not verified legal facts. Copy and extend this file for each document category.",
+  "fields": [
+    {
+      "id": "document.reference",
+      "type": "reference",
+      "label": "Document reference",
+      "description": "Reference printed after an English or Hindi identifier label",
+      "pattern": "(?<!\\w)(?:File[ \\t]+No\\.?|No\\.|No(?=[ \\t]*[:：])|No(?=[ \\t]+\\d)|फाइल[ \\t]*संख्या|संख्या)[ \\t]*[:：]?[ \\t]*(?P<value>[A-Za-z0-9][A-Za-z0-9/()._-]{2,79})",
+      "pages": [1],
+      "flags": ["IGNORECASE"]
+    },
+    {
+      "id": "document.date_numeric",
+      "type": "date",
+      "label": "Labelled numeric date",
+      "pattern": "(?<!\\w)(?:Dated?|दिनांक)[ \\t]*[:：][ \\t]*(?P<value>\\d{1,2}\\.\\d{1,2}\\.\\d{4})",
+      "pages": [1],
+      "date_format": "%d.%m.%Y",
+      "flags": ["IGNORECASE"]
+    },
+    {
+      "id": "quantity.percentage",
+      "type": "quantity",
+      "label": "Printed percentage",
+      "description": "Percentage occurrence; this does not establish which rule or client it applies to",
+      "pattern": "(?P<value>\\d+(?:\\.\\d+)?)\\s*(?P<unit>%)"
+    },
+    {
+      "id": "math.observation",
+      "type": "formula",
+      "label": "Formula observations",
+      "description": "Source candidates with arithmetic, structure and answer gates retained",
+      "extractor": "formulas"
+    }
+  ]
+}

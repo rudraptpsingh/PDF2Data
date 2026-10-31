@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Versioned JSON extraction rules: initialize, catalog, extract, search and evaluate
+  new fields across document categories without per-field parser changes.
+- Exact source/ruleset provenance, typed date/quantity candidates and bounded regex
+  workers; reviewed-reference evaluation reports precision, recall and errors.
+- Optional `--rules` / `PDF2DATA_RULES` integration in readable exports, workspace
+  processing and MCP `fields` reads. No additional runtime dependency.
+
 ## 0.2.0-rc.1 — 2026-10-31
 
 First packaged release candidate of PDF2Data. Existing `local_vector_batch` imports
