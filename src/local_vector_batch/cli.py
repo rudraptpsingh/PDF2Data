@@ -60,6 +60,9 @@ def parser() -> argparse.ArgumentParser:
     reconcile = sub.add_parser("pdf-table-reconcile", help="retain native table cells only with source geometry and exact glyph evidence")
     for key in ("layout","read","native-packages","output"):reconcile.add_argument("--"+key,type=Path,required=True)
     reconcile.add_argument("--json",action="store_true")
+    mapping = sub.add_parser("pdf-document-map", help="map existing extracted pages and supplied review notes to verified original rasters")
+    for key in ("document", "layout", "output"):mapping.add_argument("--"+key,type=Path,required=True)
+    mapping.add_argument("--notes",type=Path);mapping.add_argument("--json",action="store_true")
     derive = sub.add_parser("benchmark-reconcile-tables",help="reconcile native source tables without rerunning model inference")
     for key in ("suite","run","native-run","output"):derive.add_argument("--"+key,type=Path,required=True)
     derive.add_argument("--json",action="store_true")
@@ -348,7 +351,10 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command == "pdf-table-reconcile":
+        if args.command == "pdf-document-map":
+            from .page_map import build_page_map
+            result=build_page_map(args.document,args.layout,args.output,args.notes)
+        elif args.command == "pdf-table-reconcile":
             from .table_reconcile import reconcile
             result=reconcile(args.layout,args.read,args.native_packages,args.output)
         elif args.command == "benchmark-reconcile-tables":

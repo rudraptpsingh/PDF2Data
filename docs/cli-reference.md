@@ -14,6 +14,12 @@ After installing the package, use `pdf2data` without `./`. For Qwen use the MLX-
 
 ## Every exposed command
 
+For source mapping, `pdf-document-map --document document.json --layout layout.json
+--notes review-notes.json --output out/page-map --json` reads existing artifacts,
+checks original PDF/raster identity and page/block bindings, and creates a separate
+comparison. Notes are supplied review observations; the command does not infer
+legal relationships or rerun OCR. Use a new output folder.
+
 | Command | Purpose |
 |---|---|
 | `pdf2data benchmark-prepare` | freeze source PDFs and external labels by hash |
@@ -23,6 +29,7 @@ After installing the package, use `pdf2data` without `./`. For Qwen use the MLX-
 | `pdf2data pdf-layout-detect` | detect source-bound original-page regions offline |
 | `pdf2data pdf-region-read` | read pinned local text/table/formula candidates from verified crops |
 | `pdf2data pdf-table-reconcile` | reconcile source native tables with independently read values and symbols |
+| `pdf2data pdf-document-map` | map existing page/block exports and supplied review notes to original source rasters |
 | `pdf2data benchmark-reconcile-tables` | compare source-table reconciliation without rerunning model inference |
 | `pdf2data doctor` | show installed backends and accelerator availability |
 | `pdf2data embed` | embed documents from JSONL |

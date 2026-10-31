@@ -1,0 +1,29 @@
+{
+  "schema_version": "pdf2data.page-map.v1",
+  "source_pdf_sha256": "17b7dd0fe13e4e4f1ca5d4793c7485d66bb5e1b527f9b846a44564577f4d49ff",
+  "source_pdf_path": "/Users/rp/.codex/worktrees/pdf2data-structured-export/PDF2Data/out/benchmarks/legal-probes-data/pdfs/october-em.pdf",
+  "document_sha256": "94dedf1e2222b7cda0dbd014da572048e9d1dcb8c37ec9787c429943e4a0f818",
+  "layout_sha256": "1fd786015a3bac14e8f84e2c05c8fc170ef64b955cb7cd69a1211c6d7fbfa2f8",
+  "annotation_sha256": "ca63a2483c87fa0522389ee1ac3df7a4539879a3fbcbeb49b89e561a6350aec1",
+  "annotation_basis": "supplied_review_observations_not_automatic_relationship_extraction",
+  "publication_eligible": false,
+  "validation_scope": "artifact identity, physical page and block bindings; not semantic completeness",
+  "pages_mapped": 6,
+  "blocks_mapped": 62,
+  "body_blocks": 51,
+  "furniture_blocks": 11,
+  "review_findings": 12,
+  "supplied_relationship_annotations": 16,
+  "rag_ablations_executed": false,
+  "all_six_original_rasters_inspected": true,
+  "output": "/Users/rp/.codex/worktrees/pdf2data-structured-export/PDF2Data/out/source-maps/october-em-review",
+  "tests": {
+    "passed": 442,
+    "skipped": 1,
+    "skip_reason": "docling_core optional coordinate test unavailable in base Python; source and formatting CLI fixtures enabled",
+    "log_sha256": "e81c4d913edddb850bd037bed3aef180371e8e655d782cb884550a9c3202a283"
+  },
+  "javascript_syntax_check": "passed",
+  "ui_visual_validation": "not_performed_browser_file_protocol_rejected",
+  "buildview_update": "not_performed_localhost_3334_connection_refused"
+}

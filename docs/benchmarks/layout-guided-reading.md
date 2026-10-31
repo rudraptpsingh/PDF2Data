@@ -1,5 +1,11 @@
 # Local layout-guided reading
 
+For a source-to-output review, use `pdf-document-map --document document.json
+--layout layout.json --notes review-notes.json --output out/page-map --json`.
+It checks existing PDF/raster hashes and page/block bindings, then writes a separate
+HTML/MD/JSON comparison. It does not rerun OCR or automatically extract the supplied
+relationship annotations. See [the six-page review and research-backed RAG plan](source-maps/research-backed-pdf-rag.md).
+
 PDF2Data now has an opt-in path for source-bound text, table and formula
 recognition. It preserves the existing extraction and produces a new candidate
 bundle. Model output is not a reviewed legal interpretation or a replacement

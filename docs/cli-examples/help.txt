@@ -1,12 +1,31 @@
 usage: pdf2data [-h]
-                {doctor,embed,verify,pdf-extract,legal-l1,verify-legal-l1,l1-qwen-prepare,l1-qwen-run,l1-qwen-validate,pdf-repair,pdf-native-repair,pdf-batch,validate-evidence,verify-package,render-package,import-paddle-layout,review-package,ocr-consensus,audit-review,audit-rendered-review,pdf-compare,pdf-quality,pdf-quality-batch,pdf-repair-queue,pdf-auto-proof,pdf-repair-status,pdf-footnote-proof,pdf-vision-merge,pdf-vision-merge-batch,pdf-blank-commit,pdf-footnote-repair,pdf-repair-commit,pdf-review-queue,pdf-review-feedback,pdf-review-route,pdf-review-proposals,pdf-review-filter,serve}
+                {benchmark-prepare,benchmark-run,benchmark-score,benchmark-compare,pdf-layout-detect,pdf-region-read,pdf-table-reconcile,pdf-document-map,benchmark-reconcile-tables,doctor,embed,verify,pdf-extract,legal-l1,verify-legal-l1,l1-qwen-prepare,l1-qwen-run,l1-qwen-validate,l1-qwen-reproof,export-l1-data,pdf-repair,pdf-native-repair,pdf-batch,validate-evidence,verify-package,export-readable,render-package,import-paddle-layout,review-package,ocr-consensus,audit-review,audit-rendered-review,pdf-compare,pdf-quality,pdf-quality-batch,pdf-repair-queue,pdf-auto-proof,pdf-repair-status,pdf-footnote-proof,pdf-vision-merge,pdf-vision-merge-batch,pdf-blank-commit,pdf-footnote-repair,pdf-repair-commit,pdf-review-queue,pdf-review-feedback,pdf-review-route,pdf-review-proposals,pdf-review-filter,workspace,serve}
                 ...
 
 PDF2Data: source-backed PDF extraction, structured data, quality, local AI
 repair and embeddings
 
 positional arguments:
-  {doctor,embed,verify,pdf-extract,legal-l1,verify-legal-l1,l1-qwen-prepare,l1-qwen-run,l1-qwen-validate,pdf-repair,pdf-native-repair,pdf-batch,validate-evidence,verify-package,render-package,import-paddle-layout,review-package,ocr-consensus,audit-review,audit-rendered-review,pdf-compare,pdf-quality,pdf-quality-batch,pdf-repair-queue,pdf-auto-proof,pdf-repair-status,pdf-footnote-proof,pdf-vision-merge,pdf-vision-merge-batch,pdf-blank-commit,pdf-footnote-repair,pdf-repair-commit,pdf-review-queue,pdf-review-feedback,pdf-review-route,pdf-review-proposals,pdf-review-filter,serve}
+  {benchmark-prepare,benchmark-run,benchmark-score,benchmark-compare,pdf-layout-detect,pdf-region-read,pdf-table-reconcile,pdf-document-map,benchmark-reconcile-tables,doctor,embed,verify,pdf-extract,legal-l1,verify-legal-l1,l1-qwen-prepare,l1-qwen-run,l1-qwen-validate,l1-qwen-reproof,export-l1-data,pdf-repair,pdf-native-repair,pdf-batch,validate-evidence,verify-package,export-readable,render-package,import-paddle-layout,review-package,ocr-consensus,audit-review,audit-rendered-review,pdf-compare,pdf-quality,pdf-quality-batch,pdf-repair-queue,pdf-auto-proof,pdf-repair-status,pdf-footnote-proof,pdf-vision-merge,pdf-vision-merge-batch,pdf-blank-commit,pdf-footnote-repair,pdf-repair-commit,pdf-review-queue,pdf-review-feedback,pdf-review-route,pdf-review-proposals,pdf-review-filter,workspace,serve}
+    benchmark-prepare   freeze the pinned public olmOCR suite without label-
+                        based selection
+    benchmark-run       run source-only extraction profiles over a frozen
+                        suite
+    benchmark-score     score predictions with the pinned official olmOCR rule
+                        classes
+    benchmark-compare   compare matched external evaluation reports
+    pdf-layout-detect   detect source-bound page regions offline without
+                        changing existing extraction
+    pdf-region-read     read source-bound text table and formula crops with
+                        pinned local PaddleOCR-VL
+    pdf-table-reconcile
+                        retain native table cells only with source geometry
+                        and exact glyph evidence
+    pdf-document-map    map existing extracted pages and supplied review notes
+                        to verified original rasters
+    benchmark-reconcile-tables
+                        reconcile native source tables without rerunning model
+                        inference
     doctor              show installed backends and accelerator availability
     embed               embed documents from JSONL
     verify              check hashes, dimensions, and unique vector IDs
@@ -22,6 +41,10 @@ positional arguments:
                         receipts
     l1-qwen-validate    compare source-bound readings without promoting
                         unresolved content
+    l1-qwen-reproof     reassess exact source-raster Qwen witnesses into a new
+                        immutable L1 version; never replace text
+    export-l1-data      export ALL processed text/layout/tables and
+                        diagnostics, including flagged pages
     pdf-repair          repair selected original physical pages without
                         reprocessing the PDF
     pdf-native-repair   atomically replace one page from a source-bound
@@ -32,6 +55,8 @@ positional arguments:
                         without verification
     verify-package      verify a PDF evidence package and optional vector
                         anchors
+    export-readable     export a portable PDF, Markdown, HTML, JSON and
+                        optional Word output folder from immutable L1
     render-package      add linked Markdown/HTML and layout JSON to an
                         existing verified PDF package without re-extracting
     import-paddle-layout
@@ -80,6 +105,8 @@ positional arguments:
                         attach source-crop observations as unverified review
                         suggestions
     pdf-review-filter   skip already reviewed exact source and OCR differences
+    workspace           start a persistent local document workspace with
+                        upload, CLI processing, status and readable outputs
     serve               open the local PDF review and embedding webpage
 
 options:

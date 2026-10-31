@@ -192,6 +192,10 @@
     {
       "name": "benchmark-reconcile-tables",
       "purpose": "evaluate source-table reconciliation without rerunning model inference"
+    },
+    {
+      "name": "pdf-document-map",
+      "purpose": "map existing page/block exports and supplied review notes to verified original rasters"
     }
   ]
 }
