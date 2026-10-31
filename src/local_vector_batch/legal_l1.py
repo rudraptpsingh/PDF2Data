@@ -201,7 +201,7 @@ def unit_version_id(pdf_sha: str, family: str, label: str, spans: list[dict]) ->
     return f"pdf-{pdf_sha[:24]}:unit:{digest(json.dumps(payload,sort_keys=True,ensure_ascii=False).encode())[:24]}"
 
 
-def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=1000, layout=None) -> dict:
+def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=1000, layout=None, tables=None) -> dict:
     """Complete lexical navigation, not a claim of complete legal boundaries."""
     if family not in FAMILIES:raise ValueError('unknown document family')
     # Repeated long margin text is retained separately, never deleted.
@@ -245,6 +245,21 @@ def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=10
                 family_regions.append({'role_candidate':role,'span':anchor(p,start,stop), 'status':'review_required',
                     'warning':'Region is navigation, not verified party identity, legal status or operative effect.'})
     units=[];current=[];label='preamble';sequence=0
+    table_numbering=[]
+    def numbered_starts(page,lo,hi):
+        for match in NUMBER.finditer(page['text'],lo,hi):
+            candidates=[t for t in (tables or []) if t.get('page')==page['page'] and t.get('extraction_basis')=='native_pdf_geometry' and len(t.get('bbox',[]))==4]
+            if candidates and page['page'] in by_layout:
+                from .document_metadata import field_geometry
+                geometry=field_geometry(page,by_layout[page['page']],match.start(1),match.end(1))
+                if geometry:
+                    box=geometry['bbox']
+                    containing=[t for t in candidates if t['bbox'][0]<=box[0] and t['bbox'][1]<=box[1] and box[2]<=t['bbox'][2] and box[3]<=t['bbox'][3]]
+                    if containing:
+                        table_numbering.append({'span':anchor(page,match.start(),match.end()),'table_ids':[t.get('id') for t in containing],
+                            'geometry':geometry,'status':'table_numbering_candidate','effect':'retain_text_in_current_unit_not_a_new_lexical_boundary'})
+                        continue
+            yield match
     def flush():
         nonlocal current,sequence
         if current:
@@ -253,7 +268,7 @@ def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=10
             unit['family']=family;unit['review_reasons']=['lexical_numbering_may_be_caption_or_quoted_text','boundaries_and_semantics_require_review']
             units.append(unit);sequence+=1;current=[]
     for p,lo,hi in body:
-        starts=list(NUMBER.finditer(p['text'],lo,hi))
+        starts=list(numbered_starts(p,lo,hi))
         cursor=lo
         for m in starts:
             if m.start()>cursor:current.append({'page':p['page'],'char_start':cursor,'char_length':m.start()-cursor})
@@ -263,7 +278,7 @@ def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=10
     children=[child for unit in units for child in provision_children(unit,pages,width=width)]
     return {'schema_version':SCHEMA,'source_pdf_sha256':pdf_sha,'declared_family':family,
         'status':'candidate_only','child_width':width,'regions':regions,'family_regions':family_regions,
-        'units':units,'children':children,'legal_status':'unresolved','verified_claims':0,
+        'units':units,'children':children,'table_numbering_candidates':table_numbering,'legal_status':'unresolved','verified_claims':0,
         'coverage_scope':'all selected page text; visual completeness and legal boundaries require independent review'}
 
 
@@ -298,6 +313,9 @@ def validate_structure(structure: dict, pages: list[dict], pdf_sha: str) -> dict
         elif unit_spans[n]:raise ValueError('unit body on empty page')
     children=structure['children'];expected_children=[c for u in structure['units'] for c in provision_children(u,pages,width=structure.get('child_width',1000))]
     if children!=expected_children:raise ValueError('child coverage, parent or literal span mismatch')
+    for candidate in structure.get('table_numbering_candidates',[]):
+        check(candidate['span'])
+        if candidate.get('status')!='table_numbering_candidate' or candidate.get('effect')!='retain_text_in_current_unit_not_a_new_lexical_boundary':raise ValueError('table numbering candidate promoted')
     for region in structure['family_regions']:
         check(region['span'])
         if region.get('status')!='review_required':raise ValueError('family role candidate promoted')
@@ -428,7 +446,7 @@ def extract_document(source: dict, output: Path, *, ocr='off', language='eng', r
         if source.get('expected_pages') is not None and source['expected_pages']!=report['pages']:raise ValueError('expected physical page count mismatch')
         pages=rows(stage/'extraction/pages.jsonl')
         layout=capture_layout(stage/'original.pdf',pages);write_rows(stage/'layout.jsonl',layout)
-        structure=structure_document(pages,sha,source['family'],layout=layout);write_json(stage/'structure.json',structure)
+        structure=structure_document(pages,sha,source['family'],layout=layout,tables=json.loads((stage/'extraction/tables.json').read_text()));write_json(stage/'structure.json',structure)
         checked=validate_structure(structure,pages,sha)
         from .quality_gate import assess_package
         quality=assess_package(stage/'extraction',stage/'original.pdf',derive_ocr_source_raster=True,
