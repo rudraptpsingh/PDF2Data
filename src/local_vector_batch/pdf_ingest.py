@@ -16,6 +16,18 @@ from typing import Callable
 import unicodedata
 from .structure_candidates import document_profiles
 
+EXTRACTOR_CONTRACT='local-vector-batch.pdf-evidence.v2.visual-regions'
+_EXTRACTOR_IMPORT_SHA256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+
+
+def extractor_identity(policy=None):
+    from .quality_gate import load_policy
+    from .native_visuals import NATIVE_VISUALS_IMPLEMENTATION_SHA256
+    policy=load_policy() if policy is None else policy
+    return dict(extractor_contract=EXTRACTOR_CONTRACT,extractor_implementation_sha256=_EXTRACTOR_IMPORT_SHA256,
+        native_visuals_implementation_sha256=NATIVE_VISUALS_IMPLEMENTATION_SHA256,
+        quality_policy_sha256=hashlib.sha256(json.dumps(policy,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest())
+
 
 _QUANTITIES = document_profiles()["quantity_lexicon"]
 _MONEY_SCALE = "|".join(re.escape(value) for value in sorted(_QUANTITIES["money_scales"], key=len, reverse=True))
@@ -34,7 +46,8 @@ CID = re.compile(r"\(cid:\d+\)")
 PARSER_GLYPH = re.compile(r"\(cid:\d+\)|/g\d{4,6}", re.IGNORECASE)
 BLOCKING_ISSUES = frozenset({"no_searchable_text", "missing_text", "garbled_text",
                              "low_confidence_ocr", "ocr_failed", "text_extraction_failed",
-                             "native_parser_disagreement", "secondary_parser_failed"})
+                             "native_parser_disagreement", "secondary_parser_failed",
+                             "native_raster_content_unverified"})
 
 
 def independent_text_coverage(selected: str, reference: str) -> dict:
@@ -269,6 +282,9 @@ def extract_pdf(
     except Exception as error:
         issues.append({"page": 0, "kind": "secondary_parser_unavailable", "detail": str(error)[:180]})
     from .ocr import LocalOCR
+    from .quality_gate import load_policy
+    from .native_visuals import native_raster_regions, associate_table_geometry
+    quality_policy=load_policy()
     with LocalOCR(ocr, ocr_language, ocr_device, ocr_dpi) as recognizer, _open_pdf_with_page_recovery(source, secondary_pages, issues) as pdf:
         total = len(pdf.pages)
         if total == 0:
@@ -358,8 +374,12 @@ def extract_pdf(
             page_id = f"{document_id}:p{index}"
             text_sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
             from .text_script import classify_text_script, native_script_verification
-            from .quality_gate import load_policy
-            script_verification = native_script_verification(text, load_policy())
+            script_verification = native_script_verification(text, quality_policy)
+            raster_regions=native_raster_regions(page,minimum_page_fraction=quality_policy.get('native_raster_region_min_page_fraction',0.0))
+            if raster_regions:
+                issues.append({'page':index,'kind':'native_raster_content_unverified',
+                    'region_count':len(raster_regions),
+                    'detail':'Native text does not establish recovery of raster image content; retain original regions and require source/reading-order/table review'})
             if selected_method == 'pdf_text' and script_verification['required_scripts']:
                 issues.append({'page': index, 'kind': 'native_complex_script_glyph_mapping_unverified',
                                'required_scripts': script_verification['required_scripts'],
@@ -368,6 +388,7 @@ def extract_pdf(
                           "method": selected_method, "text_sha256": text_sha,
                           **classify_text_script(text),
                           "script_verification": script_verification,
+                          "native_raster_regions":raster_regions,
                           "pdf_width": round(float(page.width), 2) if getattr(page, "width", None) else None,
                           "pdf_height": round(float(page.height), 2) if getattr(page, "height", None) else None,
                           "native_quality": native_quality, "selected_quality": selected_quality,
@@ -440,6 +461,12 @@ def extract_pdf(
                 if selected_method != "pdf_text":
                     issues.append({"page": index, "kind": "ocr_layout_review",
                                    "detail": "OCR text does not reconstruct scanned table rows or merged cells"})
+                page_tables=[t for t in table_rows if t['page']==index]
+                table_geometry=associate_table_geometry(page_tables,tolerance=quality_policy.get('table_geometry_containment_tolerance_points',0.25))
+                pages[-1]['table_geometry_summary']=table_geometry
+                if table_geometry['contained_candidates'] or table_geometry['equal_geometry_candidates']:
+                    issues.append({'page':index,'kind':'nested_table_geometry_candidates',**table_geometry,
+                        'detail':'Raw table candidates retained; contained/equal geometry is not proof of independent tables or permission to discard them'})
             recognizer.last_rendered_image = None
             page_issue_kinds = {item["kind"] for item in issues if item["page"] == index}
             if blank and not text:
@@ -450,7 +477,8 @@ def extract_pdf(
                   page_issue_kinds & {"garbled_text", "native_parser_disagreement", "secondary_parser_failed",
                                       "text_extraction_failed", "native_extraction_recovered", "ocr_failed",
                                       "low_confidence_ocr", "table_extraction_failed", "missing_text",
-                                      "native_complex_script_glyph_mapping_unverified"}):
+                                      "native_complex_script_glyph_mapping_unverified", "native_raster_content_unverified",
+                                      "nested_table_geometry_candidates"}):
                 pages[-1]["status"] = "review_required"
             else:
                 pages[-1]["status"] = "ready"
@@ -479,6 +507,11 @@ def extract_pdf(
                               "execution_ms": sum((row.get("ocr") or {}).get("execution_ms", 0) for row in pages)},
               "page_status_counts": page_status_counts,
               "text_chars": sum(row["chars"] for row in pages), "tables": len(table_rows),
+              "native_raster_regions":sum(len(p.get('native_raster_regions',[])) for p in pages),
+              "maximal_table_geometry_candidates":sum(p.get('table_geometry_summary',{}).get('maximal_geometry_candidates',0) for p in pages),
+              "table_count_semantics":"tables counts raw candidates; maximal geometry is not a certified semantic-table count",
+              **extractor_identity(quality_policy),
+              "visual_completeness":"not_certified; separate original-raster quality gate required even when no image object is exposed",
               "ocr_table_candidates": sum(row["extraction_basis"] == "ocr_ruling_geometry_word_boxes"
                                           for row in table_rows),
               "numeric_candidates": len(fact_rows), "issues": issues,

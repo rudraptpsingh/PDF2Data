@@ -56,5 +56,7 @@
   "native_scripts_requiring_raster_linguistic_proof": [
     "devanagari"
   ],
-  "native_complex_script_min_characters": 1
+  "native_complex_script_min_characters": 1,
+  "native_raster_region_min_page_fraction": 0.0,
+  "table_geometry_containment_tolerance_points": 0.25
 }

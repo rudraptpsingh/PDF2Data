@@ -71,7 +71,7 @@ def test_batch_rejects_unverifiable_forced_gpu_before_starting_jobs(tmp_path):
         extract_batch(manifest, tmp_path / "out", workers=1, limit=1, ocr_device="gpu")
 
 
-def test_native_first_package_is_repaired_only_after_ocr_finds_text(monkeypatch, tmp_path):
+def test_repaired_ocr_text_keeps_visual_coverage_held_until_source_proof(monkeypatch, tmp_path):
     image = pytest.importorskip("PIL.Image")
     from local_vector_batch.ocr import LocalOCR
 
@@ -92,16 +92,34 @@ def test_native_first_package_is_repaired_only_after_ocr_finds_text(monkeypatch,
         "engine": "vision", "text": text, "lines": [], "mean_confidence": .99,
         "queue_wait_ms": 0, "execution_ms": 1})
     second = extract_one(row, output, resume=True, ocr="auto", tables=False, repair_ocr=True)
-    assert second["status"] == "extracted"
+    assert second["status"] == "review_required"
     assert second["repaired_ocr"] is True
     report = json.loads((output / "scan-1" / "report.json").read_text())
-    assert report["complete_for_embedding"] is True
+    assert report["complete_for_embedding"] is False
+    assert any(i['kind']=='native_raster_content_unverified' for i in report['issues'])
+    assert json.loads((output/'scan-1'/'pages.jsonl').read_text())['text']==text
     assert report["source_pdf_sha256"] == hashlib.sha256(source.read_bytes()).hexdigest()
     monkeypatch.setattr(LocalOCR, "recognize", lambda _self, _page: None)
     refreshed = extract_one(row, output, resume=True, ocr="off", tables=False, refresh=True)
     assert refreshed["status"] == "review_required"
     assert refreshed["refreshed"] is True
     assert json.loads((output / "scan-1" / "report.json").read_text())["complete_for_embedding"] is False
+
+
+def test_old_extractor_cache_is_not_silently_reused_or_overwritten(tmp_path):
+    from pypdf import PdfWriter
+    from local_vector_batch.evidence_package import create_package
+    source=tmp_path/'source.pdf';writer=PdfWriter();writer.add_blank_page(width=100,height=100)
+    with source.open('wb') as stream:writer.write(stream)
+    output=tmp_path/'out';output.mkdir();row=dict(document_id='source',path=str(source),url='https://example.gov/source.pdf')
+    extract_one(row,output,resume=False,ocr='off',tables=False)
+    target=output/'source';report_path=target/'report.json';report=json.loads(report_path.read_text())
+    report.pop('extractor_contract');report_path.write_text(json.dumps(report));create_package(target)
+    before={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in target.iterdir() if p.is_file()}
+    result=extract_one(row,output,resume=True,ocr='off',tables=False)
+    assert result['status']=='retry_required' and result['reason']=='cached_extractor_outdated'
+    after={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in target.iterdir() if p.is_file()}
+    assert before==after
 
 
 @pytest.mark.skipif(os.name != "posix", reason="per-document deadline requires POSIX signals")

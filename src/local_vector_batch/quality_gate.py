@@ -27,6 +27,11 @@ STATES = {"pass", "fail", "unknown"}
 def load_policy(path: Path | None = None) -> dict:
     raw = Path(path).read_text(encoding="utf-8") if path else files("local_vector_batch").joinpath("quality_policy.json").read_text(encoding="utf-8")
     policy = json.loads(raw)
+    visual_fraction=policy.get('native_raster_region_min_page_fraction',0.0)
+    containment_tolerance=policy.get('table_geometry_containment_tolerance_points',0.25)
+    if (type(visual_fraction) not in (int,float) or not 0<=visual_fraction<=1 or
+        type(containment_tolerance) not in (int,float) or not 0<=containment_tolerance<=2):
+        raise ValueError('invalid native visual geometry policy')
     if (policy.get("schema_version") != 1 or
             any(not 0 <= policy[key] <= 1 for key in ("word_recall_min", "word_precision_min", "word_order_min")) or
             type(policy.get("source_ink_unaccounted_max")) is not int or policy["source_ink_unaccounted_max"] < 0 or

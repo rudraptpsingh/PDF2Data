@@ -120,6 +120,15 @@ def extract_one(row: dict, output: Path, *, resume: bool, ocr: str,
             report = json.loads((target / "report.json").read_text(encoding="utf-8"))
             if report.get("source_url") != source_url:
                 raise ValueError("resumed source URL differs from original extraction")
+            from .pdf_ingest import extractor_identity
+            current_identity=extractor_identity()
+            stale_extractor=any(report.get(key)!=value for key,value in current_identity.items())
+            if stale_extractor and not refresh:
+                return {**base,'status':'retry_required','reason':'cached_extractor_outdated',
+                    'source_pdf_sha256':source_sha,'output':str(target),
+                    'required_extractor_identity':current_identity,
+                    'detail':'Preserve the old evidence package; extract to a fresh output directory or explicitly refresh a disposable cache.',
+                    'elapsed_ms':round((time.monotonic()-start)*1000)}
             can_repair = repair_ocr and not report.get("complete_for_embedding") and any(
                 item["kind"] in {"missing_text", "garbled_text", "low_confidence_ocr",
                                  "ocr_failed", "no_searchable_text", "native_parser_disagreement"}
