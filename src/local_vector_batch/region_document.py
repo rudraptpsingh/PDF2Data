@@ -90,6 +90,11 @@ def assemble(document):
                          region_id=raw['region_id'], kind=kind, source_kind=raw['kind'],
                          spans=[span(page, cursor, cursor+len(raw['text']))], bbox=raw['bbox'],
                          parent_unit_ids=[], semantic_state='candidate')
+            for key in ('recovery_parent_region', 'recovery_kind', 'table_fragment_of', 'reader_engine'):
+                if raw.get(key) is not None:
+                    block[key] = raw[key]
+            if raw.get('table_fragment_of'):
+                block['table_assembly_state'] = 'fragment_unstitched'
             if not raw['text']:
                 raise ValueError('empty successful region reading')
             if kind == 'heading':
@@ -300,7 +305,9 @@ def search_projections(data):
         units.append(dict(id=block['id'], region_id=block['region_id'], page=block['spans'][0]['page'],
                           text=' > '.join(block.get('heading_path', []))+'\n'+text,
                           evidence=deepcopy(block['spans']), cell_ids=cell_ids,
-                          source_text=raw, kind=block['kind'], publication_eligible=False))
+                          source_text=raw, kind=block['kind'],
+                          **{key:block[key] for key in ('table_fragment_of','table_assembly_state','reader_engine') if key in block},
+                          publication_eligible=False))
     return dict(schema_version='pdf2data.search-projections.v1', source_pdf_sha256=data['source_pdf_sha256'],
                 units=units, derived_search_aid=True, publication_eligible=False)
 

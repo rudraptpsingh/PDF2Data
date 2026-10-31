@@ -16,6 +16,7 @@ def rows(path):return [json.loads(line) for line in Path(path).read_text().split
 def main():
     p=argparse.ArgumentParser()
     for name in ('suite','before-score','after-score','structured','layout','output'):p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--structured-suffix',choices=('','structured'),default='',help='Use structured/ inside each automatic reader/reconciliation source folder')
     args=p.parse_args();suite=load(args.suite);before=load(args.before_score/'report.json');after=load(args.after_score/'report.json')
     if not before['valid_evaluation'] or not after['valid_evaluation'] or before['suite_sha256']!=suite['suite_sha256'] or after['suite_sha256']!=suite['suite_sha256']:raise ValueError('incompatible source score suites')
     if args.output.exists():raise ValueError('source map exists')
@@ -24,7 +25,7 @@ def main():
     args.output.mkdir(parents=True);mapped=[];launcher=Path(__file__).resolve().parents[1]/'pdf2data'
     def href(path):return escape(os.path.relpath(path.resolve(),args.output.resolve()),quote=True)
     for case in suite['cases']:
-        export=args.structured/case['id'];raw=export/'raw-region-document.json';dest=args.output/'pages'/case['id']
+        export=args.structured/case['id']/args.structured_suffix;raw=export/'raw-region-document.json';dest=args.output/'pages'/case['id']
         command=[str(launcher),'pdf-document-map','--document',str(raw.resolve()),'--layout',str(args.layout.resolve()),'--output',str(dest.resolve()),'--json']
         done=subprocess.run(command,env={**os.environ,'PDF2DATA_PYTHON':sys.executable},capture_output=True,text=True,timeout=120)
         if done.returncode:raise ValueError('source map failed: '+case['id']+' '+done.stderr+' '+done.stdout)
@@ -45,8 +46,8 @@ def main():
     html=['<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PDF2Data benchmark source map</title>',
           '<style>body{font:14px/1.5 system-ui;max-width:1300px;margin:30px auto;padding:20px;background:#f4f6f4;color:#243b30}table{border-collapse:collapse;width:100%;background:white}td,th{padding:10px;border-bottom:1px solid #e0e7e1;text-align:left}thead{position:sticky;top:0;background:#e9efea}a{color:#24684c}small{color:#65746b}.links{white-space:nowrap}.gain{background:#e8f7eb}.loss{background:#fff0e8}input{font:inherit;width:100%;padding:12px;margin:16px 0;border:1px solid #cad8cc;border-radius:8px}</style>',
           '<h1>PDF2Data · 70 original PDFs → extracted outputs</h1>',
-          f'<p>Same frozen suite · {len(old)} outcomes · prior {report["before_macro"]:.2%} → shared structure {report["after_macro"]:.2%} category macro.</p>',
-          f'<p>{report["improved_outcomes"]} checks improved; {report["regressed_outcomes"]} regressed. Recognition was reused. Original OCR failures remain counted. Per-document fractions below are individual rule counts, not the category-macro score.</p>',
+          f'<p>Same frozen suite · {len(old)} outcomes · prior {report["before_macro"]:.2%} → updated pipeline {report["after_macro"]:.2%} category macro.</p>',
+          f'<p>{report["improved_outcomes"]} checks improved; {report["regressed_outcomes"]} regressed. This map reuses saved prediction artifacts. Failed readings remain counted. Per-document fractions below are individual rule counts, not the category-macro score.</p>',
           '<input id="filter" aria-label="Filter documents" placeholder="Filter filename or category"><table><thead><tr><th>Original test PDF</th><th>Before</th><th>After</th><th>Review</th><th>Source ↔ output</th></tr></thead><tbody>']
     for row in mapped:
         status=f'{row["failed_reading_regions"]} failed reads; {row["visual_review_regions"]} visual regions' if row['failed_reading_regions'] or row['visual_review_regions'] else 'Unreviewed structure candidate'

@@ -88,6 +88,16 @@ def test_ambiguous_illustration_tables_remain_explicitly_unresolved():
     assert data['structural_candidates']['diagnostics'][0]['kind']=='ambiguous_illustration_table'
 
 
+def test_recovered_table_fragment_retains_parent_without_claiming_stitched_grid():
+    doc=document([b('Header Value','table')],tables=[dict(id='d:p1:r0:t',page=1,cells=[['Header','Value']])])
+    doc['pages'][0]['blocks'][0].update(recovery_parent_region='original-table',
+        recovery_kind='source_whitespace_partition',table_fragment_of='original-table')
+    block=regions(assemble(doc))['d:p1:r0']
+    assert block['table_fragment_of']=='original-table'
+    assert block['table_assembly_state']=='fragment_unstitched'
+    assert block['semantic_state']=='candidate'
+
+
 def test_unscoped_adjacent_pages_are_not_inferred_as_clause_continuations():
     data=assemble(document([b('Standalone text.')],[b('Unrelated standalone text.')]))
     assert not any(e['type']=='continues' for e in data['structural_candidates']['edges'])

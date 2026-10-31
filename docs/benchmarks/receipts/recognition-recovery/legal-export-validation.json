@@ -1,0 +1,21 @@
+{
+  "documents": [
+    {
+      "source": "56bebe798f88ed13c0d7",
+      "pages": 6,
+      "table_cells": 36,
+      "raw_text_unchanged": true,
+      "tables_unchanged": true,
+      "relationships_unchanged": true
+    },
+    {
+      "source": "0bb718f69b9e7ff5939a",
+      "pages": 2,
+      "table_cells": 0,
+      "raw_text_unchanged": true,
+      "tables_unchanged": true,
+      "relationships_unchanged": true
+    }
+  ],
+  "scope": "cached source-bound legal exports, no recognition rerun or new legal accuracy claim"
+}

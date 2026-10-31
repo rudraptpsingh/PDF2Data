@@ -136,14 +136,15 @@ def extract_case(case,profile,output,launcher,python):
     write(receipt,result);return result
 
 
-def run(suite_path,profile,output,python,workers=4,resume=False,layout_python=None,reuse_readings=None):
+def run(suite_path,profile,output,python,workers=4,resume=False,layout_python=None,reuse_readings=None,text_fallback='none',reuse_layout=None):
     output=output.resolve()
     invocation_start=time.perf_counter()
     suite=load(suite_path);validate_suite(suite)
     if profile not in PROFILES or not 1<=workers<=8:raise ValueError('invalid benchmark profile/workers')
     if profile=='layout-vlm':
         if workers!=1 or layout_python is None:raise ValueError('layout-vlm requires --workers 1 and --layout-python')
-        return structured_run(suite,output,python,layout_python,resume,reuse_readings)
+        return structured_run(suite,output,python,layout_python,resume,reuse_readings,text_fallback,reuse_layout)
+    if text_fallback!='none' or reuse_layout is not None:raise ValueError('layout reuse and text fallback require layout-vlm')
     if output.exists() and not resume:raise ValueError('benchmark run output exists; use resume')
     output.mkdir(parents=True,exist_ok=True)
     config={'suite_sha256':suite['suite_sha256'],'profile':profile,'profile_config':PROFILES[profile],
@@ -175,13 +176,15 @@ def run(suite_path,profile,output,python,workers=4,resume=False,layout_python=No
     write(output/'run.json',result);return {k:v for k,v in result.items() if k!='cases'}
 
 
-def structured_run(suite,output,python,layout_python,resume=False,reuse_readings=None):
+def structured_run(suite,output,python,layout_python,resume=False,reuse_readings=None,text_fallback='none',reuse_layout=None):
     """The same external rules; only source IDs, paths and hashes reach readers."""
     if output.exists() and not resume:raise ValueError('benchmark output exists; use resume')
     output.mkdir(parents=True,exist_ok=True)
     config={'suite_sha256':suite['suite_sha256'],'profile':'layout-vlm','profile_config':PROFILES['layout-vlm'],
             'implementation_sha256':implementation_hashes(),'python':str(python.absolute()),'workers':1,'runtime':runtime(python),
             'layout_python':str(layout_python.absolute()),'layout_runtime':runtime(layout_python),'reuse_readings':str(reuse_readings.resolve()) if reuse_readings else None}
+    config['text_fallback']=text_fallback
+    config['reuse_layout']={'path':str(reuse_layout.resolve()),'sha256':sha(reuse_layout.read_bytes())} if reuse_layout else None
     if (output/'config.json').exists() and load(output/'config.json')!=config:raise ValueError('structured benchmark resume contract changed')
     write(output/'config.json',config)
     if resume and (output/'run.json').exists():
@@ -192,6 +195,11 @@ def structured_run(suite,output,python,layout_python,resume=False,reuse_readings
         return {'output':str(output/'run.json'),'reused':True,'errors':record['errors']}
     source_rows=[{'id':c['id'],'path':c['path'],'sha256':c['sha256'],'pages':c['pages']} for c in suite['cases']]
     write(output/'sources.json',{'schema_version':'pdf2data.source-batch.v1','sources':source_rows})
+    if reuse_layout is not None:
+        target=output/'layout/layout.json'
+        if target.exists() and target.read_bytes()!=reuse_layout.read_bytes():raise ValueError('saved reused layout differs')
+        target.parent.mkdir(exist_ok=True)
+        target.write_bytes(reuse_layout.read_bytes())
     launcher=Path(__file__).parents[2]/'pdf2data';commands=[];start=time.perf_counter()
     def invoke(command,environment,log):
         commands.append(command)
@@ -206,6 +214,7 @@ def structured_run(suite,output,python,layout_python,resume=False,reuse_readings
     if len(layout['documents'])!=len(suite['cases']) or layout['source_manifest_sha256']!=sha((output/'sources.json').read_bytes()) or {d['id'] for d in layout['documents']}!={c['id'] for c in suite['cases']}:raise ValueError('incomplete or mismatched layout source batch')
     command=[str(launcher),'pdf-region-read','--layout',str(output/'layout/layout.json'),'--output',str(output/'read'),'--device','gpu','--max-tokens','4096','--json']
     if reuse_readings is not None:command+=['--reuse-readings',str(reuse_readings.resolve())]
+    if text_fallback!='none':command+=['--text-fallback',text_fallback]
     if (output/'read').exists():command+=['--resume']
     invoke(command,python,'read')
     reading=load(output/'read/read.json');completed=[];docs={d['id']:d for d in reading['documents']}
@@ -214,7 +223,7 @@ def structured_run(suite,output,python,layout_python,resume=False,reuse_readings
         item={'id':case['id'],'pdf':case['pdf'],'source_sha256':case['sha256'],'status':'completed','artifacts':[],
               'review_required_pages':[p['page'] for p in page_rows],'empty_nonblank_pages':[p['page'] for p in page_rows if not p['text'].strip()],
               'failed_regions':docs[case['id']]['failed_regions'],'visual_review_regions':sum(len(p['visual_review_regions']) for p in page_rows),
-              'methods':{'layout_paddleocr_vl':len(page_rows)},'table_candidates':len(tables)}
+              'methods':dict(Counter(p.get('method','layout_paddleocr_vl') for p in page_rows)),'table_candidates':len(tables)}
         if len(page_rows)!=case['pages'] or {p['page'] for p in page_rows}!=set(range(1,case['pages']+1)):raise ValueError('structured page coverage mismatch')
         if item['failed_regions']:
             item.update(status='error',failure_stage='extraction',error='incomplete region readings; retained for review')
@@ -231,9 +240,10 @@ def structured_run(suite,output,python,layout_python,resume=False,reuse_readings
             'wall_seconds_this_invocation':time.perf_counter()-start,'end_to_end_seconds':time.perf_counter()-start,
             'fresh_extraction_run':not reused_layout and reading['reused_regions']==0,'reused_cases':0,'reused_error_cases':0,
             'reused_layout':reused_layout,'reused_regions':reading['reused_regions'],'cold_os_cache_controlled':False,
-            'selected_methods':{'layout_paddleocr_vl':sum(c['pages'] for c in suite['cases'])},'model':reading['model'],'model_revision':reading['revision'],
+            'selected_methods':dict(sum((Counter(c['methods']) for c in completed),Counter())),'model':reading['model'],'model_revision':reading['revision'],
             'reader_device':reading['device_used'],'model_files_sha256':reading['model_files_sha256'],'reader_runtime':reading['runtime'],
             'detector_identity':layout.get('detector_identity'),'table_placement':'source_detector_geometry_order_candidate','publication_eligible':False}
+    record['text_fallback']=reading.get('text_fallback')
     write(output/'run.json',record);return {k:v for k,v in record.items() if k not in {'cases','config','model_files_sha256'}}
 
 

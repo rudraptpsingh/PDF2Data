@@ -46,6 +46,8 @@ def parser() -> argparse.ArgumentParser:
     bench.add_argument("--suite", type=Path, required=True);bench.add_argument("--profile", choices=("native","auto","layout-vlm"), required=True)
     bench.add_argument("--output", type=Path, required=True);bench.add_argument("--parser-python", type=Path, default=Path(sys.executable))
     bench.add_argument("--reuse-readings",type=Path);bench.add_argument("--layout-python",type=Path);bench.add_argument("--workers", type=int, default=4);bench.add_argument("--resume", action="store_true");bench.add_argument("--json", action="store_true")
+    bench.add_argument("--reuse-layout",type=Path)
+    bench.add_argument("--text-fallback",choices=('none','vision'),default='none')
     scoring = sub.add_parser("benchmark-score", help="score predictions with the pinned official olmOCR rule classes")
     for key in ("suite","run","upstream","eval-python","output"):scoring.add_argument("--"+key,type=Path,required=True)
     scoring.add_argument("--mode",choices=("text","tables"),default="tables");scoring.add_argument("--json",action="store_true")
@@ -54,9 +56,13 @@ def parser() -> argparse.ArgumentParser:
     layout = sub.add_parser("pdf-layout-detect", help="detect source-bound page regions offline without changing existing extraction")
     layout.add_argument("--manifest",type=Path,required=True);layout.add_argument("--output",type=Path,required=True)
     layout.add_argument("--device",choices=("mps","cpu","cuda"),default="mps");layout.add_argument("--dpi",type=int,default=180);layout.add_argument("--json",action="store_true")
+    recover=sub.add_parser("pdf-layout-recover",help="partition failed source regions at measured whitespace without benchmark labels")
+    for key in ("layout","read","output"):recover.add_argument("--"+key,type=Path,required=True)
+    recover.add_argument("--max-rows",type=int,default=4);recover.add_argument("--max-parts",type=int,default=16);recover.add_argument("--json",action="store_true")
     visual = sub.add_parser("pdf-region-read", help="read source-bound text table and formula crops with pinned local PaddleOCR-VL")
     visual.add_argument("--layout",type=Path,required=True);visual.add_argument("--output",type=Path,required=True)
     visual.add_argument("--reuse-readings",type=Path);visual.add_argument("--device",choices=("gpu","cpu"),default="gpu");visual.add_argument("--max-tokens",type=int,default=4096);visual.add_argument("--resume",action="store_true");visual.add_argument("--json",action="store_true")
+    visual.add_argument("--text-fallback",choices=('none','vision'),default='none')
     reconcile = sub.add_parser("pdf-table-reconcile", help="retain native table cells only with source geometry and exact glyph evidence")
     for key in ("layout","read","native-packages","output"):reconcile.add_argument("--"+key,type=Path,required=True)
     reconcile.add_argument("--json",action="store_true")
@@ -360,7 +366,10 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command == "benchmark-structure-run":
+        if args.command == "pdf-layout-recover":
+            from .region_recovery import recover_layout
+            result=recover_layout(args.layout,args.read,args.output,args.max_rows,args.max_parts)
+        elif args.command == "benchmark-structure-run":
             from .benchmark import structure_projection_run
             result=structure_projection_run(args.suite,args.run,args.structured,args.output)
         elif args.command == "pdf-structure-evaluate":
@@ -383,13 +392,13 @@ def main(argv: list[str] | None = None) -> int:
             result=detect(args.manifest,args.output,args.device,args.dpi)
         elif args.command == "pdf-region-read":
             from .structured import read_regions
-            result=read_regions(args.layout,args.output,args.device,args.max_tokens,args.resume,args.reuse_readings)
+            result=read_regions(args.layout,args.output,args.device,args.max_tokens,args.resume,args.reuse_readings,args.text_fallback)
         elif args.command == "benchmark-prepare":
             from .benchmark import prepare
             result = prepare(args.dataset_root,args.output,args.per_category,args.seed,args.custom)
         elif args.command == "benchmark-run":
             from .benchmark import run as benchmark_run
-            result = benchmark_run(args.suite,args.profile,args.output,args.parser_python,args.workers,args.resume,args.layout_python,args.reuse_readings)
+            result = benchmark_run(args.suite,args.profile,args.output,args.parser_python,args.workers,args.resume,args.layout_python,args.reuse_readings,args.text_fallback,args.reuse_layout)
         elif args.command == "benchmark-score":
             from .benchmark import score
             result = score(args.suite,args.run,args.upstream,args.eval_python,args.output,args.mode)

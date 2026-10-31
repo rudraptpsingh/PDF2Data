@@ -291,11 +291,14 @@ def verify_page_source(document,page):
             if crop.mode!=expected.mode or crop.size!=expected.size or crop.tobytes()!=expected.tobytes():raise ValueError('crop differs from original source pixels')
 
 
-def read_regions(layout_path,output,device='gpu',max_tokens=4096,resume=False,reuse_readings=None):
+def read_regions(layout_path,output,device='gpu',max_tokens=4096,resume=False,reuse_readings=None,text_fallback='none'):
     layout=load(layout_path);output=output.resolve()
     if layout.get('schema_version')!='pdf2data.region-layout.v1':raise ValueError('unsupported region layout')
     if output.exists() and not resume:raise ValueError('region reading output exists; use explicit resume')
     if device not in {'gpu','cpu'} or not 256<=max_tokens<=16384:raise ValueError('invalid visual reading settings')
+    if text_fallback not in {'none','vision'}:raise ValueError('invalid text fallback')
+    from .region_fallback import vision_identity,vision_attempt,validate_lines
+    fallback_identity=vision_identity() if text_fallback=='vision' else None
     os.environ['HF_HUB_OFFLINE']='1';os.environ['TRANSFORMERS_OFFLINE']='1'
     cache=Path(os.environ.get('HF_HUB_CACHE',Path.home()/'.cache/huggingface/hub'))
     snapshot=cache/('models--'+MODEL.replace('/','--'))/'snapshots'/REVISION
@@ -306,6 +309,8 @@ def read_regions(layout_path,output,device='gpu',max_tokens=4096,resume=False,re
     from mlx_vlm import load as load_model,generate
     model_hashes={p.name:sha(p.read_bytes()) for p in snapshot.iterdir() if p.is_file()}
     contract={'layout_sha256':sha(Path(layout_path).read_bytes()),'model':MODEL,'revision':REVISION,'model_files_sha256':model_hashes,'device':device,'max_tokens':max_tokens,'prompts':PROMPTS,'implementation_sha256':sha(Path(__file__).read_bytes()),'runtime':{n:version(n) for n in ['mlx','mlx-vlm','transformers']}}
+    contract['text_fallback']=fallback_identity
+    contract['retry_implementation_sha256']={name:sha(Path(__file__).with_name(name).read_bytes()) for name in ('region_fallback.py','ocr.py','vision_ocr.swift')}
     inherited={}
     if reuse_readings is not None:
         parent=Path(reuse_readings).resolve();parent_record=load(parent/'read.json')
@@ -316,6 +321,7 @@ def read_regions(layout_path,output,device='gpu',max_tokens=4096,resume=False,re
         for file in sorted(parent.glob('*/readings.json')):
             parent_files[str(file.relative_to(parent))]=sha(file.read_bytes())
             for row in load(file):
+                if row.get('reader_engine')=='macos_vision' and (fallback_identity is None or parent_record.get('text_fallback')!=fallback_identity):continue
                 if row['status']=='candidate' and row.get('text_sha256')==sha(row['text'].encode()):
                     key=(row['source_pdf_sha256'],row['page'],row['source_crop_sha256'],row['task'])
                     if key in inherited and inherited[key]['text']!=row['text']:raise ValueError('conflicting inherited visual readings')
@@ -350,6 +356,8 @@ def read_regions(layout_path,output,device='gpu',max_tokens=4096,resume=False,re
                 task='table' if region['kind']=='table' else 'formula' if region['kind'] in {'formula','equation'} else 'text'
                 prompt=processor.apply_chat_template([{'role':'user','content':[{'type':'image'},{'type':'text','text':PROMPTS[task]}]}],tokenize=False,add_generation_prompt=True)
                 t=time.perf_counter();entry={'region_id':region['id'],'page':page['page'],'task':task,'source_crop_sha256':region['crop_sha256'],'source_pdf_sha256':document['source_pdf_sha256'],'bbox':region['bbox'],'kind':region['kind'],'status':'candidate','content_verified':False,'reading_order_verified':False}
+                recovery={k:region[k] for k in ('recovery_parent_region','recovery_kind','table_fragment_of') if region.get(k) is not None}
+                entry.update(recovery)
                 result=None
                 try:
                     previous=prior.get(region['id']) or inherited.get((document['source_pdf_sha256'],page['page'],region['crop_sha256'],task))
@@ -361,10 +369,23 @@ def read_regions(layout_path,output,device='gpu',max_tokens=4096,resume=False,re
                     text=result.text.strip();tokens=getattr(result,'generation_tokens',None)
                     entry.update(text=text,tokens=tokens,text_sha256=sha(text.encode()),generation_reused=bool(previous and previous['status']=='candidate'))
                     reason='missing_token_count' if type(tokens) is not int else 'token_cap' if tokens>=max_tokens else 'empty_reading' if not text else None
+                    if previous and previous.get('reader_engine')=='macos_vision':
+                        attempt=previous.get('fallback_attempt',{})
+                        if fallback_identity is None or not attempt.get('accepted') or validate_lines(attempt.get('lines')) or attempt.get('text')!=text:raise ValueError('saved fallback identity or lines changed')
+                        entry.update(reader_engine='macos_vision',fallback_attempt=attempt,paddle_attempt=previous['paddle_attempt'])
+                        reason=None
+                    elif reason and task=='text' and text_fallback=='vision':
+                        entry['paddle_attempt']=dict(text=text,tokens=tokens,failure_reason=reason,text_sha256=sha(text.encode()))
+                        attempt=vision_attempt(region['crop_path']);entry['fallback_attempt']=attempt
+                        if attempt['accepted']:
+                            text=attempt['text'];tokens=None;reason=None
+                            entry.update(text=text,tokens=None,text_sha256=sha(text.encode()),reader_engine='macos_vision')
                     if reason:
                         entry['failure_reason']=reason;raise ValueError(reason)
                     if task=='table':
-                        candidate_tables=parse_tables(text,page['page'],region);page_tables.extend(candidate_tables)
+                        candidate_tables=parse_tables(text,page['page'],region)
+                        for table in candidate_tables:table.update(recovery)
+                        page_tables.extend(candidate_tables)
                         from .document_blocks import table_html
                         display='\n\n'.join(table_html(table) for table in candidate_tables)
                         plain='\n'.join(' '.join(str(c) for c in row if c is not None) for table in candidate_tables for row in table['cells'])
@@ -372,7 +393,7 @@ def read_regions(layout_path,output,device='gpu',max_tokens=4096,resume=False,re
                         display=text if text.startswith(('\\[','$$','\\(')) else '\\[\n'+text+'\n\\]';plain=display
                     else:plain=display=text
                     all_text.append(plain)
-                    blocks.append({'region_id':region['id'],'kind':region['kind'],'bbox':region['bbox'],'text':plain,'markdown':display,'scope':'furniture' if region['kind'] in FURNITURE else 'body'})
+                    blocks.append({'region_id':region['id'],'kind':region['kind'],'bbox':region['bbox'],'text':plain,'markdown':display,'scope':'furniture' if region['kind'] in FURNITURE else 'body','reader_engine':entry.get('reader_engine','paddleocr_vl'),**recovery})
                     if region['kind'] not in FURNITURE:body.append(plain)
                 except Exception as error:
                     entry.update(status='reading_failed',error=str(error)[:400]);problems.append(region['id'])
@@ -383,7 +404,8 @@ def read_regions(layout_path,output,device='gpu',max_tokens=4096,resume=False,re
                 write(dest/'readings.json',readings)
                 print(json.dumps({'event':'region_read','id':document['id'],'page':page['page'],'region':region['id'],'task':task,'status':entry['status'],'seconds':entry['seconds']}),flush=True)
             text='\n\n'.join(body)
-            pages.append({'page':page['page'],'text':text,'raw_region_text':'\n\n'.join(all_text),'text_sha256':sha(text.encode()),'method':'layout_paddleocr_vl','status':'review_required','blocks':blocks,'failed_regions':problems,'visual_review_regions':visual_review,'coverage':page['coverage'],'layout_error':page['layout_error']})
+            method='layout_paddleocr_vl_with_vision_text_retry' if any(r.get('reader_engine')=='macos_vision' and r['page']==page['page'] and r['status']=='candidate' for r in readings) else 'layout_paddleocr_vl'
+            pages.append({'page':page['page'],'text':text,'raw_region_text':'\n\n'.join(all_text),'text_sha256':sha(text.encode()),'method':method,'status':'review_required','blocks':blocks,'failed_regions':problems,'visual_review_regions':visual_review,'coverage':page['coverage'],'layout_error':page['layout_error']})
             tables.extend(page_tables)
         (dest/'pages.jsonl').write_text(''.join(json.dumps(p,ensure_ascii=False)+'\n' for p in pages));write(dest/'tables.json',tables)
         md='\n\n'.join(b['markdown'] for p in pages for b in p['blocks'] if b['scope']=='body')
@@ -400,4 +422,5 @@ def read_regions(layout_path,output,device='gpu',max_tokens=4096,resume=False,re
         structured_export=export_regions(dest/'document.json',layout_path,dest/'structured',reuse_existing=resume)
         documents.append({'id':document['id'],'pages':len(pages),'failed_regions':sum(len(p['failed_regions']) for p in pages),'tables':len(tables),'output':str(dest),'structured_export':structured_export})
     record={'schema_version':'pdf2data.region-read.v1','layout_sha256':sha(Path(layout_path).read_bytes()),'model':MODEL,'revision':REVISION,'model_files_sha256':model_hashes,'prompts':PROMPTS,'max_tokens':max_tokens,'model_load_seconds':load_seconds,'wall_seconds':time.perf_counter()-start,'device_used':str(mx.default_device()),'peak_device_memory_bytes':mx.get_peak_memory(),'reused_regions':reused_regions,'runtime':{n:version(n) for n in ['mlx','mlx-vlm','transformers']},'documents':documents,'total_failed_regions':sum(d['failed_regions'] for d in documents),'publication_eligible':False}
+    record['text_fallback']=fallback_identity
     write(output/'read.json',record);return {'output':str(output/'read.json'),'documents':len(documents),'device_used':record['device_used'],'wall_seconds':record['wall_seconds'],'failed_regions':record.get('total_failed_regions',0)}

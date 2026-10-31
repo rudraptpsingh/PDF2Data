@@ -1,5 +1,10 @@
 # Local layout-guided reading
 
+Failed crops can now be retried with `pdf-layout-recover`, followed by the same
+source-bound reader. `--text-fallback vision` is an optional local text retry;
+source-ink checks can reject confident but incomplete results. See
+[recognition recovery, CLI examples and the 71.75% → 71.93% evaluation](2026-10-31-recognition-recovery.md).
+
 Region reading and source-table reconciliation now also write a `structured/`
 package using the shared block/span exporter. It retains raw alternatives and
 unreviewed structural relationships. [Implementation, source maps and measured results](2026-10-31-structure-validation.md)
