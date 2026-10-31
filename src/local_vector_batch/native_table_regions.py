@@ -37,7 +37,8 @@ class _VerifiedSourceRenderCache:
 
     def _check(self):
         from .proof_identity import inspect_pdf2data_profile
-        with self.source.open('rb')as stream:actual=hashlib.file_digest(stream,'sha256').hexdigest()
+        from .hashing import file_sha256
+        actual=file_sha256(self.source)
         if actual!=self.key['source_pdf_sha256']:raise ValueError('Job raster cache original PDF changed')
         if sha(canonical(self.policy))!=self.key['policy_sha256']:raise ValueError('Job raster cache policy changed')
         if any(self.snapshot[k]!=self.key[k]for k in('source_pdf_sha256','page','page_text_sha256')):

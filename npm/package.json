@@ -1,0 +1,17 @@
+{
+  "name": "@rudraptpsingh/pdf2data",
+  "version": "0.2.0-rc.1",
+  "description": "Local PDF extraction, structured exports, source review and MCP tools",
+  "type": "module",
+  "license": "MIT",
+  "author": "Rudra Pratap Singh",
+  "repository": { "type": "git", "url": "git+https://github.com/rudraptpsingh/PDF2Data.git" },
+  "homepage": "https://github.com/rudraptpsingh/PDF2Data#readme",
+  "bugs": "https://github.com/rudraptpsingh/PDF2Data/issues",
+  "engines": { "node": ">=20" },
+  "bin": { "pdf2data": "bin/pdf2data.mjs", "pdf2data-mcp": "bin/pdf2data-mcp.mjs" },
+  "files": [ "bin/", "README.md", "LICENSE" ],
+  "scripts": { "test": "node --test test/*.test.mjs" },
+  "publishConfig": { "access": "public", "registry": "https://registry.npmjs.org/" },
+  "keywords": [ "pdf", "ocr", "mcp", "rag", "structured-data", "local-first" ]
+}

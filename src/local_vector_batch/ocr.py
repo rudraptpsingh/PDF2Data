@@ -98,8 +98,8 @@ def _rapidocr_model_sha256(recognition_model: str) -> str | None:
         path = Path(rapidocr.__file__).parent / "models" / f"{recognition_model}_PP-OCRv5_rec_mobile.onnx"
         if not path.is_file():
             return None
-        with path.open("rb") as model_file:
-            return hashlib.file_digest(model_file, "sha256").hexdigest()
+        from .hashing import file_sha256
+        return file_sha256(path)
     except (ImportError, OSError):
         return None
 

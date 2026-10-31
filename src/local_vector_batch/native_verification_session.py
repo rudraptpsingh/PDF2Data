@@ -17,7 +17,8 @@ def active_session():return _ACTIVE.get()
 
 def _file(path):
     before=path.stat()
-    with path.open('rb')as stream:digest=hashlib.file_digest(stream,'sha256').hexdigest()
+    from .hashing import file_sha256
+    digest=file_sha256(path)
     after=path.stat()
     stat=lambda s:(s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns)
     if stat(before)!=stat(after):raise ValueError('Source artifact changed during verification guard')

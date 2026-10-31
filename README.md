@@ -1,5 +1,29 @@
 # PDF2Data
 
+**Release candidate:** `0.2.0-rc.1` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
+
+## Quick start
+
+With Node 20+ and [uv](https://docs.astral.sh/uv/getting-started/installation/) installed:
+
+```bash
+npm install -g @rudraptpsingh/pdf2data@next
+pdf2data --version
+pdf2data doctor
+pdf2data workspace --workspace ./pdf2data-workspace
+```
+
+The launcher downloads the matching Python wheel and dependencies into an isolated
+uv cache on first use. OCR and AI models are optional, explicit installs. The core
+supports Python 3.10+; MCP requires 3.11+. The launcher selects Python 3.12.
+See [npm usage and MCP configuration](npm/README.md). Python users can install the
+wheel directly from the matching GitHub release; PyPI publication is not required.
+
+The optional MCP server exposes `pdf2data_parse`, `pdf2data_status` and
+`pdf2data_read` over the same CLI pipeline. An [agent skill](skills/pdf2data/SKILL.md)
+and skill ZIP accompany the release. Start with `pdf2data-mcp --help` to prepare its
+runtime before adding it to a stdio-capable host.
+
 A local CLI for source-backed PDF extraction, structured evidence packages, quality checks, review, guarded repair and passage embeddings. It runs on Apple Silicon with MLX, Windows/Linux with PyTorch CUDA, or CPU. GPU encoding is batched in one process; CPU encoding can use a bounded number of worker processes. The base package has no ML dependencies and does not download a model merely by importing it.
 
 The output is deterministic, checksum verified, and ready for a Vectorize import step. PDF2Data preserves original sources, text and layout provenance. Extraction and model agreement do not establish legal correctness. Index publication and database ingestion remain separate stages.

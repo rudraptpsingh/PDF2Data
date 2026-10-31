@@ -95,7 +95,8 @@ def extract_package(package,pages,*,calendar_policy=None,rules_path=None):
     import pdfplumber
     package=Path(package);rules,rule_sha=load_rules(rules_path)
     manifest=json.loads((package/'l1-package.json').read_text());pdf_path=package/'original.pdf'
-    with pdf_path.open('rb')as stream:pdf_sha=hashlib.file_digest(stream,'sha256').hexdigest()
+    from .hashing import file_sha256
+    pdf_sha=file_sha256(pdf_path)
     if manifest['artifacts'].get('original.pdf')!=pdf_sha:raise ValueError('Original PDF hash mismatch')
     for name in ('layout.jsonl','source-receipt.json','quality.json'):
         if manifest['artifacts'].get(name)!=digest((package/name).read_bytes()):raise ValueError('L1 source artifact hash mismatch: '+name)

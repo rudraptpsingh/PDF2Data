@@ -1,6 +1,25 @@
-# Changes
+# Changelog
 
-## Unreleased
+## 0.2.0-rc.1 — 2026-10-31
+
+First packaged release candidate of PDF2Data. Existing `local_vector_batch` imports
+and the legacy CLI entry point remain compatible.
+
+- Full-document Markdown, HTML, JSON, optional Word and source-linked layout views.
+- Compact local upload/workspace with live stages and artifact downloads.
+- Source-linked document roles, headers/footers, bilingual metadata and worked-formula candidates.
+- Complete physical source-location export, including empty and whitespace readings.
+- Native raster evidence and nested-table geometry safeguards; prior outputs remain snapshots.
+- Optional MCP server: parse, status and bounded source reads over the same CLI pipeline.
+- An agent skill and a small npm launcher, with no automatic AI-model downloads.
+- Optional DuckDB/NetworkX profiling example and Cytoscape-compatible graph export.
+
+This is a prerelease. Parsing quality and legal/factual review remain separate.
+See the benchmark receipts for the scope of measured results; this release does
+not claim a new OCR accuracy score.
+
+## Earlier development notes
+
 
 - Added resumable source-bound page repair queues, explicit worker-crash retry
   states, model/policy-version attempt keys, and current-page status separate

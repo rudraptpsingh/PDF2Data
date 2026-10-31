@@ -33,15 +33,25 @@ def test_only_high_agreement_clean_page_is_candidate():
                            has_table_or_layout_warning=False)["consensus_candidate"]
 
 
-def test_independent_recognizer_routes_dominant_script_and_records_weights():
+def test_independent_recognizer_routes_dominant_script_and_records_weights(tmp_path,monkeypatch):
+    import hashlib
+    import rapidocr
+    from local_vector_batch.ocr import _rapidocr_model_sha256
+    # Controlled model files exercise provenance without a hidden CI download.
+    monkeypatch.setattr(rapidocr,'__file__',str(tmp_path/'__init__.py'))
+    models=tmp_path/'models';models.mkdir()
+    for name in ('en','devanagari'):
+        (models/f'{name}_PP-OCRv5_rec_mobile.onnx').write_bytes(('fixture-weights-'+name).encode())
+    _rapidocr_model_sha256.cache_clear()
     assert recognition_model_for_text("THE GAZETTE\nकेन्द्रीय विद्युत आयोग द्वारा जारी नियम") == "devanagari"
     assert recognition_model_for_text("Header हिन्दी\nThe applicant shall file a reply") == "en"
     devanagari = recognition_receipt("devanagari")
     english = recognition_receipt("en")
     assert devanagari["recognition_languages"] == ["hi", "en"]
     assert english["recognition_languages"] == ["en"]
-    assert len(devanagari["recognition_model_sha256"]) == 64
-    assert len(english["recognition_model_sha256"]) == 64
+    assert devanagari["recognition_model_sha256"] == hashlib.sha256(b'fixture-weights-devanagari').hexdigest()
+    assert english["recognition_model_sha256"] == hashlib.sha256(b'fixture-weights-en').hexdigest()
+    _rapidocr_model_sha256.cache_clear()
 
 
 def test_progress_counts_worker_copy_once_and_ignores_incomplete_line(tmp_path):
