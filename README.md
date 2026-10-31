@@ -1,17 +1,19 @@
 # PDF2Data
 
-**Release candidate:** `0.2.0-rc.1` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
+[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.1` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
 
 ## Quick start
 
 With Node 20+ and [uv](https://docs.astral.sh/uv/getting-started/installation/) installed:
 
 ```bash
-npm install -g @rudraptpsingh/pdf2data@next
+npm install -g https://github.com/rudraptpsingh/PDF2Data/releases/download/v0.2.0-rc.1/rudraptpsingh-pdf2data-0.2.0-rc.1.tgz
 pdf2data --version
 pdf2data doctor
 pdf2data workspace --workspace ./pdf2data-workspace
 ```
+
+Install directly from the GitHub release while npm registry publication awaits account 2FA.
 
 The launcher downloads the matching Python wheel and dependencies into an isolated
 uv cache on first use. OCR and AI models are optional, explicit installs. The core
