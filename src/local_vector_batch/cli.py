@@ -72,6 +72,12 @@ def parser() -> argparse.ArgumentParser:
     structure_export=sub.add_parser("pdf-structure-export",help="adapt immutable region readings to shared source-linked structure, readable exports and search projections")
     for key in ("document","layout","output"):structure_export.add_argument("--"+key,type=Path,required=True)
     structure_export.add_argument("--json",action="store_true")
+    visualize=sub.add_parser("pdf-visualize",help="render color-coded structure overlays on verified saved source pages")
+    visualize.add_argument("--bundle",type=Path,required=True)
+    visualize.add_argument("--output",type=Path,required=True)
+    visualize.add_argument("--pages",type=int,nargs='+')
+    visualize.add_argument("--opacity",type=float,default=.14)
+    visualize.add_argument("--json",action="store_true")
     structure_eval=sub.add_parser("pdf-structure-evaluate",help="compare fixed-budget lexical retrieval of raw versus structured source evidence")
     for key in ("raw","structured","cases","output"):structure_eval.add_argument("--"+key,type=Path,required=True)
     structure_eval.add_argument("--max-chars",type=int,default=6000);structure_eval.add_argument("--seed-k",type=int,default=2);structure_eval.add_argument("--json",action="store_true")
@@ -390,6 +396,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "pdf-layout-detect":
             from .structured import detect
             result=detect(args.manifest,args.output,args.device,args.dpi)
+        elif args.command == "pdf-visualize":
+            from .layout_overlay import visualize_bundle
+            result=visualize_bundle(args.bundle,args.output,args.pages,args.opacity)
         elif args.command == "pdf-region-read":
             from .structured import read_regions
             result=read_regions(args.layout,args.output,args.device,args.max_tokens,args.resume,args.reuse_readings,args.text_fallback)

@@ -317,7 +317,8 @@ def export_regions(document_path, layout_path, output,reuse_existing=False):
     from .readable_export import full_document, html_document
     output = Path(output).absolute()
     implementation={name:sha(Path(__file__).with_name(name).read_bytes()) for name in
-                    ('region_document.py','document_blocks.py','readable_export.py','page_map.py')}
+                    ('region_document.py','document_blocks.py','readable_export.py','page_map.py',
+                     'layout_overlay.py','overlays.js','overlays.css','viewer.css')}
     if output.exists() and reuse_existing:
         receipt=load(output/'manifest.json')
         if (receipt['input_document_sha256']!=sha(Path(document_path).read_bytes()) or
@@ -361,7 +362,10 @@ def export_regions(document_path, layout_path, output,reuse_existing=False):
             (stage/name).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')
         (stage/'document.md').write_text(md)
         (stage/'pages.md').write_text('\n\n'.join(f'## Page {p["page"]}\n\n'+p['text'] for p in data['pages']))
-        (stage/'document.html').write_text(html_document(data,False,continuous))
+        from .layout_overlay import write_overlays
+        overlays=write_overlays(stage,data,source)
+        (stage/'document.html').write_text(html_document(data,False,continuous,overlays))
+        (stage/'layout.html').write_text(html_document(data,False,continuous,overlays,layout_mode=True))
         receipt=dict(schema_version='pdf2data.region-structure-export.v1',source_pdf_sha256=original['source_pdf_sha256'],
                      input_document_sha256=sha(Path(document_path).read_bytes()),layout_sha256=sha(Path(layout_path).read_bytes()),
                      pages=len(data['pages']),raw_regions=sum('region_id' in b for b in data['document_blocks']['blocks']),

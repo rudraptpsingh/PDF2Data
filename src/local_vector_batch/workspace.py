@@ -16,6 +16,7 @@ ARTIFACTS=[
     ('quality','✓','Checks','verify','l1/document/quality.json'),
     ('markdown','MD','Markdown','export','readable/document.md'),
     ('html','</>','Document','export','readable/document.html'),
+    ('layout','▧','Layout','export','readable/layout.html'),
     ('word','W','Word','export','readable/document.docx'),
     ('json','{}','JSON','export','readable/data.json'),
     ('relations','⋈','Relations','export','readable/relations.json')]
@@ -119,7 +120,7 @@ class Workspace:
                       'tables':len(json.loads((package/'extraction/tables.json').read_text())),'withheld_pages':0}
                     self.save(state)
             state['status']='processed_with_flags' if state['metrics']['quality_flags'] else 'processed'
-            state['outputs']={name:f'/jobs/{job_id}/files/{name}' for name in ['document.html','document.md','data.json','relations.json','quality.json','source.pdf']+(['document.docx'] if self.docx_python else [])}
+            state['outputs']={name:f'/jobs/{job_id}/files/{name}' for name in ['document.html','layout.html','document.md','data.json','relations.json','quality.json','source.pdf']+(['document.docx'] if self.docx_python else [])}
             state['finished_at']=now();self.save(state)
         except Exception as error:
             state.update(status='failed',error=str(error)[:1800],finished_at=now())
@@ -168,7 +169,7 @@ def serve_workspace(root,port=8771,max_upload_mb=150,docx_python=None):
                 match=re.fullmatch(r'/jobs/([a-f0-9]{32})/artifacts/([a-z]+)',path)
                 if match:
                     file=workspace.artifact_file(match[1],match[2])
-                    if match[2]=='html':return self.send(302,b'',headers={'Location':f'/jobs/{match[1]}/files/document.html'})
+                    if match[2] in ('html','layout'):return self.send(302,b'',headers={'Location':f'/jobs/{match[1]}/files/{file.name}'})
                     return self.send(200,file.read_bytes(),mimetypes.guess_type(file.name)[0] or 'application/octet-stream')
                 match=re.fullmatch(r'/jobs/([a-f0-9]{32})/files/(.+)',path)
                 if match:
