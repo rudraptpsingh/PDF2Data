@@ -124,7 +124,7 @@ def export_source_locations(source_pdf: Path, output: Path, *, package: Path | N
                          'declared_rotated_crop_width_points': width, 'declared_rotated_crop_height_points': height,
                          'raw_coordinate_space': 'unrotated_PDF_user_space_bottom_left',
                          'renderer_clipping_or_raster_geometry_verified': False},
-            'availability': 'text_available' if reading and reading['text'] else 'source_only',
+            'availability': 'text_available' if reading and reading['text'].strip() else 'source_only',
             'cached_reading': reading, 'cached_quality': quality.get(number), 'cached_package': context,
             'source_review': {'status': 'not_run', 'model_output_is_candidate_only': True,
                               'model_review_is_source_quality_approval': False},

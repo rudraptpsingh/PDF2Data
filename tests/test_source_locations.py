@@ -26,12 +26,12 @@ def source(tmp_path):
     return path
 
 
-def package(tmp_path, original):
+def package(tmp_path, original, blank_text=''):
     root = tmp_path / 'package';extraction = root / 'extraction';extraction.mkdir(parents=True)
     # Page 2 is present with empty text; page 3 is absent from the cache entirely.
     text = 'वित्तीय वर्ष 2024-25 से 2028-29 — ₹ 42.52 🧾'
     rows = [{'page': 1, 'text': text, 'text_sha256': digest(text)},
-            {'page': 2, 'text': '', 'text_sha256': digest('')}]
+            {'page': 2, 'text': blank_text, 'text_sha256': digest(blank_text)}]
     page_raw = ''.join(json.dumps(row, ensure_ascii=False) + '\n' for row in rows)
     (extraction / 'pages.jsonl').write_text(page_raw, encoding='utf-8')
     pdf_sha = digest(original.read_bytes())
@@ -82,6 +82,15 @@ def test_raw_media_crop_rotation_and_normalized_region_remain_distinct(tmp_path)
     assert rows[0]['source_location_id'] != read(other)[0]['source_location_id']
     explicit = tmp_path / 'explicit-whole-page.jsonl';export_source_locations(original, explicit, bbox=[0., 0., 1., 1.])
     assert read(other)[0]['source_location_id'] == read(explicit)[0]['source_location_id']
+
+
+def test_whitespace_reading_retained_exactly_but_not_advertised_as_searchable_text(tmp_path):
+    original = source(tmp_path);whitespace = ' \n\t\u00a0'
+    cached, _ = package(tmp_path, original, blank_text=whitespace);out = tmp_path / 'whitespace.jsonl'
+    export_source_locations(original, out, package=cached)
+    row = read(out)[1]
+    assert row['availability'] == 'source_only'
+    assert row['cached_reading']['text'] == whitespace and row['cached_reading']['text_sha256'] == digest(whitespace)
 
 
 @pytest.mark.parametrize('box', [[0, 0, 2, 1], [0, 0, 0, 1], [0, .8, 1, .2], [0, 0, float('nan'), 1], [False, 0, 1, 1], [0, 1]])
