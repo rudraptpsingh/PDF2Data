@@ -79,7 +79,7 @@ def test_preview_rejects_tampered_source_image_before_creating_output(tmp_path):
     data=fixture();data['source_pdf_sha256']=sha256(pdf.read_bytes()).hexdigest()
     overlay=bundle/'overlays.json';overlay.write_text(json.dumps(build_overlays(data,layout())))
     image=bundle/'assets/page-0001.png';Image.new('RGB',(200,400),'white').save(image)
-    files={str(p.relative_to(bundle)):sha256(p.read_bytes()).hexdigest() for p in (pdf,overlay,image)}
+    files={p.relative_to(bundle).as_posix():sha256(p.read_bytes()).hexdigest() for p in (pdf,overlay,image)}
     (bundle/'manifest.json').write_text(json.dumps(dict(source_pdf_sha256=data['source_pdf_sha256'],files=files)))
     result=visualize_bundle(bundle,tmp_path/'valid',pages=[1])
     assert result['pages']==1 and Path(result['images'][0]).is_file()

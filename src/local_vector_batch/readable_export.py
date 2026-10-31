@@ -169,7 +169,7 @@ def export_readable(package:Path,output:Path,docx_python:Path|None=None):
         overlays=write_overlays(stage,data)
         (stage/'document.html').write_text(html_document(data,bool(docx_python),continuous,overlays))
         (stage/'layout.html').write_text(html_document(data,bool(docx_python),continuous,overlays,layout_mode=True))
-        files={str(p.relative_to(stage)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(stage.rglob('*')) if p.is_file()}
+        files={p.relative_to(stage).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(stage.rglob('*')) if p.is_file()}
         (stage/'manifest.json').write_text(json.dumps({'schema_version':'pdf2data.readable-manifest.v1','source_pdf_sha256':data['source_pdf_sha256'],'files':files,'publication_eligible':False},indent=2)+'\n')
         # Fresh destination only; never alter the source package.
         if output.exists():raise ValueError('readable output appeared during export')

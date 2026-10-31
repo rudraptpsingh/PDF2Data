@@ -66,7 +66,7 @@ from .lossless_text import (auxiliary_text_receipt,validate_auxiliary_text_recei
 
 
 def write_json(path: Path, value) -> None:
-    path.write_text(lossless_json_dumps(value, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+    path.write_bytes((lossless_json_dumps(value, ensure_ascii=False, indent=2)+'\n').encode('utf-8'))
 
 
 def rows(path: Path) -> list[dict]:
@@ -74,7 +74,7 @@ def rows(path: Path) -> list[dict]:
 
 
 def write_rows(path: Path, values: list[dict]) -> None:
-    path.write_text(''.join(lossless_json_dumps(v, ensure_ascii=False)+'\n' for v in values), encoding='utf-8')
+    path.write_bytes(''.join(lossless_json_dumps(v, ensure_ascii=False)+'\n' for v in values).encode('utf-8'))
 
 
 def read_manifest(path: Path) -> dict:

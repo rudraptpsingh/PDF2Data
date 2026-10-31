@@ -33,7 +33,7 @@ def package(tmp_path, original, blank_text=''):
     rows = [{'page': 1, 'text': text, 'text_sha256': digest(text)},
             {'page': 2, 'text': blank_text, 'text_sha256': digest(blank_text)}]
     page_raw = ''.join(json.dumps(row, ensure_ascii=False) + '\n' for row in rows)
-    (extraction / 'pages.jsonl').write_text(page_raw, encoding='utf-8')
+    (extraction / 'pages.jsonl').write_bytes(page_raw.encode('utf-8'))
     pdf_sha = digest(original.read_bytes())
     (extraction / 'evidence-package.json').write_text(json.dumps({'document': {'pdf_sha256': pdf_sha},
         'files': {'pages.jsonl': {'sha256': digest(page_raw)}}}))

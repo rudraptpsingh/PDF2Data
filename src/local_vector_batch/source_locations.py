@@ -134,7 +134,7 @@ def export_source_locations(source_pdf: Path, output: Path, *, package: Path | N
     output.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix='.pdf2data-source-locations-', dir=output.parent)
     try:
-        with os.fdopen(fd, 'w', encoding='utf-8') as stream:
+        with os.fdopen(fd, 'w', encoding='utf-8', newline='\n') as stream:
             for record in records:
                 stream.write(_json(record) + '\n')
         os.link(name, output)  # exclusive publication; preserve immutable outputs

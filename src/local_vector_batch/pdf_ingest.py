@@ -152,11 +152,11 @@ def short_native_page_evidence(page, native_text: str, independent_text: str) ->
 
 
 def _write_json(path: Path, value: object) -> None:
-    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    path.write_bytes((json.dumps(value, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
 
 
 def _jsonl(path: Path, rows: list[dict]) -> None:
-    with path.open("w", encoding="utf-8") as stream:
+    with path.open("w", encoding="utf-8", newline="\n") as stream:
         for row in rows:
             stream.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
 

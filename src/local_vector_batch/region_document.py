@@ -383,7 +383,7 @@ def export_regions(document_path, layout_path, output,reuse_existing=False):
                      source_completeness_verified=False,
                      recognition_rerun=False,publication_eligible=False)
         receipt['implementation_sha256']=implementation
-        receipt['files']={str(p.relative_to(stage)):sha(p.read_bytes()) for p in sorted(stage.rglob('*')) if p.is_file()}
+        receipt['files']={p.relative_to(stage).as_posix():sha(p.read_bytes()) for p in sorted(stage.rglob('*')) if p.is_file()}
         (stage/'manifest.json').write_text(json.dumps(receipt,indent=2)+'\n')
         if output.exists():
             raise ValueError('structured output appeared during export')
