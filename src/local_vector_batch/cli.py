@@ -42,6 +42,8 @@ def parser() -> argparse.ArgumentParser:
     sub = main.add_subparsers(dest="command", required=True)
     from .field_rules import configure as field_parser
     field_parser(sub.add_parser('fields',help='extract, catalog, query and evaluate configurable source-bound metadata rules'))
+    from .evidence_graph import configure as graph_parser
+    graph_parser(sub.add_parser('graph', help='build evidence graphs and optionally import/inspect them in Neo4j'))
     controller=sub.add_parser('pdf-control',help='inventory, measure, repair and recheck documents through a durable local feedback loop')
     operations=controller.add_subparsers(dest='operation',required=True)
     for operation in ('init','run','status','feedback','tasks'):
@@ -457,6 +459,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == 'fields':
             from .field_rules import execute
+            result=execute(args)
+        elif args.command == 'graph':
+            from .evidence_graph import execute
             result=execute(args)
         elif args.command == "pdf-layout-recover":
             from .region_recovery import recover_layout

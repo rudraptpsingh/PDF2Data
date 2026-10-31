@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Optional source-bound evidence graph export, candidate assertion validation and
+  resumable Neo4j import/inspection through CLI and MCP; no legal approval or new OCR.
+
 - Versioned JSON extraction rules: initialize, catalog, extract, search and evaluate
   new fields across document categories without per-field parser changes.
 - Exact source/ruleset provenance, typed date/quantity candidates and bounded regex

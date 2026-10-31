@@ -41,6 +41,32 @@ class Bridge:
                     artifacts=[dict(id=a['id'],available=a['available'],bytes=a['bytes'],
                                     path=str(self.workspace.artifact_file(run_id,a['id'])) if a['available'] else None) for a in job['artifacts']])
 
+    def graph(self, run_id, operation='build'):
+        """Only this workspace's parsed run; server configuration owns DB access."""
+        from .evidence_graph import build, import_graph, inspect_graph, load, validate, summary
+        state = self.workspace.get(run_id)
+        if state['status'] not in ('processed', 'processed_with_flags'):
+            raise ValueError('Processing is not complete; call pdf2data_status')
+        directory = self.workspace.directory(run_id)
+        bundle = directory / 'evidence-graph'
+        if operation == 'build':
+            if bundle.exists():
+                return summary(validate(load(bundle / 'graph.json')))
+            return build(bundle, packages=directory / 'l1')
+        if operation not in ('import', 'inspect'):
+            raise ValueError('Unknown graph operation')
+        import os
+        uri = os.environ.get('PDF2DATA_NEO4J_URI')
+        if not uri:
+            raise ValueError('Configure PDF2DATA_NEO4J_URI on the MCP server for database operations')
+        kwargs = dict(uri=uri, user=os.environ.get('PDF2DATA_NEO4J_USER', 'neo4j'),
+                      password_env='PDF2DATA_NEO4J_PASSWORD',
+                      database=os.environ.get('PDF2DATA_NEO4J_DATABASE', 'neo4j'))
+        if operation == 'import':
+            return import_graph(bundle, **kwargs)
+        snapshot = validate(load(bundle / 'graph.json'))['snapshot_id']
+        return inspect_graph(snapshot, **kwargs)
+
     def read(self,run_id,artifact='page',page=None,region_id=None,table_id=None,max_chars=30000,cell_id=None):
         if not 1000<=max_chars<=200000:raise ValueError('max_chars must be 1000..200000')
         state=self.workspace.get(run_id)
@@ -174,6 +200,11 @@ def create_server(bridge):
     def pdf2data_status(run_id:str)->dict[str,Any]:
         """Get actual processing stages, quality flags and generated artifact paths for one PDF2Data run."""
         return bridge.status(run_id)
+
+    @server.tool(annotations=ToolAnnotations(readOnlyHint=False,destructiveHint=False,openWorldHint=True),structured_output=True)
+    async def pdf2data_graph(run_id:str,operation:Literal['build','import','inspect']='build')->dict[str,Any]:
+        """Build a source-bound graph for a parsed run, explicitly import to configured local Neo4j, or inspect it. Candidate links never grant semantic approval."""
+        return await asyncio.to_thread(bridge.graph,run_id,operation)
 
     @server.tool(annotations=ToolAnnotations(readOnlyHint=True,openWorldHint=False),structured_output=True)
     def pdf2data_read(run_id:str,artifact:Literal['page','fields','tables','table_contexts','continuations','document_parts','quality','markdown','manifest','overlays']='page',page:int|None=None,region_id:str|None=None,table_id:str|None=None,max_chars:int=30000,cell_id:str|None=None)->dict[str,Any]:

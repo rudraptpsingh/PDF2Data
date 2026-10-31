@@ -775,3 +775,7 @@ adds whitespace/gutter retries and an optional guarded local text fallback. The
 same sample reaches 71.93%, with one additional baseline pass and no content-rule
 gains. Original source maps, raw attempts and unresolved table fragments remain
 available for review.
+
+## Optional evidence graph / Neo4j
+
+Build a source-bound graph from cached L1 packages with `pdf2data graph build`, then explicitly import and inspect it in local Neo4j. Catalogue references and semantic links retain candidate/review status. No new OCR or model inference occurs. See [the graph workflow](docs/neo4j-evidence-graph.md).
