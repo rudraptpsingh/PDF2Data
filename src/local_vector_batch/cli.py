@@ -169,6 +169,10 @@ def parser() -> argparse.ArgumentParser:
     export_l1.add_argument("--output", required=True, type=Path)
     export_l1.add_argument("--json", action="store_true")
     export_l1.add_argument("--region-packets", type=Path, help="include verified mixed native/raster candidates without clearing quality flags")
+    query_export=sub.add_parser('export-query-data',help='export complete cached pages/tables/units with hashed raw sidecar references; no extraction or approval')
+    query_export.add_argument('--packages',required=True,type=Path)
+    query_export.add_argument('--output',required=True,type=Path)
+    query_export.add_argument('--json',action='store_true')
     locations = sub.add_parser('source-locations', help='export every physical PDF page/region, including held or textless pages; no model approval')
     locations.add_argument('--input', type=Path, required=True, help='original PDF; reads geometry without rerunning extraction')
     locations.add_argument('--output', type=Path, required=True, help='new JSONL output outside the immutable source package')
@@ -495,6 +499,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "export-l1-data":
             from .l1_export import export_processed
             result = export_processed(args.packages, args.output, args.region_packets)
+        elif args.command == 'export-query-data':
+            from .query_export import export_query_data
+            result = export_query_data(args.packages,args.output)
         elif args.command == 'source-locations':
             from .source_locations import export_source_locations
             result = export_source_locations(args.input, args.output, package=args.package, bbox=args.bbox)
