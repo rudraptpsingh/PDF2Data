@@ -31,9 +31,12 @@ npm version `0.2.0-rc.1`. The npm name is `@rudraptpsingh/pdf2data`; the unscope
    Publishing uses the repository NPM_TOKEN secret or a configured npm trusted publisher.
 7. Verify npm metadata, GitHub asset hashes and installation from the public artifacts.
 
-The active npm configuration follows the same Actions/publishing pattern as
-BuildView. Token values are never committed. Register npm trusted publishing for
-this repository/workflow to replace the initial token credential with OIDC.
+The active npm configuration reuses the existing BuildView publishing credential
+as PDF2Data’s own `NPM_TOKEN` Actions secret. It was transferred encrypted to
+PDF2Data’s repository public key; no plaintext was logged or committed. This token
+has publishing permission and 2FA bypass, unlike a normal npm login session.
+Register npm trusted publishing for this repository/workflow to replace the token
+credential with OIDC.
 [Official npm guidance](https://docs.npmjs.com/trusted-publishers).
 
 ## Stable-release gates

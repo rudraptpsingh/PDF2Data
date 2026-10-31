@@ -13,7 +13,8 @@ pdf2data doctor
 pdf2data workspace --workspace ./pdf2data-workspace
 ```
 
-Install directly from the GitHub release while npm registry publication awaits account 2FA.
+Install directly from the GitHub release. npm accepted the registry publication;
+its initial new-package processing must finish before the `@next` registry install is available.
 
 The launcher downloads the matching Python wheel and dependencies into an isolated
 uv cache on first use. OCR and AI models are optional, explicit installs. The core
