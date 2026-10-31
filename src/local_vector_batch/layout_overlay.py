@@ -138,6 +138,16 @@ def build_overlays(data,source_document=None):
                     geometry_basis=observation['basis'],state='candidate' if observation['parsed_text_aligned'] else 'source_glyph_observation_unaligned',
                     confidence=None,order=None,parsed_text_aligned=observation['parsed_text_aligned'],font_names=observation['font_names'])
         formatting(regions,width,height)
+        for formula in data.get('document_model',{}).get('formula_observations',{}).get('formulas',[]):
+            if formula['source_span']['page']!=number:continue
+            geometry=formula.get('geometry')
+            if not geometry:continue
+            checked=formula.get('computed_value');unit=formula.get('result_unit_literal') or ''
+            rendered='<p class="source-paragraph">'+escape(formula['literal'])+'</p>'
+            if checked is not None:rendered+='<p>Checked result: '+escape(checked+' '+unit)+'</p>'
+            add(formula['id'],'formula',geometry['bbox'],formula['literal'],preview_html=rendered,order=None,confidence=None,
+                geometry_basis=geometry['basis'],state='candidate',display_label='Worked formula' if formula['kind']=='worked_numeric_equality' else 'Formula candidate',
+                arithmetic_status=formula['arithmetic_status'],variable_bindings_verified=False)
         for i,region in enumerate(quality.get(number,{}).get('unresolved_visual_regions',[])):
             box=region.get('bbox_normalized')
             if box:

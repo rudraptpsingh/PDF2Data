@@ -1,0 +1,4 @@
+interface:
+  display_name: "PDF2Data"
+  short_description: "Parse PDFs into source-linked structured outputs"
+  default_prompt: "Use $pdf2data to parse this PDF and inspect its tables and quality flags."

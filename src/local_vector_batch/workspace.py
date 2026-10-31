@@ -76,7 +76,7 @@ class Workspace:
 
     def submit(self,source,options,retry_of=None):
         from .legal_l1 import FAMILIES,read_manifest
-        title=options.get('title','').strip();family=options.get('family','regulation');ocr=options.get('ocr','auto');url=options.get('url','').strip()
+        title=options.get('title','').strip();family=options.get('family','generic');ocr=options.get('ocr','auto');url=options.get('url','').strip()
         if not title or len(title)>240:raise ValueError('provide a document title of 1 to 240 characters')
         if family not in FAMILIES or ocr not in ('auto','off','vision','tesseract','rapidocr'):raise ValueError('invalid document type or OCR setting')
         with Path(source).open('rb') as stream:

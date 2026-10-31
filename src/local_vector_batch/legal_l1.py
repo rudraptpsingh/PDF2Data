@@ -23,7 +23,7 @@ from .evidence_package import verify_package
 from .provisions import select_provision, provision_children, validate_wrapper
 
 SCHEMA = 'powerlex.legal-l1.v1'
-FAMILIES = frozenset({'regulation', 'draft', 'notice', 'explanatory_memorandum',
+FAMILIES = frozenset({'generic', 'regulation', 'draft', 'notice', 'explanatory_memorandum',
     'judgment', 'interim_order', 'record_of_proceedings', 'approval', 'pleading',
     'registry_listing', 'contract', 'tender', 'technical_procedure', 'financial_evidence'})
 ID = re.compile(r'^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$')
@@ -31,6 +31,7 @@ HASH = re.compile(r'^[a-f0-9]{64}$')
 NUMBER = re.compile(r'(?m)^[ \t]*(\d{1,3})[.)][ \t]+(?=\S)')
 PAGE_FOOTER = re.compile(r'^(?:Page\s+\d+\s+(?:of|/)\s+\d+|RoP in Petition\b|Petition No\..*Page)', re.I)
 PROFILES = {
+    'generic': [],
     'record_of_proceedings': [('petitioner',r'^Petitioner\s*:'), ('respondents',r'^Respondents?\s*:'),
         ('coram',r'^Coram\s*:'), ('appearances',r'^Parties Present\s*:'), ('proceedings',r'^Record of Proceedings\s*$')],
     'interim_order': [('caption',r'^IN THE MATTER OF\s*:'), ('opposing_parties',r'^VERSUS\s*$'),

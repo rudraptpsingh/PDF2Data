@@ -149,11 +149,20 @@ def build_document_model(data):
                publication_eligible=False)
     from .document_metadata import extract_metadata
     model['metadata']=extract_metadata(data)
+    from .formula_observations import extract_formulas
+    model['formula_observations']=extract_formulas(data)
     validate_document_model(model,data)
     return model
 
 
 def validate_document_model(model,data):
+    if 'formula_observations' in model:
+        from .formula_observations import extract_formulas
+        if model['formula_observations']!=extract_formulas(data):raise ValueError('formula source anchor or arithmetic observation changed')
+        pages={p['page']:p for p in data['pages']}
+        for formula in model['formula_observations']['formulas']:
+            s=formula['source_span'];p=pages[s['page']]
+            if s['page_text_sha256']!=p['text_sha256'] or p['text'][s['char_start']:s['char_start']+s['char_length']]!=formula['literal'] or s['exact_quote']!=formula['literal']:raise ValueError('formula source anchor changed')
     if 'metadata' in model:
         from .document_metadata import validate_metadata
         validate_metadata(model['metadata'],data)

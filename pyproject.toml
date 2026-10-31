@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "PDF2Data"
-version = "0.1.0"
+version = "0.2.0rc1"
 description = "Source-backed PDF extraction, structured data, validation and local AI repair"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -32,9 +32,18 @@ ocr-consensus = ["rapidocr>=3.10,<4", "onnxruntime>=1.22,<2", "rapidfuzz>=3,<4"]
 pdf-vlm = ["mlx-vlm>=0.7,<0.8", "rapidocr>=3.10,<4", "onnxruntime>=1.22,<2", "pdfplumber>=0.11,<1", "pypdf>=5,<7", "pypdfium2>=5.14,<6", "fonttools>=4,<5", "filelock>=3.13,<5", "opencv-python-headless>=4.8,<5"]
 pdf-layout = ["docling>=2.144,<3", "onnxruntime>=1.22,<2", "pypdf>=5,<7"]
 test = ["pytest>=8,<10"]
+mcp = ["mcp>=2.3,<3", "filelock>=3.13,<5"]
+word = ["python-docx>=1.2,<2"]
+
+[project.urls]
+Homepage = "https://github.com/rudraptpsingh/PDF2Data"
+Repository = "https://github.com/rudraptpsingh/PDF2Data.git"
+Issues = "https://github.com/rudraptpsingh/PDF2Data/issues"
+Documentation = "https://github.com/rudraptpsingh/PDF2Data#readme"
 
 [project.scripts]
 pdf2data = "local_vector_batch.cli:main"
+pdf2data-mcp = "local_vector_batch.mcp_server:main"
 local-vector-batch = "local_vector_batch.cli:main"
 
 [tool.hatch.build.targets.wheel]

@@ -142,6 +142,7 @@ def export_readable(package:Path,output:Path,docx_python:Path|None=None):
         (stage/'document-blocks.json').write_text(json.dumps(data['document_blocks'],ensure_ascii=False,indent=2)+'\n')
         (stage/'document-model.json').write_text(json.dumps(data['document_model'],ensure_ascii=False,indent=2)+'\n')
         (stage/'document-metadata.json').write_text(json.dumps(data['document_model']['metadata'],ensure_ascii=False,indent=2)+'\n')
+        (stage/'formulas.json').write_text(json.dumps(data['document_model']['formula_observations'],ensure_ascii=False,indent=2)+'\n')
         shutil.copyfile(package/'layout.jsonl',stage/'layout.jsonl')
         import pypdfium2 as pdfium
         pdf=pdfium.PdfDocument(str(package/'original.pdf'))

@@ -37,6 +37,8 @@ def doctor() -> dict:
 def parser() -> argparse.ArgumentParser:
     main = argparse.ArgumentParser(prog="pdf2data",
                                    description="PDF2Data: source-backed PDF extraction, structured data, quality, local AI repair and embeddings")
+    from . import __version__
+    main.add_argument('--version',action='version',version='PDF2Data '+__version__)
     sub = main.add_subparsers(dest="command", required=True)
     prep = sub.add_parser("benchmark-prepare", help="freeze the pinned public olmOCR suite without label-based selection")
     prep.add_argument("--dataset-root", type=Path, required=True);prep.add_argument("--output", type=Path, required=True)
