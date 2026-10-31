@@ -216,6 +216,49 @@ can assist with grading; model agreement cannot be the only legal correctness ju
 The current 71.75% OCR rule macro and seven legal probes remain useful but **are not
 relationship extraction, complete-evidence retrieval or answer correctness scores**.
 
+## Review of the suggested parsing-library article
+
+Reviewed 31 October 2026:
+[Transform Any Document into LLM-Ready Data](https://martinuke0.github.io/posts/2026-01-06-transform-any-document-into-llm-ready-data-top-parsing-libraries-revealed/).
+It is useful for library discovery and reinforces structure preservation, multiple
+export formats, local processing and validation. Its ranking is not a reproducible
+accuracy/RAG benchmark: it does not specify a test corpus, pinned configurations,
+measured metrics or comparable results. It does not demonstrate recovery of this
+PDF's cross-page clauses, quote attribution, exceptions or illustration associations.
+
+Recommendations were checked against primary documentation and the installed
+Docling API rather than copying its snippets.
+
+| Library | Verified capability / correction | Decision for PDF2Data |
+| --- | --- | --- |
+| Docling | The documented export is `result.document.export_to_markdown()`, not the article's `result.to_markdown()`. The installed API confirms the latter is absent. Picture descriptions require explicit enrichment configuration; importing an Ollama client does not enable them. [Quickstart](https://docling-project.github.io/docling/getting_started/quickstart/), [enrichment configuration](https://docling-project.github.io/docling/usage/enrichments/). | Reuse the existing installed engine; retain/adapt its structured document representation and source provenance. Keep the tested local reader for recognition. Add image enrichment only as a bounded, separately evidenced candidate stage. |
+| Microsoft MarkItDown | Official Python usage instantiates `MarkItDown` then calls its conversion method. CLI file output uses `-o` or shell redirection, rather than a second bare output filename. The project describes itself as a Markdown conversion utility and cautions that it may not be best for high-fidelity human-facing conversion. [Official repository](https://github.com/microsoft/markitdown). | Potential lightweight comparison or future Office-format adapter. No evidence here justifies replacing our legal-PDF recognition, exact cell/span model or source-view export. |
+| NanoNets LLM-Data-Converter | Its README confirms default cloud processing, schema/field-oriented JSON, explicit local preferences and CUDA for its documented GPU mode. Enhanced JSON can use Ollama and fall back when unavailable. [Official repository](https://github.com/NanoNets/llm-data-converter). | Borrow the consistent conversion/export interface and explicit schema concept. A new engine would need a source-fidelity comparison, explicit local execution and Apple Metal verification. Schema-shaped JSON alone does not prove field values or relationships. No package was installed or document uploaded. |
+| Monkt | Official documentation describes an authenticated hosted transformation API. This review did not verify the article's classification of it as a local library or establish an open-source offline implementation. [Official API documentation](https://monkt.com/api/documentation/). | No dependency proposed for the current local open-source pipeline. Its service description is not evidence that it solves our source-binding requirements. |
+
+One further correction from the local environment: Docling 2.144.0's default
+`PdfFormatOption.backend` is `docling.backend.docling_parse_backend.ThreadedDoclingParseDocumentBackend`,
+not the PdfPlumber backend asserted in the article. This was checked by inspecting
+the installed class and by instantiating the format option, without converting a
+PDF or running recognition.
+
+### Concrete improvement retained from this review
+
+Use one source-backed conversion result with several projections: canonical JSON
+for blocks/spans/cells and relationships; Markdown/HTML/DOCX for reading; compact
+clause and header/value text for indexing. All projections must refer to the same
+original evidence. Do not make a generated JSON summary the canonical document.
+
+The next implementation remains the **canonical region-to-block adapter and shared
+exporter**. Validate the duplicated date, clause 1.7 continuation, both illustration
+associations and hypothetical-date scope before indexing the new projection. Then
+run the fixed-budget A/B/C retrieval experiment described above. This article adds
+useful interface ideas and corrected integration details; it does not establish an
+accuracy improvement or require replacing the current engine.
+
+This was a research/API review only. No model swap, new OCR run, database mutation
+or new RAG performance measurement was performed.
+
 ## Build order
 
 1. Complete this source map and freeze targeted questions/required evidence.
