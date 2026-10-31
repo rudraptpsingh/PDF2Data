@@ -24,6 +24,12 @@ def _digest(raw):
     return sha256(raw.encode('utf-8') if isinstance(raw, str) else raw).hexdigest()
 
 
+def _source_signature(stat):
+    # Reading may update access time under Linux relatime. It does not change
+    # the source identity/content metadata used to guard this captured snapshot.
+    return stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns
+
+
 def normalized_bbox(value):
     if (len(value) != 4 or any(type(n) not in (int, float) or not math.isfinite(n) for n in value)
             or not (0 <= value[0] < value[2] <= 1 and 0 <= value[1] < value[3] <= 1)):
@@ -129,7 +135,7 @@ def export_source_locations(source_pdf: Path, output: Path, *, package: Path | N
             'source_review': {'status': 'not_run', 'model_output_is_candidate_only': True,
                               'model_review_is_source_quality_approval': False},
             'source_quality_approval_granted': False, 'legal_answer_eligible': False, 'publication_eligible': False})
-    if source_pdf.stat() != original_stat:
+    if _source_signature(source_pdf.stat()) != _source_signature(original_stat):
         raise ValueError('original PDF changed during location export')
     output.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix='.pdf2data-source-locations-', dir=output.parent)

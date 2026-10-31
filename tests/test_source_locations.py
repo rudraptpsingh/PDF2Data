@@ -122,3 +122,33 @@ def test_cli_exports_textless_original_without_extraction_or_model(tmp_path, cap
     result = json.loads(capsys.readouterr().out)
     assert result['pages'] == result['source_only_pages'] == 3
     assert result['model_calls'] == 0 and result['content_streams_extracted'] is False
+
+
+def test_access_time_update_during_read_is_not_reported_as_changed_pdf(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    original=source(tmp_path);real_stat=Path.stat;reads=[]
+    def stat(path,*args,**kwargs):
+        result=real_stat(path,*args,**kwargs)
+        if path==original:
+            reads.append(True)
+            values={name:getattr(result,name)for name in dir(result)if name.startswith('st_')}
+            values['st_atime_ns']+=len(reads)*1_000_000
+            values['st_atime']+=len(reads)*.001
+            return SimpleNamespace(**values)
+        return result
+    monkeypatch.setattr(Path,'stat',stat)
+    result=export_source_locations(original,tmp_path/'locations.jsonl')
+    assert result['pages']==3 and len(reads)>=2
+
+
+def test_original_modified_during_snapshot_read_is_still_rejected(tmp_path,monkeypatch):
+    import pypdf
+    original=source(tmp_path);real_reader=pypdf.PdfReader;out=tmp_path/'locations.jsonl'
+    def reader(*args,**kwargs):
+        result=real_reader(*args,**kwargs)
+        original.write_bytes(original.read_bytes()+b'\n')
+        return result
+    monkeypatch.setattr(pypdf,'PdfReader',reader)
+    with pytest.raises(ValueError,match='changed during'):
+        export_source_locations(original,out)
+    assert not out.exists()
