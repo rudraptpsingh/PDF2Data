@@ -50,7 +50,7 @@ jobs:
       - name: Assemble release files
         shell: bash
         run: |
-          npm --prefix npm pack --pack-destination "$PWD/dist"
+          (cd npm && npm pack --pack-destination "$GITHUB_WORKSPACE/dist")
           python -c 'import shutil; shutil.make_archive("dist/pdf2data-skill", "zip", "skills", "pdf2data")'
           cd dist
           sha256sum * > SHA256SUMS.txt
