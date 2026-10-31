@@ -55,6 +55,16 @@ class Bridge:
             raw=path.read_bytes()
             if hashlib.sha256(raw).hexdigest()!=manifest['files'][name]:raise ValueError('Export artifact changed: '+name)
             return raw.decode('utf-8')
+        def continuations(number=None):
+            if 'continuations.json' not in manifest['files']:
+                return dict(status='not_available_reexport_required',links=[],unresolved_boundaries=[])
+            value=json.loads(checked('continuations.json'))
+            if value.get('source_pdf_sha256')!=state['source_pdf_sha256']:raise ValueError('Continuation/source identity changed')
+            if number is not None:
+                if type(number)is not int or number<1:raise ValueError('A positive physical page number is required')
+                for key in ('links','unresolved_boundaries'):
+                    value[key]=[r for r in value[key] if number in (r['from_page'],r['to_page'])]
+            return value
         if artifact=='page':
             if type(page)is not int or page<1:raise ValueError('A positive physical page number is required')
             data=json.loads(checked('data.json'));pages={p['page']:p for p in data['pages']}
@@ -68,7 +78,8 @@ class Bridge:
             if region_id is not None:tables=[t for t in tables if any(b.get('table_id')==t['id'] for b in blocks)]
             selected=pages[page]
             body=dict(page=selected if region_id is None else dict(page=page,text_sha256=selected['text_sha256']),blocks=blocks,tables=tables,
-                      quality=next(q for q in data['quality']['results'] if q['page']==page))
+                      quality=next(q for q in data['quality']['results'] if q['page']==page),continuations=continuations(page))
+        elif artifact=='continuations':body=continuations(page)
         elif artifact=='tables':
             data=json.loads(checked('data.json'));body=[t for t in data['tables'] if (page is None or t['page']==page) and (table_id is None or t['id']==table_id)]
             if table_id is not None and not body:raise ValueError('Unknown source table')
@@ -76,7 +87,7 @@ class Bridge:
             name={'quality':'quality.json','markdown':'document.md','manifest':'manifest.json','overlays':'overlays.json'}[artifact]
             body=manifest if artifact=='manifest' else checked(name)
             if artifact in ('quality','overlays'):body=json.loads(body)
-        else:raise ValueError('Unsupported artifact; use page, tables, quality, markdown, manifest or overlays')
+        else:raise ValueError('Unsupported artifact; use page, tables, continuations, quality, markdown, manifest or overlays')
         result=dict(schema_version='pdf2data.mcp.evidence.v1',source_pdf_sha256=state['source_pdf_sha256'],run_id=run_id,
                     artifact=artifact,data=body,content_verified=False,publication_eligible=False)
         size=len(json.dumps(result,ensure_ascii=False))
@@ -107,7 +118,7 @@ def create_server(bridge):
         return bridge.status(run_id)
 
     @server.tool(annotations=ToolAnnotations(readOnlyHint=True,openWorldHint=False),structured_output=True)
-    def pdf2data_read(run_id:str,artifact:Literal['page','tables','quality','markdown','manifest','overlays']='page',page:int|None=None,region_id:str|None=None,table_id:str|None=None,max_chars:int=30000)->dict[str,Any]:
+    def pdf2data_read(run_id:str,artifact:Literal['page','tables','continuations','quality','markdown','manifest','overlays']='page',page:int|None=None,region_id:str|None=None,table_id:str|None=None,max_chars:int=30000)->dict[str,Any]:
         """Read complete source-scoped text, typed blocks, tables or diagnostics. Oversized results request narrower scope; content is never silently clipped."""
         return bridge.read(run_id,artifact,page,region_id,table_id,max_chars)
 

@@ -24,12 +24,19 @@ def test_bridge_runs_cli_and_scopes_source_reads(tmp_path):
         page = bridge.read(run['run_id'], page=1, max_chars=200000)
         assert page['data']['page']['page'] == 1
         assert page['source_pdf_sha256'] == state['source_pdf_sha256']
+        context=bridge.read(run['run_id'],artifact='continuations',page=1,max_chars=200000)
+        assert context['data']['source_pdf_sha256']==state['source_pdf_sha256']
+        assert page['data']['continuations']==context['data']
         bounded = bridge.read(run['run_id'], page=1, max_chars=1000)
         assert bounded['status'] == 'requires_scope' and 'data' not in bounded
         artifact = bridge.workspace.directory(run['run_id']) / 'readable/document.md'
         artifact.write_text('Changed output')
         with pytest.raises(ValueError, match='changed'):
             bridge.read(run['run_id'], artifact='markdown')
+        context_path=artifact.with_name('continuations.json')
+        context_path.write_text('{}')
+        with pytest.raises(ValueError,match='changed'):
+            bridge.read(run['run_id'],artifact='continuations')
     finally:
         bridge.close()
 
@@ -82,4 +89,7 @@ def test_official_sdk_stdio_roundtrip_runs_real_pdf(tmp_path):
                 result = await session.call_tool('pdf2data_read', dict(run_id=run_id, artifact='page', page=1, max_chars=200000))
                 assert not result.is_error
                 assert result.structured_content['data']['page']['page'] == 1
+                context=await session.call_tool('pdf2data_read',dict(run_id=run_id,artifact='continuations',page=1,max_chars=200000))
+                assert not context.is_error
+                assert context.structured_content['data']['publication_eligible'] is False
     asyncio.run(exercise())

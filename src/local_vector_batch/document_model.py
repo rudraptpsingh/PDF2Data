@@ -151,11 +151,16 @@ def build_document_model(data):
     model['metadata']=extract_metadata(data)
     from .formula_observations import extract_formulas
     model['formula_observations']=extract_formulas(data)
+    from .document_continuations import build_continuations
+    model['continuations']=build_continuations(data)
     validate_document_model(model,data)
     return model
 
 
 def validate_document_model(model,data):
+    if 'continuations' in model:
+        from .document_continuations import build_continuations
+        if model['continuations']!=build_continuations(data):raise ValueError('continuation source anchors or associations changed')
     if 'formula_observations' in model:
         from .formula_observations import extract_formulas
         if model['formula_observations']!=extract_formulas(data):raise ValueError('formula source anchor or arithmetic observation changed')

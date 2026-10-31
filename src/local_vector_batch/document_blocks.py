@@ -21,6 +21,12 @@ def inside(glyph,box):
     b=glyph['bbox'];x=(b[0]+b[2])/2;y=(b[1]+b[3])/2
     return box[0]-.3<=x<=box[2]+.3 and box[1]-.3<=y<=box[3]+.3
 
+def open_continued_sentence(before,after,numbered_parent=False):
+    before,after=before.rstrip(),after.lstrip()
+    if not before or not after or re.search(r'[.!?;:।。][”"\')]*$',before):return False
+    if after.isupper() or re.match(r'^\d+(?:\.\d+)*[.)]?\s',after):return False
+    return after[0].islower() or '\u0900'<=after[0]<='\u097f' or numbered_parent
+
 def glyph_lines(layout):
     groups=[]
     for glyph in sorted(layout.get('glyphs',[]),key=lambda g:(g['bbox'][1],g['bbox'][0])):
@@ -178,8 +184,16 @@ def build_blocks(data):
             if table:item.update(table_id=table['id'],table_version_id=table.get('table_version_id'),replacement_proof=table['readable_placement'])
             blocks.append(item)
     joined=[];previous=None
+    numbered_units={u['id'] for u in data['structure']['units'] if re.fullmatch(r'\d+(?:\.\d+)*',str(u.get('label','')))}
     for block in blocks:
-        if block['kind']=='paragraph' and previous and previous['kind']=='paragraph' and block['parent_unit_ids'] and block['parent_unit_ids']==previous['parent_unit_ids'] and block['spans'][0]['page']>previous['spans'][-1]['page']:
+        before=''.join(s['exact_quote'] for s in previous['spans']).rstrip() if previous else ''
+        after=''.join(s['exact_quote'] for s in block['spans']).lstrip()
+        open_sentence=open_continued_sentence(before,after,bool(set(block['parent_unit_ids'])&numbered_units))
+        ab=previous.get('bbox') if previous else None;bb=block.get('bbox')
+        ah=layouts.get(previous['spans'][-1]['page'],{}).get('height') if previous else None
+        bh=layouts.get(block['spans'][0]['page'],{}).get('height')
+        boundary=bool(ab and bb and ah and bh and ab[3]/ah>=.7 and bb[1]/bh<=.25 and abs(ab[0]-bb[0])<=12)
+        if open_sentence and boundary and block['kind']=='paragraph' and previous and previous['kind']=='paragraph' and block['parent_unit_ids'] and block['parent_unit_ids']==previous['parent_unit_ids'] and block['spans'][0]['page']==previous['spans'][-1]['page']+1 and block.get('bold_candidate',False)==previous.get('bold_candidate',False):
             previous['spans'].extend(block['spans']);previous['cross_page_continuation']='same_candidate_source_parent';continue
         joined.append(block)
         if block['kind'] not in ('footer','header','whitespace'):previous=block
@@ -216,6 +230,7 @@ def validate_blocks(document,pages):
 def render_blocks(data,id_prefix=''):
     document=data.get('document_blocks') or build_blocks(data);tables={t['id']:t for t in data['tables']};md=[];html=[]
     list_depth=-1;active_quote=None
+    continuations=data.get('document_model',{}).get('continuations',{}).get('links',[])
     def close_list():
         nonlocal list_depth
         while list_depth>=0:html.append('</li></ol>');list_depth-=1
@@ -232,7 +247,8 @@ def render_blocks(data,id_prefix=''):
         text='\n'.join(s['exact_quote'].rstrip('\n') for s in block['spans']).strip('\n');page=block['spans'][0]['page']
         if kind!='list_item':close_list()
         attrs=f'id="{escape(id_prefix+block["id"],quote=True)}" data-source-page="{page}" data-semantic-state="candidate"'
-        cite=f'<a class="block-source" href="source.pdf#page={page}" aria-label="Source page {page}">p{page}</a>'
+        source_pages=list(dict.fromkeys(s['page'] for s in block['spans']))
+        cite=' · '.join(f'<a class="block-source" href="source.pdf#page={number}" aria-label="Source page {number}">p{number}</a>' for number in source_pages)
         if kind=='table':
             rendered=table_html(tables[block['table_id']]);md.append(rendered);html.append(f'<figure {attrs}>{rendered}<figcaption>{cite} · Table structure candidate</figcaption></figure>')
         elif kind=='heading':
@@ -249,6 +265,18 @@ def render_blocks(data,id_prefix=''):
             md.append('**'+text+'**' if block.get('bold_candidate') else text)
             rendered='<strong>'+escape(text)+'</strong>' if block.get('bold_candidate') else escape(text)
             html.append(f'<p {attrs} class="source-paragraph">{rendered} {cite}</p>')
+        if len(source_pages)>1:
+            md.append('<small>Source pages: '+cite+'</small>')
+        owner=block.get('table_id',block['id'])
+        for relation in continuations:
+            if relation['from_id']==relation['to_id']:
+                continue
+            if owner not in (relation['from_id'],relation['to_id']):
+                continue
+            forward=owner==relation['from_id'];number=relation['to_page'] if forward else relation['from_page']
+            label=('Continues on' if forward else 'Continued from')+f' source page {number} · candidate'
+            note=f'<small class="continuation-note"><a href="source.pdf#page={number}">{escape(label)}</a></small>'
+            html.append(note);md.append(note)
         if quote:
             for i in range(md_start,len(md)):md[i]='\n'.join('> '+line for line in md[i].split('\n'))
     close_list()

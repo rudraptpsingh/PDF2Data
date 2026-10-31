@@ -8,6 +8,7 @@ from __future__ import annotations
 import re
 import hashlib
 import json
+from .table_headers import first_row_header_candidate
 from datetime import date
 from functools import lru_cache
 from importlib.resources import files
@@ -211,6 +212,7 @@ def table_candidates(table: dict, page: dict) -> list[dict]:
     # complete row occurs once in selected page text. Keep this as a lexical
     # anchor only: the proposed grid and header relationship still need review.
     row_spans = {}
+    header_row = first_row_header_candidate(table['cells'])
     for row_index, cells in enumerate(table["cells"]):
         values = [(column, str(raw).strip()) for column, raw in enumerate(cells)
                   if raw is not None and str(raw).strip()]
@@ -241,8 +243,8 @@ def table_candidates(table: dict, page: dict) -> list[dict]:
                       "exact_unique_row_context" if bounds else "ambiguous_or_not_in_selected_text")
             rows.append({"kind": "table_cell", "table_id": table["id"], "table_version_id": table.get("table_version_id"),
                          "table_bbox": table["bbox"], "row": row_index, "column": column_index,
-                         "proposed_header": row_index == 0,
-                         "candidate_header_row": 0 if row_index else None,
+                         "proposed_header": header_row is not None and row_index == header_row,
+                         "candidate_header_row": header_row if row_index else None,
                          "value_text": value, "evidence": [span] if span else [],
                          "span_status": status,
                          "review_reasons": ["row_column_header_and_merged_cell_association",

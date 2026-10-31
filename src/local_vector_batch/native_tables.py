@@ -5,6 +5,7 @@ import re
 import hashlib
 import json
 from collections import Counter
+from .table_headers import first_row_header_candidate
 
 
 def is_ruling_object(obj: dict) -> bool:
@@ -62,6 +63,7 @@ def table_shape(found, cells: list[list], table_id: str) -> dict:
     xs=sorted(set(round(float(x),2) for b in boxes for x in (b[0],b[2])))
     ys=sorted(set(round(float(y),2) for b in boxes for y in (b[1],b[3])))
     spans=[];seen=set()
+    header_row=first_row_header_candidate(cells)
     # pdfplumber row positions may omit boundaries that occur only inside a
     # vertically merged cell. Place values by physical box coordinates.
     geometry_grid=[[None for _ in range(len(xs)-1)] for _ in range(len(ys)-1)]
@@ -75,7 +77,7 @@ def table_shape(found, cells: list[list], table_id: str) -> dict:
             geometry_grid[top][lo]=value
             spans.append({'id':f'{table_id}:r{top}:c{lo}','row':top,'column':lo,
                 'row_span':bottom-top,'column_span':hi-lo,'bbox':list(b),
-                'text':value,'role_candidate':'header' if top==0 else 'data',
+                'text':value,'role_candidate':('header' if header_row==0 else 'unresolved') if top==0 else 'data',
                 'status':'source_cell_candidate','glyph_audit':glyph_audit(value or '')})
     if Counter(str(v) for row in cells for v in row if v not in (None,''))!=Counter(str(c['text']) for c in spans if c['text'] not in (None,'')):
         raise ValueError('native geometry cannot map every populated extracted cell')

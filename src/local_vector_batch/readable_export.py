@@ -72,6 +72,11 @@ def full_document(data):
                 if previous:edges.append({'from':previous,'to':block['id'],'type':'next_rendered_block','basis':'source_order_candidate'})
                 previous=block['id']
             if block.get('table_id'):edges.append({'from':block['id'],'to':block['table_id'],'type':'renders_table_candidate'})
+    for relation in data.get('document_model',{}).get('continuations',{}).get('links',[]):
+        first,second=relation['from_id'],relation['to_id']
+        if first==second:
+            first,second=by_page[relation['from_page']]['id'],by_page[relation['to_page']]['id']
+        edges.append({'from':first,'to':second,'type':relation['kind'],'candidate':relation})
     graph={'schema_version':'pdf2data.relations.v1','source_pdf_sha256':data['source_pdf_sha256'],'nodes':nodes,'edges':edges,'legal_relationships':'unverified','publication_eligible':False}
     return md,''.join(parts),graph
 
@@ -143,6 +148,7 @@ def export_readable(package:Path,output:Path,docx_python:Path|None=None):
         (stage/'document-model.json').write_text(json.dumps(data['document_model'],ensure_ascii=False,indent=2)+'\n')
         (stage/'document-metadata.json').write_text(json.dumps(data['document_model']['metadata'],ensure_ascii=False,indent=2)+'\n')
         (stage/'formulas.json').write_text(json.dumps(data['document_model']['formula_observations'],ensure_ascii=False,indent=2)+'\n')
+        (stage/'continuations.json').write_text(json.dumps(data['document_model']['continuations'],ensure_ascii=False,indent=2)+'\n')
         shutil.copyfile(package/'layout.jsonl',stage/'layout.jsonl')
         import pypdfium2 as pdfium
         pdf=pdfium.PdfDocument(str(package/'original.pdf'))

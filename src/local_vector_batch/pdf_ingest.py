@@ -27,6 +27,10 @@ def extractor_identity(policy=None):
     policy=load_policy() if policy is None else policy
     return dict(extractor_contract=EXTRACTOR_CONTRACT,extractor_implementation_sha256=_EXTRACTOR_IMPORT_SHA256,
         native_visuals_implementation_sha256=NATIVE_VISUALS_IMPLEMENTATION_SHA256,
+        table_structure_implementation_sha256=hashlib.sha256(json.dumps({
+            name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
+            for name in ('native_tables.py','table_headers.py','structure_candidates.py')
+        },sort_keys=True).encode()).hexdigest(),
         quality_policy_sha256=hashlib.sha256(json.dumps(policy,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest())
 
 
