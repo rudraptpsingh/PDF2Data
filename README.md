@@ -7,14 +7,15 @@
 With Node 20+ and [uv](https://docs.astral.sh/uv/getting-started/installation/) installed:
 
 ```bash
-npm install -g https://github.com/rudraptpsingh/PDF2Data/releases/download/v0.2.0-rc.1/rudraptpsingh-pdf2data-0.2.0-rc.1.tgz
+npm install -g @rudraptpsingh/pdf2data@next
 pdf2data --version
 pdf2data doctor
 pdf2data workspace --workspace ./pdf2data-workspace
 ```
 
-Install directly from the GitHub release. npm accepted the registry publication;
-its initial new-package processing must finish before the `@next` registry install is available.
+The release candidate is published on npm under the `next` tag.
+[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.1)
+remain available for direct installation.
 
 The launcher downloads the matching Python wheel and dependencies into an isolated
 uv cache on first use. OCR and AI models are optional, explicit installs. The core

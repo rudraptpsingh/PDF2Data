@@ -39,6 +39,16 @@ Register npm trusted publishing for this repository/workflow to replace the toke
 credential with OIDC.
 [Official npm guidance](https://docs.npmjs.com/trusted-publishers).
 
+## RC publication verification
+
+The `0.2.0-rc.1` npm package is public under the `next` tag.
+[Publisher verification](https://github.com/rudraptpsingh/PDF2Data/actions/runs/41183804099)
+passed using PDF2Data’s own configured secret, then installed from the public
+registry and ran `pdf2data --version` and `pdf2data doctor` on Ubuntu.
+The first upload was accepted using BuildView’s existing token; initial npm
+new-package processing took a few minutes before public installation succeeded.
+BuildView’s main branch and release workflow were unchanged.
+
 ## Stable-release gates
 
 | Priority | Improvement | Completion evidence |
