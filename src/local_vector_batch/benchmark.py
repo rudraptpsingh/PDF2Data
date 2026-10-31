@@ -372,13 +372,14 @@ def compare(score_paths,output):
     reports=[load(p/'report.json') for p in score_paths]
     if len(reports)<2 or len({r['suite_sha256'] for r in reports})!=1:raise ValueError('comparison needs matching frozen suites')
     if any(not r['valid_evaluation'] for r in reports):raise ValueError('cannot compare invalid evaluator runs')
-    output.mkdir(parents=True)
     evidence=[]
     for path,report in zip(score_paths,reports):
         request=load(path/'request.json');run_path=Path(request['run'])/'run.json';run_record=load(run_path)
         evidence.append({'label':path.name,'score_path':str(path.resolve()),'report_sha256':sha((path/'report.json').read_bytes()),
                          'run_path':str(run_path),'run_sha256':sha(run_path.read_bytes()),'parser_implementation_sha256':run_record['config']['implementation_sha256'],
-                         'extraction_errors':run_record['errors'],'fresh_extraction_run':run_record['fresh_extraction_run']})
+                         'extraction_errors':run_record['errors'],'fresh_extraction_run':run_record.get('fresh_extraction_run'),
+                         'projection':run_record.get('projection')})
+    output.mkdir(parents=True)
     comparison={'schema_version':'pdf2data.benchmark-comparison.v1','suite_sha256':reports[0]['suite_sha256'],
                 'evidence':evidence,'profiles':[{k:r[k] for k in ('profile','mode','public_documents','public_rules','categories','raw_category_macro','coverage_adjusted_category_macro','errors','evaluation_seconds','extraction_wall_seconds')} for r in reports],
                 'score_scope':'pinned upstream rule classes plus missing-page baselines; no leaderboard submission',

@@ -156,7 +156,9 @@ def short_native_page_evidence(page, native_text: str, independent_text: str) ->
 
 
 def _write_json(path: Path, value: object) -> None:
-    path.write_bytes((json.dumps(value, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
+    with path.open("w", encoding="utf-8", newline="\n") as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write("\n")
 
 
 def _jsonl(path: Path, rows: list[dict]) -> None:
@@ -171,6 +173,17 @@ def _file_sha(path: Path) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+@contextmanager
+def _release_page_after_use(page):
+    """Release cached layout even after reuse, cancellation or extraction errors."""
+    try:
+        yield page
+    finally:
+        close = getattr(page, 'close', None)
+        if callable(close):
+            close()
 
 
 @contextmanager
@@ -305,209 +318,210 @@ def extract_pdf(
         if old_pages and total != len(old_pages):
             raise ValueError("source PDF physical page count changed from verified baseline")
         for index, page in enumerate(pdf.pages, 1):
-            if old_pages and index not in repair_pages:
-                pages.append(old_pages[index])
-                input_rows.extend(old_inputs.get(index, []))
-                table_rows.extend(old_tables.get(index, []))
-                fact_rows.extend(old_facts.get(index, []))
-                structure_rows.extend(old_structures.get(index, []))
-                issues.extend(old_issues.get(index, []))
+            with _release_page_after_use(page):
+                if old_pages and index not in repair_pages:
+                    pages.append(old_pages[index])
+                    input_rows.extend(old_inputs.get(index, []))
+                    table_rows.extend(old_tables.get(index, []))
+                    fact_rows.extend(old_facts.get(index, []))
+                    structure_rows.extend(old_structures.get(index, []))
+                    issues.extend(old_issues.get(index, []))
+                    if progress:
+                        progress(index, total)
+                    continue
+                native_error = None
+                try:
+                    text = (page.extract_text() or "").replace("\r\n", "\n").strip()
+                except Exception as error:
+                    text = ""
+                    native_error = str(error)[:180]
+                native = text
+                native_quality = text_quality(native)
+                independent_coverage = None
+                secondary_text = ""
+                parser_gap = False
+                if secondary_pages is not None and index <= len(secondary_pages):
+                    try:
+                        secondary_text = (secondary_pages[index - 1].extract_text() or "").strip()
+                        if native and (len(secondary_text) >= 80 or
+                                       (len(native) < 80 and secondary_text)):
+                            independent_coverage = independent_text_coverage(native, secondary_text)
+                            parser_gap = ((independent_coverage["char_recall"] is not None and
+                                           independent_coverage["char_recall"] < .995) or
+                                          (independent_coverage["digit_recall"] is not None and
+                                           independent_coverage["digit_recall"] < 1))
+                    except Exception as error:
+                        issues.append({"page": index, "kind": "secondary_parser_failed", "detail": str(error)[:180]})
+                try:
+                    blank = not text and not any(getattr(page, "objects", {"unknown": [1]}).values())
+                except Exception:
+                    blank = False
+                ocr_result = None
+                selected_method = "pdf_text"
+                # Short native text can be only a digitally printed footer while the
+                # substantive page is a scanned/form XObject that `page.images` does
+                # not expose. Render and OCR every visibly nonblank short page.
+                if native_quality["needs_ocr"] or parser_gap or (not blank and len(text) < 80):
+                    ocr_eligible_pages += 1
+                    try:
+                        if recognizer.engine != "off":
+                            ocr_attempted_pages += 1
+                        ocr_result = recognizer.recognize(page)
+                        if ocr_result and ocr_result["text"].strip() and (
+                            not native or native_quality["needs_ocr"] or
+                            (parser_gap and ocr_result["mean_confidence"] >= .8 and
+                             not text_quality(ocr_result["text"])["needs_ocr"]) or
+                            (len(ocr_result["text"]) > len(native) and ocr_result["mean_confidence"] >= .75)
+                        ):
+                            text = ocr_result["text"]
+                            selected_method = ocr_result["engine"]
+                            issues.append({"page": index, "kind": "ocr_used", "engine": ocr_result["engine"],
+                                           "confidence": round(ocr_result["mean_confidence"], 3)})
+                            if ocr_result["mean_confidence"] < .75:
+                                issues.append({"page": index, "kind": "low_confidence_ocr"})
+                    except Exception as error:
+                        issues.append({"page": index, "kind": "ocr_failed", "detail": str(error)[:180]})
+                native_line_repairs = []
+                if native_consensus and selected_method == "pdf_text" and secondary_pages is not None:
+                    try:
+                        from .native_consensus import repair_source_lines
+                        layout_reference = secondary_pages[index-1].extract_text(extraction_mode="layout") or ""
+                        text, native_line_repairs = repair_source_lines(source, page, index, text, layout_reference)
+                    except Exception as error:
+                        issues.append({"page": index, "kind": "native_consensus_unavailable", "detail": str(error)[:180]})
+                selected_quality = text_quality(text)
+                short_evidence = (short_native_page_evidence(page, text, secondary_text)
+                                  if selected_method == "pdf_text" and 0 < len(text) < 80 else None)
+                if parser_gap:
+                    issues.append({"page": index,
+                                   "kind": "native_parser_disagreement" if selected_method == "pdf_text" else
+                                           "native_parser_disagreement_recovered_by_ocr",
+                                   "detail": "Independent extraction found letters or digits absent from native text",
+                                   **independent_coverage})
+                if independent_coverage is None and len(native) >= 80:
+                    issues.append({"page": index, "kind": "secondary_parser_inconclusive",
+                                   "detail": "Independent page text was unavailable or too short to audit native coverage"})
+                if selected_quality["needs_ocr"]:
+                    issues.append({"page": index, "kind": "garbled_text", "detail": "Encoded or replacement glyphs remain unresolved"})
+                if native_error:
+                    issues.append({"page": index, "kind": "native_extraction_recovered" if text else "text_extraction_failed",
+                                   "detail": native_error})
+                page_id = f"{document_id}:p{index}"
+                text_sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
+                from .text_script import classify_text_script, native_script_verification
+                script_verification = native_script_verification(text, quality_policy)
+                raster_regions=native_raster_regions(page,minimum_page_fraction=quality_policy.get('native_raster_region_min_page_fraction',0.0))
+                if raster_regions:
+                    issues.append({'page':index,'kind':'native_raster_content_unverified',
+                        'region_count':len(raster_regions),
+                        'detail':'Native text does not establish recovery of raster image content; retain original regions and require source/reading-order/table review'})
+                if selected_method == 'pdf_text' and script_verification['required_scripts']:
+                    issues.append({'page': index, 'kind': 'native_complex_script_glyph_mapping_unverified',
+                                   'required_scripts': script_verification['required_scripts'],
+                                   'detail': 'Native Unicode and parser agreement do not verify font glyph mapping; independent raster/language proof required'})
+                pages.append({"id": page_id, "page": index, "text": text, "chars": len(text),
+                              "method": selected_method, "text_sha256": text_sha,
+                              **classify_text_script(text),
+                              "script_verification": script_verification,
+                              "native_raster_regions":raster_regions,
+                              "pdf_width": round(float(page.width), 2) if getattr(page, "width", None) else None,
+                              "pdf_height": round(float(page.height), 2) if getattr(page, "height", None) else None,
+                              "native_quality": native_quality, "selected_quality": selected_quality,
+                              "independent_coverage": independent_coverage,
+                              **({"short_source_evidence": short_evidence} if short_evidence else {}),
+                              **({"secondary_native_text": secondary_text} if parser_gap else {}),
+                              **({"native_text": native} if ocr_result is not None or native_line_repairs else {}),
+                              **({"native_line_repairs": native_line_repairs} if native_line_repairs else {}),
+                              **({"ocr": ocr_result} if ocr_result else {})})
+                from .structure_candidates import page_candidates, table_candidates
+                structure_rows.extend(page_candidates(pages[-1]))
+                if len(text) < 80:
+                    kind = "blank_page" if blank else "missing_text" if not text else \
+                        "short_text_verified" if short_evidence and short_evidence["ready"] else "short_text"
+                    issues.append({"page": index, "kind": kind, "chars": len(text),
+                                   "detail": "Short native text matches independent parser and accounts for all visible ink"
+                                   if kind == "short_text_verified" else
+                                   "Review scanned, image-only, or intentionally blank page before embedding"})
+                if text:
+                    metadata = {"parent_document_id": document_id, "page": index,
+                                "source_pdf_sha256": sha, "page_text_sha256": text_sha, "source_title": label}
+                    if source_url:
+                        metadata["url"] = source_url
+                    input_rows.append({"id": page_id, "text": text, "metadata": metadata})
+                    for match in FACT.finditer(text):
+                        value = match.group().strip()
+                        kind = ("currency" if re.match(r"₹|INR|Rs\.?", value, re.I) else "percentage" if "%" in value else
+                                "capacity" if re.search(r"\b[mk]w", value, re.I) else
+                                "duration" if re.search(r"\b(?:days?|months?|years?)\b", value, re.I) else "date")
+                        fact_rows.append({"page": index, "page_id": page_id, "page_text_sha256": text_sha,
+                                          "char_start": match.start(), "char_length": match.end() - match.start(),
+                                          "kind": kind, "value_text": value,
+                                          "context": re.sub(r"\s+", " ", text[max(0, match.start()-90):match.end()+90]).strip(),
+                                          "status": "unverified_candidate"})
+                if tables:
+                    native_tables_on_page = 0
+                    try:
+                        from .native_tables import find_native_tables, table_shape
+                        for number, found in enumerate(find_native_tables(page), 1):
+                            cells = found.extract()
+                            if not cells:
+                                continue
+                            table_rows.append({"id": f"{page_id}:table{number}", "page": index,
+                                               "bbox": [round(float(x), 2) for x in found.bbox],
+                                               "bbox_coordinates": "PDF points, top-left",
+                                               "extraction_basis": "native_pdf_geometry",
+                                               "cells": cells, "status": "needs_row_column_review",
+                                               **table_shape(found, cells, f"{page_id}:table{number}")})
+                            native_tables_on_page += 1
+                            structure_rows.extend(table_candidates(table_rows[-1], pages[-1]))
+                    except Exception as error:
+                        issues.append({"page": index, "kind": "table_extraction_failed", "detail": str(error)[:180]})
+                    if selected_method in {"vision", "tesseract", "rapidocr"} and ocr_result and not native_tables_on_page:
+                        try:
+                            from .ocr_tables import ruled_table_candidates
+                            rendered = (getattr(recognizer, "last_rendered_image", None) or
+                                        page.to_image(resolution=ocr_result["render_dpi"]).original)
+                            for candidate in ruled_table_candidates(
+                                rendered, ocr_result["lines"], page=index, page_id=page_id,
+                                pdf_width=float(page.width), pdf_height=float(page.height),
+                            ):
+                                candidate["source_pdf_sha256"] = sha
+                                candidate["page_text_sha256"] = text_sha
+                                candidate["ocr_engine"] = ocr_result["engine"]
+                                candidate["render_dpi"] = ocr_result["render_dpi"]
+                                table_rows.append(candidate)
+                                structure_rows.extend(table_candidates(candidate, pages[-1]))
+                                issues.append({"page": index, "kind": "ocr_ruled_table_candidate",
+                                               "table_id": candidate["id"],
+                                               "detail": "OCR word boxes assigned to printed grid; row and column values require source review"})
+                        except Exception as error:
+                            issues.append({"page": index, "kind": "ocr_table_candidate_failed", "detail": str(error)[:180]})
+                    if selected_method != "pdf_text":
+                        issues.append({"page": index, "kind": "ocr_layout_review",
+                                       "detail": "OCR text does not reconstruct scanned table rows or merged cells"})
+                    page_tables=[t for t in table_rows if t['page']==index]
+                    table_geometry=associate_table_geometry(page_tables,tolerance=quality_policy.get('table_geometry_containment_tolerance_points',0.25))
+                    pages[-1]['table_geometry_summary']=table_geometry
+                    if table_geometry['contained_candidates'] or table_geometry['equal_geometry_candidates']:
+                        issues.append({'page':index,'kind':'nested_table_geometry_candidates',**table_geometry,
+                            'detail':'Raw table candidates retained; contained/equal geometry is not proof of independent tables or permission to discard them'})
+                recognizer.last_rendered_image = None
+                page_issue_kinds = {item["kind"] for item in issues if item["page"] == index}
+                if blank and not text:
+                    pages[-1]["status"] = "blank"
+                elif (selected_method != "pdf_text" or
+                      (len(text) < 80 and not (short_evidence and short_evidence["ready"])) or
+                      independent_coverage is None or
+                      page_issue_kinds & {"garbled_text", "native_parser_disagreement", "secondary_parser_failed",
+                                          "text_extraction_failed", "native_extraction_recovered", "ocr_failed",
+                                          "low_confidence_ocr", "table_extraction_failed", "missing_text",
+                                          "native_complex_script_glyph_mapping_unverified", "native_raster_content_unverified",
+                                          "nested_table_geometry_candidates"}):
+                    pages[-1]["status"] = "review_required"
+                else:
+                    pages[-1]["status"] = "ready"
                 if progress:
                     progress(index, total)
-                continue
-            native_error = None
-            try:
-                text = (page.extract_text() or "").replace("\r\n", "\n").strip()
-            except Exception as error:
-                text = ""
-                native_error = str(error)[:180]
-            native = text
-            native_quality = text_quality(native)
-            independent_coverage = None
-            secondary_text = ""
-            parser_gap = False
-            if secondary_pages is not None and index <= len(secondary_pages):
-                try:
-                    secondary_text = (secondary_pages[index - 1].extract_text() or "").strip()
-                    if native and (len(secondary_text) >= 80 or
-                                   (len(native) < 80 and secondary_text)):
-                        independent_coverage = independent_text_coverage(native, secondary_text)
-                        parser_gap = ((independent_coverage["char_recall"] is not None and
-                                       independent_coverage["char_recall"] < .995) or
-                                      (independent_coverage["digit_recall"] is not None and
-                                       independent_coverage["digit_recall"] < 1))
-                except Exception as error:
-                    issues.append({"page": index, "kind": "secondary_parser_failed", "detail": str(error)[:180]})
-            try:
-                blank = not text and not any(getattr(page, "objects", {"unknown": [1]}).values())
-            except Exception:
-                blank = False
-            ocr_result = None
-            selected_method = "pdf_text"
-            # Short native text can be only a digitally printed footer while the
-            # substantive page is a scanned/form XObject that `page.images` does
-            # not expose. Render and OCR every visibly nonblank short page.
-            if native_quality["needs_ocr"] or parser_gap or (not blank and len(text) < 80):
-                ocr_eligible_pages += 1
-                try:
-                    if recognizer.engine != "off":
-                        ocr_attempted_pages += 1
-                    ocr_result = recognizer.recognize(page)
-                    if ocr_result and ocr_result["text"].strip() and (
-                        not native or native_quality["needs_ocr"] or
-                        (parser_gap and ocr_result["mean_confidence"] >= .8 and
-                         not text_quality(ocr_result["text"])["needs_ocr"]) or
-                        (len(ocr_result["text"]) > len(native) and ocr_result["mean_confidence"] >= .75)
-                    ):
-                        text = ocr_result["text"]
-                        selected_method = ocr_result["engine"]
-                        issues.append({"page": index, "kind": "ocr_used", "engine": ocr_result["engine"],
-                                       "confidence": round(ocr_result["mean_confidence"], 3)})
-                        if ocr_result["mean_confidence"] < .75:
-                            issues.append({"page": index, "kind": "low_confidence_ocr"})
-                except Exception as error:
-                    issues.append({"page": index, "kind": "ocr_failed", "detail": str(error)[:180]})
-            native_line_repairs = []
-            if native_consensus and selected_method == "pdf_text" and secondary_pages is not None:
-                try:
-                    from .native_consensus import repair_source_lines
-                    layout_reference = secondary_pages[index-1].extract_text(extraction_mode="layout") or ""
-                    text, native_line_repairs = repair_source_lines(source, page, index, text, layout_reference)
-                except Exception as error:
-                    issues.append({"page": index, "kind": "native_consensus_unavailable", "detail": str(error)[:180]})
-            selected_quality = text_quality(text)
-            short_evidence = (short_native_page_evidence(page, text, secondary_text)
-                              if selected_method == "pdf_text" and 0 < len(text) < 80 else None)
-            if parser_gap:
-                issues.append({"page": index,
-                               "kind": "native_parser_disagreement" if selected_method == "pdf_text" else
-                                       "native_parser_disagreement_recovered_by_ocr",
-                               "detail": "Independent extraction found letters or digits absent from native text",
-                               **independent_coverage})
-            if independent_coverage is None and len(native) >= 80:
-                issues.append({"page": index, "kind": "secondary_parser_inconclusive",
-                               "detail": "Independent page text was unavailable or too short to audit native coverage"})
-            if selected_quality["needs_ocr"]:
-                issues.append({"page": index, "kind": "garbled_text", "detail": "Encoded or replacement glyphs remain unresolved"})
-            if native_error:
-                issues.append({"page": index, "kind": "native_extraction_recovered" if text else "text_extraction_failed",
-                               "detail": native_error})
-            page_id = f"{document_id}:p{index}"
-            text_sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
-            from .text_script import classify_text_script, native_script_verification
-            script_verification = native_script_verification(text, quality_policy)
-            raster_regions=native_raster_regions(page,minimum_page_fraction=quality_policy.get('native_raster_region_min_page_fraction',0.0))
-            if raster_regions:
-                issues.append({'page':index,'kind':'native_raster_content_unverified',
-                    'region_count':len(raster_regions),
-                    'detail':'Native text does not establish recovery of raster image content; retain original regions and require source/reading-order/table review'})
-            if selected_method == 'pdf_text' and script_verification['required_scripts']:
-                issues.append({'page': index, 'kind': 'native_complex_script_glyph_mapping_unverified',
-                               'required_scripts': script_verification['required_scripts'],
-                               'detail': 'Native Unicode and parser agreement do not verify font glyph mapping; independent raster/language proof required'})
-            pages.append({"id": page_id, "page": index, "text": text, "chars": len(text),
-                          "method": selected_method, "text_sha256": text_sha,
-                          **classify_text_script(text),
-                          "script_verification": script_verification,
-                          "native_raster_regions":raster_regions,
-                          "pdf_width": round(float(page.width), 2) if getattr(page, "width", None) else None,
-                          "pdf_height": round(float(page.height), 2) if getattr(page, "height", None) else None,
-                          "native_quality": native_quality, "selected_quality": selected_quality,
-                          "independent_coverage": independent_coverage,
-                          **({"short_source_evidence": short_evidence} if short_evidence else {}),
-                          **({"secondary_native_text": secondary_text} if parser_gap else {}),
-                          **({"native_text": native} if ocr_result is not None or native_line_repairs else {}),
-                          **({"native_line_repairs": native_line_repairs} if native_line_repairs else {}),
-                          **({"ocr": ocr_result} if ocr_result else {})})
-            from .structure_candidates import page_candidates, table_candidates
-            structure_rows.extend(page_candidates(pages[-1]))
-            if len(text) < 80:
-                kind = "blank_page" if blank else "missing_text" if not text else \
-                    "short_text_verified" if short_evidence and short_evidence["ready"] else "short_text"
-                issues.append({"page": index, "kind": kind, "chars": len(text),
-                               "detail": "Short native text matches independent parser and accounts for all visible ink"
-                               if kind == "short_text_verified" else
-                               "Review scanned, image-only, or intentionally blank page before embedding"})
-            if text:
-                metadata = {"parent_document_id": document_id, "page": index,
-                            "source_pdf_sha256": sha, "page_text_sha256": text_sha, "source_title": label}
-                if source_url:
-                    metadata["url"] = source_url
-                input_rows.append({"id": page_id, "text": text, "metadata": metadata})
-                for match in FACT.finditer(text):
-                    value = match.group().strip()
-                    kind = ("currency" if re.match(r"₹|INR|Rs\.?", value, re.I) else "percentage" if "%" in value else
-                            "capacity" if re.search(r"\b[mk]w", value, re.I) else
-                            "duration" if re.search(r"\b(?:days?|months?|years?)\b", value, re.I) else "date")
-                    fact_rows.append({"page": index, "page_id": page_id, "page_text_sha256": text_sha,
-                                      "char_start": match.start(), "char_length": match.end() - match.start(),
-                                      "kind": kind, "value_text": value,
-                                      "context": re.sub(r"\s+", " ", text[max(0, match.start()-90):match.end()+90]).strip(),
-                                      "status": "unverified_candidate"})
-            if tables:
-                native_tables_on_page = 0
-                try:
-                    from .native_tables import find_native_tables, table_shape
-                    for number, found in enumerate(find_native_tables(page), 1):
-                        cells = found.extract()
-                        if not cells:
-                            continue
-                        table_rows.append({"id": f"{page_id}:table{number}", "page": index,
-                                           "bbox": [round(float(x), 2) for x in found.bbox],
-                                           "bbox_coordinates": "PDF points, top-left",
-                                           "extraction_basis": "native_pdf_geometry",
-                                           "cells": cells, "status": "needs_row_column_review",
-                                           **table_shape(found, cells, f"{page_id}:table{number}")})
-                        native_tables_on_page += 1
-                        structure_rows.extend(table_candidates(table_rows[-1], pages[-1]))
-                except Exception as error:
-                    issues.append({"page": index, "kind": "table_extraction_failed", "detail": str(error)[:180]})
-                if selected_method in {"vision", "tesseract", "rapidocr"} and ocr_result and not native_tables_on_page:
-                    try:
-                        from .ocr_tables import ruled_table_candidates
-                        rendered = (getattr(recognizer, "last_rendered_image", None) or
-                                    page.to_image(resolution=ocr_result["render_dpi"]).original)
-                        for candidate in ruled_table_candidates(
-                            rendered, ocr_result["lines"], page=index, page_id=page_id,
-                            pdf_width=float(page.width), pdf_height=float(page.height),
-                        ):
-                            candidate["source_pdf_sha256"] = sha
-                            candidate["page_text_sha256"] = text_sha
-                            candidate["ocr_engine"] = ocr_result["engine"]
-                            candidate["render_dpi"] = ocr_result["render_dpi"]
-                            table_rows.append(candidate)
-                            structure_rows.extend(table_candidates(candidate, pages[-1]))
-                            issues.append({"page": index, "kind": "ocr_ruled_table_candidate",
-                                           "table_id": candidate["id"],
-                                           "detail": "OCR word boxes assigned to printed grid; row and column values require source review"})
-                    except Exception as error:
-                        issues.append({"page": index, "kind": "ocr_table_candidate_failed", "detail": str(error)[:180]})
-                if selected_method != "pdf_text":
-                    issues.append({"page": index, "kind": "ocr_layout_review",
-                                   "detail": "OCR text does not reconstruct scanned table rows or merged cells"})
-                page_tables=[t for t in table_rows if t['page']==index]
-                table_geometry=associate_table_geometry(page_tables,tolerance=quality_policy.get('table_geometry_containment_tolerance_points',0.25))
-                pages[-1]['table_geometry_summary']=table_geometry
-                if table_geometry['contained_candidates'] or table_geometry['equal_geometry_candidates']:
-                    issues.append({'page':index,'kind':'nested_table_geometry_candidates',**table_geometry,
-                        'detail':'Raw table candidates retained; contained/equal geometry is not proof of independent tables or permission to discard them'})
-            recognizer.last_rendered_image = None
-            page_issue_kinds = {item["kind"] for item in issues if item["page"] == index}
-            if blank and not text:
-                pages[-1]["status"] = "blank"
-            elif (selected_method != "pdf_text" or
-                  (len(text) < 80 and not (short_evidence and short_evidence["ready"])) or
-                  independent_coverage is None or
-                  page_issue_kinds & {"garbled_text", "native_parser_disagreement", "secondary_parser_failed",
-                                      "text_extraction_failed", "native_extraction_recovered", "ocr_failed",
-                                      "low_confidence_ocr", "table_extraction_failed", "missing_text",
-                                      "native_complex_script_glyph_mapping_unverified", "native_raster_content_unverified",
-                                      "nested_table_geometry_candidates"}):
-                pages[-1]["status"] = "review_required"
-            else:
-                pages[-1]["status"] = "ready"
-            if progress:
-                progress(index, total)
     if not input_rows:
         issues.append({"page": 1, "kind": "no_searchable_text", "detail": "No page produced searchable text"})
     page_status_counts = {status: sum(row["status"] == status for row in pages)
@@ -552,6 +566,11 @@ def extract_pdf(
     _write_json(output / "tables.json", table_rows)
     _jsonl(output / "fact-candidates.jsonl", fact_rows)
     _jsonl(output / "structure-candidates.jsonl", structure_rows)
+    # Package assembly reopens persisted artifacts; release extraction-owned
+    # graphs before that second materialization. Source identities do not change.
+    pages.clear(); input_rows.clear(); table_rows.clear(); fact_rows.clear(); structure_rows.clear()
+    old_pages.clear(); old_inputs.clear(); old_tables.clear(); old_facts.clear(); old_structures.clear(); old_issues.clear()
+    secondary_pages = None
     from .evidence_package import create_package
     create_package(output)
     return report

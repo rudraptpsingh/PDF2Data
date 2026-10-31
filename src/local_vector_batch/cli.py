@@ -40,6 +40,21 @@ def parser() -> argparse.ArgumentParser:
     from . import __version__
     main.add_argument('--version',action='version',version='PDF2Data '+__version__)
     sub = main.add_subparsers(dest="command", required=True)
+    controller=sub.add_parser('pdf-control',help='inventory, measure, repair and recheck documents through a durable local feedback loop')
+    operations=controller.add_subparsers(dest='operation',required=True)
+    for operation in ('init','run','status','feedback','tasks'):
+        control=operations.add_parser(operation)
+        control.add_argument('--output',type=Path,required=True,help='isolated controller workspace')
+        control.add_argument('--json',action='store_true')
+        if operation=='init':control.add_argument('--input',type=Path,required=True,help='JSONL original/source hash and optional extraction package inventory')
+        if operation=='feedback':control.add_argument('--references',type=Path,required=True,help='source-visual, version-bound calibration references with reviewer identity')
+        if operation=='tasks':
+            control.add_argument('--limit',type=int,default=25);control.add_argument('--offset',type=int,default=0)
+            control.add_argument('--include-unlabelled',action='store_true')
+        if operation=='run':
+            control.add_argument('--max-documents',type=int,default=10)
+            control.add_argument('--max-rounds',type=int,default=2)
+            control.add_argument('--ocr',choices=('off','auto','vision','tesseract','rapidocr'),default='off')
     prep = sub.add_parser("benchmark-prepare", help="freeze the pinned public olmOCR suite without label-based selection")
     prep.add_argument("--dataset-root", type=Path, required=True);prep.add_argument("--output", type=Path, required=True)
     prep.add_argument("--custom", action="store_true", help="local rules with explicitly custom provenance, not the public dataset")
@@ -50,6 +65,17 @@ def parser() -> argparse.ArgumentParser:
     bench.add_argument("--reuse-readings",type=Path);bench.add_argument("--layout-python",type=Path);bench.add_argument("--workers", type=int, default=4);bench.add_argument("--resume", action="store_true");bench.add_argument("--json", action="store_true")
     bench.add_argument("--reuse-layout",type=Path)
     bench.add_argument("--text-fallback",choices=('none','vision'),default='none')
+    ollama_bench=sub.add_parser('benchmark-ollama-run',help='evaluate a locally installed OCR model on frozen source pages; no model pull or approval')
+    for key in ('suite','output'):ollama_bench.add_argument('--'+key,type=Path,required=True)
+    ollama_bench.add_argument('--host',default='http://127.0.0.1:11434');ollama_bench.add_argument('--model',default='deepseek-ocr:3b')
+    ollama_bench.add_argument('--max-tokens',type=int,default=8192);ollama_bench.add_argument('--dpi',type=int,default=180)
+    ollama_bench.add_argument('--timeout',type=int,default=240);ollama_bench.add_argument('--resume',action='store_true');ollama_bench.add_argument('--json',action='store_true')
+    subset=sub.add_parser('benchmark-project-subset',help='project verified cached predictions to a frozen source-identical subset without inference')
+    for key in ('suite','run','output'):subset.add_argument('--'+key,type=Path,required=True)
+    subset.add_argument('--json',action='store_true')
+    replay=sub.add_parser('benchmark-ollama-replay',help='revalidate hash-bound raw OCR responses after output-quality fixes; no model call')
+    for key in ('suite','run','output'):replay.add_argument('--'+key,type=Path,required=True)
+    replay.add_argument('--json',action='store_true')
     scoring = sub.add_parser("benchmark-score", help="score predictions with the pinned official olmOCR rule classes")
     for key in ("suite","run","upstream","eval-python","output"):scoring.add_argument("--"+key,type=Path,required=True)
     scoring.add_argument("--mode",choices=("text","tables"),default="tables");scoring.add_argument("--json",action="store_true")
@@ -456,12 +482,28 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "pdf-region-read":
             from .structured import read_regions
             result=read_regions(args.layout,args.output,args.device,args.max_tokens,args.resume,args.reuse_readings,args.text_fallback)
+        elif args.command=='pdf-control':
+            from . import control_loop
+            if args.operation=='init':result=control_loop.initialize(args.input,args.output)
+            elif args.operation=='feedback':result=control_loop.add_feedback(args.output,args.references)
+            elif args.operation=='status':result=control_loop.status(args.output)
+            elif args.operation=='tasks':result=control_loop.tasks(args.output,args.limit,args.offset,args.include_unlabelled)
+            else:result=control_loop.run(args.output,args.max_documents,args.max_rounds,args.ocr)
         elif args.command == "benchmark-prepare":
             from .benchmark import prepare
             result = prepare(args.dataset_root,args.output,args.per_category,args.seed,args.custom)
         elif args.command == "benchmark-run":
             from .benchmark import run as benchmark_run
             result = benchmark_run(args.suite,args.profile,args.output,args.parser_python,args.workers,args.resume,args.layout_python,args.reuse_readings,args.text_fallback,args.reuse_layout)
+        elif args.command=='benchmark-ollama-run':
+            from .ollama_ocr_benchmark import run
+            result=run(args.suite,args.output,args.host,args.model,args.max_tokens,args.dpi,args.timeout,args.resume)
+        elif args.command=='benchmark-project-subset':
+            from .ollama_ocr_benchmark import subset_run
+            result=subset_run(args.suite,args.run,args.output)
+        elif args.command=='benchmark-ollama-replay':
+            from .ollama_ocr_benchmark import replay
+            result=replay(args.suite,args.run,args.output)
         elif args.command == "benchmark-score":
             from .benchmark import score
             result = score(args.suite,args.run,args.upstream,args.eval_python,args.output,args.mode)

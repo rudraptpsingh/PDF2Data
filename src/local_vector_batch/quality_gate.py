@@ -641,12 +641,31 @@ def assess_package(package: Path, source_pdf: Path, *, pages: list[int] | None =
     if derive_independent_native:
         from pypdf import PdfReader
         reader = PdfReader(source_pdf)
-        for page in raw_pages:
-            if page["page"] in selected and page.get("method") == "pdf_text" and page["page"] not in independent_by_page:
-                try:
-                    independent_by_page[page["page"]] = reader.pages[page["page"]-1].extract_text() or ""
-                except Exception:
-                    pass
+        import pdfplumber
+        from .native_consensus import read_source_lines, choose_witness
+        # PDF stream order can put a footer ahead of body text. Use the same
+        # fresh, source-geometry-bound independent consensus as native ingestion;
+        # never relax exact numbers/operators or source-raster completeness.
+        with pdfplumber.open(source_pdf) as native:
+            for page in raw_pages:
+                if page["page"] in selected and page.get("method") == "pdf_text" and page["page"] not in independent_by_page:
+                    physical=native.pages[page['page']-1]
+                    try:
+                        secondary=reader.pages[page['page']-1]
+                        layout_text=secondary.extract_text(extraction_mode='layout',layout_mode_space_vertically=False)or ''
+                        source_lines=read_source_lines(source_pdf,physical,page['page'])
+                        witness,basis=choose_witness(page['text'],layout_text,source_lines)
+                        independent_by_page[page['page']]=witness or ''
+                        independent_metadata_by_page[page['page']]={
+                            'engine':basis,'source_pdf_sha256':doc['pdf_sha256'],'page':page['page'],
+                            'selected_page_text_sha256':page['text_sha256'],
+                            'text_sha256':hashlib.sha256((witness or '').encode()).hexdigest(),
+                            'basis':'fresh_native_reader_and_source_geometry_consensus'}
+                    except Exception:
+                        # A failed geometry read cannot authorize agreement.
+                        try:independent_by_page[page['page']]=reader.pages[page['page']-1].extract_text()or ''
+                        except Exception:pass
+                    finally:physical.close()
     source_geometry_by_page = source_geometry_by_page or {}
     source_geometry_by_page = dict(source_geometry_by_page)
     # Inspect original fonts even when callers supply geometry or disable raster
@@ -772,6 +791,7 @@ def assess_package(package: Path, source_pdf: Path, *, pages: list[int] | None =
         result["source_url"] = doc.get("source_url")
         result["independent_text_sha256"] = (hashlib.sha256(independent_by_page[page["page"]].encode()).hexdigest()
                                               if page["page"] in independent_by_page else None)
+        result['independent_reader_basis']=independent_metadata_by_page.get(page['page'],{}).get('basis','caller_supplied_or_plain_native_fallback')
         results.append(result)
     outcomes = Counter(row["outcome"] for row in results)
     return {"schema_version": 1, "package_outcome": "assessed",

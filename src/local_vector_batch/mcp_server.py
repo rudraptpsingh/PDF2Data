@@ -41,7 +41,7 @@ class Bridge:
                     artifacts=[dict(id=a['id'],available=a['available'],bytes=a['bytes'],
                                     path=str(self.workspace.artifact_file(run_id,a['id'])) if a['available'] else None) for a in job['artifacts']])
 
-    def read(self,run_id,artifact='page',page=None,region_id=None,table_id=None,max_chars=30000):
+    def read(self,run_id,artifact='page',page=None,region_id=None,table_id=None,max_chars=30000,cell_id=None):
         if not 1000<=max_chars<=200000:raise ValueError('max_chars must be 1000..200000')
         state=self.workspace.get(run_id)
         if state['status'] not in ('processed','processed_with_flags'):raise ValueError('Processing is not complete; call pdf2data_status')
@@ -80,6 +80,56 @@ class Bridge:
             body=dict(page=selected if region_id is None else dict(page=page,text_sha256=selected['text_sha256']),blocks=blocks,tables=tables,
                       quality=next(q for q in data['quality']['results'] if q['page']==page),continuations=continuations(page))
         elif artifact=='continuations':body=continuations(page)
+        elif artifact=='document_parts':
+            if 'document-parts.json' not in manifest['files']:
+                body=dict(status='not_available_reexport_required')
+            else:
+                body=json.loads(checked('document-parts.json'))
+                if body['source_pdf_sha256']!=state['source_pdf_sha256']:raise ValueError('Document parts/source identity changed')
+                if page is not None:
+                    if type(page)is not int or page<1:raise ValueError('A positive physical page number is required')
+                    for key in ('printed_page_labels','explicit_markers','header_clusters'):
+                        body[key]=[r for r in body[key]if r['physical_page']==page]
+                    ids={c['id']for c in body['header_clusters']}
+                    body['catalog_checks']=[r for r in body['catalog_checks']if r['header_candidate_id']in ids]
+        elif artifact=='table_contexts':
+            name='table-contexts.jsonl';path=(base/name).resolve()
+            if name not in manifest['files']:
+                body=dict(status='not_available_reexport_required',tables=[])
+            else:
+                from .hashing import file_sha256
+                if not path.is_relative_to(base.resolve()) or file_sha256(path)!=manifest['files'][name]:
+                    raise ValueError('Export artifact changed: '+name)
+                if page is not None and (type(page)is not int or page<1):raise ValueError('A positive physical page number is required')
+                body=[];context_size=0;over_budget=False
+                # Verify the whole sidecar, but load one physical table at a time.
+                # Scoping never silently truncates a cell or its associations.
+                with path.open('r',encoding='utf-8',newline='\n') as stream:
+                    for line in stream:
+                        value=json.loads(line)
+                        if value['source_pdf_sha256']!=state['source_pdf_sha256']:raise ValueError('Table context/source identity changed')
+                        if page is not None and value['physical_page']!=page:continue
+                        if table_id is not None and value['table_id']!=table_id:continue
+                        if cell_id is not None:
+                            selected=[c for c in value['cells'] if c['id']==cell_id]
+                            if not selected:continue
+                            ids={c['id'] for c in selected}
+                            for cell in selected:
+                                ids.update(cell['left_row_context_cell_ids'])
+                                ids.update(h['cell_id']for h in cell['column_header_candidates']if h['table_id']==value['table_id'])
+                            value['cells']=[c for c in value['cells'] if c['id'] in ids]
+                            value['requested_cell_id']=cell_id
+                            value['cell_scope']='requested_cell_and_local_header_and_left_row_context'
+                        context_size+=len(json.dumps(value,ensure_ascii=False))
+                        if context_size>max_chars:
+                            over_budget=True;break
+                        body.append(value)
+                if file_sha256(path)!=manifest['files'][name]:raise ValueError('Export artifact changed while reading: '+name)
+                if over_budget:
+                    return dict(status='requires_scope',minimum_total_characters=context_size,max_chars=max_chars,run_id=run_id,
+                                message='No content was clipped. Request a physical page, table_id or cell_id, or use the local sidecar.',
+                                local_export=str(base))
+                if not body and (table_id is not None or cell_id is not None):raise ValueError('Unknown source table or cell in the requested scope')
         elif artifact=='tables':
             data=json.loads(checked('data.json'));body=[t for t in data['tables'] if (page is None or t['page']==page) and (table_id is None or t['id']==table_id)]
             if table_id is not None and not body:raise ValueError('Unknown source table')
@@ -87,7 +137,7 @@ class Bridge:
             name={'quality':'quality.json','markdown':'document.md','manifest':'manifest.json','overlays':'overlays.json'}[artifact]
             body=manifest if artifact=='manifest' else checked(name)
             if artifact in ('quality','overlays'):body=json.loads(body)
-        else:raise ValueError('Unsupported artifact; use page, tables, continuations, quality, markdown, manifest or overlays')
+        else:raise ValueError('Unsupported artifact; use page, tables, table_contexts, continuations, document_parts, quality, markdown, manifest or overlays')
         result=dict(schema_version='pdf2data.mcp.evidence.v1',source_pdf_sha256=state['source_pdf_sha256'],run_id=run_id,
                     artifact=artifact,data=body,content_verified=False,publication_eligible=False)
         size=len(json.dumps(result,ensure_ascii=False))
@@ -118,9 +168,9 @@ def create_server(bridge):
         return bridge.status(run_id)
 
     @server.tool(annotations=ToolAnnotations(readOnlyHint=True,openWorldHint=False),structured_output=True)
-    def pdf2data_read(run_id:str,artifact:Literal['page','tables','continuations','quality','markdown','manifest','overlays']='page',page:int|None=None,region_id:str|None=None,table_id:str|None=None,max_chars:int=30000)->dict[str,Any]:
+    def pdf2data_read(run_id:str,artifact:Literal['page','tables','table_contexts','continuations','document_parts','quality','markdown','manifest','overlays']='page',page:int|None=None,region_id:str|None=None,table_id:str|None=None,max_chars:int=30000,cell_id:str|None=None)->dict[str,Any]:
         """Read complete source-scoped text, typed blocks, tables or diagnostics. Oversized results request narrower scope; content is never silently clipped."""
-        return bridge.read(run_id,artifact,page,region_id,table_id,max_chars)
+        return bridge.read(run_id,artifact,page,region_id,table_id,max_chars,cell_id)
 
     return server
 

@@ -34,6 +34,11 @@ The output is deterministic, checksum verified, and ready for a Vectorize import
 
 [Complete CLI reference, all commands and real outputs](docs/cli-reference.md).
 
+The [feedback controller](docs/feedback-controller.md) inventories originals,
+measures per-page errors, stages bounded repairs and rechecks the full document.
+Machine checks and source review have separate progress counts. This feature is
+available in the development checkout; it is not part of npm `0.2.0-rc.1`.
+
 ### Open a complete converted document
 
 For a visual workflow with local PDF upload, persistent run history and stage tracking:
@@ -54,6 +59,14 @@ After `legal-l1`, export a readable folder without reprocessing or altering the 
 Open `out/readable-source/document.html`. It starts with the continuous document, joining complete paragraph candidates across PDF pages. Source comparison shows each original page above its selected text. The folder contains `document.md`, `data.json`, `relations.json`, `quality.json`, `pages.md`, `source.pdf` and page images. Add `--docx-python /path/to/python-with-python-docx` to also create `document.docx`.
 
 Markdown is the human reading; JSON retains exact spans and relationships. Paragraph boundaries, table grids, roles and references remain candidates. Relationship edges describe provenance and exact containment, not verified legal applicability. This export adds a command and therefore changes the code profile of future extractions; existing captured packages remain unchanged and are verified against their captured hashes.
+
+The current development branch adds a streamed [table-context sidecar](docs/table-contexts.md)
+with cell-local evidence, candidate headers, periods, units and continuation
+references. These changes are not included in the published `0.2.0-rc.1` package.
+The [document-parts artifact](docs/document-parts.md) also retains printed page
+labels, explicit annexure/language markers and header identity conflicts.
+The optional [DeepSeek-OCR accuracy pilot](docs/benchmarks/deepseek-ocr-local-pilot.md)
+reports measured failures and keeps the existing reader as the default.
 
 The Python namespace `local_vector_batch` and the `local-vector-batch` entry point remain compatible. The active local checkout is `PDF2Data`; an old-path symlink keeps existing consumers running.
 

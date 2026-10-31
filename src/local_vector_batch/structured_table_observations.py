@@ -101,8 +101,11 @@ def extract_package(package,pages,*,calendar_policy=None,rules_path=None):
     for name in ('layout.jsonl','source-receipt.json','quality.json'):
         if manifest['artifacts'].get(name)!=digest((package/name).read_bytes()):raise ValueError('L1 source artifact hash mismatch: '+name)
     quality={row['page']:row for row in json.loads((package/'quality.json').read_text()).get('results',[])}
-    selected={row['page']:row for row in map(json.loads,(package/'extraction/pages.jsonl').read_text().splitlines())}
-    layout={r['page']:r for r in map(json.loads,(package/'layout.jsonl').read_text().splitlines())}
+    # JSONL records end at physical LF; Unicode NEL/LS/PS are valid cell text.
+    with (package/'extraction/pages.jsonl').open('r',encoding='utf-8',newline='\n') as stream:
+        selected={row['page']:row for row in map(json.loads,stream)}
+    with (package/'layout.jsonl').open('r',encoding='utf-8',newline='\n') as stream:
+        layout={r['page']:r for r in map(json.loads,stream)}
     tables_path=package/'extraction/tables.json';tables=json.loads(tables_path.read_text());observations=[];holds=[]
     with pdfplumber.open(pdf_path)as pdf:
         for page in sorted(set(pages)):

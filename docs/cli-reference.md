@@ -22,8 +22,12 @@ legal relationships or rerun OCR. Use a new output folder.
 
 | Command | Purpose |
 |---|---|
+| `pdf2data pdf-control init/run/status/feedback` | durable local measure → repair → full-document recheck loop with source-bound feedback |
 | `pdf2data benchmark-prepare` | freeze source PDFs and external labels by hash |
 | `pdf2data benchmark-run` | run native or automatic OCR profiles through the PDF2Data CLI |
+| `pdf2data benchmark-ollama-run` | evaluate an explicitly installed local OCR model on frozen original pages |
+| `pdf2data benchmark-ollama-replay` | revalidate hash-bound raw model replies with zero inference calls |
+| `pdf2data benchmark-project-subset` | project hash-checked cached predictions onto a source-identical frozen subset |
 | `pdf2data benchmark-score` | execute pinned upstream olmOCR-bench rule classes |
 | `pdf2data benchmark-compare` | compare reports from an identical frozen suite |
 | `pdf2data pdf-layout-detect` | detect source-bound original-page regions offline |

@@ -21,11 +21,13 @@ FILES = ("report.json", "pages.jsonl", "tables.json", "fact-candidates.jsonl",
 
 
 def _sha(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    from .hashing import file_sha256
+    return file_sha256(path)
 
 
 def _rows(path: Path) -> list[dict]:
-    return [json.loads(line) for line in jsonl_physical_lines(path.read_text(encoding="utf-8")) if line.strip(' \t\r')]
+    with path.open(encoding="utf-8", newline="\n") as stream:
+        return [json.loads(line) for line in stream if line.strip(" \t\r\n")]
 
 
 def create_package(output: Path) -> dict:

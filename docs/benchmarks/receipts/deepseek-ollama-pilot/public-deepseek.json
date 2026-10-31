@@ -1,0 +1,98 @@
+{
+  "schema_version": "pdf2data.official-rules-score.v1",
+  "suite_sha256": "0b82d23b5f56d1335da9c6e6963fe2b1c12d65d64dff490ae6b88c771b972ab5",
+  "dataset": "allenai/olmOCR-bench",
+  "dataset_revision": "54a96a6fb6a2bd3b297e59869491db4d3625b711",
+  "complete_public_dataset": false,
+  "profile": "deepseek-ocr-ollama",
+  "mode": "tables",
+  "public_documents": 14,
+  "public_rules": 98,
+  "tests_including_baseline": 112,
+  "categories": {
+    "arxiv_math": {
+      "tests": 9,
+      "raw_pass": 8,
+      "adjusted_pass": 8,
+      "raw_rate": 0.8888888888888888,
+      "adjusted_rate": 0.8888888888888888
+    },
+    "baseline": {
+      "tests": 14,
+      "raw_pass": 6,
+      "adjusted_pass": 6,
+      "raw_rate": 0.42857142857142855,
+      "adjusted_rate": 0.42857142857142855
+    },
+    "headers_footers": {
+      "tests": 9,
+      "raw_pass": 2,
+      "adjusted_pass": 2,
+      "raw_rate": 0.2222222222222222,
+      "adjusted_rate": 0.2222222222222222
+    },
+    "long_tiny_text": {
+      "tests": 17,
+      "raw_pass": 11,
+      "adjusted_pass": 11,
+      "raw_rate": 0.6470588235294118,
+      "adjusted_rate": 0.6470588235294118
+    },
+    "multi_column": {
+      "tests": 9,
+      "raw_pass": 0,
+      "adjusted_pass": 0,
+      "raw_rate": 0.0,
+      "adjusted_rate": 0.0
+    },
+    "old_scans": {
+      "tests": 9,
+      "raw_pass": 0,
+      "adjusted_pass": 0,
+      "raw_rate": 0.0,
+      "adjusted_rate": 0.0
+    },
+    "old_scans_math": {
+      "tests": 39,
+      "raw_pass": 0,
+      "adjusted_pass": 0,
+      "raw_rate": 0.0,
+      "adjusted_rate": 0.0
+    },
+    "table_tests": {
+      "tests": 6,
+      "raw_pass": 0,
+      "adjusted_pass": 0,
+      "raw_rate": 0.0,
+      "adjusted_rate": 0.0
+    }
+  },
+  "raw_category_macro": 0.2733426704014939,
+  "coverage_adjusted_category_macro": 0.2733426704014939,
+  "errors": {
+    "extraction_error": 71
+  },
+  "valid_evaluation": true,
+  "rule_outcomes": {
+    "evaluated": 41,
+    "extraction_error": 71
+  },
+  "evaluation_seconds": 2.535568958031945,
+  "extraction_wall_seconds": 0,
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "dependencies": {
+      "pypdf": "6.21.4",
+      "playwright": "1.64.1",
+      "beautifulsoup4": "4.15.0",
+      "rapidfuzz": "3.14.6",
+      "fuzzysearch": "0.8.1",
+      "numpy": "2.5.4"
+    },
+    "math_cache": "fresh isolated equations.sqlite; not extraction timing"
+  },
+  "method": "pinned upstream load_single_test/run; macro average including per-page baseline; one repeat",
+  "leaderboard_submission": false,
+  "publication_eligible": false
+}

@@ -1,7 +1,8 @@
 # DeepSeek-OCR, Ollama and Open WebUI assessment
 
-31 October 2026. Integration research; no DeepSeek backend or model download
-has been added to PDF2Data.
+31 October 2026. The initial research below has now been followed by an actual
+[local accuracy pilot](benchmarks/deepseek-ocr-local-pilot.md). An optional CLI
+benchmark adapter is implemented; DeepSeek is not a default extraction backend.
 
 Both supplied guides were read. Their setup ideas are useful, but OCR output
 must enter PDF2Data's source-bound extraction/evaluation contract.
@@ -61,11 +62,14 @@ PowerLex responsible for reviewed facts, complete retrieval, applicability and
 drafting. A general chat UI does not resolve incorrect headers, units, periods
 or legal assertion roles.
 
-## Evaluation before adoption
+## Initial preflight and subsequent evaluation
 
-Local preflight found no `ollama` executable and no responding loopback server
-at port 11434. No DeepSeek inference was run, and no speed/accuracy gain is
-claimed.
+The initial preflight found no `ollama` executable or server on port 11434.
+The subsequent pilot used an isolated, checksum-verified official runtime and
+model store on port 11435. It ran 22 source pages on the Metal GPU. Corrected
+public pilot scores were 27.33% for DeepSeek and 75.04% for the current workflow;
+custom legal probes passed 3/7 and 7/7 respectively. Keep the candidate
+experimental; see the linked pilot for denominator, scoring and timing limits.
 
 First compare the candidate with the existing readers on the same frozen weak
 scan, handwriting/math, dense-table and bilingual cases, including the two

@@ -27,6 +27,19 @@ def test_bridge_runs_cli_and_scopes_source_reads(tmp_path):
         context=bridge.read(run['run_id'],artifact='continuations',page=1,max_chars=200000)
         assert context['data']['source_pdf_sha256']==state['source_pdf_sha256']
         assert page['data']['continuations']==context['data']
+        parts=bridge.read(run['run_id'],artifact='document_parts',page=1,max_chars=200000)
+        assert all(p['physical_page']==1 for p in parts['data']['printed_page_labels'])
+        parts_file=bridge.workspace.directory(run['run_id'])/'readable/document-parts.json'
+        parts_file.write_text('{}')
+        with pytest.raises(ValueError,match='changed'):
+            bridge.read(run['run_id'],artifact='document_parts')
+        table_context=bridge.read(run['run_id'],artifact='table_contexts',page=1,max_chars=200000)
+        assert isinstance(table_context['data'],list)
+        context_file=bridge.workspace.directory(run['run_id'])/'readable/table-contexts.jsonl'
+        assert context_file.is_file()
+        context_file.write_text('changed')
+        with pytest.raises(ValueError,match='changed'):
+            bridge.read(run['run_id'],artifact='table_contexts')
         bounded = bridge.read(run['run_id'], page=1, max_chars=1000)
         assert bounded['status'] == 'requires_scope' and 'data' not in bounded
         artifact = bridge.workspace.directory(run['run_id']) / 'readable/document.md'
@@ -59,6 +72,30 @@ def test_workspace_owner_and_input_boundaries_are_enforced(tmp_path):
         bridge.close()
     reopened = Bridge(tmp_path / 'workspace', [inputs])
     reopened.close()
+
+
+def test_context_cell_scope_retains_its_header_and_left_row_and_rejects_unknown_cells(tmp_path):
+    import fitz
+    source=tmp_path/'table.pdf';pdf=fitz.open();page=pdf.new_page(width=600,height=800)
+    for y in (50,90,130):page.draw_line((50,y),(350,y))
+    for x in (50,200,350):page.draw_line((x,50),(x,130))
+    for x,y,text in [(60,75,'Entity'),(210,75,'Amount'),(60,115,'Example Plant'),(210,115,'10')]:
+        page.insert_text((x,y),text,fontsize=12)
+    pdf.save(source);pdf.close()
+    bridge=Bridge(tmp_path/'workspace',[tmp_path])
+    try:
+        started=bridge.parse(str(source),ocr='off');bridge.workspace.executor.shutdown(wait=True)
+        run_id=started['run_id']
+        tables=bridge.read(run_id,artifact='table_contexts',page=1,max_chars=200000)['data']
+        assert len(tables)==1
+        cell=next(c for c in tables[0]['cells']if c['raw_text']=='10')
+        scoped=bridge.read(run_id,artifact='table_contexts',table_id=tables[0]['table_id'],cell_id=cell['id'],max_chars=200000)['data'][0]
+        assert {c['raw_text']for c in scoped['cells']}=={'10','Amount','Example Plant'}
+        assert scoped['requested_cell_id']==cell['id']
+        assert bridge.read(run_id,artifact='table_contexts',max_chars=1000)['status']=='requires_scope'
+        with pytest.raises(ValueError,match='Unknown'):
+            bridge.read(run_id,artifact='table_contexts',cell_id='missing')
+    finally:bridge.close()
 
 
 def test_official_sdk_stdio_roundtrip_runs_real_pdf(tmp_path):

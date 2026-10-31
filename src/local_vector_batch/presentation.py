@@ -21,7 +21,8 @@ def _write(path: Path, value: str) -> str:
 
 
 def _rows(path: Path) -> list[dict]:
-    return [json.loads(line) for line in jsonl_physical_lines(path.read_text(encoding="utf-8")) if line.strip(' \t\r')]
+    with path.open(encoding="utf-8", newline="\n") as stream:
+        return [json.loads(line) for line in stream if line.strip(" \t\r\n")]
 
 
 def _html(title: str, body: str) -> str:

@@ -153,11 +153,16 @@ def build_document_model(data):
     model['formula_observations']=extract_formulas(data)
     from .document_continuations import build_continuations
     model['continuations']=build_continuations(data)
+    from .document_parts import build_document_parts
+    model['document_parts']=build_document_parts(data,model['metadata'],nodes)
     validate_document_model(model,data)
     return model
 
 
 def validate_document_model(model,data):
+    if 'document_parts' in model:
+        from .document_parts import build_document_parts
+        if model['document_parts']!=build_document_parts(data,model['metadata'],model['elements']):raise ValueError('document part identity or source anchors changed')
     if 'continuations' in model:
         from .document_continuations import build_continuations
         if model['continuations']!=build_continuations(data):raise ValueError('continuation source anchors or associations changed')

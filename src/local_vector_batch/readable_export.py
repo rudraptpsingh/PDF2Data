@@ -149,6 +149,9 @@ def export_readable(package:Path,output:Path,docx_python:Path|None=None):
         (stage/'document-metadata.json').write_text(json.dumps(data['document_model']['metadata'],ensure_ascii=False,indent=2)+'\n')
         (stage/'formulas.json').write_text(json.dumps(data['document_model']['formula_observations'],ensure_ascii=False,indent=2)+'\n')
         (stage/'continuations.json').write_text(json.dumps(data['document_model']['continuations'],ensure_ascii=False,indent=2)+'\n')
+        (stage/'document-parts.json').write_text(json.dumps(data['document_model']['document_parts'],ensure_ascii=False,indent=2)+'\n')
+        from .table_contexts import write_table_contexts
+        write_table_contexts(stage/'table-contexts.jsonl',data)
         shutil.copyfile(package/'layout.jsonl',stage/'layout.jsonl')
         import pypdfium2 as pdfium
         pdf=pdfium.PdfDocument(str(package/'original.pdf'))

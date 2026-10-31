@@ -1,0 +1,382 @@
+{
+  "schema_version": "pdf2data.deepseek-local-pilot.v1",
+  "date": "2026-10-31",
+  "model": {
+    "model": "deepseek-ocr:3b",
+    "digest": "0e7b018b8a22373167ee79c9a852821235488cbd2a2a5a93495558627423278c",
+    "ollama_version": "0.40.13",
+    "endpoint": "http://127.0.0.1:11435"
+  },
+  "prompt": "\n<|grounding|>Convert the document to markdown.",
+  "dpi": 180,
+  "context_length": 8192,
+  "maximum_generated_tokens": 8192,
+  "temperature": 0,
+  "seed": 0,
+  "upstream_revision": "f7cfe4c22098b154c76b6ec950d1c0a464eecf8d",
+  "public": {
+    "documents": 14,
+    "pages": 14,
+    "rules": 98,
+    "tests_including_baseline": 112,
+    "generation_errors": 8,
+    "token_limit_failures": 4,
+    "elapsed_seconds": 361.4335487500066,
+    "median_page_seconds": 9.529327958007343,
+    "reused_cases": 0,
+    "normal_stop_with_only_model_control_token": [
+      "headers_footers/056544decf9498b6bf7949a1edddc6d58829df82_page_5_processed.pdf",
+      "old_scans_math/3_pg634.pdf",
+      "old_scans_math/5_pg558.pdf",
+      "tables/240cc9b2701d8110eac95cc55b06c8198f54_pg10_pg1.pdf"
+    ],
+    "case_outcomes": [
+      {
+        "pdf": "arxiv_math/2503.07875_pg21.pdf",
+        "source_sha256": "6a19349961cfa7b40412e8938f3e54d101b8ba1f3eaf5948b2900468e8fa19dc",
+        "status": "error",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "reader_failed",
+            "elapsed_seconds": 36.44232766702771,
+            "done_reason": "length",
+            "error": "OCR generation did not finish normally: length",
+            "model_metrics": {
+              "total_duration": 36433763875,
+              "load_duration": 1788559959,
+              "prompt_eval_count": 940,
+              "prompt_eval_duration": 1754457000,
+              "eval_count": 7252,
+              "eval_duration": 32841796000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "arxiv_math/2503.08649_pg4.pdf",
+        "source_sha256": "d7846c540e9ecc7bb44624ed6a0ef91f2814b24ef5d652741bc61fce6a349ab6",
+        "status": "completed",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "generated_unverified",
+            "elapsed_seconds": 5.076460083946586,
+            "done_reason": "stop",
+            "error": null,
+            "model_metrics": {
+              "total_duration": 5069046042,
+              "load_duration": 6212334,
+              "prompt_eval_count": 940,
+              "prompt_eval_duration": 1116979000,
+              "eval_count": 936,
+              "eval_duration": 3774141000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "headers_footers/056544decf9498b6bf7949a1edddc6d58829df82_page_5_processed.pdf",
+        "source_sha256": "1de0ac9b45a7d83e193d91eb30364b430a64c50a9d8ca426fa63841eb7ed9b1f",
+        "status": "error",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "reader_failed",
+            "elapsed_seconds": 1.1746260840445757,
+            "done_reason": "stop",
+            "error": "OCR returned only model control/grounding metadata; no parsed content",
+            "model_metrics": {
+              "total_duration": 1167484458,
+              "load_duration": 6954708,
+              "prompt_eval_count": 940,
+              "prompt_eval_duration": 1060154000,
+              "eval_count": 7,
+              "eval_duration": 23643000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "headers_footers/ba10222e40f05d76e2bf1d51c39066a4b1fe82ed_page_11.pdf",
+        "source_sha256": "6a08970e2ad99cbd67379ed26f2cf92a7f2a3070b967127597bcfdeda2c01fa3",
+        "status": "completed",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "generated_unverified",
+            "elapsed_seconds": 3.6101835829904303,
+            "done_reason": "stop",
+            "error": null,
+            "model_metrics": {
+              "total_duration": 3604421458,
+              "load_duration": 4127583,
+              "prompt_eval_count": 940,
+              "prompt_eval_duration": 944834000,
+              "eval_count": 668,
+              "eval_duration": 2609513000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "long_tiny_text/10c_pg1.pdf",
+        "source_sha256": "9b4477326521fc7cc6ac0b57d06a5320838efab1ebf081064120294b94e4033e",
+        "status": "error",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "reader_failed",
+            "elapsed_seconds": 34.83256445790175,
+            "done_reason": "length",
+            "error": "OCR generation did not finish normally: length",
+            "model_metrics": {
+              "total_duration": 34765560917,
+              "load_duration": 76245584,
+              "prompt_eval_count": 940,
+              "prompt_eval_duration": 905123000,
+              "eval_count": 7252,
+              "eval_duration": 33440152000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "long_tiny_text/13_pg531_pg1.pdf",
+        "source_sha256": "3b0ba23e06932486183ce53224df4ebe710026674ae12deb057547453d3a6b79",
+        "status": "completed",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "generated_unverified",
+            "elapsed_seconds": 10.088458416052163,
+            "done_reason": "stop",
+            "error": null,
+            "model_metrics": {
+              "total_duration": 10072923250,
+              "load_duration": 18299709,
+              "prompt_eval_count": 940,
+              "prompt_eval_duration": 1102998000,
+              "eval_count": 2005,
+              "eval_duration": 8607275000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "multi_column/09f801e3a2ec90ef456d34ad571a46f36fce_page_40_pg1.pdf",
+        "source_sha256": "adff34855ab00fa1ae6debceb9549015d697572387c4b8a19a434d2217e815b5",
+        "status": "completed",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "generated_unverified",
+            "elapsed_seconds": 8.970197499962524,
+            "done_reason": "stop",
+            "error": null,
+            "model_metrics": {
+              "total_duration": 8961042500,
+              "load_duration": 5702250,
+              "prompt_eval_count": 1240,
+              "prompt_eval_duration": 1872459000,
+              "eval_count": 1628,
+              "eval_duration": 6981642000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "multi_column/09f90a8fad0997f7cf454cbcbe79cab3bc0f_page_2_pg1.pdf",
+        "source_sha256": "c4f98d467c50d8f76595c3241c76deabbb5841eb2a0d99dc1e99e9a09e3e60d1",
+        "status": "error",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "reader_failed",
+            "elapsed_seconds": 54.2317957499763,
+            "done_reason": "length",
+            "error": "OCR generation did not finish normally: length",
+            "model_metrics": {
+              "total_duration": 54209334084,
+              "load_duration": 5620042,
+              "prompt_eval_count": 940,
+              "prompt_eval_duration": 1104413000,
+              "eval_count": 7252,
+              "eval_duration": 53021291000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "old_scans/33.pdf",
+        "source_sha256": "faa1dd9667c7c23f82ff14d91835722bc90966f11f17b0eae6d65c6610ba3f2f",
+        "status": "completed",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "generated_unverified",
+            "elapsed_seconds": 33.955864000017755,
+            "done_reason": "stop",
+            "error": null,
+            "model_metrics": {
+              "total_duration": 33223545416,
+              "load_duration": 829783625,
+              "prompt_eval_count": 1240,
+              "prompt_eval_duration": 18712835000,
+              "eval_count": 117,
+              "eval_duration": 4568265000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "old_scans/52.pdf",
+        "source_sha256": "4a0c5065d6c20bff78fd701b482d77629c635e37e74232f25c88e2baf26cd295",
+        "status": "completed",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "generated_unverified",
+            "elapsed_seconds": 22.565369041985832,
+            "done_reason": "stop",
+            "error": null,
+            "model_metrics": {
+              "total_duration": 22233404458,
+              "load_duration": 376274708,
+              "prompt_eval_count": 1240,
+              "prompt_eval_duration": 12427982000,
+              "eval_count": 302,
+              "eval_duration": 7814186000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "old_scans_math/3_pg634.pdf",
+        "source_sha256": "c6817819a70cf0f147ff08f0a5c6e25e6690387008e38cd931a60592b92aa7ec",
+        "status": "error",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "reader_failed",
+            "elapsed_seconds": 5.260606540949084,
+            "done_reason": "stop",
+            "error": "OCR returned only model control/grounding metadata; no parsed content",
+            "model_metrics": {
+              "total_duration": 5242205958,
+              "load_duration": 16422541,
+              "prompt_eval_count": 940,
+              "prompt_eval_duration": 4961106000,
+              "eval_count": 7,
+              "eval_duration": 70269000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "old_scans_math/5_pg558.pdf",
+        "source_sha256": "f7a819976115e43a498a94222642305561cd91d181f900f85c6211cfe3b13e0e",
+        "status": "error",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "reader_failed",
+            "elapsed_seconds": 4.40473287506029,
+            "done_reason": "stop",
+            "error": "OCR returned only model control/grounding metadata; no parsed content",
+            "model_metrics": {
+              "total_duration": 4391512834,
+              "load_duration": 6994459,
+              "prompt_eval_count": 940,
+              "prompt_eval_duration": 4194884000,
+              "eval_count": 7,
+              "eval_duration": 54985000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "tables/240cc9b2701d8110eac95cc55b06c8198f54_pg10_pg1.pdf",
+        "source_sha256": "66c97fedebaa4caf80df72b393b0840d28f437b863cda68c819f068b166308cd",
+        "status": "error",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "reader_failed",
+            "elapsed_seconds": 4.207743666018359,
+            "done_reason": "stop",
+            "error": "OCR returned only model control/grounding metadata; no parsed content",
+            "model_metrics": {
+              "total_duration": 4191492292,
+              "load_duration": 7620792,
+              "prompt_eval_count": 940,
+              "prompt_eval_duration": 3976157000,
+              "eval_count": 7,
+              "eval_duration": 111957000
+            }
+          }
+        ]
+      },
+      {
+        "pdf": "tables/d22cfda9b7cf678a7996008fb8faa82209fe_pg10.pdf",
+        "source_sha256": "ad740ff857c6c3522d3de7608f45fdc25618e627341db6b0b92a45bcf11414bd",
+        "status": "error",
+        "page_metrics": [
+          {
+            "page": 1,
+            "status": "reader_failed",
+            "elapsed_seconds": 115.90688016696367,
+            "done_reason": "length",
+            "error": "OCR generation did not finish normally: length",
+            "model_metrics": {
+              "total_duration": 115868511750,
+              "load_duration": 15099166,
+              "prompt_eval_count": 940,
+              "prompt_eval_duration": 3451883000,
+              "eval_count": 7252,
+              "eval_duration": 112250450000
+            }
+          }
+        ]
+      }
+    ],
+    "inference_token_limit_failures": 4,
+    "control_only_failures": 4,
+    "accepted_nonempty_normal_stop_pages": 6,
+    "pre_fix_macro": 0.40627917833800187,
+    "validated_macro": 0.2733426704014939,
+    "current_pipeline_macro": 0.7504309416074122,
+    "completeness_revalidation_model_calls": 0
+  },
+  "legal": {
+    "documents": 2,
+    "pages": 8,
+    "probes": 7,
+    "generation_errors": 0,
+    "elapsed_seconds": 55.075438541942276,
+    "reused_cases": 0,
+    "custom_development_probes_not_independent_holdout": true,
+    "validated_source_probes_passed": 3,
+    "current_source_probes_passed": 7
+  },
+  "gpu": {
+    "backend": "Metal",
+    "device": "Apple M5 Max",
+    "offloaded_layers": "13/13",
+    "reported_model_vram_bytes": 2248922889,
+    "peak_memory_measured": false
+  },
+  "comparison": {
+    "same_frozen_sources": true,
+    "same_unmodified_evaluator": true,
+    "current_predictions_reused_and_rescored": true,
+    "current_extraction_timing_rerun": false,
+    "same_model_architecture_or_resolution_budget": false,
+    "whole_page_deepseek_vs_region_native_reconciliation": true,
+    "previously_used_development_sample": true,
+    "full_public_benchmark": false,
+    "accuracy_is_not_legal_clearance": true
+  },
+  "decision": "experimental_evaluation_only_do_not_replace_current_native_and_paddle_pipeline",
+  "prediction_policy": "reject_control_only_and_truncated_replies_v2"
+}
