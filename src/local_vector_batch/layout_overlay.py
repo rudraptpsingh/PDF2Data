@@ -53,11 +53,12 @@ def normalized(box,width,height):
 
 def build_overlays(data,source_document=None):
     """Use existing detected boxes or exact native source-line evidence only."""
-    from .document_blocks import line_evidence,union,render_blocks
+    from .document_blocks import line_evidence,union,render_blocks,compact as compact_metadata
     if source_document and source_document.get('source_pdf_sha256',data['source_pdf_sha256'])!=data['source_pdf_sha256']:
         raise ValueError('overlay layout belongs to a different source PDF')
     pages=[];blocks=data.get('document_blocks',{}).get('blocks',[])
     model={n['id']:n for n in data.get('document_model',{}).get('elements',[])}
+    metadata=data.get('document_model',{}).get('metadata',{}).get('fields',[])
     layouts={p['page']:p for p in (source_document['pages'] if source_document else data.get('layout',[]))}
     quality={r['page']:r for r in data.get('quality',{}).get('results',[])}
     from .layout_furniture import PAGE_LABEL,observed_margins,furniture_candidates,formatting
@@ -112,6 +113,18 @@ def build_overlays(data,source_document=None):
                 if not box:
                     unlocated.append(block['id']);continue
                 candidate=model.get(block['id'],{});shown_kind=candidate.get('role_candidate',block['kind'])
+                fields=[f for f in metadata if f['scope']=='document_header' and f.get('geometry') and f['source_span']['page']==number and
+                        any(s['page']==number and s['char_start']<=f['source_span']['char_start'] and f['source_span']['char_start']+f['source_span']['char_length']<=s['char_start']+s['char_length'] for s in block['spans'])]
+                fields.sort(key=lambda f:f['source_span']['char_start'])
+                if shown_kind=='metadata' and fields and compact_metadata(text)==compact_metadata(''.join(f['source_span']['exact_quote'] for f in fields)):
+                    for field in fields:
+                        literal=field['source_span']['exact_quote']
+                        add(field['id'],'metadata',field['geometry']['bbox'],literal,block_id=block['id'],
+                            order=block.get('order'),preview_html='<p class="source-paragraph">'+escape(literal)+'</p>',
+                            geometry_basis=field['geometry']['basis'],state='candidate',confidence=None,
+                            field_role=field['role_candidate'],display_label=field['role_candidate'].replace('_',' ').capitalize(),
+                            field_value=field['value'],normalized_value=field.get('normalization',{}).get('iso'))
+                    continue
                 add(block['id'],shown_kind,box,text,block_id=block['id'],order=block.get('order'),
                     preview_html=preview(block,text,block['kind']),geometry_basis=basis,state='candidate',confidence=None,
                     role_candidate=shown_kind,inline_candidates=candidate.get('inline_candidates',[]),
@@ -180,7 +193,7 @@ def visualize_bundle(bundle,output,pages=None,opacity=.14):
             x0,y0,x1,y1=region['bbox_normalized'];box=[round(x0*image.width),round(y0*image.height),round(x1*image.width),round(y1*image.height)]
             color=record['palette'][region['type']]['color'];rgb=tuple(int(color[j:j+2],16) for j in (1,3,5))
             draw.rectangle(box,fill=(*rgb,round(255*opacity)),outline=(*rgb,230),width=max(1,round(image.width/750)))
-            label=f'{i} {record["palette"][region["type"]]["label"]}'
+            label=f'{i} '+(region.get('display_label') or record['palette'][region['type']]['label'])
             tx,ty=box[0],max(0,box[1]-size-5);bounds=draw.textbbox((tx+3,ty+1),label,font=font)
             draw.rectangle((tx,ty,min(image.width,bounds[2]+4),bounds[3]+2),fill=(*rgb,235));draw.text((tx+3,ty+1),label,font=font,fill='white')
         painted=Image.alpha_composite(image,layer).convert('RGB')

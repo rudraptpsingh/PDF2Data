@@ -41,7 +41,7 @@
     button.dataset.hovered='true'; button.setAttribute('aria-pressed','true'); active.set(page.page,{region,button});
     const pane=item.pane; pane.replaceChildren(); pane.classList.remove('empty-pane'); color(pane,region.type);
     const head=make('div',undefined,'overlay-pane-head'), dot=make('span','','overlay-dot'); color(dot,region.type);
-    head.append(dot,make('strong',data.palette[region.type].label),make('span','Page '+page.page,'overlay-meta'));
+    head.append(dot,make('strong',region.display_label||data.palette[region.type].label),make('span','Page '+page.page,'overlay-meta'));
     if (region.block_id && $(region.block_id)) {
       const link=make('a','↗');link.href='#'+region.block_id;link.setAttribute('aria-label','Locate extracted block');
       link.onclick=event=>{event.preventDefault();$('full-mode').click();$(region.block_id).scrollIntoView({block:'center',behavior:'smooth'});};head.append(link);
@@ -49,6 +49,7 @@
     pane.append(head,formatted(region));
     const meta=make('div',region.state.replaceAll('_',' '),'overlay-pane-meta');
     if (region.formatting) meta.append(make('span',' · '+region.formatting.alignment_candidate.replaceAll('_',' ')));
+    if (region.normalized_value) meta.append(make('span',' · '+region.normalized_value));
     pane.append(meta); connect(page);
   }
   for (const [type,spec] of Object.entries(data.palette)) {
@@ -70,7 +71,8 @@
       const button=make('button',undefined,'overlay-box');button.type='button';const [x0,y0,x1,y1]=region.bbox_normalized;
       Object.assign(button.style,{left:x0*100+'%',top:y0*100+'%',width:(x1-x0)*100+'%',height:(y1-y0)*100+'%'});
       color(button,region.type);button.dataset.type=region.type;button.dataset.state=region.state;button.setAttribute('aria-pressed','false');
-      const label=(i+1)+' · '+data.palette[region.type].label;button.setAttribute('aria-label',label+', '+region.state.replaceAll('_',' '));button.title=label;
+      if(region.field_role)button.dataset.fieldRole=region.field_role;
+      const label=(i+1)+' · '+(region.display_label||data.palette[region.type].label);button.setAttribute('aria-label',label+', '+region.state.replaceAll('_',' '));button.title=label;
       button.append(make('span',label,'overlay-tag'));button.onclick=()=>inspect(region,page,button);button.onmouseenter=()=>inspect(region,page,button);button.onfocus=()=>inspect(region,page,button);plane.append(button);
     });
     canvas.append(plane);source.append(pane,link);

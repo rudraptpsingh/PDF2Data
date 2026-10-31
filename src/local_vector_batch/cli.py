@@ -248,6 +248,10 @@ def parser() -> argparse.ArgumentParser:
     readable.add_argument('--output', required=True, type=Path)
     readable.add_argument('--docx-python', type=Path, help='optional Python runtime with python-docx installed')
     readable.add_argument('--json', action='store_true')
+    profiles=sub.add_parser('profile-documents',help='measure bilingual keyword and metadata patterns in verified L1 packages')
+    profiles.add_argument('--manifest',required=True,type=Path)
+    profiles.add_argument('--output',required=True,type=Path)
+    profiles.add_argument('--json',action='store_true')
     present = sub.add_parser("render-package", help="add linked Markdown/HTML and layout JSON to an existing verified PDF package without re-extracting")
     present.add_argument("--output", required=True, type=Path, help="pdf-extract output directory")
     present.add_argument("--json", action="store_true")
@@ -554,6 +558,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "export-readable":
             from .readable_export import export_readable
             result = export_readable(args.package,args.output,args.docx_python)
+        elif args.command == 'profile-documents':
+            from .document_profiles import profile_documents
+            result=profile_documents(args.manifest,args.output)
         elif args.command == "render-package":
             from .evidence_package import create_package, verify_package
             verify_package(args.output)

@@ -147,11 +147,16 @@ def build_document_model(data):
                semantic_sections=[],section_recovery='not_proven_by_pdf_page_breaks',
                unsupported_structure=['unresolved_footnote_anchors','automatic_numbering_identity','editable_equation_trees','original_word_style_names'],
                publication_eligible=False)
+    from .document_metadata import extract_metadata
+    model['metadata']=extract_metadata(data)
     validate_document_model(model,data)
     return model
 
 
 def validate_document_model(model,data):
+    if 'metadata' in model:
+        from .document_metadata import validate_metadata
+        validate_metadata(model['metadata'],data)
     if model['source_pdf_sha256']!=data['source_pdf_sha256'] or model['publication_eligible'] is not False:raise ValueError('invalid model source or approval state')
     expected={b['id']:b for b in data['document_blocks']['blocks']}
     if len(model['elements'])!=len(expected) or {n['id'] for n in model['elements']}!=set(expected):raise ValueError('model lost or duplicated a source block')

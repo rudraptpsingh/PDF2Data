@@ -1,0 +1,237 @@
+{
+  "schema_version": "pdf2data.regulatory-handoff-example.v1",
+  "example_scope": "Source-bound candidate rule and arithmetic illustration; no client eligibility determination",
+  "document": {
+    "source_pdf_sha256": "17b7dd0fe13e4e4f1ca5d4793c7485d66bb5e1b527f9b846a44564577f4d49ff",
+    "declared_type": "explanatory_memorandum",
+    "instrument_context": "supplementary draft",
+    "legal_effect_verified": false,
+    "metadata_fields": [
+      {
+        "id": "field-f3f739d40082980e8351edbd",
+        "role_candidate": "document_reference",
+        "label": "No.",
+        "value": "L-1/250/2019/CERC",
+        "label_span": {
+          "page": 1,
+          "page_text_sha256": "7f95484b83c58f11fbb530fe04b6705a96814cb2101a7c3e6ed9bcebda89ae64",
+          "char_start": 234,
+          "char_length": 3,
+          "offset_encoding": "codepoint",
+          "exact_quote": "No."
+        },
+        "value_span": {
+          "page": 1,
+          "page_text_sha256": "7f95484b83c58f11fbb530fe04b6705a96814cb2101a7c3e6ed9bcebda89ae64",
+          "char_start": 238,
+          "char_length": 17,
+          "offset_encoding": "codepoint",
+          "exact_quote": "L-1/250/2019/CERC"
+        },
+        "source_span": {
+          "page": 1,
+          "page_text_sha256": "7f95484b83c58f11fbb530fe04b6705a96814cb2101a7c3e6ed9bcebda89ae64",
+          "char_start": 234,
+          "char_length": 21,
+          "offset_encoding": "codepoint",
+          "exact_quote": "No. L-1/250/2019/CERC"
+        },
+        "scope": "document_header",
+        "geometry": {
+          "bbox": [
+            72.024,
+            198.7399999999999,
+            203.35999999999999,
+            210.7399999999999
+          ],
+          "bbox_normalized": [
+            0.12098367264664381,
+            0.2360556822500949,
+            0.34159779614325064,
+            0.2503088179399467
+          ],
+          "basis": "unique_exact_native_line_substring",
+          "side": "left"
+        },
+        "label_language": "en",
+        "status": "candidate",
+        "role_verified": false
+      },
+      {
+        "id": "field-9051836429ce80d1b113acf6",
+        "role_candidate": "document_date",
+        "label": "Dated",
+        "value": "26.10.2026",
+        "label_span": {
+          "page": 1,
+          "page_text_sha256": "7f95484b83c58f11fbb530fe04b6705a96814cb2101a7c3e6ed9bcebda89ae64",
+          "char_start": 256,
+          "char_length": 5,
+          "offset_encoding": "codepoint",
+          "exact_quote": "Dated"
+        },
+        "value_span": {
+          "page": 1,
+          "page_text_sha256": "7f95484b83c58f11fbb530fe04b6705a96814cb2101a7c3e6ed9bcebda89ae64",
+          "char_start": 263,
+          "char_length": 10,
+          "offset_encoding": "codepoint",
+          "exact_quote": "26.10.2026"
+        },
+        "source_span": {
+          "page": 1,
+          "page_text_sha256": "7f95484b83c58f11fbb530fe04b6705a96814cb2101a7c3e6ed9bcebda89ae64",
+          "char_start": 256,
+          "char_length": 17,
+          "offset_encoding": "codepoint",
+          "exact_quote": "Dated: 26.10.2026"
+        },
+        "scope": "document_header",
+        "geometry": {
+          "bbox": [
+            416.23,
+            198.7399999999999,
+            516.868,
+            210.7399999999999
+          ],
+          "bbox_normalized": [
+            0.6991701941812807,
+            0.2360556822500949,
+            0.8682187730968219,
+            0.2503088179399467
+          ],
+          "basis": "unique_exact_native_line_substring",
+          "side": "right"
+        },
+        "label_language": "en",
+        "status": "candidate",
+        "role_verified": false,
+        "normalization": {
+          "status": "unambiguous",
+          "iso": "2026-10-26"
+        }
+      }
+    ]
+  },
+  "rule_candidate": {
+    "source_block_id": "block-f24b5ebb9257855326afb099",
+    "source_spans": [
+      {
+        "page": 5,
+        "page_text_sha256": "9786bb95fb59174c5a05d8dc51abffa3d890f9291b1974d2f6de7082555c2fe6",
+        "char_start": 686,
+        "char_length": 973,
+        "offset_encoding": "codepoint",
+        "exact_quote": "(b) If the RE developer chooses to avail waiver based on proposed sub-clauses (h-\ni and h-ii) based on its start date of connectivity as on date of signing of\nPPA/PSA or SCOD as per PPA/PSA, whichever is later, the project shall be\neligible for waiver of 75% for a period of 10 years i.e. PPA tenure (considering\nbaseline date as 30.04.2026) from its COD. If the RE developer extends the\nsame PPA beyond 10 years , it will continue to be eligible for a waiver of 75%\nmaximum up to 25 years from date of COD. However, after the expiry of the\nterm of the original PPA i.e. 10 Years, if the new PPA is entered with different\nbuyer or in case the original PPA gets terminated (due to any of the reasons)\nbefore expiry of the tenure of the PPA (say during 8th year), the project shall be\neligible for waiver as per trajectory under Table 1 of Regulation 13(2)(a) read\nwith Regulation 13(2)(h) for the balance period (considering the max. waiver\nperiod allowed is for 25 years).\n"
+      }
+    ],
+    "review_status": "needs_rule_review",
+    "activation_allowed": false,
+    "observations": {
+      "waiver_percentage": {
+        "literal": "75%",
+        "source_span": {
+          "page": 5,
+          "page_text_sha256": "9786bb95fb59174c5a05d8dc51abffa3d890f9291b1974d2f6de7082555c2fe6",
+          "char_start": 941,
+          "char_length": 3,
+          "offset_encoding": "codepoint",
+          "exact_quote": "75%"
+        }
+      },
+      "initial_period": {
+        "literal": "10 years",
+        "source_span": {
+          "page": 5,
+          "page_text_sha256": "9786bb95fb59174c5a05d8dc51abffa3d890f9291b1974d2f6de7082555c2fe6",
+          "char_start": 961,
+          "char_length": 8,
+          "offset_encoding": "codepoint",
+          "exact_quote": "10 years"
+        }
+      },
+      "possible_maximum_period": {
+        "literal": "25 years",
+        "source_span": {
+          "page": 5,
+          "page_text_sha256": "9786bb95fb59174c5a05d8dc51abffa3d890f9291b1974d2f6de7082555c2fe6",
+          "char_start": 1167,
+          "char_length": 8,
+          "offset_encoding": "codepoint",
+          "exact_quote": "25 years"
+        }
+      },
+      "example_baseline": {
+        "literal": "30.04.2026",
+        "source_span": {
+          "page": 5,
+          "page_text_sha256": "9786bb95fb59174c5a05d8dc51abffa3d890f9291b1974d2f6de7082555c2fe6",
+          "char_start": 1016,
+          "char_length": 10,
+          "offset_encoding": "codepoint",
+          "exact_quote": "30.04.2026"
+        }
+      }
+    },
+    "condition_candidates": [
+      "Later of connectivity start date as at PPA/PSA signing and SCOD",
+      "Illustration uses a ten-year PPA tenure",
+      "An extension may retain benefit up to the stated COD-based cap",
+      "A different buyer or termination invokes a different trajectory"
+    ],
+    "dependencies_to_retrieve": [
+      "Regulation 13(2)(a), Table 1",
+      "Regulation 13(2)(h)",
+      "Referenced proposed sub-clauses (h-i) and (h-ii)",
+      "Later final notification and amending orders"
+    ],
+    "rule_logic_status": "Interpretation candidates, not executable eligibility logic"
+  },
+  "proposed_calculation_tool_contract": {
+    "tool_name": "percentage_reduction",
+    "implementation": "allowlisted Decimal arithmetic",
+    "required_inputs": [
+      "base_charge",
+      "currency",
+      "charge_period",
+      "waiver_percent",
+      "applicable_rule_version",
+      "verified_client_fact_ids",
+      "execution_mode"
+    ],
+    "validation": [
+      "0 <= percentage <= 100",
+      "Non-negative charge",
+      "Consistent currency and period",
+      "No activation from draft-only evidence",
+      "Eligibility and missing facts checked before operational execution"
+    ]
+  },
+  "arithmetic_illustration": {
+    "execution_mode": "illustrative_scenario",
+    "base_charge": {
+      "amount": "1000000.00",
+      "currency": "INR",
+      "period": "one month",
+      "provenance": "hypothetical input, not found in source PDF"
+    },
+    "waiver_percent": {
+      "decimal": "75",
+      "basis": "source candidate; assumed applicable only for this arithmetic example"
+    },
+    "operation": "waived = base_charge * waiver_percent / 100; payable = base_charge - waived",
+    "result": {
+      "waived": "750000.00",
+      "payable": "250000.00",
+      "currency": "INR",
+      "period": "one month"
+    },
+    "client_applicability": "unknown",
+    "compliance_use_allowed": false
+  },
+  "remaining_extraction_gaps": [
+    "Bindings between all conditions, exceptions and rule outcomes need review",
+    "Authority resolution and final-versus-draft version relationships are not established by lexical extraction",
+    "The mathematical tool contract is proposed, not a registered production integration"
+  ]
+}

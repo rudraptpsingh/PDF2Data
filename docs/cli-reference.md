@@ -1106,3 +1106,21 @@ The four `benchmark-*` commands and their reproducible examples are documented i
 ## Layout-guided visual reading
 
 `pdf-layout-detect`, `pdf-region-read` and the `benchmark-run --profile layout-vlm` profile are documented in [local layout-guided reading](benchmarks/layout-guided-reading.md). Outputs remain review candidates; the original packages are preserved.
+
+## Bilingual document profiles and typed metadata
+
+```sh
+pdf2data profile-documents --manifest profile-input.json --output NEW_DIRECTORY --json
+```
+
+The manifest has `schema_version: "pdf2data.profile-input.v1"` and a `packages`
+array of `{ "package": "/path/to/verified/l1-package", "id": "optional-alias" }`.
+The command verifies packages, deduplicates PDF hashes and writes separate Hindi
+and English keyword frequencies by source-declared type, plus metadata candidates.
+It never trains or approves extraction rules automatically.
+
+`export-readable` and `pdf-structure-export` now include
+`document-metadata.json` and embed the same fields in `document-model.json` and
+`data.json`. Labels, values, role candidates, original language, exact source
+spans and available geometry are retained. See
+[structured evidence and calculation handoff](structured-regulatory-data.md).

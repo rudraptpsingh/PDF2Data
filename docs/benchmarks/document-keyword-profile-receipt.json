@@ -1,0 +1,413 @@
+{
+  "schema_version": "pdf2data.document-profiles.v1",
+  "input_manifest_sha256": "111e152245d4ab68fc432198b265389b194dc957a24119bd12007d0c4bc77cbc",
+  "unique_documents": 13,
+  "physical_pages": 138,
+  "counting_policy": "English/Hindi regex alias occurrences, including furniture; document frequency is binary per unique source hash",
+  "learning_policy": "descriptive sample frequencies; no automatic rule training, type classification or date-role approval",
+  "by_document_type": [
+    {
+      "document_type": "approval",
+      "documents": 1,
+      "pages": 6,
+      "primary_field_candidate_documents": {
+        "document_reference": 0,
+        "document_date": 1,
+        "decision_date": 1,
+        "hearing_date": 0,
+        "case_number": 1,
+        "appeal_number": 0,
+        "application_number": 0,
+        "listing_as_of_date": 0,
+        "publication_date": 0,
+        "effective_date": 0
+      }
+    },
+    {
+      "document_type": "draft",
+      "documents": 2,
+      "pages": 10,
+      "primary_field_candidate_documents": {
+        "document_reference": 2,
+        "document_date": 2,
+        "decision_date": 0,
+        "hearing_date": 0,
+        "case_number": 0,
+        "appeal_number": 0,
+        "application_number": 0,
+        "listing_as_of_date": 0,
+        "publication_date": 1,
+        "effective_date": 0
+      }
+    },
+    {
+      "document_type": "explanatory_memorandum",
+      "documents": 3,
+      "pages": 59,
+      "primary_field_candidate_documents": {
+        "document_reference": 3,
+        "document_date": 3,
+        "decision_date": 0,
+        "hearing_date": 0,
+        "case_number": 0,
+        "appeal_number": 0,
+        "application_number": 0,
+        "listing_as_of_date": 0,
+        "publication_date": 0,
+        "effective_date": 0
+      }
+    },
+    {
+      "document_type": "interim_order",
+      "documents": 1,
+      "pages": 16,
+      "primary_field_candidate_documents": {
+        "document_reference": 0,
+        "document_date": 1,
+        "decision_date": 0,
+        "hearing_date": 0,
+        "case_number": 0,
+        "appeal_number": 1,
+        "application_number": 1,
+        "listing_as_of_date": 0,
+        "publication_date": 0,
+        "effective_date": 0
+      }
+    },
+    {
+      "document_type": "judgment",
+      "documents": 1,
+      "pages": 35,
+      "primary_field_candidate_documents": {
+        "document_reference": 0,
+        "document_date": 1,
+        "decision_date": 1,
+        "hearing_date": 0,
+        "case_number": 1,
+        "appeal_number": 0,
+        "application_number": 0,
+        "listing_as_of_date": 0,
+        "publication_date": 0,
+        "effective_date": 0
+      }
+    },
+    {
+      "document_type": "notice",
+      "documents": 1,
+      "pages": 1,
+      "primary_field_candidate_documents": {
+        "document_reference": 1,
+        "document_date": 1,
+        "decision_date": 0,
+        "hearing_date": 0,
+        "case_number": 0,
+        "appeal_number": 0,
+        "application_number": 0,
+        "listing_as_of_date": 0,
+        "publication_date": 0,
+        "effective_date": 0
+      }
+    },
+    {
+      "document_type": "record_of_proceedings",
+      "documents": 1,
+      "pages": 2,
+      "primary_field_candidate_documents": {
+        "document_reference": 0,
+        "document_date": 0,
+        "decision_date": 0,
+        "hearing_date": 1,
+        "case_number": 1,
+        "appeal_number": 0,
+        "application_number": 1,
+        "listing_as_of_date": 0,
+        "publication_date": 0,
+        "effective_date": 0
+      }
+    },
+    {
+      "document_type": "registry_listing",
+      "documents": 1,
+      "pages": 4,
+      "primary_field_candidate_documents": {
+        "document_reference": 0,
+        "document_date": 0,
+        "decision_date": 0,
+        "hearing_date": 0,
+        "case_number": 0,
+        "appeal_number": 0,
+        "application_number": 0,
+        "listing_as_of_date": 1,
+        "publication_date": 0,
+        "effective_date": 0
+      }
+    },
+    {
+      "document_type": "regulation",
+      "documents": 2,
+      "pages": 5,
+      "primary_field_candidate_documents": {
+        "document_reference": 1,
+        "document_date": 1,
+        "decision_date": 0,
+        "hearing_date": 0,
+        "case_number": 0,
+        "appeal_number": 0,
+        "application_number": 0,
+        "listing_as_of_date": 0,
+        "publication_date": 0,
+        "effective_date": 0
+      }
+    }
+  ],
+  "publication_eligible": false,
+  "source_inventory": [
+    {
+      "source_pdf_sha256": "81b49711c885dff83f3fe738a1a6971ccdf4a675ccf76f2e344d21a6ea259606",
+      "declared_document_type": "judgment",
+      "pages": 35,
+      "page_text_sha256": [
+        "b8875bee707cf3c51a1cf7255ad8702b13bff38025fed7c5c0f5975dd55dee2f",
+        "396b7e675fecf3530ac48d3b4a62c40d109a110d07dcb2badcc33bcf89444b98",
+        "33c38ee4e58ba8cbb574d89378ce9e33289b68c678d65b82fa7f3fd1f3ca100d",
+        "91a117663b4c92daec3a0d108d99c5446e78881db7606a54c3dcb58075259739",
+        "e4ad087e31f80952170378b3c7627671a0d525c777a6f829350876d17613982b",
+        "fef7653bd0305cffa45e8f06356f1e58adf705d9e90e33f437b98156c5b80a96",
+        "1cf66741cc5a8bb2d2914ac2547c04d481be502e9378bb2538ee48faef154fe4",
+        "b43188bbf4ad0456155718ed96be3a0e33deb6a3efa42412520af60be9759d12",
+        "ec4594405174cdb6292821d92937e2ac70d677728d02d0939874ba1d6f89ff7d",
+        "5d60ef391ee62a27b3fea4cacc209794a1564e6d61e90b46a8f77cb51d13f37a",
+        "ee7300e0d7f4d02d9d8aec9022edd38967f9f0e04526c8b8c5dd1ca311be4efc",
+        "d4bdb5833b11504d31d39c23c1856de759d1c4b26c401ab70caf1c93f43a985d",
+        "a9a0da34086362375d3edc6ce5e1e75b296216be614e3c94b71ae083fc4e6903",
+        "a9541bf7b86e10671875605a3b0b36c78f2409d411dbf7d7ce5104fc9e19e30c",
+        "9570e2eb57f6980ac8a633737caa12c3c08b55dc08d4685907d5a51670ac1fdd",
+        "2b423c836c408942739918360a5f1481003e522e032a23904c7a589541652686",
+        "c75fcb705d40fcae89d5ac3db4acf78389fe4bb78523e06b40178888b6a2f194",
+        "2c0b7f4d3cc043c30e6dded2240bfb7e31353caa00c834f51dce2b4adf987a9b",
+        "d6b21f9b74ff27328f49037127b315f406135e833547dcb44fd95135adf66c64",
+        "d0c8b082da69253a7404c789f4138f16305366f3869d13cc5f3cc1304aa2ab80",
+        "24a6ecb9ade35224acd4de080cefbfda94456f18ead88f308f5e0ab4b80173e1",
+        "0378ef219e4b16c17fa91a1ed4c4d632bc4f541def154c176a7dfb72651a7ea9",
+        "41e5cb82ded93b64c36f8ebc9cb3a12980ce97d29213df42e2730b1d95d59ebc",
+        "0e1821beb69e47843aea815e6a419d6ae263c5a0c488cbfa56b27e9d0d54d903",
+        "9ff6b96e2a00d18e74a90278ed59bdfd7024e9c208e963916f1b43dc0e93757d",
+        "21b20c1f86fb36513a533d657487bf1c00db333ccb42fb42ac6ce70bd7973e08",
+        "681e362895367b087b1072db90e19f7238b977d5d044502a7ed14449b2285115",
+        "4dd2e55163f48ff738b8f3dbcc62492d0852bf17727215e11b1dbd1a3ea5b572",
+        "1650589cd0b2b18b017c248dcc3adeb350aaa8ee1fdbda67c15441063b9bed86",
+        "630b9bcae494685f81bc76e8fa2753267b844bfe49cd9b784e3daeefcc33fa2e",
+        "bca3eba76ebb3b54e8f2c11b7656bdb9bbc7545e32c5acaeabfa41909660325b",
+        "e29603f1ba593ad35a241231afe61aa245193100cef245821d4e8f2522c49a3f",
+        "85fe13bffa1546c0cbf9a8a7c50d9847c288d0e87c703e1cbc983e19558bbe0e",
+        "39231cb5b026025541b1d426c7949cc1389fd5c6a06339279ed48202069e5a91",
+        "8d66a1323e25f500ba740c7e42c6841d35455ca41e804423a85cd90557cd424e"
+      ],
+      "quality_flagged_pages": 1
+    },
+    {
+      "source_pdf_sha256": "d6e57eb97d76e48236662fc582c4ca32efd106b3d57886bc1db1c063dd7d4c9d",
+      "declared_document_type": "interim_order",
+      "pages": 16,
+      "page_text_sha256": [
+        "810926e865ae7ec489fae5b91e58f59c5e71b1c30cc016be19a80695464559fb",
+        "2642f6d73b46eb5c9b270f06c32ec5b205fe538e7f57f31eddc99e983b33ad94",
+        "47e7dd308e6115db7b034ccb44c72c8d611819a950be30c234f32db805829aaa",
+        "27cc48e341324198b3abd7193854e859aa2ed64c6989840fccba3a8d09f18558",
+        "95d64f1466f3eb140c118fbbb9031b53af6c5c9a8e9847ec20de611f16c01853",
+        "d21ce5a54a15e1eb1ad5b179779431890c40aae6d64b1fd74610aa44463b6d22",
+        "5bf478e0bd5c700987838a6ef0f9ed4bbff5c08a831e4d0f67a2f32d18fca65a",
+        "d59923f5dd42f3b82d3a50fec35cec3a192dd7a7f229308d50d73805158b4e48",
+        "b9c07a097ba2156eb087d5409733c56e9a7898a0c0ee2471c13d6949e85afad4",
+        "3e479be051d1939178297b7496bc47c153034508ed9bc24e8f9cf8410cff7f0a",
+        "e371091bfd333d2e8f60cd02650817aca6c76e1c52ebfbbbbb794e85b20a357d",
+        "b93bd77135ad53cafcbb954855c6ee8293faed2c42040f37b2ec586ca8ea06d6",
+        "9135fe252aa0f52395db86333b40ecf9154d065238d292fce7a0b001a59ebc0f",
+        "7e317fec7bb376a285328509106e0b3c3b2d4d1e055e98ce1192a3ca83b99fc6",
+        "0b226d2f6872dfb14e3be5f63d9d20755932c007726e04823db531ea1d8fbfe6",
+        "85540613453673f397feb0afaf84503b6d7c1f27e1a37af181dded9e4d7160fa"
+      ],
+      "quality_flagged_pages": 0
+    },
+    {
+      "source_pdf_sha256": "77a5884d98d8a9f1887825f94bbc68d39f130d682f789975387713ff9d359e77",
+      "declared_document_type": "record_of_proceedings",
+      "pages": 2,
+      "page_text_sha256": [
+        "d7565a792e831aabffa248294df4a81d9d7197c22908334bdeede7caa5410d40",
+        "f426edbbbbfff0bb582018c2b527efe82dd81d85e61c68cd227345abd648cf26"
+      ],
+      "quality_flagged_pages": 2
+    },
+    {
+      "source_pdf_sha256": "f81b17705af68637e42f13a676eb892ed519c487e4067461699e8740e7922943",
+      "declared_document_type": "approval",
+      "pages": 6,
+      "page_text_sha256": [
+        "214112d87bac125b64b96b21292a005aed2bde1500bdd49f97d875e51051f746",
+        "1b4290da9d000980e08de4de9fdcf2d9c3c3ad7c330c84e5018533be71ed2fbc",
+        "1324940c1eeea9a28252bce7d6750e9aa72f062e471d2de8df9f7659c8ed2def",
+        "f91b4e25c57a28b42a2e30542d48b4f76dd87850d3d3e75a35b4ea209f8c6f78",
+        "7aca1fd1606e2d10ddd9b66b87479e4da6aa3513f1b538a8f358673ff6265bf5",
+        "417ac507bbd46f471dd9e51605648df1c54e143b89ab66f95ec28d4fc26749c3"
+      ],
+      "quality_flagged_pages": 6
+    },
+    {
+      "source_pdf_sha256": "00bb0b39fbca29ee0cd0ef3934dc7479f6081b642f1c67b9e34ae2f5eebeb01e",
+      "declared_document_type": "draft",
+      "pages": 7,
+      "page_text_sha256": [
+        "e44a60949c90a21feaebc0e8886b04d281718fbf7c1bc46539336700ee264fba",
+        "1cdae4ad44235d5a1cb06d8729f2ccbe782df4486f95e2a0e609f65ab0dcdc02",
+        "1fbe601ebc146053200385bfc6d5d19ee6e0a52e48e27a63d34ca0e82eaccb3c",
+        "68b82d8e37a471ab2d6f975c66cbc6a6f5c99e4673e15eaf8db35ba4749d5980",
+        "90a37eb85b75f483f36a7de6a67e3d160bc58d7792b24ce9f138878c36e26f80",
+        "c377f19deef2f970635c991de5e52a8eded3243e22d49c1719696a79cd0c65fe",
+        "5263948a8383327eec10081d341a0c42a8a351a2fc70d63fd897abe12e90b857"
+      ],
+      "quality_flagged_pages": 1
+    },
+    {
+      "source_pdf_sha256": "8534d3cd8f2206e6ab7ff060d4a9d8ce363607736c30d6aef64e1aaa8c187fa4",
+      "declared_document_type": "explanatory_memorandum",
+      "pages": 22,
+      "page_text_sha256": [
+        "95967a757279628ab679bf410f6d9fca0ccfe80a25d680521b92862915793dd2",
+        "ee6aa70bbb51867ed4ee6db8b93d3a5346a5ca4ef9ea24de77509496b30155fc",
+        "e10a651bef5fd673fec8c8ab76617720b8ea589ddabafaa14b620e640495d8e5",
+        "5dd6bcc4352a260e555968115a2783d19cf4cd7495da63cc0a20a5a424f97ba1",
+        "939d6bb8c2c622c42e228aa1feaa2959bdba630e14966b6940688c49d76a44c3",
+        "f9e1f2c633b689f174417f80854f0bbe2e0c4c96f6266dc3c447bf15c548473c",
+        "989e89bc3f880ab5f8a93e02c0a20454307f307b81932e9952e795869ca495bb",
+        "ea90dbe7d152ecc864d9d6fb64ff52dd96a69c3a571a2466db5c83cd546ea09d",
+        "11cfee2b5d4c51194a454dd0999936a3cc2d2b1c8c4d32d41771de726bffa50f",
+        "5d309f20ca977a3c406a6b1d61fbd0cfb94e7ba691d902592ad92cc819715026",
+        "b7aae5e3a4f6ade7cad86ab06893222894f6c6cc5e07d240825469e02a4438d5",
+        "51bf2cdb53fa140da17e441d1f592fc3071cde98ea9ce06afab236fbc6b9c8a4",
+        "db0ec43af0b5260f18105aac9c130213dce59e3838ab2b251c48ab1a8af6a6df",
+        "45c53bb5d4225670ddbf419876231a9e088bc03c819beb42040b2593d0553909",
+        "677306854f097af165bc99242f6087ae0a0659ec643630fa4884c25292fa3e63",
+        "d48c1f8e5d3dd8f36ece29d8b01bd331f2a551d024e0b7254a81629aa17d0070",
+        "71873ea2e82d43ec50acf5651e41ffd950d08d79d60cca35a830342421105454",
+        "745f7418197170d7d56c9f9c1e52908f3b2de486a611f43e622b78e70f781805",
+        "e6b28db0509d75d06876d8a17982ef3b4af9f2dfed118421e8364ecc601b4f5f",
+        "c5a213360979ed4125ac0ad23700146cade74fa448e740d1105a9a7fd45cc1b3",
+        "3f99709ff5dfdcf67d6329566077d6cf212504c48d8b18401eeb09a32c3c24b7",
+        "d60697f55dee0bdaed8a147b83d10adc43d7fba86abdf65c864742fda437e51d"
+      ],
+      "quality_flagged_pages": 5
+    },
+    {
+      "source_pdf_sha256": "17b7dd0fe13e4e4f1ca5d4793c7485d66bb5e1b527f9b846a44564577f4d49ff",
+      "declared_document_type": "explanatory_memorandum",
+      "pages": 6,
+      "page_text_sha256": [
+        "7f95484b83c58f11fbb530fe04b6705a96814cb2101a7c3e6ed9bcebda89ae64",
+        "63a9264dd526d2a49d1795a5576f14cfcfad851df9cad7f9f6d3909e352f69ef",
+        "8c98185430b81c660dbf01d8a059472bb3a149881ee8c543dd701fa53f772bbd",
+        "860c06d7bfc7f5d41cd7be1e8e411496178bb5b902d39976b3adf8024e1d137a",
+        "9786bb95fb59174c5a05d8dc51abffa3d890f9291b1974d2f6de7082555c2fe6",
+        "de9b8878fee770b77547e2e433d8f46a0bea81403c3c8fe602fc244d179e43d6"
+      ],
+      "quality_flagged_pages": 1
+    },
+    {
+      "source_pdf_sha256": "6d66b3d1005a050cb4f254c9b536cb402b30caec6c76d512b2ff7dd55a952bb7",
+      "declared_document_type": "notice",
+      "pages": 1,
+      "page_text_sha256": [
+        "357d82780964a54db02fcbfbfaa7853d49dbd5d1c72da3a8461ca6e7c8ea03bb"
+      ],
+      "quality_flagged_pages": 0
+    },
+    {
+      "source_pdf_sha256": "2efc99923a7df73c32615f5c201230f17974ef1a2b73ed1b3d20b1d917f5952e",
+      "declared_document_type": "draft",
+      "pages": 3,
+      "page_text_sha256": [
+        "bf4cc01200c14efdc2714d45118604a55c5ee5fcf86df0d9ed771ced1f172e06",
+        "a03a878410cdd02b1c88090ec38dd6cbc2aeba1bbea6d528b083169733c89ca3",
+        "223889512aa23beb2df4721b2499a787929ce0a37dbb99696aea03dd235ca700"
+      ],
+      "quality_flagged_pages": 1
+    },
+    {
+      "source_pdf_sha256": "29d888f49246bc4bb29dc273ae8de8f76420c3aeb0e33dacf8277b027688543c",
+      "declared_document_type": "registry_listing",
+      "pages": 4,
+      "page_text_sha256": [
+        "7948f1a01c6c55f57d9dd3d57d656ae55c882a69208b043c8efa03ef0e5c42ff",
+        "c88e11ac7415b86b997218236ff82b2b04b45abbff4a10633db9ba409289b103",
+        "d39b328e297d0e227094b74accedf38c13e4db7812bcf43abf1e61f91dc7227d",
+        "6eafa0b8e798aa8819c9c10c680909bfddbe50b93bf99e661cd64078e391d318"
+      ],
+      "quality_flagged_pages": 4
+    },
+    {
+      "source_pdf_sha256": "fd94954d82d9772b02fb9ec1a6aa936473a6dd67af0bb548308ec192d3df6aa6",
+      "declared_document_type": "regulation",
+      "pages": 4,
+      "page_text_sha256": [
+        "6da685dc8abbd62a350f8656c6ebee8757414f82fddeb256876f833bd9e2b8a2",
+        "4e26fd4c8a087a0f2c2ead0de896aed40856e370cc8749d608bc2e471a0a564c",
+        "b669fcf95a7d1b8cb9bc6d9b7d469da19d380067ecb67831b9bcad42dc3e27ee",
+        "d8802a4ea8a07c7df414865fc6123cb13b7a37f521dad6cde3ec743d2ef7ebc5"
+      ],
+      "quality_flagged_pages": 4
+    },
+    {
+      "source_pdf_sha256": "101721f25fad5cff676251210ef7118c10f2d8257669b9b5599ff2a3f4c3893c",
+      "declared_document_type": "explanatory_memorandum",
+      "pages": 31,
+      "page_text_sha256": [
+        "4a58018b6982947e23fd84fad759344a0d1d035676c6f7d8db17e091c96d47da",
+        "e69ce3e66631b276717a6bd0e2b5c2630832e0c3e6556cdafa2fc4cb90014ad5",
+        "f6fbd9406b9815fe89d5bb00e5e8dc8e3f80272293ab8d4a187622b131879721",
+        "1ae28703ee10b85869df9328a787a0ff37c207d9ca8ad933f36043fd373a590c",
+        "1dd911a9d8465526a883a68266ab8772ef47dc5bdc42875a49fb509a314bfc21",
+        "8b533cbaa5706ee1ba2a3318c38e32341c538b01e9811f30c9caa13fce47662a",
+        "42b9cc665fd2dfc57310f17594a1c5baf96fed056a0536883cd1a19a076c5471",
+        "5e94ddd525b018522c5185b0f6ee46d0709358e3b4f855a4f1a33164b3a8dcd7",
+        "33f62814fa5c71945f5ef3bee7d3760bf5e7fbf49e6a3840c95be820701f68b3",
+        "dfcb30e6f937adc298accfbf974ba1d3228d90c316204b0fecbb6d5be47f9230",
+        "e320ed8bf23703cdd45ae6023b2917027d8942351f2db39179441985c299e8c5",
+        "13831f6e69cd59d5bf8c18e2f3f762e373cdb69fc8e4b6c78aba2a010f98a2c0",
+        "cfc22aa91c753c508a6ab99dc0b7d622071fa98719958261cb6cf85430433895",
+        "ff8df05026a7610e899f3e9b32dfb8e13d4bf01f2e6e17e171df59329bbb037c",
+        "66bbfd119d1537cdcfb3497b87057d1daf64b1caf8ffd19b447a83fdf4e7b372",
+        "7fb71df8e7d1309d681474e0007953ab732bac4bccb07e7f1b2011d74e26f029",
+        "0b0ee0bba7c5dd19baccaf824deb29f2c1642a7b270f86957913116678f65fc6",
+        "de13ceadb56177d4d5cacebbc7c07d6d29e57d728cad042eee12853855eacb63",
+        "8b099fa13b22a354f528efa7d0dbd09b9f261de6ac6b11b85a9439643c8038ae",
+        "592905a601fbe8579a7dc52324f297eb6d0e86cd9a8b92e9d8c8ef23cf9ce9b8",
+        "93e7db4b159beb3b016f3b3064d63d1cbe771f99f33bebe67f6cc04ef2ef5de9",
+        "8d8e0d2db3f693e4dd7001acaf9bcb4708ab7084893aee7817f290cd15f30278",
+        "c177c1a07fec7ae0670f1d14f03baa66fcff927ab15160653648a8abc6716a59",
+        "ab3f315c012cb257d6327c994fc9e167d44de26120ab0f7c2e1e0910f9833c7a",
+        "fafba10509518897b6284c864f6a6feb624a865381272147aa67d75632276324",
+        "fc34d1053c7a5768c7988abea54f82bded162350a69060cf2ef1e5e35fb7d173",
+        "4263c482cb4da82b672a2fa1cffc16f3e0a520a0f6abe6581a39301a3e238659",
+        "b33103b8b67c83853414b40a578f71973f5e2e427994207fa21218e0adc6be69",
+        "fa86c8871dc146bb2fd9541dc8df80004c6df11ab9b25a0cc699efc868d36423",
+        "b7b42bc084a5e0b598f6485b6982b7035e9bc6a660f2a29738182c2d52c07cae",
+        "ef1058ae03a6e91fc9b65fd32223666ebcf7f52359bd7a4e77c054090e98ff17"
+      ],
+      "quality_flagged_pages": 3
+    },
+    {
+      "source_pdf_sha256": "090308f118c8409c841d30af7a22d9d08fac637208a06841d8693fff8a18bf62",
+      "declared_document_type": "regulation",
+      "pages": 1,
+      "page_text_sha256": [
+        "7bd664b754b709471f485306910e01617f3debf6013842eb9dc3df5d9880fca0"
+      ],
+      "quality_flagged_pages": 1
+    }
+  ],
+  "keyword_matrix_sha256": "5715dbccb97155abebbf37d097250562cbe31da7683b839dde8f3cbd281e9bb1",
+  "implementation_sha256": {
+    "document_metadata.py": "2e7df0a0a894d0e6a39e92f5015edfc5f3acf499c3acadcd47565c1b5f8a1398",
+    "document_profiles.py": "3e1f528b2f0c27996db3436192a7b7b0e50072730966ec5335a2839b6e532008"
+  }
+}
