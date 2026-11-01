@@ -44,6 +44,8 @@ def parser() -> argparse.ArgumentParser:
     cell_parser(sub.add_parser('cell-fields',help='extract and re-verify configured exact cell-local fields'))
     from .table_records import configure as table_record_parser
     table_record_parser(sub.add_parser('table-records',help='extract and re-verify source-backed hierarchical table group candidates'))
+    from .field_witness import configure as witness_parser
+    witness_parser(sub.add_parser('field-witness',help='prepare source-image field readings, run local Ollama and replay reader comparisons'))
     from .field_rules import configure as field_parser
     field_parser(sub.add_parser('fields',help='extract, catalog, query and evaluate configurable source-bound metadata rules'))
     controller=sub.add_parser('pdf-control',help='inventory, measure, repair and recheck documents through a durable local feedback loop')
@@ -459,7 +461,10 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command == 'table-records':
+        if args.command == 'field-witness':
+            from .field_witness import execute
+            result=execute(args)
+        elif args.command == 'table-records':
             from .table_records import execute
             result=execute(args)
         elif args.command == 'cell-fields':
