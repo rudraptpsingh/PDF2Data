@@ -48,6 +48,9 @@ and MCP reads. Add [JSON check rules](docs/field-check-rules.md) to test counts,
 values, pages and captures without writing Python tests.
 Opt-in [multipart fields](docs/multipart-fields.md) retain cross-page values and
 captures within a native parent, with separate page anchors and explicit seams.
+Use [semantic field profiles](docs/semantic-fields.md) to classify those source
+parts through a configured AskMill runner. Model-generated values are rejected;
+role candidates retain source holds and require separate semantic review.
 
 The [feedback controller](docs/feedback-controller.md) inventories originals,
 measures per-page errors, stages bounded repairs and rechecks the full document.

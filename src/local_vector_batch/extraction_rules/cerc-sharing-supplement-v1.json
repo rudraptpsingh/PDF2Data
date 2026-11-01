@@ -1,0 +1,136 @@
+{
+  "schema_version": "pdf2data.extraction-rules.v1",
+  "fields_schema_version": "pdf2data.configured-fields.v3",
+  "id": "powerlex.family.cerc-sharing-supplement",
+  "version": "1",
+  "families": [
+    "draft"
+  ],
+  "scope_note": "Reusable candidate grammar for CERC Sharing supplementary drafts. No literal source dates, amounts, PDF hashes or physical-page selections in match rules. Native unit labels require source-family classification; zero matches are a gap, not absence. Captures are literal atoms, not composed eligibility or activated deadlines.",
+  "fields": [
+    {
+      "id": "identity.issue_date",
+      "type": "text",
+      "scope": "native_unit_candidate",
+      "native_unit_labels": [
+        "preamble"
+      ],
+      "pattern": "Dated:\\s*(?P<value>(?P<date>\\d{1,2}[./-]\\d{1,2}[./-]\\d{4}))",
+      "capture_groups": [
+        "date"
+      ],
+      "flags": [
+        "MULTILINE"
+      ]
+    },
+    {
+      "id": "reference.prior_draft_date",
+      "type": "text",
+      "scope": "native_unit_candidate",
+      "native_unit_labels": [
+        "preamble"
+      ],
+      "pattern": "published on\\s*(?P<value>(?P<date>\\d{1,2}[./-]\\d{1,2}[./-]\\d{4}))",
+      "capture_groups": [
+        "date"
+      ],
+      "flags": [
+        "MULTILINE"
+      ]
+    },
+    {
+      "id": "eligibility.contract_term_and_cutoff",
+      "type": "text",
+      "scope": "native_unit_candidate",
+      "native_unit_labels": [
+        "1"
+      ],
+      "pattern": "(?P<value>entered into a (?P<documents>PPA or PSA) for a (?P<comparison>minimum) tenure of\\s*(?P<duration>(?:[A-Za-z]+(?:\\s*\\(\\d+\\))?|\\d+)) (?P<unit>years) with a (?P<counterparty>drawee DIC)[\\s\\S]{0,220}?on or before (?P<cutoff>\\d{1,2}[./-]\\d{1,2}[./-]\\d{4}))",
+      "capture_groups": [
+        "documents",
+        "comparison",
+        "duration",
+        "unit",
+        "counterparty",
+        "cutoff"
+      ],
+      "flags": [
+        "MULTILINE"
+      ]
+    },
+    {
+      "id": "eligibility.cod_window_and_trigger",
+      "type": "text",
+      "scope": "native_unit_candidate",
+      "native_unit_labels": [
+        "1"
+      ],
+      "pattern": "(?P<value>and the project achieves (?P<event>COD) within a period of (?P<duration>(?:[A-Za-z]+(?:\\s*\\(\\d+\\))?|\\d+)) (?P<unit>months?) from the date of[\\s\\S]{0,80}?(?P<trigger>effectiveness of its GNA) as per GNA Regulations, it shall be eligible for a waiver of\\s*inter-state transmission charges as under:)",
+      "capture_groups": [
+        "event",
+        "duration",
+        "unit",
+        "trigger"
+      ],
+      "flags": [
+        "MULTILINE"
+      ]
+    },
+    {
+      "id": "filing.initial_contracts",
+      "type": "text",
+      "scope": "native_unit_candidate",
+      "native_unit_labels": [
+        "1"
+      ],
+      "pattern": "^[ \\t]*(?P<value>\\(i\\) The projects that wish to avail waiver under this sub-clause, (?P<obligation>shall submit) a copy\\s*of (?P<documents>PPA and PSA \\(as applicable\\)) to (?P<recipients>CTUIL and NLDC) (?P<comparison>latest by) (?P<cutoff>\\d{1,2}[./-]\\d{1,2}[./-]\\d{4})\\.)",
+      "capture_groups": [
+        "obligation",
+        "documents",
+        "recipients",
+        "comparison",
+        "cutoff"
+      ],
+      "flags": [
+        "MULTILINE"
+      ]
+    },
+    {
+      "id": "waiver.extended_tenure_cap",
+      "type": "text",
+      "scope": "native_unit_candidate",
+      "native_unit_labels": [
+        "1"
+      ],
+      "pattern": "^[ \\t]*(?P<value>\\(iii\\) The PPA or PSA[\\s\\S]{1,350}?subject to (?P<comparison>maximum)\\s*of (?P<duration>\\d+) (?P<unit>years) from (?P<trigger>COD of the generating station)\\.)",
+      "capture_groups": [
+        "comparison",
+        "duration",
+        "unit",
+        "trigger"
+      ],
+      "flags": [
+        "MULTILINE"
+      ]
+    },
+    {
+      "id": "election.after_cod",
+      "type": "text",
+      "scope": "native_unit_candidate",
+      "native_unit_labels": [
+        "1"
+      ],
+      "pattern": "(?P<value>\\(h-ii\\) An REGS[\\s\\S]{1,450}?shall submit an (?P<document>undertaking) to the (?P<recipients>NLDC and\\s*CTUIL) within a period of (?P<duration>(?:[A-Za-z]+(?:\\s*\\(\\d+\\))?|\\d+)) (?P<unit>days?) of (?P<trigger>achievement of COD), specifying[\\s\\S]{1,230}?corresponding capacity:)",
+      "capture_groups": [
+        "document",
+        "recipients",
+        "duration",
+        "unit",
+        "trigger"
+      ],
+      "flags": [
+        "MULTILINE"
+      ]
+    }
+  ]
+}

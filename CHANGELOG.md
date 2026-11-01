@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 0.2.0-rc.10 — 2026-11-01
+
+- Add `semantic-fields prepare/run/validate` over verified native multipart
+  fields using AskMill's opt-in request/result v2 contract. Models select IDs and
+  configured roles; PDF2Data projects exact source parts and retains quality holds.
+- Require complete schema-valid responses, selected-atom accounting and pinned
+  source/profile/request re-derivation. Runs verify AskMill receipts and settlement;
+  failed raw output stays available without repair or provider fallback.
+- Include the CERC Sharing supplementary-draft field rules and JSON checks.
+  The real-source development run covers seven fields and eight source parts;
+  role membership/coverage checks do not establish general semantic accuracy,
+  legal acceptance, eligibility or financial correctness.
+
 ## 0.2.0-rc.9 — 2026-11-01
 
 - Opt-in fields v3 matches within retained native source units and preserves
