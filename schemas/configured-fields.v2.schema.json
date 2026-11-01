@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PDF2Data opt-in source-anchored named field captures",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source_pdf_sha256",
+    "source_package_sha256",
+    "rules_sha256",
+    "producer_implementation",
+    "field_catalog",
+    "field_status",
+    "observations",
+    "publication_eligible",
+    "semantic_ownership_approved",
+    "family_is_verified_legal_scope"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "pdf2data.configured-fields.v2"
+    },
+    "source_pdf_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "source_package_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "rules_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "producer_implementation": {
+      "type": "object",
+      "required": [
+        "field_rules.py",
+        "formula_observations.py",
+        "document_blocks.py",
+        "document_metadata.py"
+      ],
+      "additionalProperties": {
+        "$ref": "#/$defs/hash"
+      }
+    },
+    "field_catalog": {
+      "type": "array"
+    },
+    "field_status": {
+      "type": "object"
+    },
+    "observations": {
+      "type": "array",
+      "maxItems": 50000,
+      "items": {
+        "$ref": "#/$defs/observation"
+      }
+    },
+    "publication_eligible": {
+      "const": false
+    },
+    "semantic_ownership_approved": {
+      "const": false
+    },
+    "family_is_verified_legal_scope": {
+      "const": false
+    }
+  },
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "span": {
+      "type": "object",
+      "required": [
+        "page",
+        "page_text_sha256",
+        "char_start",
+        "char_length",
+        "offset_encoding",
+        "exact_quote"
+      ],
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page_text_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "char_start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "char_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "offset_encoding": {
+          "const": "codepoint"
+        },
+        "exact_quote": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "capture": {
+      "type": "object",
+      "required": [
+        "value_literal",
+        "source_span",
+        "status"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "value_literal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_span": {
+              "$ref": "#/$defs/span"
+            },
+            "status": {
+              "const": "matched"
+            }
+          }
+        },
+        {
+          "properties": {
+            "value_literal": {
+              "type": "null"
+            },
+            "source_span": {
+              "type": "null"
+            },
+            "status": {
+              "const": "not_matched"
+            }
+          }
+        }
+      ],
+      "properties": {
+        "value_literal": {},
+        "source_span": {},
+        "status": {}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "required": [
+        "id",
+        "field_id",
+        "type",
+        "source_pdf_sha256",
+        "rules_sha256",
+        "value_literal",
+        "source_span",
+        "status",
+        "content_verified",
+        "calculation_allowed",
+        "captures",
+        "capture_association"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "field_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "text",
+            "date",
+            "quantity",
+            "reference",
+            "formula"
+          ]
+        },
+        "source_pdf_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "rules_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "value_literal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_span": {
+          "$ref": "#/$defs/span"
+        },
+        "status": {
+          "const": "candidate"
+        },
+        "content_verified": {
+          "const": false
+        },
+        "calculation_allowed": {
+          "const": false
+        },
+        "captures": {
+          "type": "object",
+          "maxProperties": 32,
+          "additionalProperties": {
+            "$ref": "#/$defs/capture"
+          }
+        },
+        "capture_association": {
+          "const": "configured_same_value_match_candidate_not_semantic_ownership"
+        }
+      }
+    }
+  }
+}

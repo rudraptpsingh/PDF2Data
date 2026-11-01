@@ -33,6 +33,7 @@ def implementation():
 def load_rules(path):
     decode(Path(path).read_bytes())
     rules=load_fields(path)
+    if rules.get('fields_schema_version','pdf2data.configured-fields.v1')!='pdf2data.configured-fields.v1' or any('capture_groups'in f for f in rules['fields']):raise ValueError('Use fields extraction for page-local named captures')
     if rules.get('cell_fields_schema_version',SCHEMA)not in(SCHEMA,SCHEMA_V2):raise ValueError('Use explicit cell fields v1 or v2 schema')
     for f in rules['fields']:
         if f.get('extractor','regex')!='regex' or f['type']=='formula' or f.get('scope','all')!='all':raise ValueError('Cell fields require regex and all cell-local scope; formulas need a separate verified representation')
