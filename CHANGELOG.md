@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 0.2.0-rc.14 — 2026-11-02
+
+- Add explicit bounded English cardinal and printed-percent quantity modes.
+  Preserve literal/source spans, comparison context and quality holds; keep
+  configured unit hints separate from anchored printed units.
+- Add exact rational/null quantity assertions to field checks and enforce the
+  quantity-only normalization boundary in the public extraction-rule schema.
+- Retain exact released rc12 and rc13 custody decoder compatibility alongside
+  current code, with the existing operation, source, dependency and hash gates.
+- Qualify seven retained real-source word quantities and separate printed-unit
+  witnesses. This does not establish legal, calculation or pipeline acceptance.
+
 ## 0.2.0-rc.13 — 2026-11-02
 
 - Replay frozen native proofs with explicit hash-checked custody bindings and an exact captured decoder closure; preserve captured provenance and reject substituted parents or external review inputs.

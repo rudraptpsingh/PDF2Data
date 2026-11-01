@@ -166,6 +166,22 @@
               }
             }
           }
+        ],
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "quantity_normalization"
+              ]
+            },
+            "then": {
+              "properties": {
+                "type": {
+                  "const": "quantity"
+                }
+              }
+            }
+          }
         ]
       }
     },

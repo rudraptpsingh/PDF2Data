@@ -1,7 +1,7 @@
 """Explicit, sealed custody bindings for exact captured native proof decoders.
 
 Frozen JSON and source artifacts are never edited. An isolated interpreter runs
-only an exact current decoder or the known released rc12 decoder. Its Path
+only an exact current decoder or a known released rc12/rc13 decoder. Its Path
 constructors receive only prevalidated resource bindings, not a filesystem-wide
 redirect or an import path to the extraction origin.
 """
@@ -17,7 +17,13 @@ import tempfile
 
 SCHEMA='pdf2data.proof-relocations.v1'
 RC12_CODE='05ec5555a128690a282ed5235f52dd684ca7f2866f4f2ab029f7700e1a47781e'
+RC13_CODE='076b5055cc1496fde274888a880a31533f1f042365384b8da935984e74da86f5'
+RELEASED_DECODER_CODES=frozenset({RC12_CODE,RC13_CODE})
 SUPPORTED={'native_whitefill_prose','native_table_regions'}
+
+
+def supported_decoder_epoch(actual_code,current_code,operation):
+    return operation in SUPPORTED and actual_code in RELEASED_DECODER_CODES|{current_code}
 
 
 def canonical(value):return json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',',':'))
@@ -163,7 +169,7 @@ def worker(request):
     for path in files:bindings.within(path)
     captured=config['proof_profile'];expected=captured['source_configuration_expected'];actual_code=code_sha(package)
     current_code=code_sha(Path(__file__).resolve().parent)
-    if actual_code not in{RC12_CODE,current_code}:raise ValueError('Captured decoder is not a supported released/current producer epoch')
+    if not supported_decoder_epoch(actual_code,current_code,operation):raise ValueError('Captured decoder is not a supported released/current producer epoch')
     if actual_code!=expected['package_code_sha256']or {p.name:file_sha(p)for p in files}!=captured['source_files']:
         raise ValueError('Captured decoder source bytes differ from frozen proof profile')
     runtime_seal={p.name:file_sha(p)for p in files}

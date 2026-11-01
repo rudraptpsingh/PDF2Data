@@ -9,6 +9,18 @@ WORDS='english_cardinal_0_100_v1'
 PERCENT='english_cardinal_percent_0_100_v1'
 
 
+def test_public_rule_schema_requires_quantity_type_for_normalization():
+    from pathlib import Path
+    jsonschema=pytest.importorskip('jsonschema')
+    schema=json.loads((Path(__file__).parents[1]/'schemas/extraction-rules.schema.json').read_text())
+    validator=jsonschema.Draft202012Validator(schema)
+    config=dict(schema_version=fields.SCHEMA,id='schema-boundary',version='1',fields=[rule()])
+    validator.validate(config)
+    for kind in ('text','date','reference','formula'):
+        config['fields'][0]['type']=kind
+        with pytest.raises(jsonschema.ValidationError):validator.validate(config)
+
+
 def rule(mode=WORDS, pattern=r'(?P<value>.+)'):
     return dict(id='amount',type='quantity',pattern=pattern,quantity_normalization=mode)
 

@@ -21,7 +21,7 @@ Keep regular `.py` and `.json` package source files, including their original
 names. The extraction source closure is inspected as provenance and never
 imported. The decoder closure must match every captured source-file hash and
 the complete captured package code identity. Supported decoders are the installed
-CLI's exact current code and the released rc12 code. Other historical epochs
+CLI's exact current code and the exact released rc12 and rc13 code. Other historical epochs
 fail closed. The adapter executes only the verified flat decoder files in an
 isolated Python subprocess, using the installed interpreter and dependencies.
 
