@@ -775,3 +775,7 @@ adds whitespace/gutter retries and an optional guarded local text fallback. The
 same sample reaches 71.93%, with one additional baseline pass and no content-rule
 gains. Original source maps, raw attempts and unresolved table fragments remain
 available for review.
+
+Cell-local configured extraction is available through `pdf2data cell-fields`.
+See [configured cell fields](docs/configured-cell-fields.md) for explicit columns,
+source-cell citations and independent bundle re-derivation.

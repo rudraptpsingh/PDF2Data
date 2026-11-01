@@ -40,6 +40,8 @@ def parser() -> argparse.ArgumentParser:
     from . import __version__
     main.add_argument('--version',action='version',version='PDF2Data '+__version__)
     sub = main.add_subparsers(dest="command", required=True)
+    from .cell_fields import configure as cell_parser
+    cell_parser(sub.add_parser('cell-fields',help='extract and re-verify configured exact cell-local fields'))
     from .field_rules import configure as field_parser
     field_parser(sub.add_parser('fields',help='extract, catalog, query and evaluate configurable source-bound metadata rules'))
     controller=sub.add_parser('pdf-control',help='inventory, measure, repair and recheck documents through a durable local feedback loop')
@@ -455,7 +457,10 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
-        if args.command == 'fields':
+        if args.command == 'cell-fields':
+            from .cell_fields import execute
+            result = execute(args)
+        elif args.command == 'fields':
             from .field_rules import execute
             result=execute(args)
         elif args.command == "pdf-layout-recover":
