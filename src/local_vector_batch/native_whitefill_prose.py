@@ -31,12 +31,32 @@ def selected_representation(source,native,page,raw,selected,third,policy):
                  'repairs':repairs,'reproduced_text_sha256':sha(reproduced)}
 
 
+def white_background(rect,policy):
+    color=rect.get('non_stroking_color')
+    return bool(rect.get('fill')and not rect.get('stroke')and
+        (list(color)if isinstance(color,(list,tuple))else[color])in policy['allowed_exact_white_colors'])
+
+
+def footer_rule_rectangle(rect,native,policy):
+    """Only a thin, long bottom-margin rule disjoint from every visible glyph."""
+    if not policy.get('allow_bottom_margin_rule_rectangles'):return False
+    x0,y0,x1,y1=(rect[k]for k in('x0','top','x1','bottom'))
+    if not (rect.get('fill')or rect.get('stroke'))or not (
+        -.5<=x0<x1<=native.width+.5 and native.height*policy['footer_rule_min_top_fraction']<=y0<=y1<=native.height+.5
+        and y1-y0<=policy['footer_rule_max_height_points']
+        and x1-x0>=native.width*policy['footer_rule_min_width_fraction']):return False
+    return not any(g.get('text','').strip()and min(x1,g['x1'])>max(x0,g['x0'])and
+        min(y1,g['bottom'])>max(y0,g['top'])for g in native.chars)
+
+
 def classify_objects(native,policy):
-    colors=policy['allowed_exact_white_colors'];rects=native.rects
-    white=bool(rects)and all(r.get('fill')and not r.get('stroke')and
-        (list(r['non_stroking_color'])if isinstance(r.get('non_stroking_color'),(list,tuple))else[r.get('non_stroking_color')])in colors for r in rects)
+    from .native_tables import is_ruling_object
+    rects=native.rects
+    white=any(white_background(r,policy)for r in rects)and all(
+        white_background(r,policy)or footer_rule_rectangle(r,native,policy)for r in rects)
     return {'nonempty_white_backgrounds':white,
-            'no_ruling_strokes_images_or_curves':not native.images and not native.curves and not native.lines and all(not r.get('stroke')for r in rects)}
+            'no_body_rulings_images_or_curves':not native.images and not native.curves and not native.lines and all(
+                not is_ruling_object(r)or footer_rule_rectangle(r,native,policy)for r in rects)}
 
 
 def derive(parent,page):
@@ -54,6 +74,9 @@ def derive(parent,page):
     with pdfplumber.open(source)as pdf:
         native=pdf.pages[page-1];predicates=classify_objects(native,policy)
         if not all(predicates.values()):raise ValueError('Rule object predicates did not match: '+canonical(predicates))
+        from .native_tables import resolve_cached_candidates
+        candidate_resolution=resolve_cached_candidates(native,raw_tables)
+        predicates['raw_candidates_explained_by_white_fill_cells']=candidate_resolution['layout_gate_table_count']==0
         paint=analyze(source,page,[])
         predicates['no_paint_occlusion_or_unsupported_paint']=not paint['unsupported_paints']and all(g['visibility_state']in('retained_visible_or_unproven','retained_raw_whitespace')for g in paint['classified_glyphs'])
         representation_ok,representation=selected_representation(source,native,page,native.extract_text(),selected['text'],layout.get('secondary_layout_text_raw')or'',policy)
@@ -74,7 +97,9 @@ def derive(parent,page):
         proof={'contract_version':'pdf2data.native-whitefill-prose-proof.v1','operation':OPERATION,'source_pdf_sha256':pdf_sha,
             'page':page,'page_text_sha256':selected['text_sha256'],'rule_id':policy['rule_id'],'rule_version':policy['version'],
             'rule_config_sha256':sha(canonical(policy)),'predicates':predicates,'classification':'invisible_background_candidates_with_single_column_native_prose',
-            'white_rectangles':[{'index':i,'bbox':[r[k]for k in('x0','top','x1','bottom')],'source_object_sha256':sha(canonical(r))}for i,r in enumerate(native.rects)],
+            'white_rectangles':[{'index':i,'bbox':[r[k]for k in('x0','top','x1','bottom')],'source_object_sha256':sha(canonical(r))}for i,r in enumerate(native.rects)if white_background(r,policy)],
+            'footer_rule_rectangles':[{'index':i,'bbox':[r[k]for k in('x0','top','x1','bottom')],'source_object_sha256':sha(canonical(r))}for i,r in enumerate(native.rects)if footer_rule_rectangle(r,native,policy)and not white_background(r,policy)],
+            'raw_candidate_resolution':candidate_resolution,
             'paint_visibility_proof_sha256':sha(canonical(paint)),'independent_source_lines':source_lines,'independent_basis':basis,
             'selected_representation_proof':representation,
             'source_geometry':geometry,'raw_tables_retained':raw_tables,'raw_table_semantics':'unreviewed_not_removed_or_rewritten',
@@ -85,7 +110,8 @@ def derive(parent,page):
 def build_version(parent,source_runtime,page,output,*,external_decoder=False):
     from .legal_l1 import verify_document,write_rows,readiness_ledger
     parent,source_runtime,output=map(lambda p:Path(p).resolve(),(parent,source_runtime,output))
-    if output.exists():raise ValueError('New immutable white-background proof directory required')
+    if output.exists()or output.is_relative_to(parent)or parent.is_relative_to(output)or output.is_relative_to(source_runtime)or source_runtime.is_relative_to(output):
+        raise ValueError('New immutable white-background proof directory outside parent and source runtime required')
     verify_document(parent);origin=inspect_pdf2data_profile(source_runtime);source=read(parent/'source-receipt.json')
     if any(source['configuration'].get(k)!=v for k,v in origin['source_configuration_expected'].items()):raise ValueError('Original extraction epoch mismatch')
     if next(q for q in read(parent/'quality.json')['results']if q['page']==page)['outcome']=='auto_accepted':
@@ -113,6 +139,7 @@ def build_version(parent,source_runtime,page,output,*,external_decoder=False):
         manifest=read(stage/'l1-package.json');manifest['request_sha256']=sha(canonical({'parent':before,'operation':OPERATION,'proof_sha256':sha(canonical(proof))}))
         manifest['artifacts']={name:sha((stage/name).read_bytes())for name in manifest['artifacts']};save(stage/'l1-package.json',manifest);verify_document(stage)
         if(stage/'extraction/pages.jsonl').read_bytes()!=(parent/'extraction/pages.jsonl').read_bytes()or(stage/'extraction/tables.json').read_bytes()!=(parent/'extraction/tables.json').read_bytes():raise ValueError('White-background rule changed selected text/raw tables')
+        if sha((parent/'l1-package.json').read_bytes())!=before:raise ValueError('White-background parent changed during reproof')
         stage.rename(dest)
     decoder=None if external_decoder else verify_version(dest,source_runtime)
     result={'status':'blocked_pending_registered_source_decoder'if external_decoder else'passed','page':page,

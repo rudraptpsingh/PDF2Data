@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 
-def source_pdf(path,*,stroke=False,color=1.0,columns=1,occluded=False,one_background=False):
+def source_pdf(path,*,stroke=False,color=1.0,columns=1,occluded=False,one_background=False,footer=None):
     from pypdf import PdfWriter
     from pypdf.generic import NameObject,DictionaryObject,DecodedStreamObject
     writer=PdfWriter();page=writer.add_blank_page(width=240,height=320)
@@ -17,6 +17,11 @@ def source_pdf(path,*,stroke=False,color=1.0,columns=1,occluded=False,one_backgr
             backgrounds.append(f'{color} g 0 G .6 w {x} {y} {w} 60 re '+('B'if stroke else'f'))
             text.append(f'0 g BT /F1 10 Tf {x+10} {y+30} Td ('+('ALPHA'if c==0 else'BETA')+') Tj ET')
     if one_background:backgrounds=[f'{color} g 30 160 180 120 re f']
+    if footer:
+        y=150 if footer=='body'else 20
+        height=5 if footer=='thick'else 3
+        backgrounds.append(f'0.4 g 30 {y} 180 {height} re f')
+        if footer=='overlap':text.append('0 g BT /F1 10 Tf 40 20 Td (Footer) Tj ET')
     content='\n'.join((text+backgrounds)if occluded else(backgrounds+text));stream=DecodedStreamObject();stream.set_data(content.encode());page[NameObject('/Contents')]=writer._add_object(stream);writer.write(path)
 
 
@@ -66,7 +71,7 @@ def test_same_configured_prose_rule_preserves_an_empty_raw_matrix_list(tmp_path)
     from local_vector_batch.native_whitefill_prose import derive,build_version
     original=parent(tmp_path,one_background=True);raw=(original/'extraction/tables.json').read_bytes();assert json.loads(raw)==[]
     proof,quality=derive(original,1)
-    assert proof['raw_tables_retained']==[]and proof['rule_version']==3
+    assert proof['raw_tables_retained']==[]and proof['rule_version']==4
     assert quality['outcome']=='auto_accepted'and all(v['state']=='pass'for v in quality['components'].values())
     with pytest.raises(ValueError,match='Already accepted'):build_version(original,Path(__file__).resolve().parents[1],1,tmp_path/'no-redundant-clearance')
 
@@ -89,3 +94,31 @@ def test_digit_or_condition_loss_never_qualifies_as_representation(monkeypatch):
     from local_vector_batch import native_consensus
     monkeypatch.setattr(native_consensus,'repair_source_lines',lambda *args:pytest.fail('Changed content must reject before repair'))
     assert not selected_representation(Path('source.pdf'),object(),1,'Pay 100; not final.','Pay 10; final.','',{'allow_registered_source_line_representation':True})[0]
+
+
+def test_footer_rule_requires_independent_full_page_proof_and_retains_raw_tables(tmp_path):
+    from local_vector_batch.native_whitefill_prose import derive,build_version
+    original=parent(tmp_path,footer='valid');raw=(original/'extraction/tables.json').read_bytes()
+    proof,quality=derive(original,1)
+    assert quality['outcome']=='auto_accepted'and proof['footer_rule_rectangles']
+    assert all(proof['predicates'].values())and proof['raw_tables_retained']==json.loads(raw)
+    built=build_version(original,Path(__file__).resolve().parents[1],1,tmp_path/'child')
+    assert built['fresh_decoder']['fresh_registered_source_decoder']
+    assert(Path(built['new_l1_package_path'])/'extraction/tables.json').read_bytes()==raw
+
+
+@pytest.mark.parametrize('footer',['body','thick','overlap'])
+def test_body_rules_thick_rules_and_glyph_overlap_remain_held(tmp_path,footer):
+    from local_vector_batch.native_whitefill_prose import derive
+    original=parent(tmp_path,footer=footer)
+    with pytest.raises(ValueError,match='object predicates'):derive(original,1)
+
+
+def test_public_reproof_output_cannot_change_parent_or_origin(tmp_path):
+    from local_vector_batch.native_whitefill_prose import build_version
+    original=parent(tmp_path);runtime=Path(__file__).resolve().parents[1]
+    before=(original/'l1-package.json').read_bytes()
+    for output in (original/'nested-output',runtime/'.qa/unsafe-output'):
+        with pytest.raises(ValueError,match='outside parent and source runtime'):build_version(original,runtime,1,output)
+        assert not output.exists()
+    assert (original/'l1-package.json').read_bytes()==before

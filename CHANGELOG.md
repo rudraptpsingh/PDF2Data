@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 0.2.0-rc.12 — 2026-11-02
+
+- Expose `native-whitefill-prose-reproof` over the existing registered source
+  proof route. Extend its closed predicates to account for thin, long footer
+  rules disjoint from glyphs, alongside exact white paragraph backgrounds.
+- Require exact single-column candidate/cell/rectangle ownership, fresh paint
+  visibility, independent source lines and all eight ordinary source gates.
+  Native table previews include the underlying original-object diagnostics.
+- Keep every raw table, selected text, frozen quality ledger and consumer pin.
+  Passing proof produces a separate immutable L1 version and re-runs its
+  registered decoder. Real grids and ambiguous candidates remain held.
+- Bounded source cases and mechanical refusal controls do not establish general
+  table accuracy, semantic interpretation or legal/publication acceptance.
+
 ## 0.2.0-rc.11 — 2026-11-02
 
 - Add `admit-cached-l1` to verify and copy a pinned legacy `pdf-extract` reading

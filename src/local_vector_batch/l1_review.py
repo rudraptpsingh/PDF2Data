@@ -147,7 +147,7 @@ def preview_tables(source_pdf: Path, physical_page: int, source_sha: str, *, sel
     import pdfplumber
     import pypdfium2 as pdfium
     import re
-    from .native_tables import find_native_tables,table_shape,glyph_audit
+    from .native_tables import find_native_tables,table_shape,glyph_audit,candidate_source_diagnostic
     from .native_consensus import agrees
     if digest(Path(source_pdf).read_bytes())!=source_sha:raise ValueError('table preview source changed')
     result=[]
@@ -205,6 +205,7 @@ def preview_tables(source_pdf: Path, physical_page: int, source_sha: str, *, sel
                         'native_raw_matrix':json.loads(json.dumps(cells)),
                         'bbox':[float(x) for x in found.bbox],'page_width':page.width,'page_height':page.height,
                         'caption':caption or f'Source table {index+1}', 'caption_source_page':caption_page,**shape,
+                        'candidate_source_diagnostic':candidate_source_diagnostic(page,found),
                         'status':'repair_preview_not_approved','source_unchanged':True})
         finally:text_page.close();other_page.close()
     return result

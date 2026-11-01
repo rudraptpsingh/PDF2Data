@@ -236,6 +236,9 @@ def parser() -> argparse.ArgumentParser:
     blank=sub.add_parser('exact-white-blank-reproof',help='strict RGB255/180dpi and two-empty-reader proof into a new immutable L1 quality version')
     for option in ('package','source-runtime','output'):blank.add_argument('--'+option,type=Path,required=True)
     blank.add_argument('--pages',type=int,nargs='+',required=True);blank.add_argument('--json',action='store_true')
+    whitefill=sub.add_parser('native-whitefill-prose-reproof',help='reprove retained white-background grid candidates and bottom-margin rules into a new immutable L1 version')
+    for option in ('package','source-runtime','output'):whitefill.add_argument('--'+option,type=Path,required=True)
+    whitefill.add_argument('--page',type=int,required=True);whitefill.add_argument('--json',action='store_true')
     table_queue=sub.add_parser('auto-held-table-review',help='generate current source-bound held-table questions and exact source crops')
     for option in ('input','proof-runtime','output'):table_queue.add_argument('--'+option,type=Path,required=True)
     table_queue.add_argument('--source-runtime',type=Path,action='append',required=True)
@@ -591,6 +594,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command=='exact-white-blank-reproof':
             from .native_blank_proof import create_blank_version
             result=create_blank_version(args.package,args.source_runtime,args.pages,args.output)
+        elif args.command=='native-whitefill-prose-reproof':
+            from .native_whitefill_prose import build_version
+            result=build_version(args.package,args.source_runtime,args.page,args.output)
         elif args.command=='auto-held-table-review':
             from .native_table_review_queue import generate_queue
             result=generate_queue(args.input,args.source_runtime,args.proof_runtime,args.output,limit=args.limit,scan_limit=args.scan_limit,reviewed=args.reviewed,cache_dir=args.cache_dir)
@@ -838,6 +844,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command=='native-table-cell-revalidate'and result.get('status')!='validated':return 3
         if args.command=='native-table-region-reproof'and result.get('status')!='passed':return 3
         if args.command=='exact-white-blank-reproof'and result.get('status')!='passed':return 3
+        if args.command=='native-whitefill-prose-reproof'and result.get('status')!='passed':return 3
         if args.command == "pdf-quality" and args.require_accepted and (
                 result.get("packages_blocked") or result.get("counts", {}).get("repair_required") or
                 result.get("counts", {}).get("source_blocked") or not result.get("pages_assessed")):

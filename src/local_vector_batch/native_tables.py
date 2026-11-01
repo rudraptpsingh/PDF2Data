@@ -21,7 +21,7 @@ def is_ruling_object(obj: dict) -> bool:
     return dark and min(obj.get('width',0),obj.get('height',0))<=2
 
 
-def find_native_tables(page):
+def find_native_tables(page, *, white_fill_candidates=None):
     filtered=page.filter(is_ruling_object) if hasattr(page,'filter') else page
     found=list(filtered.find_tables())
     if filtered is not page:
@@ -31,8 +31,94 @@ def find_native_tables(page):
             x0,y0,x1,y1=candidate.bbox
             if not any(t.bbox[0]-.5<=x0 and t.bbox[1]-.5<=y0 and t.bbox[2]+.5>=x1 and t.bbox[3]+.5>=y1 for t in found):
                 candidate._powerlex_detection='unresolved_raw_candidate_no_filtered_ruling_match'
+                if white_fill_candidates is not None:
+                    proof=white_fill_single_column_proof(page,candidate)
+                    if proof is not None:white_fill_candidates.append(proof)
                 found.append(candidate)
     return found
+
+
+def candidate_source_diagnostic(page, found):
+    """Expose the source objects behind a candidate, without approving a table."""
+    box=list(found.bbox)
+    def intersects(obj):
+        return min(box[2],obj['x1'])+.5>=max(box[0],obj['x0']) and min(box[3],obj['bottom'])+.5>=max(box[1],obj['top'])
+    def record(obj):
+        return {'bbox':[float(obj[k])for k in ('x0','top','x1','bottom')],
+                **{k:obj.get(k)for k in ('object_type','stroke','fill','linewidth','stroking_color','non_stroking_color')}}
+    rects=[r for r in page.rects if intersects(r)]
+    lines=[r for r in page.lines if intersects(r)]
+    curves=[r for r in page.curves if intersects(r)]
+    return {'contract_version':'pdf2data.native-table-candidate-source-diagnostic.v1',
+            'detection_method':getattr(found,'_powerlex_detection','source_rulings_excluding_fill_only_text_shading'),
+            'bbox':box,'intersecting_rectangles':[record(r)for r in rects],
+            'fill_only_rectangles_excluded_by_ruling_filter':sum(not is_ruling_object(r)for r in rects),
+            'retained_ruling_rectangles':sum(is_ruling_object(r)for r in rects),
+            'intersecting_lines':[record(r)for r in lines],
+            'intersecting_curves':[record(r)for r in curves],
+            'source_quality_clearance':False,'semantic_table_proven':False}
+
+
+def white_fill_single_column_proof(page, found):
+    """Classify an invisible fill grid, retaining its complete raw evidence.
+
+    This does not classify semantic tables. Multi-column or ambiguous candidates
+    and any visible ruling/path evidence retain the ordinary table review gate.
+    """
+    if getattr(found,'_powerlex_detection',None)!='unresolved_raw_candidate_no_filtered_ruling_match':return None
+    rows=getattr(found,'rows',[])
+    if len(rows)<2 or any(len(row.cells)!=1 or row.cells[0] is None for row in rows):return None
+    boxes=[list(row.cells[0])for row in rows]
+    diagnostic=candidate_source_diagnostic(page,found)
+    rects=diagnostic['intersecting_rectangles']
+    if (len(rects)!=len(boxes) or diagnostic['retained_ruling_rectangles'] or
+            diagnostic['intersecting_lines'] or diagnostic['intersecting_curves']):return None
+    def white(color):
+        if isinstance(color,(int,float)):return color==1
+        if isinstance(color,(tuple,list)):
+            return (len(color)in(1,3) and all(c==1 for c in color))or(len(color)==4 and all(c==0 for c in color))
+        return False
+    if any(not r['fill']or r['stroke']or not white(r['non_stroking_color'])for r in rects):return None
+    matching=[];used=set();glyph_counts=[]
+    for box in boxes:
+        matches=[i for i,r in enumerate(rects)if max(abs(a-b)for a,b in zip(box,r['bbox']))<=.5]
+        if len(matches)!=1 or matches[0]in used:return None
+        used.add(matches[0]);matching.append(matches[0])
+        glyphs=[g for g in page.chars if g.get('text','').strip()and
+                box[0]<= (g['x0']+g['x1'])/2 <=box[2]and box[1]<=(g['top']+g['bottom'])/2<=box[3]]
+        if not glyphs:return None
+        # Each white rectangle must cover one physical text baseline, not a
+        # multiline cell or a list whose row relationship is still ambiguous.
+        if max(g['top']for g in glyphs)-min(g['top']for g in glyphs)>2:return None
+        glyph_counts.append(len(glyphs))
+    cells=found.extract()
+    if len(cells)!=len(boxes)or any(len(row)!=1 or not isinstance(row[0],str)or not row[0].strip()for row in cells):return None
+    return {'contract_version':'pdf2data.white-fill-single-column-candidate.v1',
+            'bbox':[float(v)for v in found.bbox], 'raw_cells':cells,
+            'source_cell_boxes':boxes,'source_rectangle_membership':matching,'nonempty_glyph_counts':glyph_counts,
+            'source_object_diagnostic':diagnostic,'bbox_tolerance_points':.5,
+            'disposition':'not_a_visible_source_ruling_grid_raw_observation_retained',
+            'source_quality_clearance':False,'semantic_table_proven':False}
+
+
+def resolve_cached_candidates(page, archived):
+    """Recompute exclusions from original objects; cached labels grant no proof."""
+    excluded=[]
+    find_native_tables(page,white_fill_candidates=excluded)
+    resolved=[]
+    for table in archived:
+        matches=[p for p in excluded if [round(v,2)for v in p['bbox']]==[round(v,2)for v in table['bbox']]
+                 and p['raw_cells']==table['cells'] and len(p['source_cell_boxes'])==table.get('row_count')
+                 and table.get('column_count')==1
+                 and [[round(v,2)for v in box]for box in p['source_cell_boxes']]==[c['bbox']for c in table.get('cell_spans',[])]]
+        if len(matches)==1:
+            resolved.append({'archived_table_id':table['id'],
+                'archived_table_sha256':hashlib.sha256(json.dumps(table,sort_keys=True,ensure_ascii=False).encode()).hexdigest(),
+                'source_proof':matches[0]})
+    return {'contract_version':'pdf2data.source-bound-table-candidate-resolution.v1',
+            'raw_candidate_count':len(archived),'layout_gate_table_count':len(archived)-len(resolved),
+            'excluded_ruling_candidates':resolved,'archived_tables_modified':False,
+            'source_quality_clearance':False,'semantic_table_proven':False}
 
 
 def glyph_audit(text: str) -> dict:

@@ -1,6 +1,6 @@
 # PDF2Data
 
-[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.11` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
+[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.12` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
 
 ## Quick start
 
@@ -14,7 +14,7 @@ pdf2data workspace --workspace ./pdf2data-workspace
 ```
 
 The release candidate is published on npm under the `next` tag.
-[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.11)
+[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.12)
 remain available for direct installation.
 
 The launcher downloads the matching Python wheel and dependencies into an isolated
@@ -33,6 +33,10 @@ A local CLI for source-backed PDF extraction, structured evidence packages, qual
 The output is deterministic, checksum verified, and ready for a Vectorize import step. PDF2Data preserves original sources, text and layout provenance. Extraction and model agreement do not establish legal correctness. Index publication and database ingestion remain separate stages.
 
 [Complete CLI reference, all commands and real outputs](docs/cli-reference.md).
+
+[White background candidate discrimination](docs/white-fill-table-candidates.md)
+keeps invisible paragraph rectangles from imposing an unsupported table gate,
+while preserving source evidence and ordinary independent quality checks.
 
 Use [cached-reading admission](docs/cached-reading-admission.md) to expose a verified
 legacy `pdf-extract` reading to native fields without extraction or quality promotion.

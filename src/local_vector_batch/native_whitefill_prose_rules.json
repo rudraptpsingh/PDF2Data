@@ -1,14 +1,41 @@
 {
   "contract_version": "pdf2data.native-whitefill-prose-rules.v1",
   "rule_id": "opaque_white_background_with_complete_native_prose",
-  "version": 3,
+  "version": 4,
   "require_recorded_raw_grid_candidates": false,
   "allow_registered_source_line_representation": true,
-  "allowed_exact_white_colors": [[1.0], [1.0, 1.0, 1.0], [0.0, 0.0, 0.0, 0.0]],
+  "allowed_exact_white_colors": [
+    [
+      1.0
+    ],
+    [
+      1.0,
+      1.0,
+      1.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  ],
   "source_column_gap_points": 36,
   "source_column_gap_font_multiplier": 4,
-  "required_predicates": ["nonempty_white_backgrounds", "no_ruling_strokes_images_or_curves", "no_paint_occlusion_or_unsupported_paint", "source_bound_selected_representation", "single_column_source_lines", "complete_independent_source_line_coverage"],
+  "required_predicates": [
+    "nonempty_white_backgrounds",
+    "no_body_rulings_images_or_curves",
+    "no_paint_occlusion_or_unsupported_paint",
+    "source_bound_selected_representation",
+    "single_column_source_lines",
+    "complete_independent_source_line_coverage",
+    "raw_candidates_explained_by_white_fill_cells"
+  ],
   "raw_table_policy": "retain_every_original_matrix_and_value_as_unreviewed_candidates",
   "legal_review": "not_run",
-  "publication_eligible": false
+  "publication_eligible": false,
+  "allow_bottom_margin_rule_rectangles": true,
+  "footer_rule_min_top_fraction": 0.9,
+  "footer_rule_max_height_points": 4,
+  "footer_rule_min_width_fraction": 0.6
 }
