@@ -1,0 +1,63 @@
+{
+  "schema_version": "pdf2data.semantic-real-source-qualification.v1",
+  "status": "bounded_source_selection_validated_semantics_unreviewed",
+  "actual_documents": 1,
+  "source_pdf_sha256": "2efc99923a7df73c32615f5c201230f17974ef1a2b73ed1b3d20b1d917f5952e",
+  "source_package_sha256": "5512c1037d3ded2c2a8cda89dbd7b60d046a87287493ddb4f043aa904663aca5",
+  "selected_native_fields": 7,
+  "ordered_source_parts": 8,
+  "role_checks": {
+    "expected": {
+      "identity.issue_date": "document_metadata",
+      "reference.prior_draft_date": "reference",
+      "eligibility.contract_term_and_cutoff": "condition",
+      "eligibility.cod_window_and_trigger": "condition",
+      "filing.initial_contracts": "proposed_filing_requirement",
+      "waiver.extended_tenure_cap": "condition",
+      "election.after_cod": "proposed_election_window"
+    },
+    "actual": {
+      "identity.issue_date": "document_metadata",
+      "reference.prior_draft_date": "reference",
+      "eligibility.contract_term_and_cutoff": "condition",
+      "eligibility.cod_window_and_trigger": "condition",
+      "filing.initial_contracts": "proposed_filing_requirement",
+      "waiver.extended_tenure_cap": "condition",
+      "election.after_cod": "proposed_election_window"
+    },
+    "matched": 7,
+    "scope": "Manually checked against selected actual source spans; field IDs and role descriptions provide hints. Not a held-out semantic accuracy benchmark."
+  },
+  "cross_page_cod_gna_parts": [
+    1,
+    2
+  ],
+  "quality_holds_retained": true,
+  "missing_dependencies_retained": [
+    "principal-table1-and-reg13-2-h",
+    "applicable-gna-version"
+  ],
+  "runner_receipt_integrity_verified": true,
+  "askmill_release": "0.1.0a4",
+  "askmill_wheel_sha256": "6a17f43435df1fd9388331903b2383d4f8fb94ffd48e3fc2acafc4be2edb2745",
+  "installed_result_replayed": true,
+  "model": "gemma4:e4b",
+  "revision": "0314351184bcfc7f88ba25bdaec896325ed6adcc5371674a988be35cd120101d",
+  "model_calls_in_development": 2,
+  "failed_attempts_preserved": [
+    "Token-limited incomplete model output, no candidate export.",
+    "Completed model output rejected by initial request-envelope binding; normalization fixed and cached output revalidated.",
+    "Initial source build included ignored runtime folder; build rejected; packaging exclusion fixed."
+  ],
+  "synthetic_documents_or_client_facts_used": false,
+  "source_quality_approval_granted": false,
+  "semantic_ownership_approved": false,
+  "calculation_allowed": false,
+  "publication_eligible": false,
+  "unit_tests_not_document_accuracy": {
+    "passed": 1396,
+    "skipped": 8
+  },
+  "npm_control_tests": 5,
+  "broader_source_family_coverage": "not_established"
+}

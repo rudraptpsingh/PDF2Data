@@ -48,6 +48,8 @@ def parser() -> argparse.ArgumentParser:
     witness_parser(sub.add_parser('field-witness',help='prepare source-image field readings, run local Ollama and replay reader comparisons'))
     from .field_rules import configure as field_parser
     field_parser(sub.add_parser('fields',help='extract, catalog, query and evaluate configurable source-bound metadata rules'))
+    from .semantic_fields import configure as semantic_parser
+    semantic_parser(sub.add_parser('semantic-fields', help='prepare, run and validate source-bound role candidates through AskMill'))
     controller=sub.add_parser('pdf-control',help='inventory, measure, repair and recheck documents through a durable local feedback loop')
     operations=controller.add_subparsers(dest='operation',required=True)
     for operation in ('init','run','status','feedback','tasks'):
@@ -469,6 +471,9 @@ def main(argv: list[str] | None = None) -> int:
             result=execute(args)
         elif args.command == 'cell-fields':
             from .cell_fields import execute
+            result = execute(args)
+        elif args.command == 'semantic-fields':
+            from .semantic_fields import execute
             result = execute(args)
         elif args.command == 'fields':
             from .field_rules import execute

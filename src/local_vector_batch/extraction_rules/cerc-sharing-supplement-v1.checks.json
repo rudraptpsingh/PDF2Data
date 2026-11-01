@@ -1,0 +1,219 @@
+{
+  "schema_version": "pdf2data.field-check-rules.v1",
+  "id": "powerlex.family.cerc-sharing-supplement.native-case",
+  "version": "1",
+  "target": {
+    "source_pdf_sha256": "2efc99923a7df73c32615f5c201230f17974ef1a2b73ed1b3d20b1d917f5952e",
+    "source_package_sha256": "5512c1037d3ded2c2a8cda89dbd7b60d046a87287493ddb4f043aa904663aca5",
+    "rules_sha256": "c6793bb979dea636156bbb05b11ba4e2ac7d4d9f450cfc268ff4b57f92372c7d"
+  },
+  "checks": [
+    {
+      "id": "identity.issue_date",
+      "field_id": "identity.issue_date",
+      "count": {
+        "min": 1,
+        "max": 1
+      },
+      "expected_literals": [
+        "26.10.2026"
+      ],
+      "expected_pages": [
+        [
+          1
+        ]
+      ],
+      "required_captures": [
+        "date"
+      ],
+      "expected_captures": [
+        {
+          "date": "26.10.2026"
+        }
+      ]
+    },
+    {
+      "id": "reference.prior_draft_date",
+      "field_id": "reference.prior_draft_date",
+      "count": {
+        "min": 1,
+        "max": 1
+      },
+      "expected_literals": [
+        "31.07.2026"
+      ],
+      "expected_pages": [
+        [
+          1
+        ]
+      ],
+      "required_captures": [
+        "date"
+      ],
+      "expected_captures": [
+        {
+          "date": "31.07.2026"
+        }
+      ]
+    },
+    {
+      "id": "eligibility.contract_term_and_cutoff",
+      "field_id": "eligibility.contract_term_and_cutoff",
+      "count": {
+        "min": 1,
+        "max": 1
+      },
+      "expected_literals": [
+        "entered into a PPA or PSA for a minimum tenure of\nseven (07) years with a drawee DIC (either directly or through a trading licensee or\nRenewable Energy Implementing Agency) on or before 31.03.2027"
+      ],
+      "expected_pages": [
+        [
+          1
+        ]
+      ],
+      "required_captures": [
+        "documents",
+        "comparison",
+        "duration",
+        "unit",
+        "counterparty",
+        "cutoff"
+      ],
+      "expected_captures": [
+        {
+          "documents": "PPA or PSA",
+          "comparison": "minimum",
+          "duration": "seven (07)",
+          "unit": "years",
+          "counterparty": "drawee DIC",
+          "cutoff": "31.03.2027"
+        }
+      ]
+    },
+    {
+      "id": "eligibility.cod_window_and_trigger",
+      "field_id": "eligibility.cod_window_and_trigger",
+      "count": {
+        "min": 1,
+        "max": 1
+      },
+      "expected_literals": [
+        "and the project achieves COD within a period of two months from the date of\neffectiveness of its GNA as per GNA Regulations, it shall be eligible for a waiver of\ninter-state transmission charges as under:"
+      ],
+      "expected_pages": [
+        [
+          1,
+          2
+        ]
+      ],
+      "required_captures": [
+        "event",
+        "duration",
+        "unit",
+        "trigger"
+      ],
+      "expected_captures": [
+        {
+          "event": "COD",
+          "duration": "two",
+          "unit": "months",
+          "trigger": "effectiveness of its GNA"
+        }
+      ]
+    },
+    {
+      "id": "filing.initial_contracts",
+      "field_id": "filing.initial_contracts",
+      "count": {
+        "min": 1,
+        "max": 1
+      },
+      "expected_literals": [
+        "(i) The projects that wish to avail waiver under this sub-clause, shall submit a copy\nof PPA and PSA (as applicable) to CTUIL and NLDC latest by 30.04.2027."
+      ],
+      "expected_pages": [
+        [
+          2
+        ]
+      ],
+      "required_captures": [
+        "obligation",
+        "documents",
+        "recipients",
+        "comparison",
+        "cutoff"
+      ],
+      "expected_captures": [
+        {
+          "obligation": "shall submit",
+          "documents": "PPA and PSA (as applicable)",
+          "recipients": "CTUIL and NLDC",
+          "comparison": "latest by",
+          "cutoff": "30.04.2027"
+        }
+      ]
+    },
+    {
+      "id": "waiver.extended_tenure_cap",
+      "field_id": "waiver.extended_tenure_cap",
+      "count": {
+        "min": 1,
+        "max": 1
+      },
+      "expected_literals": [
+        "(iii) The PPA or PSA which was furnished to CTU and NLDC within the above\ntimeframe may be extended beyond original tenure in which case waiver as per\nthis sub-clause shall be applicable for the extended tenure subject to maximum\nof 25 years from COD of the generating station."
+      ],
+      "expected_pages": [
+        [
+          2
+        ]
+      ],
+      "required_captures": [
+        "comparison",
+        "duration",
+        "unit",
+        "trigger"
+      ],
+      "expected_captures": [
+        {
+          "comparison": "maximum",
+          "duration": "25",
+          "unit": "years",
+          "trigger": "COD of the generating station"
+        }
+      ]
+    },
+    {
+      "id": "election.after_cod",
+      "field_id": "election.after_cod",
+      "count": {
+        "min": 1,
+        "max": 1
+      },
+      "expected_literals": [
+        "(h-ii) An REGS based on wind or solar sources, or RHGS based on a combination of\nwind and solar sources, which qualifies for waiver under sub-clause (a) as well as\nunder sub-clause (h-i) of this Clause, shall submit an undertaking to the NLDC and\nCTUIL within a period of thirty days of achievement of COD, specifying the sub-clause\n(either sub-clause (a) or sub-clause (h-i)) under which they intend to claim the waiver\nand the corresponding capacity:"
+      ],
+      "expected_pages": [
+        [
+          3
+        ]
+      ],
+      "required_captures": [
+        "document",
+        "recipients",
+        "duration",
+        "unit",
+        "trigger"
+      ],
+      "expected_captures": [
+        {
+          "document": "undertaking",
+          "recipients": "NLDC and\nCTUIL",
+          "duration": "thirty",
+          "unit": "days",
+          "trigger": "achievement of COD"
+        }
+      ]
+    }
+  ]
+}
