@@ -1,6 +1,6 @@
 # PDF2Data
 
-[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.1` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
+[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.8` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
 
 ## Quick start
 
@@ -14,7 +14,7 @@ pdf2data workspace --workspace ./pdf2data-workspace
 ```
 
 The release candidate is published on npm under the `next` tag.
-[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.1)
+[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.8)
 remain available for direct installation.
 
 The launcher downloads the matching Python wheel and dependencies into an isolated
@@ -44,12 +44,12 @@ different document categories without changing parser code:
 
 Rules support source-anchored metadata, dates, quantities and formula candidates,
 search across document bundles, reviewed-reference evaluation, readable exports
-and MCP reads. This feature is available on Git `main`, outside npm `0.2.0-rc.1`.
+and MCP reads. Add [JSON check rules](docs/field-check-rules.md) to test counts,
+values, pages and captures without writing Python tests.
 
 The [feedback controller](docs/feedback-controller.md) inventories originals,
 measures per-page errors, stages bounded repairs and rechecks the full document.
-Machine checks and source review have separate progress counts. This feature is
-available in the development checkout; it is not part of npm `0.2.0-rc.1`.
+Machine checks and source review have separate progress counts.
 
 ### Open a complete converted document
 
@@ -72,9 +72,9 @@ Open `out/readable-source/document.html`. It starts with the continuous document
 
 Markdown is the human reading; JSON retains exact spans and relationships. Paragraph boundaries, table grids, roles and references remain candidates. Relationship edges describe provenance and exact containment, not verified legal applicability. This export adds a command and therefore changes the code profile of future extractions; existing captured packages remain unchanged and are verified against their captured hashes.
 
-The current development branch adds a streamed [table-context sidecar](docs/table-contexts.md)
+The streamed [table-context sidecar](docs/table-contexts.md)
 with cell-local evidence, candidate headers, periods, units and continuation
-references. These changes are not included in the published `0.2.0-rc.1` package.
+references preserves table-level context for downstream readers.
 The [document-parts artifact](docs/document-parts.md) also retains printed page
 labels, explicit annexure/language markers and header identity conflicts.
 The optional [DeepSeek-OCR accuracy pilot](docs/benchmarks/deepseek-ocr-local-pilot.md)

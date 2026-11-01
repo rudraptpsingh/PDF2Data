@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 0.2.0-rc.8 — 2026-11-01
+
+- Add `fields check` with versioned JSON assertions for field counts, literals,
+  source pages, capture bindings and forbidden fragments. New cases require no
+  Python changes; source re-derivation remains mandatory.
+- Freeze check configuration and report per-assertion expected/actual results,
+  uncovered fields and source/rule/evaluator identities. Passing checks does not
+  grant source, formula, legal or calculation approval.
+- Include the source-main field captures and source-image witness work developed
+  after rc.1. Older bundles retain their captured runtimes; adoption requires
+  explicit compatibility validation.
+
 - Versioned JSON extraction rules: initialize, catalog, extract, search and evaluate
   new fields across document categories without per-field parser changes.
 - Exact source/ruleset provenance, typed date/quantity candidates and bounded regex

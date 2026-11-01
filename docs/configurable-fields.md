@@ -129,6 +129,10 @@ apply a new ruleset; previous outputs remain snapshots.
 
 ## Evaluate against reviewed source annotations
 
+For configurable counts, values, pages and capture assertions, use
+[`fields check` with JSON check rules](field-check-rules.md). Source-reviewed
+precision/recall evaluation remains a separate check below.
+
 ```bash
 pdf2data fields evaluate --bundle ./fields/source-id \
   --references ./reviewed-fields.json --output ./evaluation/run-1 --json

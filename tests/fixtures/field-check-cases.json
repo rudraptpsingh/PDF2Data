@@ -1,0 +1,68 @@
+{
+  "schema_version": "pdf2data.field-check-test-cases.v1",
+  "cases": [
+    {
+      "id": "unicode-capture",
+      "text": "संस्था को 30 days में जमा करना है।",
+      "field": {"id": "filing", "type": "text", "pattern": "(?P<value>संस्था को (?P<days>30) days में जमा करना है।)", "capture_groups": ["days"]},
+      "check": {"id": "filing-complete", "field_id": "filing", "count": {"min": 1, "max": 1}, "expected_literals": ["संस्था को 30 days में जमा करना है।"], "expected_pages": [[1]], "required_captures": ["days"], "expected_captures": [{"days": "30"}], "forbidden_fragments": ["<sub>", "\\frac"]},
+      "passed": true
+    },
+    {
+      "id": "missing-required-value",
+      "text": "No date is stated.",
+      "field": {"id": "date", "type": "text", "pattern": "(?P<value>26.10.2026)"},
+      "check": {"id": "date-required", "field_id": "date", "count": {"min": 1, "max": 1}},
+      "passed": false
+    },
+    {
+      "id": "explicit-negative",
+      "text": "No award is stated.",
+      "field": {"id": "award", "type": "text", "pattern": "(?P<value>awarded)"},
+      "check": {"id": "award-not-matched", "field_id": "award", "count": {"min": 0, "max": 0}},
+      "passed": true
+    },
+    {
+      "id": "wrong-capture-binding",
+      "text": "Applicant A; Respondent B",
+      "field": {"id": "parties", "type": "text", "pattern": "(?P<value>Applicant (?P<applicant>A); Respondent (?P<respondent>B))", "capture_groups": ["applicant", "respondent"]},
+      "check": {"id": "party-binding", "field_id": "parties", "count": {"min": 1, "max": 1}, "expected_captures": [{"applicant": "B", "respondent": "A"}]},
+      "passed": false
+    },
+    {
+      "id": "duplicate-value-not-hidden",
+      "text": "75 %; 75 %",
+      "field": {"id": "waiver", "type": "text", "pattern": "(?P<value>75 %)"},
+      "check": {"id": "waiver-occurrences", "field_id": "waiver", "count": {"min": 1, "max": 2}, "expected_literals": ["75 %"]},
+      "passed": false
+    },
+    {
+      "id": "literal-markup-leak",
+      "text": "SCC<sub>ess</sub>",
+      "field": {"id": "formula", "type": "text", "pattern": "(?P<value>SCC.*)"},
+      "check": {"id": "no-markup-leak", "field_id": "formula", "count": {"min": 1, "max": 1}, "forbidden_fragments": ["<sub>", "</sub>"]},
+      "passed": false
+    },
+    {
+      "id": "wrong-source-page",
+      "text": "30 days",
+      "field": {"id": "duration", "type": "text", "pattern": "(?P<value>30 days)"},
+      "check": {"id": "page-binding", "field_id": "duration", "count": {"min": 1, "max": 1}, "expected_pages": [[2]]},
+      "passed": false
+    },
+    {
+      "id": "optional-capture-not-required",
+      "text": "Applicant A",
+      "field": {"id": "party", "type": "text", "pattern": "(?P<value>Applicant A(?P<optional> absent)?)", "capture_groups": ["optional"]},
+      "check": {"id": "optional-absence", "field_id": "party", "count": {"min": 1, "max": 1}, "expected_captures": [{"optional": null}]},
+      "passed": true
+    },
+    {
+      "id": "optional-capture-required",
+      "text": "Applicant A",
+      "field": {"id": "party", "type": "text", "pattern": "(?P<value>Applicant A(?P<optional> absent)?)", "capture_groups": ["optional"]},
+      "check": {"id": "required-capture", "field_id": "party", "count": {"min": 1, "max": 1}, "required_captures": ["optional"]},
+      "passed": false
+    }
+  ]
+}
