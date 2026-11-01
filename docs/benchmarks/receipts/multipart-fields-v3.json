@@ -1,0 +1,167 @@
+{
+  "schema_version": "pdf2data.multipart-development-validation.v1",
+  "python_version": "0.2.0rc9",
+  "cases": [
+    {
+      "id": "october-cod-gna",
+      "source_pdf_sha256": "2efc99923a7df73c32615f5c201230f17974ef1a2b73ed1b3d20b1d917f5952e",
+      "source_package_sha256": "b8d02b8c3a67fb68d2a6cec19f4681faaee47e472f71017e8aa9140ed00c67d8",
+      "rules_sha256": "162d293e59fe7e45c4b0991a5fac2d85b600b7be62d93f15043a7a425f4d5193",
+      "v2_observations": 0,
+      "v3_observations": 1,
+      "exact_source_spans": true,
+      "exact_parent": true,
+      "exact_captures": true,
+      "evaluation_passed": true,
+      "wrong_page_negative_rejected": true,
+      "source_pages": [
+        1,
+        2
+      ],
+      "native_parent_quality_outcomes": {
+        "auto_accepted": 2,
+        "repair_required": 1
+      },
+      "source_seams": [
+        {
+          "from_page": 1,
+          "from_char_end": 1654,
+          "to_page": 2,
+          "to_char_start": 0,
+          "omitted_native_parent_gap": [
+            {
+              "characters": 1,
+              "text_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+            },
+            {
+              "characters": 0,
+              "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "join": "exact_native_span_concatenation_no_separator",
+          "furniture_state": "not_removed_or_classified_by_field_extractor",
+          "semantic_continuation_approved": false
+        }
+      ],
+      "field_manifest_sha256": "5d15fcb962ea67ff44f61f79335ed7963347779cdb1cc93edb59d771fae50e98",
+      "evaluation_sha256": "e32072ed503659655780411d04d54dffdc6ff60b150b441027f311996cd7585c",
+      "checks_sha256": "7ad86f888650cfecd455d6e1cb208030f0711054a7f768df168f66ef1f493bb0"
+    },
+    {
+      "id": "july-state-deviation",
+      "source_pdf_sha256": "00bb0b39fbca29ee0cd0ef3934dc7479f6081b642f1c67b9e34ae2f5eebeb01e",
+      "source_package_sha256": "ea7f17f2584b6e699e8bad37fb36fa35370e1b5d2bd0da51d8c896ef054ffcbf",
+      "rules_sha256": "64de5c6954f4bd5ed03f5fe1b3757e37d5b5a0b8e660381fbbfd4d4a2e7c0281",
+      "v2_observations": 0,
+      "v3_observations": 1,
+      "exact_source_spans": true,
+      "exact_parent": true,
+      "exact_captures": true,
+      "evaluation_passed": true,
+      "wrong_page_negative_rejected": true,
+      "source_pages": [
+        1,
+        2
+      ],
+      "native_parent_quality_outcomes": {
+        "auto_accepted": 2
+      },
+      "source_seams": [
+        {
+          "from_page": 1,
+          "from_char_end": 1733,
+          "to_page": 2,
+          "to_char_start": 0,
+          "omitted_native_parent_gap": [
+            {
+              "characters": 110,
+              "text_sha256": "d9953e80ade9151dc175346fb02c807ee59b6abc1aa311366b7f3e9a83638d41"
+            },
+            {
+              "characters": 0,
+              "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "join": "exact_native_span_concatenation_no_separator",
+          "furniture_state": "not_removed_or_classified_by_field_extractor",
+          "semantic_continuation_approved": false
+        }
+      ],
+      "field_manifest_sha256": "e41f825db575675ce420df1bbe8c3c86537ad2614457dab4d74073ca92ee1d5d",
+      "evaluation_sha256": "d86645ba1fca1d74f8f035b043034c03c70446a3cbd83c2216ef38a60b8d5ee6",
+      "checks_sha256": "9bde8516c9dc05ca39f81f9d175aa5c44a344b8ad6b18fae98a166ff787ab945"
+    },
+    {
+      "id": "july-procedure",
+      "source_pdf_sha256": "00bb0b39fbca29ee0cd0ef3934dc7479f6081b642f1c67b9e34ae2f5eebeb01e",
+      "source_package_sha256": "ea7f17f2584b6e699e8bad37fb36fa35370e1b5d2bd0da51d8c896ef054ffcbf",
+      "rules_sha256": "d472bc4377bf3f9c491b286d80654120633dfc493f0f825c189b7daec301e988",
+      "v2_observations": 0,
+      "v3_observations": 1,
+      "exact_source_spans": true,
+      "exact_parent": true,
+      "exact_captures": true,
+      "evaluation_passed": true,
+      "wrong_page_negative_rejected": true,
+      "source_pages": [
+        3,
+        4
+      ],
+      "native_parent_quality_outcomes": {
+        "auto_accepted": 3,
+        "repair_required": 1
+      },
+      "source_seams": [
+        {
+          "from_page": 3,
+          "from_char_end": 2306,
+          "to_page": 4,
+          "to_char_start": 0,
+          "omitted_native_parent_gap": [
+            {
+              "characters": 110,
+              "text_sha256": "5732a1cac701602ead9273e72406b466f7ecb764a62671b7db1fdb6ccd9d4cc3"
+            },
+            {
+              "characters": 0,
+              "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "join": "exact_native_span_concatenation_no_separator",
+          "furniture_state": "not_removed_or_classified_by_field_extractor",
+          "semantic_continuation_approved": false
+        }
+      ],
+      "field_manifest_sha256": "b8149b82ed3bd4c76edc42d27f23a0bc943bfc7207b9de42f69968bb744f99c0",
+      "evaluation_sha256": "7fd92786687e5e13fe1e2bbebef12e42f4ef64070ebb0c1a44bc0509747ef425",
+      "checks_sha256": "69a07c2a57a3efff208f3d750bfdea16b9d10bd118163d0755785563bbe6fce2"
+    }
+  ],
+  "tests": {
+    "local_passed": 1363,
+    "local_skipped": 7,
+    "npm_passed": 5
+  },
+  "installed_wheel_sha256": "00f4311f1f95db1a431f71392ec979efba1ea3f6f9171345c3037e5af9972754",
+  "mcp": {
+    "schema_version": "pdf2data.multipart-mcp-validation.v1",
+    "status": "processed_with_flags",
+    "source_pdf_sha256": "2efc99923a7df73c32615f5c201230f17974ef1a2b73ed1b3d20b1d917f5952e",
+    "requested_pages": [
+      1,
+      2
+    ],
+    "retained_parts": [
+      1,
+      2
+    ],
+    "records_equal": true,
+    "exact_captures": true,
+    "calculation_allowed": false,
+    "publication_eligible": false
+  },
+  "review_scope": "three_source_text_cases_not_corpus_accuracy_or_legal_acceptance",
+  "source_quality_approval_granted": false,
+  "semantic_completeness": "not_established",
+  "legal_approval": false
+}

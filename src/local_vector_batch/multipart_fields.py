@@ -146,7 +146,6 @@ def compute(data, rules, rules_sha, family, implementation):
 
 def evaluate(bundle, references, output):
     """Exact parent plus ordered-span labels; no implicit first-page reference."""
-    import json
     from pathlib import Path
     from .field_rules import _decode, source_data, write
     from .hashing import file_sha256
@@ -159,14 +158,17 @@ def evaluate(bundle, references, output):
         if reference.get(key) != data.get(key):raise ValueError('Multipart reference source/rules version differs: '+key)
     if not reference.get('reviewer') or reference.get('reference_scope') not in ('human_source_review', 'development_fixture'):
         raise ValueError('Declare reviewer and reference provenance')
-    source = source_data(Path(manifest['source_package']), data['source_pdf_sha256'])
+    package = Path(manifest['source_package']).resolve()
+    if output.is_relative_to(package) or package.is_relative_to(output):
+        raise ValueError('Evaluation output must be outside the immutable source package')
+    source = source_data(package, data['source_pdf_sha256'])
     pages = {p['page']:p for p in source['pages']}; units = {u['id']:u for u in source['structure']['units']}
     def key(parts, parent, literal):
         if parent not in units or not isinstance(parts, list) or not parts:raise ValueError('Reference needs native parent and ordered source spans')
         for s in parts:
             if s.get('offset_encoding', 'codepoint') != 'codepoint':raise ValueError('Use Unicode codepoint reference offsets')
             page = pages[s['page']]; a = s['char_start']; text = s['exact_quote']
-            if not isinstance(a, int) or a < 0 or not text or s['page_text_sha256'] != page['text_sha256'] or page['text'][a:a+len(text)] != text:
+            if type(a) is not int or a < 0 or not isinstance(text, str) or not text or s['page_text_sha256'] != page['text_sha256'] or page['text'][a:a+len(text)] != text:
                 raise ValueError('Multipart reference is not anchored to source')
             if s.get('char_length', len(text)) != len(text):raise ValueError('Multipart reference length differs')
             if not any(t['page'] == s['page'] and t['char_start'] <= a and a+len(text) <= t['char_start']+t['char_length'] for t in units[parent]['spans']):

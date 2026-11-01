@@ -92,7 +92,8 @@
               "all",
               "body_candidate",
               "header_candidate",
-              "footer_candidate"
+              "footer_candidate",
+              "native_unit_candidate"
             ]
           },
           "families": {
@@ -114,6 +115,24 @@
             "items": {
               "type": "string",
               "pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"
+            }
+          },
+          "native_unit_ids": {
+            "type": "array",
+            "maxItems": 1000,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "native_unit_labels": {
+            "type": "array",
+            "maxItems": 1000,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
             }
           }
         },
@@ -147,7 +166,8 @@
     "fields_schema_version": {
       "enum": [
         "pdf2data.configured-fields.v1",
-        "pdf2data.configured-fields.v2"
+        "pdf2data.configured-fields.v2",
+        "pdf2data.configured-fields.v3"
       ]
     }
   },
@@ -170,7 +190,74 @@
         ],
         "properties": {
           "fields_schema_version": {
-            "const": "pdf2data.configured-fields.v2"
+            "enum": [
+              "pdf2data.configured-fields.v2",
+              "pdf2data.configured-fields.v3"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "fields_schema_version"
+        ],
+        "properties": {
+          "fields_schema_version": {
+            "const": "pdf2data.configured-fields.v3"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "fields": {
+            "items": {
+              "required": [
+                "scope",
+                "pattern"
+              ],
+              "properties": {
+                "scope": {
+                  "const": "native_unit_candidate"
+                },
+                "extractor": {
+                  "const": "regex"
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "fields": {
+            "items": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "native_unit_ids"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "native_unit_labels"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "scope"
+                    ],
+                    "properties": {
+                      "scope": {
+                        "const": "native_unit_candidate"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
           }
         }
       }

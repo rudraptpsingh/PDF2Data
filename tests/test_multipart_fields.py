@@ -184,3 +184,67 @@ def test_rehashed_multipart_mutations_fail_native_rederivation(native_bundle,mut
     fields.write(native_bundle/'fields.json',value)
     manifest=json.loads((native_bundle/'manifest.json').read_text());manifest['files']['fields.json']=fields.file_sha256(native_bundle/'fields.json');fields.write(native_bundle/'manifest.json',manifest)
     with pytest.raises(ValueError,match='re-derivation'):fields.verify(native_bundle)
+
+
+def test_v3_output_and_rule_schemas_reject_flat_aliases_and_unapproved_scopes():
+    jsonschema=pytest.importorskip('jsonschema')
+    root=Path(__file__).parents[1]/'schemas'
+    schema=json.loads((root/'configured-fields.v3.schema.json').read_text())
+    validator=jsonschema.Draft202012Validator(schema);validator.check_schema(schema)
+    packet=run(data('1. COD within two months from the date of\n','effectiveness of GNA'))
+    validator.validate(packet)
+    for mutation in ('flat','parent','approval','capture','seam'):
+        changed=deepcopy(packet);row=changed['observations'][0]
+        if mutation=='flat':row['source_span']=row['source_spans'][0]
+        elif mutation=='parent':row.pop('native_parent')
+        elif mutation=='approval':row['calculation_allowed']=True
+        elif mutation=='capture':row['captures']['duration']['source_spans']=[]
+        else:row['source_seams'][0]['semantic_continuation_approved']=True
+        with pytest.raises(jsonschema.ValidationError):validator.validate(changed)
+    rule_schema=json.loads((root/'extraction-rules.schema.json').read_text())
+    rule_validator=jsonschema.Draft202012Validator(rule_schema)
+    rule_validator.check_schema(rule_schema);rule_validator.validate(rules())
+    for change in ('old_version','scope','extractor'):
+        changed=rules()
+        if change=='old_version':changed['fields_schema_version']=fields.FIELDS_V2
+        elif change=='scope':changed['fields'][0]['scope']='all'
+        else:changed['fields'][0].update(type='formula',extractor='formulas')
+        with pytest.raises(jsonschema.ValidationError):rule_validator.validate(changed)
+
+
+def test_declarative_checks_retain_v3_pages_and_capture_bindings(native_bundle,tmp_path):
+    from local_vector_batch.field_checks import check
+    packet=json.loads((native_bundle/'fields.json').read_text())
+    conf=dict(schema_version='pdf2data.field-check-rules.v1',id='v3-checks',version='1',
+              target={k:packet[k]for k in ('source_pdf_sha256','source_package_sha256','rules_sha256')},
+              checks=[dict(id='two-occurrences',field_id='cod',count=dict(min=2,max=2),
+                 expected_pages=[[1],[2]],expected_captures=[dict(duration='two weeks')]*2)])
+    path=tmp_path/'checks.json';fields.write(path,conf)
+    assert check(native_bundle,path,tmp_path/'checks-output')['passed']
+
+
+def test_v3_evaluation_cannot_write_into_source_package(native_bundle,tmp_path):
+    packet=json.loads((native_bundle/'fields.json').read_text());manifest=json.loads((native_bundle/'manifest.json').read_text())
+    reference={k:packet[k]for k in ('source_pdf_sha256','source_package_sha256','rules_sha256')}
+    reference.update(reviewer='fixture',reference_scope='development_fixture',fields=[])
+    path=tmp_path/'references.json';fields.write(path,reference)
+    with pytest.raises(ValueError,match='immutable source package'):
+        fields.evaluate(native_bundle,path,Path(manifest['source_package'])/'illegal-output')
+
+
+SOURCE_CASES=json.loads((Path(__file__).parent/'fixtures/multipart-source-cases.json').read_text(encoding='utf-8'))['cases']
+
+
+@pytest.mark.parametrize('case',SOURCE_CASES,ids=[c['id']for c in SOURCE_CASES])
+def test_json_source_case_literals_and_rules_have_consistent_multipart_bindings(case,tmp_path):
+    # Synthetic text checks fixture/rule consistency. The separate source CLI
+    # evaluation reopens the actual pinned PDF/package offsets and parent IDs.
+    expected=case['expected'];parts=expected['source_spans'];texts=['Preamble.\n']*max(s['page']for s in parts)
+    for i,s in enumerate(parts):
+        texts[s['page']-1]=(case['rules']['fields'][0]['native_unit_labels'][0]+'. 'if i==0 else'')+s['exact_quote']
+    path=tmp_path/'rules.json';fields.write(path,case['rules'])
+    packet=run(data(*texts),fields.load(path));assert len(packet['observations'])==1
+    row=packet['observations'][0]
+    assert row['value_literal']==expected['value_literal']
+    assert [s['page']for s in row['source_spans']]==[s['page']for s in parts]
+    assert {k:v['value_literal']for k,v in row['captures'].items()}==expected['capture_literals']
