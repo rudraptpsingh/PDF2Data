@@ -79,6 +79,32 @@ def test_rate_currency_scale_and_duration_do_not_become_calculations():
     assert all(r['absolute_date']is None for r in rates)
 
 
+def test_parenthetical_funding_qualifier_does_not_absorb_following_deadline():
+    v=run(data('1. Amendment\n1.1. A provision shall be added: “The applicant shall furnish documents (Board resolution, if internal funding is planned for 100% of project cost, with details per Procedure) within 15 days of the effective date.”'))
+    condition=next(r for r in records(v,'conditions')if r['introducer']['literal']=='if')
+    assert condition['literal']=='if internal funding is planned for 100% of project cost, with details per Procedure'
+    assert condition['predicate_tree']['kind']=='unknown'
+    assert all(q['literal']!='15 days'for q in condition['operand_candidates'])
+    assert any(r['value']['literal']=='15 days'for r in records(v,'values'))
+    assert not condition['calculation_allowed']and not condition['legal_answer_eligible']
+
+
+def test_nested_parenthesis_and_cross_page_conditional_boundaries_are_exact():
+    v=run(data('1. Amendment\n1.1. A provision shall be added: “The document (if entity has consent (including renewal),',
+               ' it may proceed) shall be filed within 15 days.”'))
+    condition=next(r for r in records(v,'conditions')if r['introducer']['literal']=='if')
+    assert condition['literal']=='if entity has consent (including renewal), it may proceed'
+    assert {s['page']for s in condition['source_spans']}=={1,2}
+    assert condition['predicate_tree']['kind']=='unknown'
+    assert ''.join(s['exact_quote']for s in condition['source_spans'])==condition['literal']
+
+
+def test_condition_outside_parenthesis_keeps_its_existing_unknown_scope():
+    v=run(data('1. Amendment\n1.1. A provision shall be added: “If an applicant uses an ESS (excluding PSP), it shall file within 15 days.”'))
+    condition=next(r for r in records(v,'conditions')if r['introducer']['literal']=='If')
+    assert 'within 15 days'in condition['literal']and condition['predicate_tree']['kind']=='unknown'
+
+
 def test_factor_words_and_printed_dates_keep_their_own_literals():
     v=run(data('DRAFT NOTIFICATION Dated: 20.05.2026\n1. Amendment\n1.1. The words “minimum discharge as twice the Connectivity quantum” shall be added.'))
     factors=[r['value']for r in records(v,'values')if r['value']['kind']=='factor']

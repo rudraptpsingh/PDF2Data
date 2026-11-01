@@ -153,3 +153,7 @@ and human review before making a category accuracy claim.
 
 See [the real-source validation receipt](regulatory-candidates-validation.md).
 Map/Query/Impact integration and automatic semantic approval are deferred.
+
+## Parenthesized condition boundaries
+
+A condition introducer inside an open parenthesis is clipped at that enclosing closing delimiter, including nested parentheses and cross-page native spans. This applies to inline `if`/`in case` qualifiers as well as exclusions. It prevents a funding-proof qualifier inside parentheses from absorbing a separate filing deadline after the closing parenthesis. Conditions introduced outside parentheses retain their existing scope, and predicate roots remain unknown unless an explicit configured Boolean pattern supplies evidence. This is a lexical source boundary, not proof of semantic ownership or applicability. Existing frozen outputs require their captured producer implementation; extract a new bundle for this change.
