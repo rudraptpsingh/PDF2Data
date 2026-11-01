@@ -38,3 +38,5 @@ A large-grid reference preserves a held control-code reading instead of
 normalizing it without sufficient source context. These are bounded source
 checks, not general table accuracy or legal, numeric or publication acceptance.
 Existing jobs and consumer pins require separate explicit qualification.
+
+For relocation of frozen parents and review inputs, see [frozen native proof custody](frozen-native-proof-custody.md).

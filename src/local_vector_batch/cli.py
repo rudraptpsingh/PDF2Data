@@ -263,6 +263,8 @@ def parser() -> argparse.ArgumentParser:
     targeted.add_argument('--pages',type=int,nargs='+',required=True);targeted.add_argument('--output',type=Path,required=True);targeted.add_argument('--json',action='store_true')
     repair_verify=sub.add_parser('verify-native-quality-repair',help='freshly reconstruct registered source-quality repair evidence')
     repair_verify.add_argument('--package',type=Path,required=True);repair_verify.add_argument('--source-runtime',type=Path,required=True);repair_verify.add_argument('--json',action='store_true')
+    repair_verify.add_argument('--relocations',type=Path,help='typed, hash-checked custody package/file bindings')
+    repair_verify.add_argument('--proof-runtime',type=Path,help='explicit exact captured decoder source closure; required with --relocations')
     repair = sub.add_parser("pdf-repair", help="repair selected original physical pages without reprocessing the PDF")
     repair.add_argument("--input", required=True, type=Path, help="original source PDF")
     repair.add_argument("--package", required=True, type=Path, help="existing verified extraction package")
@@ -620,7 +622,11 @@ def main(argv: list[str] | None = None) -> int:
             result=create_reproof(args.package,args.source_runtime,args.pages,args.output)
         elif args.command=='verify-native-quality-repair':
             from .proof_identity import verify_source_quality_repair
-            result=verify_source_quality_repair(args.package,args.source_runtime)
+            if bool(args.relocations)!=bool(args.proof_runtime):raise ValueError('Select both --relocations and --proof-runtime for custody replay')
+            if args.relocations:
+                from .proof_relocation import replay
+                result=replay(args.package,args.source_runtime,args.proof_runtime,args.relocations)
+            else:result=verify_source_quality_repair(args.package,args.source_runtime)
         elif args.command == "pdf-extract":
             from .pdf_ingest import extract_pdf
             result = extract_pdf(args.input, args.output, title=args.title,

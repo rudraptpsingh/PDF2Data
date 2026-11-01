@@ -4,6 +4,8 @@
 
 ## 0.2.0-rc.13 — 2026-11-02
 
+- Replay frozen native proofs with explicit hash-checked custody bindings and an exact captured decoder closure; preserve captured provenance and reject substituted parents or external review inputs.
+
 - Support native table source proofs from installed wheels by requiring all
   proof modules to share the actual current package directory. Mixed modules
   remain refused; captured extraction origins stay data rather than import paths.
