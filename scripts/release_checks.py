@@ -22,7 +22,7 @@ def check(dist=None):
     required = ['cli.py', 'mcp_server.py', 'workspace.html', 'ui.css', 'overlays.js',
         'overlays.css', 'viewer.css', 'quality_policy.json', 'document_profiles.json',
         'document_model.py', 'formula_observations.py', 'source_locations.py', 'native_visuals.py',
-        'field_checks.py', 'multipart_fields.py', 'semantic_fields.py',
+        'field_checks.py', 'multipart_fields.py', 'semantic_fields.py', 'cached_l1.py',
         'extraction_rules/cerc-sharing-supplement-v1.json',
         'extraction_rules/cerc-sharing-supplement-v1.checks.json']
     wheels = []

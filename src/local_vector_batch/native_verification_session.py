@@ -44,6 +44,13 @@ class VerificationSession:
         evidence=json.loads((package/'extraction/evidence-package.json').read_text())
         paths={'l1-package.json','extraction/evidence-package.json',*manifest.get('artifacts',{})}
         paths.update('extraction/'+name for name in evidence['files'])
+        if manifest.get('operation') == 'pdf2data.cached-reading-admission.v1':
+            from .cached_l1 import inventory
+            admitted=json.loads((package/'cached-reading.json').read_text())
+            retained=inventory(package/'extraction')
+            if retained != admitted.get('legacy_files'):
+                raise ValueError('Cached-reading legacy files differ from pinned inventory')
+            paths.update('extraction/'+name for name in retained)
         identity={}
         for name in sorted(paths):
             path=(package/name).resolve()

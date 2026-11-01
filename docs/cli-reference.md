@@ -1128,3 +1128,9 @@ It never trains or approves extraction rules automatically.
 `data.json`. Labels, values, role candidates, original language, exact source
 spans and available geometry are retained. See
 [structured evidence and calculation handoff](structured-regulatory-data.md).
+
+## Admit a retained legacy reading
+
+Use `admit-cached-l1` with pinned original and legacy manifest hashes, then
+`verify-legal-l1` and `fields extract`. The output preserves cached bytes and
+holds missing current source proof. See [cached-reading admission](cached-reading-admission.md).

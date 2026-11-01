@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.2.0-rc.11 — 2026-11-02
+
+- Add `admit-cached-l1` to verify and copy a pinned legacy `pdf-extract` reading
+  into an immutable native package without PDF text extraction, OCR or models.
+- Preserve original and cached file hashes, page text/status, table geometry and
+  historical receipts; expose cached page dimensions and explicit missing facets.
+- Re-derive admission artifacts during ordinary native verification. Configured
+  fields can read exact cached spans while every page retains a current source
+  proof hold. Migration integrity grants no source or legal acceptance.
+
 ## 0.2.0-rc.10 — 2026-11-01
 
 - Add `semantic-fields prepare/run/validate` over verified native multipart

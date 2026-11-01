@@ -347,6 +347,9 @@ def _verify_document_uncached(output: Path) -> dict:
     output=Path(output)
     receipt=json.loads((output/'l1-package.json').read_text())
     if receipt.get('schema_version')!=SCHEMA:raise ValueError('unknown L1 schema')
+    if receipt.get('operation') is not None:
+        from .cached_l1 import verify as verify_cached_reading
+        return verify_cached_reading(output)
     required={'original.pdf','source-receipt.json','layout.jsonl','structure.json','validation.json','quality.json','repair-queue.jsonl','readiness.json'}
     if 'vision-evidence.json' in receipt.get('artifacts',{}):required.add('vision-evidence.json')
     if set(receipt.get('artifacts',{}))!=required:raise ValueError('incomplete L1 artifact manifest')

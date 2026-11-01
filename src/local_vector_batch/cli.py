@@ -177,6 +177,14 @@ def parser() -> argparse.ArgumentParser:
     legal_verify = sub.add_parser("verify-legal-l1", help="verify original, extraction, layout and exact legal structure")
     legal_verify.add_argument("--output", required=True, type=Path)
     legal_verify.add_argument("--json", action="store_true")
+    cached = sub.add_parser('admit-cached-l1', help='admit a pinned legacy pdf-extract reading without extraction or source-quality promotion')
+    for key in ('package', 'source-pdf', 'output'):
+        cached.add_argument('--'+key, type=Path, required=True)
+    for key in ('source-sha256', 'package-sha256', 'source-id'):
+        cached.add_argument('--'+key, required=True)
+    from .legal_l1 import FAMILIES
+    cached.add_argument('--family', choices=sorted(FAMILIES), required=True)
+    cached.add_argument('--json', action='store_true')
     qprep = sub.add_parser("l1-qwen-prepare", help="freeze unresolved L1 original pages for source-bound offline Qwen reading")
     qprep.add_argument("--packages", required=True, type=Path)
     qprep.add_argument("--output", required=True, type=Path)
@@ -549,6 +557,10 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "verify-legal-l1":
             from .legal_l1 import verify_document
             result = verify_document(args.output)
+        elif args.command == 'admit-cached-l1':
+            from .cached_l1 import admit
+            result = admit(args.package, args.source_pdf, args.source_sha256,
+                           args.package_sha256, args.source_id, args.family, args.output)
         elif args.command == "l1-qwen-prepare":
             from .l1_qwen import prepare
             result = prepare(args.packages, args.output)

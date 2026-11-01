@@ -34,6 +34,9 @@ The output is deterministic, checksum verified, and ready for a Vectorize import
 
 [Complete CLI reference, all commands and real outputs](docs/cli-reference.md).
 
+Use [cached-reading admission](docs/cached-reading-admission.md) to expose a verified
+legacy `pdf-extract` reading to native fields without extraction or quality promotion.
+
 Use [configurable field rules](docs/configurable-fields.md) to add metadata for
 different document categories without changing parser code:
 
