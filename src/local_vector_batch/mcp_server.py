@@ -87,7 +87,10 @@ class Bridge:
                 if body['source_pdf_sha256']!=state['source_pdf_sha256']:raise ValueError('Configured fields/source identity changed')
                 if page is not None:
                     if type(page)is not int or page<1:raise ValueError('A positive physical page number is required')
-                    body['observations']=[r for r in body['observations']if r['source_span']['page']==page]
+                    if body.get('schema_version')=='pdf2data.configured-fields.v3':
+                        body['observations']=[r for r in body['observations']if any(s['page']==page for s in r['source_spans'])]
+                        body['page_filter_scope']='records_touching_page_complete_multipart_records_retained'
+                    else:body['observations']=[r for r in body['observations']if r['source_span']['page']==page]
         elif artifact=='document_parts':
             if 'document-parts.json' not in manifest['files']:
                 body=dict(status='not_available_reexport_required')

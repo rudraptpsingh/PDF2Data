@@ -16,13 +16,14 @@ from .hashing import file_sha256
 SCHEMA='pdf2data.extraction-rules.v1'
 FIELDS_V1='pdf2data.configured-fields.v1'
 FIELDS_V2='pdf2data.configured-fields.v2'
+FIELDS_V3='pdf2data.configured-fields.v3'
 TYPES={'text','date','quantity','reference','formula'}
 SOURCE_FILES=('extraction/pages.jsonl','layout.jsonl','extraction/tables.json','structure.json','quality.json')
 
 
 def implementation():
     root=Path(__file__).parent
-    return {name:file_sha256(root/name)for name in ('field_rules.py','formula_observations.py','document_blocks.py','document_metadata.py')}
+    return {name:file_sha256(root/name)for name in ('field_rules.py','formula_observations.py','document_blocks.py','document_metadata.py','multipart_fields.py')}
 
 
 def _decode(raw):
@@ -37,11 +38,11 @@ def _decode(raw):
 
 def capture_config(rules,field,compiled=None):
     version=rules.get('fields_schema_version',FIELDS_V1)
-    if version not in (FIELDS_V1,FIELDS_V2):raise ValueError('Unknown configured fields schema')
+    if version not in (FIELDS_V1,FIELDS_V2,FIELDS_V3):raise ValueError('Unknown configured fields schema')
     captures=field.get('capture_groups',[])
     if not isinstance(captures,list)or len(captures)>32 or any(not isinstance(n,str)or not re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,63}',n)for n in captures)or len(captures)!=len(set(captures)):
         raise ValueError('Use at most 32 unique named capture groups')
-    if 'capture_groups'in field and version!=FIELDS_V2:raise ValueError('Named captures require opt-in configured-fields.v2')
+    if 'capture_groups'in field and version not in (FIELDS_V2,FIELDS_V3):raise ValueError('Named captures require opt-in configured-fields.v2 or v3')
     if captures:
         if field.get('extractor','regex')!='regex':raise ValueError('Named captures require the regex extractor')
         compiled=compiled or re.compile(field['pattern'],flags(field))
@@ -68,7 +69,7 @@ def source_data(package,source_sha):
 
 def load(path):
     value=json.loads(Path(path).read_text(encoding='utf-8'))
-    if value.get('fields_schema_version')==FIELDS_V2:value=_decode(Path(path).read_bytes())
+    if value.get('fields_schema_version')in (FIELDS_V2,FIELDS_V3):value=_decode(Path(path).read_bytes())
     if value.get('schema_version')!=SCHEMA or not isinstance(value.get('id'),str)or not value['id']or not isinstance(value.get('version'),str)or not value['version']:raise ValueError('Rules need schema_version, id and nonempty string version')
     if not isinstance(value.get('families',[]),list)or any(not isinstance(v,str)for v in value.get('families',[])):raise ValueError('Families must be a list of declared category names')
     fields=value.get('fields');ids=[]
@@ -78,7 +79,11 @@ def load(path):
         if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_.-]{0,79}',field['id'])or field['type']not in TYPES:raise ValueError('Invalid field id or type')
         if not isinstance(field.get('pages',[]),list)or any(type(p)is not int or p<1 for p in field.get('pages',[])):raise ValueError('Pages must be positive physical page numbers')
         if not isinstance(field.get('families',[]),list)or any(not isinstance(v,str)for v in field.get('families',[])):raise ValueError('Field families must be category names')
-        if field.get('scope','all')not in ('all','body_candidate','header_candidate','footer_candidate'):raise ValueError('Unknown source-region scope')
+        if value.get('fields_schema_version')==FIELDS_V3:
+            from .multipart_fields import validate_field
+            validate_field(field)
+        elif any(n in field for n in ('native_unit_ids','native_unit_labels')):raise ValueError('Native unit selectors require explicit fields v3')
+        elif field.get('scope','all')not in ('all','body_candidate','header_candidate','footer_candidate'):raise ValueError('Unknown source-region scope')
         if field.get('extractor','regex')=='formulas':
             if field['type']!='formula':raise ValueError('Formula extractor needs type formula')
             if field.get('scope','all')!='all':raise ValueError('Formula region scopes need a verified component graph; use all and explicit pages')
@@ -112,7 +117,10 @@ def catalog(path,search=None):
 
 def compute(data,rules,rules_sha,family):
     version=rules.get('fields_schema_version',FIELDS_V1)
-    if version not in (FIELDS_V1,FIELDS_V2):raise ValueError('Unknown configured fields schema')
+    if version not in (FIELDS_V1,FIELDS_V2,FIELDS_V3):raise ValueError('Unknown configured fields schema')
+    if version==FIELDS_V3:
+        from .multipart_fields import compute as multipart_compute
+        return multipart_compute(data,rules,rules_sha,family,implementation())
     if version==FIELDS_V2 and not re.fullmatch(r'[a-f0-9]{64}',data.get('source_package_sha256','')):raise ValueError('Configured fields v2 requires exact source package SHA256')
     layouts={p['page']:p for p in data['layout']};fields=[];counts={};formula_records=None
     for field in rules['fields']:
@@ -195,7 +203,7 @@ def extract(package,rules_path,output,timeout=30):
     rules=load(rules_path)
     if output.exists()or output.is_relative_to(package)or package.is_relative_to(output):raise ValueError('Use a new output directory outside immutable source packages')
     if not 1<=timeout<=600:raise ValueError('Use a rule timeout of 1..600 seconds')
-    v2=rules.get('fields_schema_version',FIELDS_V1)==FIELDS_V2
+    v2=rules.get('fields_schema_version',FIELDS_V1)in (FIELDS_V2,FIELDS_V3)
     verify_document(package);names=(*SOURCE_FILES,'original.pdf','source-receipt.json',*(('l1-package.json',)if v2 else()));hashes={n:file_sha256(package/n)for n in names};rules_sha=file_sha256(rules_path);impl=implementation()if v2 else None
     with tempfile.TemporaryDirectory(prefix='pdf2data-fields-')as temp:
         inp=Path(temp)/'request.json';out=Path(temp)/'output.json';write(inp,dict(package=str(package),rules=str(rules_path),rules_sha256=rules_sha))
@@ -207,7 +215,7 @@ def extract(package,rules_path,output,timeout=30):
     if file_sha256(rules_path)!=rules_sha or any(file_sha256(package/n)!=h for n,h in hashes.items()):raise ValueError('Rules or source changed during extraction')
     if v2 and(implementation()!=impl or result.get('producer_implementation')!=impl):raise ValueError('Field producer implementation changed during extraction')
     output.mkdir(parents=True);(output/'rules.json').write_bytes(rules_path.read_bytes());write(output/'fields.json',result)
-    manifest=dict(schema_version='pdf2data.field-bundle.v2'if v2 else'pdf2data.field-bundle.v1',source_files=hashes,source_package=str(package),
+    manifest=dict(schema_version='pdf2data.field-bundle.v3'if rules.get('fields_schema_version')==FIELDS_V3 else'pdf2data.field-bundle.v2'if v2 else'pdf2data.field-bundle.v1',source_files=hashes,source_package=str(package),
                   files={n:file_sha256(output/n)for n in ('rules.json','fields.json')},publication_eligible=False)
     if v2:manifest.update(producer_implementation=impl,source_quality_approval_granted=False,semantic_ownership_approved=False)
     write(output/'manifest.json',manifest)
@@ -217,7 +225,7 @@ def extract(package,rules_path,output,timeout=30):
 def verify(bundle,timeout=30):
     from .legal_l1 import verify_document
     bundle=Path(bundle).resolve();manifest=_decode((bundle/'manifest.json').read_bytes())
-    if manifest.get('schema_version')!='pdf2data.field-bundle.v2':raise ValueError('Full field re-derivation requires a v2 bundle')
+    if manifest.get('schema_version')not in ('pdf2data.field-bundle.v2','pdf2data.field-bundle.v3'):raise ValueError('Full field re-derivation requires a v2 or v3 bundle')
     if manifest.get('publication_eligible')is not False or manifest.get('source_quality_approval_granted')is not False or manifest.get('semantic_ownership_approved')is not False:raise ValueError('Field manifest cannot grant approval')
     if set(manifest.get('files',{}))!={'rules.json','fields.json'}or any(file_sha256(bundle/n)!=h for n,h in manifest['files'].items()):raise ValueError('Field bundle changed')
     if manifest.get('producer_implementation')!=implementation():raise ValueError('Use the captured field producer implementation')
@@ -225,7 +233,8 @@ def verify(bundle,timeout=30):
     expected={*SOURCE_FILES,'original.pdf','source-receipt.json','l1-package.json'}
     if set(manifest.get('source_files',{}))!=expected or any(file_sha256(package/n)!=h for n,h in manifest['source_files'].items()):raise ValueError('Field source package changed')
     rules=load(bundle/'rules.json')
-    if rules.get('fields_schema_version')!=FIELDS_V2:raise ValueError('Field v2 rules required')
+    version=FIELDS_V3 if manifest['schema_version']=='pdf2data.field-bundle.v3'else FIELDS_V2
+    if rules.get('fields_schema_version')!=version:raise ValueError('Field bundle/rules schema version differs')
     # Use the same bounded subprocess as extraction; a pathological rule cannot
     # escape its explicit worker timeout during verification.
     with tempfile.TemporaryDirectory(prefix='pdf2data-field-verify-')as temp:
@@ -233,7 +242,7 @@ def verify(bundle,timeout=30):
         original=_decode((bundle/'fields.json').read_bytes());derived=_decode((rebuilt/'fields.json').read_bytes())
     if digest(original)!=digest(derived):raise ValueError('Field bundle differs from native re-derivation')
     if any(file_sha256(bundle/n)!=h for n,h in manifest['files'].items())or any(file_sha256(package/n)!=h for n,h in manifest['source_files'].items())or implementation()!=manifest['producer_implementation']:raise ValueError('Field source/rules/producer changed during verification')
-    return dict(schema_version=FIELDS_V2,integrity='passed',observations=len(original['observations']),semantic_ownership_approved=False,publication_eligible=False)
+    return dict(schema_version=version,integrity='passed',observations=len(original['observations']),semantic_ownership_approved=False,publication_eligible=False)
 
 
 def query(bundle,field=None,text=None,offset=0,limit=50):
@@ -249,7 +258,7 @@ def query(bundle,field=None,text=None,offset=0,limit=50):
     if any(file_sha256(bundle/n)!=h for n,h in manifest['files'].items()):raise ValueError('Field bundle changed')
     if offset<0 or not 1<=limit<=1000:raise ValueError('Use offset >=0 and limit 1..1000')
     data=json.loads((bundle/'fields.json').read_text())
-    if data.get('schema_version')==FIELDS_V2 or manifest.get('schema_version')=='pdf2data.field-bundle.v2':verify(bundle)
+    if data.get('schema_version')in (FIELDS_V2,FIELDS_V3)or manifest.get('schema_version')in ('pdf2data.field-bundle.v2','pdf2data.field-bundle.v3'):verify(bundle)
     rows=[r for r in data['observations']if (not field or r['field_id']==field)and(not text or text.casefold()in r['value_literal'].casefold())]
     if data['rules_sha256']!=manifest['files']['rules.json']or data['source_pdf_sha256']!=manifest['source_files']['original.pdf']:raise ValueError('Field/rules/source identity differs')
     return dict(total=len(rows),offset=offset,next_offset=offset+limit if offset+limit<len(rows)else None,
@@ -262,6 +271,9 @@ def evaluate(bundle,references,output):
     # Query verifies the frozen field/rule artifacts before evaluation.
     query(bundle)
     data=json.loads((bundle/'fields.json').read_text());manifest=json.loads((bundle/'manifest.json').read_text())
+    if data.get('schema_version')==FIELDS_V3:
+        from .multipart_fields import evaluate as multipart_evaluate
+        return multipart_evaluate(bundle,references,output)
     reference=json.loads(Path(references).read_text(encoding='utf-8'))
     if reference.get('source_pdf_sha256')!=data['source_pdf_sha256']or reference.get('rules_sha256')!=data['rules_sha256']:raise ValueError('Reference source/rules version differs')
     if not reference.get('reviewer')or reference.get('reference_scope')not in ('human_source_review','development_fixture'):raise ValueError('Declare reviewer and reference provenance')
@@ -325,5 +337,5 @@ if __name__=='__main__':
     request=json.loads(Path(sys.argv[2]).read_text());package=Path(request['package']);rules_path=Path(request['rules'])
     if file_sha256(rules_path)!=request['rules_sha256']:raise ValueError('Rules changed')
     receipt=json.loads((package/'source-receipt.json').read_text());data=source_data(package,receipt['actual_sha256']);rules=load(rules_path)
-    if rules.get('fields_schema_version')==FIELDS_V2:data['source_package_sha256']=file_sha256(package/'l1-package.json')
+    if rules.get('fields_schema_version')in (FIELDS_V2,FIELDS_V3):data['source_package_sha256']=file_sha256(package/'l1-package.json')
     write(Path(sys.argv[3]),compute(data,rules,request['rules_sha256'],receipt['declared'].get('family','generic')))
