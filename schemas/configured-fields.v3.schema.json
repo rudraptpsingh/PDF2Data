@@ -1,0 +1,552 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PDF2Data opt-in native-parent multipart fields",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source_pdf_sha256",
+    "source_package_sha256",
+    "rules_sha256",
+    "producer_implementation",
+    "field_catalog",
+    "field_status",
+    "observations",
+    "publication_eligible",
+    "semantic_ownership_approved",
+    "family_is_verified_legal_scope",
+    "declared_family",
+    "rule_set_id",
+    "rule_version",
+    "native_units_accounted",
+    "semantic_completeness",
+    "source_quality_approval_granted"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "pdf2data.configured-fields.v3"
+    },
+    "source_pdf_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "source_package_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "rules_sha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "producer_implementation": {
+      "type": "object",
+      "required": [
+        "field_rules.py",
+        "formula_observations.py",
+        "document_blocks.py",
+        "document_metadata.py",
+        "multipart_fields.py"
+      ],
+      "additionalProperties": {
+        "$ref": "#/$defs/hash"
+      }
+    },
+    "field_catalog": {
+      "type": "array"
+    },
+    "field_status": {
+      "type": "object"
+    },
+    "observations": {
+      "type": "array",
+      "maxItems": 50000,
+      "items": {
+        "$ref": "#/$defs/observation"
+      }
+    },
+    "publication_eligible": {
+      "const": false
+    },
+    "semantic_ownership_approved": {
+      "const": false
+    },
+    "family_is_verified_legal_scope": {
+      "const": false
+    },
+    "declared_family": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rule_set_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rule_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "native_units_accounted": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "semantic_completeness": {
+      "const": "not_established"
+    },
+    "source_quality_approval_granted": {
+      "const": false
+    }
+  },
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "span": {
+      "type": "object",
+      "required": [
+        "page",
+        "page_text_sha256",
+        "char_start",
+        "char_length",
+        "offset_encoding",
+        "exact_quote"
+      ],
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page_text_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "char_start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "char_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "offset_encoding": {
+          "const": "codepoint"
+        },
+        "exact_quote": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "capture": {
+      "type": "object",
+      "properties": {
+        "value_literal": {},
+        "source_spans": {},
+        "status": {}
+      },
+      "required": [
+        "value_literal",
+        "source_spans",
+        "status"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "value_literal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_spans": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/span"
+              },
+              "minItems": 1,
+              "maxItems": 1000
+            },
+            "status": {
+              "const": "matched"
+            }
+          }
+        },
+        {
+          "properties": {
+            "value_literal": {
+              "type": "null"
+            },
+            "source_spans": {
+              "type": "array",
+              "maxItems": 0
+            },
+            "status": {
+              "const": "not_matched"
+            }
+          }
+        }
+      ]
+    },
+    "observation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "field_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "text",
+            "date",
+            "quantity",
+            "reference",
+            "formula"
+          ]
+        },
+        "value_literal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_spans": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/span"
+          },
+          "minItems": 1,
+          "maxItems": 1000
+        },
+        "match_source_spans": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/span"
+          },
+          "minItems": 1,
+          "maxItems": 1000
+        },
+        "captures": {
+          "type": "object",
+          "maxProperties": 32,
+          "additionalProperties": {
+            "$ref": "#/$defs/capture"
+          }
+        },
+        "typed_candidate": {
+          "type": [
+            "object",
+            "string",
+            "null"
+          ]
+        },
+        "unit_literal": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "unit_source_spans": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/span"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "configured_unit_hint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "validation_issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "native_parent": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "label": {
+              "type": "string"
+            },
+            "source_pointer": {
+              "type": "string",
+              "pattern": "^/units/[0-9]+$"
+            },
+            "spans": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/span"
+              },
+              "minItems": 1,
+              "maxItems": 1000
+            },
+            "declared_dependencies": {
+              "type": "array"
+            },
+            "boundary_state": {
+              "type": "string"
+            },
+            "quality_observations": {
+              "type": "array"
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "source_pointer",
+            "spans",
+            "declared_dependencies",
+            "boundary_state",
+            "quality_observations"
+          ],
+          "additionalProperties": false
+        },
+        "source_seams": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from_page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "from_char_end": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "to_page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "to_char_start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "omitted_native_parent_gap": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "characters": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "text_sha256": {
+                      "$ref": "#/$defs/hash"
+                    }
+                  },
+                  "required": [
+                    "characters",
+                    "text_sha256"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 2
+              },
+              "join": {
+                "const": "exact_native_span_concatenation_no_separator"
+              },
+              "furniture_state": {
+                "const": "not_removed_or_classified_by_field_extractor"
+              },
+              "semantic_continuation_approved": {
+                "const": false
+              }
+            },
+            "required": [
+              "from_page",
+              "from_char_end",
+              "to_page",
+              "to_char_start",
+              "omitted_native_parent_gap",
+              "join",
+              "furniture_state",
+              "semantic_continuation_approved"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "match_seams": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from_page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "from_char_end": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "to_page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "to_char_start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "omitted_native_parent_gap": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "characters": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "text_sha256": {
+                      "$ref": "#/$defs/hash"
+                    }
+                  },
+                  "required": [
+                    "characters",
+                    "text_sha256"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 2
+              },
+              "join": {
+                "const": "exact_native_span_concatenation_no_separator"
+              },
+              "furniture_state": {
+                "const": "not_removed_or_classified_by_field_extractor"
+              },
+              "semantic_continuation_approved": {
+                "const": false
+              }
+            },
+            "required": [
+              "from_page",
+              "from_char_end",
+              "to_page",
+              "to_char_start",
+              "omitted_native_parent_gap",
+              "join",
+              "furniture_state",
+              "semantic_continuation_approved"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "geometry_parts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source_span": {
+                "$ref": "#/$defs/span"
+              },
+              "geometry": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "source_span",
+              "geometry"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 1000
+        },
+        "source_pdf_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "source_package_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "rule_set_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rule_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rules_sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "status": {
+          "const": "candidate"
+        },
+        "source_quality_observations": {
+          "type": "array"
+        },
+        "capture_association": {
+          "const": "configured_native_parent_match_not_semantic_ownership"
+        },
+        "projection": {
+          "const": "exact_native_span_concatenation_no_separator"
+        },
+        "content_verified": {
+          "const": false
+        },
+        "source_quality_approval_granted": {
+          "const": false
+        },
+        "semantic_ownership_approved": {
+          "const": false
+        },
+        "calculation_allowed": {
+          "const": false
+        },
+        "publication_eligible": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "field_id",
+        "type",
+        "value_literal",
+        "source_spans",
+        "match_source_spans",
+        "captures",
+        "typed_candidate",
+        "unit_literal",
+        "unit_source_spans",
+        "configured_unit_hint",
+        "validation_issues",
+        "native_parent",
+        "source_seams",
+        "match_seams",
+        "geometry_parts",
+        "source_pdf_sha256",
+        "source_package_sha256",
+        "rule_set_id",
+        "rule_version",
+        "rules_sha256",
+        "status",
+        "source_quality_observations",
+        "capture_association",
+        "projection",
+        "content_verified",
+        "source_quality_approval_granted",
+        "semantic_ownership_approved",
+        "calculation_allowed",
+        "publication_eligible"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,166 @@
+{
+  "schema_version": "pdf2data.multipart-development-cases.v1",
+  "review_scope": "agent_source_text_review_not_independent_gold_or_legal_acceptance",
+  "cases": [
+    {
+      "id": "october-cod-gna",
+      "source_pdf_sha256": "2efc99923a7df73c32615f5c201230f17974ef1a2b73ed1b3d20b1d917f5952e",
+      "source_package_sha256": "b8d02b8c3a67fb68d2a6cec19f4681faaee47e472f71017e8aa9140ed00c67d8",
+      "rules": {
+        "schema_version": "pdf2data.extraction-rules.v1",
+        "fields_schema_version": "pdf2data.configured-fields.v3",
+        "id": "pdf2data.multipart.october-cod-gna",
+        "version": "1",
+        "fields": [
+          {
+            "id": "eligibility.cod_window_and_trigger",
+            "type": "text",
+            "scope": "native_unit_candidate",
+            "native_unit_labels": [
+              "1"
+            ],
+            "pages": [
+              1,
+              2
+            ],
+            "pattern": "(?P<value>and the project achieves COD within a period of (?P<duration>two months) from the date of[\\s\\S]{0,300}?(?P<trigger>effectiveness of its GNA) as per GNA Regulations, it shall be eligible for a waiver of\\ninter-state transmission charges as under:)",
+            "capture_groups": [
+              "duration",
+              "trigger"
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "native_unit_id": "pdf-2efc99923a7df73c32615f5c:unit:e1fa9a5f181c92b5e6406aeb",
+        "source_spans": [
+          {
+            "page": 1,
+            "page_text_sha256": "bf4cc01200c14efdc2714d45118604a55c5ee5fcf86df0d9ed771ced1f172e06",
+            "char_start": 1578,
+            "char_length": 76,
+            "offset_encoding": "codepoint",
+            "exact_quote": "and the project achieves COD within a period of two months from the date of\n"
+          },
+          {
+            "page": 2,
+            "page_text_sha256": "a03a878410cdd02b1c88090ec38dd6cbc2aeba1bbea6d528b083169733c89ca3",
+            "char_start": 0,
+            "char_length": 128,
+            "offset_encoding": "codepoint",
+            "exact_quote": "effectiveness of its GNA as per GNA Regulations, it shall be eligible for a waiver of\ninter-state transmission charges as under:"
+          }
+        ],
+        "value_literal": "and the project achieves COD within a period of two months from the date of\neffectiveness of its GNA as per GNA Regulations, it shall be eligible for a waiver of\ninter-state transmission charges as under:",
+        "capture_literals": {
+          "duration": "two months",
+          "trigger": "effectiveness of its GNA"
+        }
+      }
+    },
+    {
+      "id": "july-state-deviation",
+      "source_pdf_sha256": "00bb0b39fbca29ee0cd0ef3934dc7479f6081b642f1c67b9e34ae2f5eebeb01e",
+      "source_package_sha256": "ea7f17f2584b6e699e8bad37fb36fa35370e1b5d2bd0da51d8c896ef054ffcbf",
+      "rules": {
+        "schema_version": "pdf2data.extraction-rules.v1",
+        "fields_schema_version": "pdf2data.configured-fields.v3",
+        "id": "pdf2data.multipart.july-state-deviation",
+        "version": "1",
+        "fields": [
+          {
+            "id": "state.deviation_fragment",
+            "type": "formula",
+            "scope": "native_unit_candidate",
+            "native_unit_labels": [
+              "3"
+            ],
+            "pages": [
+              1,
+              2
+            ],
+            "pattern": "(?P<value>transmission\\ndeviation for the State[\\s\\S]{0,600}?\\+ scheduled drawl[\\s\\S]{0,300}?these Regulations\\):)",
+            "capture_groups": []
+          }
+        ]
+      },
+      "expected": {
+        "native_unit_id": "pdf-00bb0b39fbca29ee0cd0ef39:unit:e6f03958de8548518bed8e1d",
+        "source_spans": [
+          {
+            "page": 1,
+            "page_text_sha256": "e44a60949c90a21feaebc0e8886b04d281718fbf7c1bc46539336700ee264fba",
+            "char_start": 1552,
+            "char_length": 181,
+            "offset_encoding": "codepoint",
+            "exact_quote": "transmission\ndeviation for the State in a time block shall be net metered drawal in excess of sum\nof (GNA and T-GNA for all drawee DICs which are intra-State entities in that State\n"
+          },
+          {
+            "page": 2,
+            "page_text_sha256": "1cdae4ad44235d5a1cb06d8729f2ccbe782df4486f95e2a0e609f65ab0dcdc02",
+            "char_start": 0,
+            "char_length": 148,
+            "offset_encoding": "codepoint",
+            "exact_quote": "+ scheduled drawl under GNARE and T-GNARE from identified sources as specified\nin sub-clauses (i) to (iv) of Regulation 13(2) of these Regulations):"
+          }
+        ],
+        "value_literal": "transmission\ndeviation for the State in a time block shall be net metered drawal in excess of sum\nof (GNA and T-GNA for all drawee DICs which are intra-State entities in that State\n+ scheduled drawl under GNARE and T-GNARE from identified sources as specified\nin sub-clauses (i) to (iv) of Regulation 13(2) of these Regulations):",
+        "capture_literals": {}
+      }
+    },
+    {
+      "id": "july-procedure",
+      "source_pdf_sha256": "00bb0b39fbca29ee0cd0ef3934dc7479f6081b642f1c67b9e34ae2f5eebeb01e",
+      "source_package_sha256": "ea7f17f2584b6e699e8bad37fb36fa35370e1b5d2bd0da51d8c896ef054ffcbf",
+      "rules": {
+        "schema_version": "pdf2data.extraction-rules.v1",
+        "fields_schema_version": "pdf2data.configured-fields.v3",
+        "id": "pdf2data.multipart.july-procedure",
+        "version": "1",
+        "fields": [
+          {
+            "id": "procedure.implementation_fragment",
+            "type": "text",
+            "scope": "native_unit_candidate",
+            "native_unit_labels": [
+              "4"
+            ],
+            "pages": [
+              3,
+              4
+            ],
+            "pattern": "(?P<value>Provided also that (?P<actor>NLDC) shall issue a detailed procedure[\\s\\S]{0,600}?of these regulations.”)",
+            "capture_groups": [
+              "actor"
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "native_unit_id": "pdf-00bb0b39fbca29ee0cd0ef39:unit:94a78ee2c7bb0283b42df5d6",
+        "source_spans": [
+          {
+            "page": 3,
+            "page_text_sha256": "1fbe601ebc146053200385bfc6d5d19ee6e0a52e48e27a63d34ca0e82eaccb3c",
+            "char_start": 2141,
+            "char_length": 165,
+            "offset_encoding": "codepoint",
+            "exact_quote": "Provided also that NLDC shall issue a detailed procedure covering implementation\nmodalities including that for collection of data and accounting of scheduled energy\n"
+          },
+          {
+            "page": 4,
+            "page_text_sha256": "68b82d8e37a471ab2d6f975c66cbc6a6f5c99e4673e15eaf8db35ba4749d5980",
+            "char_start": 0,
+            "char_length": 108,
+            "offset_encoding": "codepoint",
+            "exact_quote": "for the purpose of this Clause as a part of revised Procedures under Regulation 24(5)\nof these regulations.”"
+          }
+        ],
+        "value_literal": "Provided also that NLDC shall issue a detailed procedure covering implementation\nmodalities including that for collection of data and accounting of scheduled energy\nfor the purpose of this Clause as a part of revised Procedures under Regulation 24(5)\nof these regulations.”",
+        "capture_literals": {
+          "actor": "NLDC"
+        }
+      }
+    }
+  ]
+}

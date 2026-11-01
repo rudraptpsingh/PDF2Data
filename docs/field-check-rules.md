@@ -65,7 +65,7 @@ Exit codes: `0` all checks pass, `3` assertion mismatch, `2` invalid/stale input
 The command refuses existing output directories and writes outside source bundles.
 
 Native bundle verification runs first and cannot be disabled by configuration.
-Use a v2 field bundle produced by the matching captured implementation. Old
+Use a v2 or v3 field bundle produced by the matching captured implementation. Old
 bundles require their original runtime; re-extract into a new directory when
 adopting a new producer. Never edit a frozen bundle's implementation pins.
 

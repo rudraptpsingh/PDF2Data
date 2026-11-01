@@ -21,7 +21,7 @@ def check(dist=None):
     required = ['cli.py', 'mcp_server.py', 'workspace.html', 'ui.css', 'overlays.js',
         'overlays.css', 'viewer.css', 'quality_policy.json', 'document_profiles.json',
         'document_model.py', 'formula_observations.py', 'source_locations.py', 'native_visuals.py',
-        'field_checks.py']
+        'field_checks.py', 'multipart_fields.py']
     wheels = []
     if dist:
         for wheel in Path(dist).glob('*.whl'):

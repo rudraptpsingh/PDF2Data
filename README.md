@@ -1,6 +1,6 @@
 # PDF2Data
 
-[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.8` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
+[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.9` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
 
 ## Quick start
 
@@ -14,7 +14,7 @@ pdf2data workspace --workspace ./pdf2data-workspace
 ```
 
 The release candidate is published on npm under the `next` tag.
-[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.8)
+[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.9)
 remain available for direct installation.
 
 The launcher downloads the matching Python wheel and dependencies into an isolated
@@ -46,6 +46,8 @@ Rules support source-anchored metadata, dates, quantities and formula candidates
 search across document bundles, reviewed-reference evaluation, readable exports
 and MCP reads. Add [JSON check rules](docs/field-check-rules.md) to test counts,
 values, pages and captures without writing Python tests.
+Opt-in [multipart fields](docs/multipart-fields.md) retain cross-page values and
+captures within a native parent, with separate page anchors and explicit seams.
 
 The [feedback controller](docs/feedback-controller.md) inventories originals,
 measures per-page errors, stages bounded repairs and rechecks the full document.

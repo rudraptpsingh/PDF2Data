@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 0.2.0-rc.9 — 2026-11-01
+
+- Opt-in fields v3 matches within retained native source units and preserves
+  ordered value/capture parts across physical pages. Parent identity, full quality
+  observations and page seams remain explicit; separate parents are never joined.
+- Native re-derivation rejects modified multipart evidence. Exact source labels
+  and JSON check rules evaluate v3; MCP page filtering retains complete records.
+- Three development cases cover October COD/GNA, July deviation wording and July
+  procedure continuation. These do not establish corpus, legal or formula accuracy.
+- V1/v2 interpretation stays page-local. Existing bundles keep captured runtimes;
+  consumers explicitly adopt the new wire. Source-image witnesses remain v2-only.
+
 ## 0.2.0-rc.8 — 2026-11-01
 
 - Add `fields check` with versioned JSON assertions for field counts, literals,

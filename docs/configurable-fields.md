@@ -77,8 +77,10 @@ Field properties:
 | `extractor` | `regex` by default, or `formulas` to retain existing formula observations |
 
 Use Unicode labels and alternations for different languages. Rules cannot repair
-garbled native text or recover missing OCR. A regex spans one selected physical
-page; it does not prove cross-page scope, table ownership or formula geometry.
+garbled native text or recover missing OCR. V1/v2 regexes span one selected
+physical page. Opt-in [v3 multipart fields](multipart-fields.md) retain exact
+cross-page native-parent spans; they do not prove legal scope, table ownership
+or formula geometry.
 Formula extraction supports explicit pages but does not support region scopes
 until a formula component graph establishes them.
 
