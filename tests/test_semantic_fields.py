@@ -9,10 +9,18 @@ from local_vector_batch import semantic_fields as sf
 
 
 def scope():
+    # Exact excerpts from the actual October CERC supplementary draft. These
+    # controls test the boundary; they are not additional corpus accuracy cases.
+    parts = [dict(page=1, page_text_sha256='bf4cc01200c14efdc2714d45118604a55c5ee5fcf86df0d9ed771ced1f172e06',
+                  char_start=1578, char_length=76, offset_encoding='codepoint',
+                  exact_quote='and the project achieves COD within a period of two months from the date of\n'),
+             dict(page=2, page_text_sha256='a03a878410cdd02b1c88090ec38dd6cbc2aeba1bbea6d528b083169733c89ca3',
+                  char_start=0, char_length=128, offset_encoding='codepoint',
+                  exact_quote='effectiveness of its GNA as per GNA Regulations, it shall be eligible for a waiver of\ninter-state transmission charges as under:')]
     return dict(schema_version=sf.SCOPE, profile=dict(schema_version=sf.PROFILE, id='example', version='1',
         field_ids=['cod'], roles=['condition', 'document_metadata'], unresolved_dependencies=['principal-rule']),
-        atoms=[dict(id='a', field_id='cod', source_parts=[dict(page=1, exact_quote='COD within two months'),
-            dict(page=2, exact_quote='after effectiveness of GNA')], selected_value_parts=[],
+        atoms=[dict(id='a', field_id='cod', source_parts=parts, selected_value_parts=parts,
+            source_pdf_sha256='2efc99923a7df73c32615f5c201230f17974ef1a2b73ed1b3d20b1d917f5952e',
             source_quality_observations=[dict(page=2, outcome='repair_required')])],
         selected_source_parts=2, semantic_ownership_approved=False)
 
@@ -88,7 +96,7 @@ def test_prompt_and_response_schema_pin_the_exact_ids_roles_and_scope():
     assert schema['properties']['selections']['items']['properties']['atom_id']['enum'] == ['a']
     assert schema['properties']['selections']['items']['additionalProperties'] is False
     assert 'repair_required' not in request['prompt']  # ledger stays local, not extra model input
-    assert 'after effectiveness of GNA' in request['prompt']
+    assert 'effectiveness of its GNA' in request['prompt']
 
 
 @pytest.mark.parametrize('field,value', [('roles', []), ('roles', ['x', 'x']), ('field_ids', []),
@@ -109,13 +117,13 @@ def test_reopen_detects_job_tamper_before_model_execution(tmp_path, monkeypatch)
     bundle = tmp_path / 'bundle'; bundle.mkdir(); package = tmp_path / 'package'; package.mkdir()
     fields = dict(schema_version='pdf2data.configured-fields.v3', field_catalog=[dict(id='cod')],
         source_pdf_sha256='a'*64, source_package_sha256='b'*64,
-        observations=[dict(id='a', field_id='cod', match_source_spans=[dict(page=1, exact_quote='literal')],
-                           source_spans=[dict(page=1, exact_quote='literal')])])
+        observations=[dict(id='a', field_id='cod', match_source_spans=scope()['atoms'][0]['source_parts'],
+                           source_spans=scope()['atoms'][0]['source_parts'])])
     sf.write(bundle / 'fields.json', fields); sf.write(bundle / 'manifest.json', {'source_package': str(package)})
     profile = tmp_path / 'profile.json'; sf.write(profile, scope()['profile'])
     calls = []; monkeypatch.setattr(sf, 'verify_fields', lambda p: calls.append(p))
     job = tmp_path / 'job'; sf.prepare(bundle, profile, job)
-    assert sf.reopen(job)[0]['atoms'][0]['source_parts'][0]['exact_quote'] == 'literal'
+    assert sf.reopen(job)[0]['atoms'][0]['source_parts'] == scope()['atoms'][0]['source_parts']
     assert len(calls) == 2
     (job / 'request.json').write_text('{}')
     with pytest.raises(ValueError, match='changed'): sf.reopen(job)
