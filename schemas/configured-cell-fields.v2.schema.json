@@ -1,0 +1,406 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PDF2Data configured cell fields v2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source_pdf_sha256",
+    "source_package_sha256",
+    "rules_sha256",
+    "field_catalog",
+    "field_status",
+    "observations",
+    "publication_eligible",
+    "source_quality_approval_granted",
+    "calculation_allowed",
+    "producer_implementation"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "pdf2data.configured-cell-fields.v2"
+    },
+    "source_pdf_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source_package_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "rules_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "field_catalog": {
+      "type": "array",
+      "minItems": 1
+    },
+    "field_status": {
+      "type": "object"
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "field_id",
+          "type",
+          "value_literal",
+          "cell_source_span",
+          "match_cell_span",
+          "unit_cell_span",
+          "cell_locator",
+          "source_pdf_sha256",
+          "source_package_sha256",
+          "rules_sha256",
+          "typed_candidate",
+          "status",
+          "content_verified",
+          "calculation_allowed",
+          "semantic_scope_verified",
+          "selected_page_offset_assigned",
+          "currency_literal",
+          "currency_cell_span",
+          "scale_literal",
+          "scale_cell_span",
+          "currency_code_candidate",
+          "scale_multiplier_candidate",
+          "dimensional_normalization_allowed"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^cell-field-[a-f0-9]{24}$"
+          },
+          "field_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "enum": [
+              "text",
+              "date",
+              "quantity",
+              "reference"
+            ]
+          },
+          "value_literal": {
+            "type": "string",
+            "minLength": 1
+          },
+          "cell_source_span": {
+            "type": "object",
+            "required": [
+              "char_start",
+              "char_length",
+              "exact_quote",
+              "offset_encoding"
+            ],
+            "properties": {
+              "char_start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "char_length": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "exact_quote": {
+                "type": "string",
+                "minLength": 1
+              },
+              "offset_encoding": {
+                "const": "unicode_codepoint"
+              }
+            }
+          },
+          "match_cell_span": {
+            "type": "object",
+            "required": [
+              "char_start",
+              "char_length",
+              "exact_quote",
+              "offset_encoding"
+            ],
+            "properties": {
+              "char_start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "char_length": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "exact_quote": {
+                "type": "string",
+                "minLength": 1
+              },
+              "offset_encoding": {
+                "const": "unicode_codepoint"
+              }
+            }
+          },
+          "unit_cell_span": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "char_start",
+                  "char_length",
+                  "exact_quote",
+                  "offset_encoding"
+                ],
+                "properties": {
+                  "char_start": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "char_length": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "exact_quote": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "offset_encoding": {
+                    "const": "unicode_codepoint"
+                  }
+                }
+              }
+            ]
+          },
+          "cell_locator": {
+            "type": "object",
+            "required": [
+              "source_pointer",
+              "source_basis",
+              "row",
+              "column",
+              "row_span",
+              "column_span",
+              "physical_page",
+              "page_text_sha256",
+              "cell_text_sha256",
+              "table_id"
+            ],
+            "properties": {
+              "source_pointer": {
+                "type": "string",
+                "pattern": "^/tables/(0|[1-9][0-9]*)/(cell_spans/(0|[1-9][0-9]*)|cells/(0|[1-9][0-9]*)/(0|[1-9][0-9]*))$"
+              },
+              "source_basis": {
+                "enum": [
+                  "physical_cell_metadata",
+                  "grid_only_geometry_unavailable"
+                ]
+              },
+              "table_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "page_text_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "cell_text_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "row": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "column": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "row_span": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "column_span": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "physical_page": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          },
+          "source_pdf_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "source_package_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "rules_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "typed_candidate": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "numerator",
+                  "denominator"
+                ],
+                "properties": {
+                  "numerator": {
+                    "type": "string",
+                    "pattern": "^-?[0-9]+$"
+                  },
+                  "denominator": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]*$"
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "status": {
+            "const": "candidate"
+          },
+          "content_verified": {
+            "const": false
+          },
+          "calculation_allowed": {
+            "const": false
+          },
+          "semantic_scope_verified": {
+            "const": false
+          },
+          "selected_page_offset_assigned": {
+            "const": false
+          },
+          "currency_literal": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "currency_cell_span": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "char_start",
+                  "char_length",
+                  "exact_quote",
+                  "offset_encoding"
+                ],
+                "properties": {
+                  "char_start": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "char_length": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "exact_quote": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "offset_encoding": {
+                    "const": "unicode_codepoint"
+                  }
+                }
+              }
+            ]
+          },
+          "scale_literal": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1
+          },
+          "scale_cell_span": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "char_start",
+                  "char_length",
+                  "exact_quote",
+                  "offset_encoding"
+                ],
+                "properties": {
+                  "char_start": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "char_length": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "exact_quote": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "offset_encoding": {
+                    "const": "unicode_codepoint"
+                  }
+                }
+              }
+            ]
+          },
+          "currency_code_candidate": {
+            "type": "null"
+          },
+          "scale_multiplier_candidate": {
+            "type": "null"
+          },
+          "dimensional_normalization_allowed": {
+            "const": false
+          }
+        },
+        "not": {
+          "required": [
+            "source_span"
+          ]
+        }
+      }
+    },
+    "publication_eligible": {
+      "const": false
+    },
+    "source_quality_approval_granted": {
+      "const": false
+    },
+    "calculation_allowed": {
+      "const": false
+    },
+    "producer_implementation": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    }
+  }
+}

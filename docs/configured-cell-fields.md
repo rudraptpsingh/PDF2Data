@@ -65,3 +65,24 @@ must authorize access to the bundle and the source path it captures.
 
 No PDF is reparsed, no model/network/database call is made and no source quality,
 legal eligibility or publication approval is upgraded.
+
+## Explicit v2 dimensions
+
+Set `cell_fields_schema_version` to `pdf2data.configured-cell-fields.v2` in the
+rules root to opt in. The default v1 compute output remains byte-for-byte stable
+for the regression fixture; the existing v1 schema is retained separately.
+V2 observations add `currency_literal`, `currency_cell_span`, `scale_literal`
+and `scale_cell_span` from optional named regex groups `currency` and `scale`.
+Missing/empty captures stay null. V2 also embeds the producer implementation
+file hashes in the output, so consumers retain the code identity with the fields.
+
+For `Rs. 3.5 Cr/MW`, capture `Rs`, `3.5`, `Cr` and `/MW` separately. The slash
+belongs to the printed rate unit. Source spans remain local to the exact native
+cell and captured match. No ISO currency alias, scale multiplier, currency
+conversion or financial arithmetic is inferred: `currency_code_candidate` and
+`scale_multiplier_candidate` are null and `dimensional_normalization_allowed`
+is false. A separate v2 schema validates these boundaries.
+
+A new implementation pin is required for re-verification; retain the original
+installed version for an older v1/v2 bundle. This release does not migrate or
+approve existing source bundles.
