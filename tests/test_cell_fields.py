@@ -95,3 +95,30 @@ def test_missing_optional_pdf_dependency_has_actionable_error(tmp_path,monkeypat
     def missing(path):raise ModuleNotFoundError("No module named 'pypdf'",name='pypdf')
     monkeypatch.setattr(l1,'verify_document',missing)
     with pytest.raises(ValueError,match=r'PDF2Data\[pdf\]'):module._run(tmp_path,tmp_path/'rules.json',30)
+
+def test_v1_output_is_unchanged_by_opt_in_v2_dimensions():
+    assert digest(compute(data(),rule(),'c'*64))=='c2d141c14c10f4b2740a69b6cd0cb64dd16c670d1bf6431eb8b299ed4472e7e3'
+
+def test_v2_preserves_printed_currency_scale_denominator_and_exact_local_spans():
+    source=data();source['tables'][0]['cell_spans'][1]['text']='Rs. 3.5 Cr/MW'
+    rules=rule();rules['cell_fields_schema_version']='pdf2data.configured-cell-fields.v2';rules['fields'][0]['pattern']=r'(?P<currency>Rs)\.?\s*(?P<value>\d+(?:\.\d+)?)\s*(?P<scale>Cr)(?P<unit>/MW)'
+    result=compute(source,rules,'c'*64);o=result['observations'][0]
+    assert result['schema_version']=='pdf2data.configured-cell-fields.v2'
+    assert o['typed_candidate']=={'numerator':'7','denominator':'2'}and o['unit_literal']=='/MW'
+    assert o['currency_literal']=='Rs'and o['scale_literal']=='Cr'
+    text=source['tables'][0]['cell_spans'][1]['text']
+    for name in('currency','scale'):
+        s=o[name+'_cell_span'];assert text[s['char_start']:s['char_start']+s['char_length']]==o[name+'_literal']
+    assert o['currency_code_candidate']is None and o['scale_multiplier_candidate']is None and not o['dimensional_normalization_allowed']
+    jsonschema=pytest.importorskip('jsonschema');schema=json.loads((Path(__file__).parents[1]/'schemas/configured-cell-fields.v2.schema.json').read_text());jsonschema.Draft202012Validator(schema).validate(result)
+
+def test_v2_missing_dimensions_stay_null_and_unknown_schema_fails(tmp_path):
+    rules=rule();rules['cell_fields_schema_version']='pdf2data.configured-cell-fields.v2';o=compute(data(),rules,'c'*64)['observations'][0]
+    assert o['currency_literal']is None and o['currency_cell_span']is None and o['scale_literal']is None
+    rules['cell_fields_schema_version']='future';p=tmp_path/'rules.json';p.write_text(json.dumps(rules))
+    with pytest.raises(ValueError,match='explicit cell fields'):load_rules(p)
+
+def test_v2_empty_currency_capture_is_not_a_printed_currency():
+    rules=rule();rules['cell_fields_schema_version']='pdf2data.configured-cell-fields.v2';rules['fields'][0]['pattern']=r'(?P<currency>)(?P<value>10,000)/(?P<unit>MW)'
+    r=compute(data(),rules,'c'*64);o=r['observations'][0];assert o['currency_literal']is None and o['currency_cell_span']is None
+    assert r['producer_implementation']==implementation()

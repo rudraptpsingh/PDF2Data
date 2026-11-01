@@ -12,6 +12,7 @@ from .field_rules import load as load_fields, flags, write
 from .hashing import file_sha256
 
 SCHEMA='pdf2data.configured-cell-fields.v1'
+SCHEMA_V2='pdf2data.configured-cell-fields.v2'
 SOURCE_FILES=('original.pdf','source-receipt.json','l1-package.json','extraction/pages.jsonl','extraction/tables.json','quality.json')
 CODE_FILES=('cell_fields.py','field_rules.py','formula_observations.py')
 
@@ -32,6 +33,7 @@ def implementation():
 def load_rules(path):
     decode(Path(path).read_bytes())
     rules=load_fields(path)
+    if rules.get('cell_fields_schema_version',SCHEMA)not in(SCHEMA,SCHEMA_V2):raise ValueError('Use explicit cell fields v1 or v2 schema')
     for f in rules['fields']:
         if f.get('extractor','regex')!='regex' or f['type']=='formula' or f.get('scope','all')!='all':raise ValueError('Cell fields require regex and all cell-local scope; formulas need a separate verified representation')
         columns=f.get('cell_columns')
@@ -103,15 +105,23 @@ def compute(data,rules,rules_sha):
                              source_quality=next((q['outcome']for q in data.get('quality',{}).get('results',[])if q['page']==table['page']),'unknown'),
                              status='candidate',content_verified=False,calculation_allowed=False,semantic_scope_verified=False,
                              validation_issues=issues,selected_page_offset_assigned=False)
+                    if rules.get('cell_fields_schema_version',SCHEMA)==SCHEMA_V2:
+                        for dimension in('currency','scale'):
+                            captured=match.groupdict().get(dimension)or None
+                            row[dimension+'_literal']=captured
+                            row[dimension+'_cell_span']=span(*match.span(dimension))if captured else None
+                        row.update(currency_code_candidate=None,scale_multiplier_candidate=None,dimensional_normalization_allowed=False)
                     row['id']='cell-field-'+digest([rules_sha,field['id'],row['source_pdf_sha256'],row['source_package_sha256'],locator,row['cell_source_span']])[:24]
                     found.append(row)
                     if len(rows)+len(found)>50000:raise ValueError('More than 50000 cell fields; narrow rules')
         rows+=found;counts[field['id']]=dict(status='candidates_found'if found else'not_detected_not_proven_absent',matches=len(found))
-    return dict(schema_version=SCHEMA,source_pdf_sha256=data['source_pdf_sha256'],source_package_sha256=data['source_package_sha256'],
+    result=dict(schema_version=rules.get('cell_fields_schema_version',SCHEMA),source_pdf_sha256=data['source_pdf_sha256'],source_package_sha256=data['source_package_sha256'],
                 rule_set_id=rules['id'],rule_version=rules['version'],rules_sha256=rules_sha,field_catalog=rules['fields'],
                 observations=rows,field_status=counts,declared_family=data['declared_family'],family_is_verified_legal_scope=False,
                 source_quality_approval_granted=False,publication_eligible=False,calculation_allowed=False,
                 scope='explicit_cell_column_and_optional_table_page_row_filters_no_fill_down_or_continuation_inference')
+    if result['schema_version']==SCHEMA_V2:result['producer_implementation']=implementation()
+    return result
 
 def _run(package,rules_path,timeout):
     from .legal_l1 import verify_document
@@ -138,7 +148,7 @@ def extract(package,rules_path,output,timeout=30):
     output.mkdir(parents=True);(output/'rules.json').write_bytes(rules_path.read_bytes());write(output/'cell-fields.json',result)
     write(output/'manifest.json',dict(schema_version='pdf2data.cell-field-bundle.v1',source_package=str(package),source_files=source_files,
                                    implementation_files_sha256=code,files={n:file_sha256(output/n)for n in('rules.json','cell-fields.json')},publication_eligible=False))
-    return dict(schema_version=SCHEMA,output=str(output),observations=len(result['observations']),field_status=result['field_status'],source_quality_changed=False,publication_eligible=False)
+    return dict(schema_version=result['schema_version'],output=str(output),observations=len(result['observations']),field_status=result['field_status'],source_quality_changed=False,publication_eligible=False)
 
 def verify(bundle,timeout=30):
     bundle=Path(bundle).resolve();manifest=decode((bundle/'manifest.json').read_bytes())
