@@ -23,7 +23,7 @@ test('explicit local wheel and runtime overrides are passed without a shell', ()
 test('version inspection needs neither uv nor a Python installation', () => {
   const result = spawnSync(process.execPath, ['bin/pdf2data.mjs', '--version'], { cwd: new URL('..', import.meta.url), encoding: 'utf8', env: { ...process.env, PDF2DATA_UV: '/missing/uv' } });
   assert.equal(result.status, 0);
-  assert.match(result.stdout, /PDF2Data 0\.2\.0rc1/);
+  assert.equal(result.stdout.trim(), `PDF2Data ${engineVersion} (npm launcher ${launcherVersion})`);
 });
 test('missing uv gives an actionable error and a nonzero exit', () => {
   const result = spawnSync(process.execPath, ['bin/pdf2data.mjs', 'doctor'], { cwd: new URL('..', import.meta.url), encoding: 'utf8', env: { ...process.env, PDF2DATA_UV: '/missing/uv' } });

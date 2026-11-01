@@ -1,7 +1,7 @@
 # Release setup and next milestones
 
-31 October 2026. Release candidate: `v0.2.0-rc.1`; Python version `0.2.0rc1`;
-npm version `0.2.0-rc.1`. The npm name is `@rudraptpsingh/pdf2data`; the unscoped
+1 November 2026. Release candidate: `v0.2.0-rc.8`; Python version `0.2.0rc8`;
+npm version `0.2.0-rc.8`. The npm name is `@rudraptpsingh/pdf2data`; the unscoped
 `pdf2data` npm package is owned by another publisher.
 
 ## Distribution in this release
@@ -39,9 +39,9 @@ Register npm trusted publishing for this repository/workflow to replace the toke
 credential with OIDC.
 [Official npm guidance](https://docs.npmjs.com/trusted-publishers).
 
-## RC publication verification
+## Earlier RC publication verification
 
-The `0.2.0-rc.1` npm package is public under the `next` tag.
+The `0.2.0-rc.1` npm package was published under the `next` tag.
 [Publisher verification](https://github.com/rudraptpsingh/PDF2Data/actions/runs/41183804099)
 passed using PDF2Data’s own configured secret, then installed from the public
 registry and ran `pdf2data --version` and `pdf2data doctor` on Ubuntu.

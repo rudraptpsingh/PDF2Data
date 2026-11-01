@@ -301,7 +301,8 @@ def configure(parser):
     checking=sub.add_parser('verify');checking.add_argument('--bundle',type=Path,required=True);checking.add_argument('--timeout',type=int,default=30)
     searching=sub.add_parser('query');searching.add_argument('--bundle',type=Path,action='append',required=True);searching.add_argument('--field');searching.add_argument('--text');searching.add_argument('--offset',type=int,default=0);searching.add_argument('--limit',type=int,default=50)
     evaluation=sub.add_parser('evaluate');evaluation.add_argument('--bundle',type=Path,required=True);evaluation.add_argument('--references',type=Path,required=True);evaluation.add_argument('--output',type=Path,required=True)
-    for child in (initialization,listing,extraction,checking,searching,evaluation):child.add_argument('--json',action='store_true')
+    assertions=sub.add_parser('check',help='test verified extracted fields using declarative JSON checks');assertions.add_argument('--bundle',type=Path,required=True);assertions.add_argument('--checks',type=Path,required=True);assertions.add_argument('--output',type=Path,required=True);assertions.add_argument('--timeout',type=int,default=30)
+    for child in (initialization,listing,extraction,checking,searching,evaluation,assertions):child.add_argument('--json',action='store_true')
 
 
 def execute(args):
@@ -313,6 +314,9 @@ def execute(args):
     if args.field_operation=='extract':return extract(args.package,args.rules,args.output,args.timeout)
     if args.field_operation=='verify':return verify(args.bundle,args.timeout)
     if args.field_operation=='evaluate':return evaluate(args.bundle,args.references,args.output)
+    if args.field_operation=='check':
+        from .field_checks import check
+        return check(args.bundle,args.checks,args.output,args.timeout)
     return query(args.bundle,args.field,args.text,args.offset,args.limit)
 
 

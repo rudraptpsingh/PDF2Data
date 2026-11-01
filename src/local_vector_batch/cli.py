@@ -817,7 +817,7 @@ def main(argv: list[str] | None = None) -> int:
                       "token_budget_validated": result.get("token_budget_validated", False),
                       "skipped_input_records": result.get("input_audit", {}).get("records_without_passages")}
         print(json.dumps(result, ensure_ascii=False) if args.json else json.dumps(result, indent=2, ensure_ascii=False))
-        if args.command=='fields'and args.field_operation=='evaluate'and not result.get('passed'):return 3
+        if args.command=='fields'and args.field_operation in ('evaluate','check')and not result.get('passed'):return 3
         if args.command=='native-table-cell-revalidate'and result.get('status')!='validated':return 3
         if args.command=='native-table-region-reproof'and result.get('status')!='passed':return 3
         if args.command=='exact-white-blank-reproof'and result.get('status')!='passed':return 3
