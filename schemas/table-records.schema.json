@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source_pdf_sha256",
+    "source_package_sha256",
+    "rules_sha256",
+    "rule_set_id",
+    "rule_version",
+    "rule_catalog",
+    "producer_implementation",
+    "source_cells",
+    "rows",
+    "groups",
+    "memberships",
+    "summary_observations",
+    "continuation_candidates",
+    "gaps",
+    "counts",
+    "limitations",
+    "semantic_ownership_approved",
+    "entity_identity_approved",
+    "source_quality_approval_granted",
+    "publication_eligible",
+    "calculation_allowed"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "pdf2data.table-records.v1"
+    },
+    "source_pdf_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source_package_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "rules_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "rule_set_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rule_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rule_catalog": {
+      "type": "object"
+    },
+    "producer_implementation": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "source_cells": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "locator",
+          "raw_value",
+          "text_sha256",
+          "cell_text_span",
+          "source_quality",
+          "selected_page_offset_assigned"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "locator": {
+            "type": "object",
+            "required": [
+              "source_pointer",
+              "row",
+              "column",
+              "row_span",
+              "column_span",
+              "physical_page",
+              "table_id",
+              "table_version_id",
+              "page_text_sha256"
+            ]
+          },
+          "selected_page_offset_assigned": {
+            "const": false
+          }
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "physical_page",
+          "table_id",
+          "row",
+          "role_cell_refs",
+          "kind",
+          "group_context_candidates",
+          "membership_ids",
+          "complete_period",
+          "unresolved_group_levels"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "header",
+              "blank",
+              "data",
+              "charge_period",
+              "status_event",
+              "incomplete_period_fragment",
+              "profile_column_scope_unavailable"
+            ]
+          },
+          "complete_period": {
+            "type": "boolean"
+          },
+          "role_cell_refs": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "level",
+          "marker_row_id",
+          "marker_table_id",
+          "marker_cell_refs",
+          "semantic_ownership_approved"
+        ],
+        "properties": {
+          "semantic_ownership_approved": {
+            "const": false
+          }
+        }
+      }
+    },
+    "memberships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "row_id",
+          "group_candidate_id",
+          "basis",
+          "continuation_candidate_chain",
+          "semantic_ownership_approved",
+          "raw_cells_filled"
+        ],
+        "properties": {
+          "semantic_ownership_approved": {
+            "const": false
+          },
+          "raw_cells_filled": {
+            "const": false
+          }
+        }
+      }
+    },
+    "summary_observations": {
+      "type": "array"
+    },
+    "continuation_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "from_table_id",
+          "to_table_id",
+          "state",
+          "reason",
+          "semantic_ownership_approved",
+          "intervening_body_content_checked"
+        ],
+        "properties": {
+          "state": {
+            "enum": [
+              "continuation_candidate_requires_review",
+              "unresolved_continuation",
+              "ambiguous_continuation"
+            ]
+          },
+          "semantic_ownership_approved": {
+            "const": false
+          },
+          "intervening_body_content_checked": {
+            "const": false
+          }
+        }
+      }
+    },
+    "gaps": {
+      "type": "array"
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "semantic_ownership_approved": {
+      "const": false
+    },
+    "entity_identity_approved": {
+      "const": false
+    },
+    "source_quality_approval_granted": {
+      "const": false
+    },
+    "publication_eligible": {
+      "const": false
+    },
+    "calculation_allowed": {
+      "const": false
+    }
+  }
+}
