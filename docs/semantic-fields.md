@@ -35,6 +35,10 @@ pdf2data semantic-fields validate --job semantic-job \
 ```
 
 AskMill 0.1.0a4 supports the required opt-in request/result v2 schema contract.
+Install PDF2Data with its `pdf` extra for source re-verification; the npm launcher
+already requests that extra. A bare Python wheel lacks `pypdf`. The minimal
+standalone replay was independently checked with `pypdf==6.21.4`; it does not
+qualify a fresh PDF-parsing runtime.
 Use an existing configured profile and shared GPU leases. PDF2Data does not call
 model HTTP endpoints, download models, repair responses or change providers.
 Failed/incomplete raw output remains in the run directory.
