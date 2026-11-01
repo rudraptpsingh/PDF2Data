@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 0.2.0-rc.13 — 2026-11-02
+
+- Support native table source proofs from installed wheels by requiring all
+  proof modules to share the actual current package directory. Mixed modules
+  remain refused; captured extraction origins stay data rather than import paths.
+- Refuse proof outputs overlapping source packages, extraction runtimes or input
+  receipts. Keep incomplete cell review as an explicit terminal hold without
+  creating a quality version.
+- Qualify the installed route on bounded source cases with existing independent
+  cell/region decoders. Preserve raw grids, source text, numeric/operator holds
+  and all frozen consumer artifacts; no source acceptance rules are relaxed.
+
 ## 0.2.0-rc.12 — 2026-11-02
 
 - Expose `native-whitefill-prose-reproof` over the existing registered source

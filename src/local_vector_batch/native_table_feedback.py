@@ -29,6 +29,13 @@ def read_rows(path):
     return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
 
 
+def require_coherent_proof_modules(*modules):
+    """Accept one actual package directory in both wheels and source checkouts."""
+    package=Path(__file__).resolve().parent
+    if any(Path(module.__file__).resolve().parent!=package for module in modules):
+        raise ValueError('Mixed cached proof runtime modules are prohibited')
+
+
 def capture_source(package, parser_root, page):
     """Fresh current-tool proof in process, with explicit original epoch binding.
 
@@ -43,10 +50,7 @@ def capture_source(package, parser_root, page):
         raise ValueError('Original source extraction runtime/configuration differs')
     from . import legal_l1,l1_review,quality_gate
     from .native_verification_session import active_session
-    proof_root=Path(__file__).resolve().parents[2]
-    for module in(legal_l1,l1_review,quality_gate):
-        if not Path(module.__file__).resolve().is_relative_to(proof_root/'src/local_vector_batch'):
-            raise ValueError('Mixed cached proof runtime modules are prohibited')
+    require_coherent_proof_modules(legal_l1,l1_review,quality_gate)
     legal_l1.verify_document(package);source=package/'original.pdf';source_sha=sha(source.read_bytes())
     session=active_session()
     selected=session.page_row(package/'extraction/pages.jsonl',page)if session else next(row for row in read_rows(package/'extraction/pages.jsonl')if row['page']==page)
@@ -259,8 +263,9 @@ def _revalidate_checked(package, parser_root, feedback, dossier, output, page=5)
 
 def revalidate(package, parser_root, feedback, dossier, output, page=5):
     """Every submitted repair receives a terminal receipt, including preflight."""
-    output=Path(output)
-    if output.exists():raise ValueError('Choose a new immutable output directory')
+    package,parser_root,feedback,dossier,output=map(lambda p:Path(p).resolve(),(package,parser_root,feedback,dossier,output))
+    if output.exists()or output.is_relative_to(package)or package.is_relative_to(output)or output.is_relative_to(parser_root)or parser_root.is_relative_to(output)or feedback.is_relative_to(output)or dossier.is_relative_to(output):
+        raise ValueError('Choose a new immutable output outside parent, source runtime and inputs')
     try:
         return _revalidate_checked(package,parser_root,feedback,dossier,output,page)
     except (ValueError,KeyError,TypeError,OSError,subprocess.SubprocessError)as error:

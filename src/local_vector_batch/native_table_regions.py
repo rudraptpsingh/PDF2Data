@@ -376,14 +376,21 @@ def assess_registered_regions(package,snapshot,cell_result,proof):
 
 def build_version(package,runtime,feedback,dossier,page,output,*,external_decoder=False):
     package,runtime,feedback,dossier,output=map(lambda p:Path(p).resolve(),(package,runtime,feedback,dossier,output))
-    if output.exists():raise ValueError('Choose a new immutable output directory')
-    output.mkdir(parents=True);(output/'engine-source.py').write_bytes(Path(__file__).read_bytes());sys.path.insert(0,str(runtime/'src'))
+    if output.exists()or output.is_relative_to(package)or package.is_relative_to(output)or output.is_relative_to(runtime)or runtime.is_relative_to(output)or feedback.is_relative_to(output)or dossier.is_relative_to(output):
+        raise ValueError('Choose a new immutable output outside parent, source runtime and inputs')
+    output.mkdir(parents=True);(output/'engine-source.py').write_bytes(Path(__file__).read_bytes())
     from local_vector_batch.legal_l1 import verify_document,write_rows,readiness_ledger
     verify_document(package)
     original_manifest=sha((package/'l1-package.json').read_bytes());original_pages=sha((package/'extraction/pages.jsonl').read_bytes())
     repair_configuration=proof_configuration('native_table_regions',package,Path(__file__))
     repair_configuration.update(source_runtime=str(runtime),feedback_path=str(feedback),feedback_sha256=sha(feedback.read_bytes()),dossier_path=str(dossier),dossier_sha256=sha(dossier.read_bytes()),page=page)
     cells=revalidate(package,runtime,feedback,dossier,output/'cell-revalidation',page)
+    if cells['status']=='held':
+        result={'status':'held','reason':'Source cell review remains incomplete','page':page,
+            'cell_validation_status':'held','cell_validation_receipt':'cell-revalidation/validation.json',
+            'source_text_modified':False,'new_source_quality_version_created':False,
+            'answer_publication_eligible':False,'model_calls':0,'remote_operations':0}
+        save(output/'validation.json',result);return result
     if cells['status']!='validated':raise ValueError('Source cell review remains incomplete/rejected')
     snapshot=read(output/'cell-revalidation/source-snapshot.json')
     try:

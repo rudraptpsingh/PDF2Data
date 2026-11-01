@@ -1,6 +1,6 @@
 {
   "name": "@rudraptpsingh/pdf2data",
-  "version": "0.2.0-rc.12",
+  "version": "0.2.0-rc.13",
   "description": "Local PDF extraction, structured exports, source review and MCP tools",
   "type": "module",
   "license": "MIT",
