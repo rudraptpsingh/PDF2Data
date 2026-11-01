@@ -74,6 +74,7 @@ Field properties:
 | `scope` | `all`, `body_candidate`, `header_candidate` or `footer_candidate` |
 | `date_format` | Explicit `strptime` format; failed dates remain literal candidates |
 | `unit` | Configuration hint only; it does not substitute for a printed `unit` group |
+| `quantity_normalization` | Optional [bounded English word/percent mode](word-quantities.md); unknown forms remain null |
 | `extractor` | `regex` by default, or `formulas` to retain existing formula observations |
 
 Use Unicode labels and alternations for different languages. Rules cannot repair

@@ -134,6 +134,12 @@
               "type": "string",
               "minLength": 1
             }
+          },
+          "quantity_normalization": {
+            "enum": [
+              "english_cardinal_0_100_v1",
+              "english_cardinal_percent_0_100_v1"
+            ]
           }
         },
         "oneOf": [

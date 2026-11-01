@@ -64,7 +64,7 @@ class Projection:
 
 
 def compute(data, rules, rules_sha, family, implementation):
-    from .field_rules import capture_config, flags
+    from .field_rules import capture_config, flags, quantity_from_match
     if not re.fullmatch(r'[a-f0-9]{64}', data.get('source_package_sha256', '')):
         raise ValueError('Fields v3 requires exact source package SHA256')
     pages = {p['page']: p for p in data['pages']}; layouts = {p['page']: p for p in data['layout']}
@@ -102,10 +102,9 @@ def compute(data, rules, rules_sha, family, implementation):
                         try:typed = datetime.strptime(literal, field['date_format']).date().isoformat()
                         except (ValueError, KeyError):issues.append('date_does_not_match_declared_format')
                     else:
-                        from .formula_observations import stated_number
                         try:
-                            n = stated_number(literal); typed = dict(numerator=str(n.numerator), denominator=str(n.denominator))
-                        except (ValueError, ArithmeticError):issues.append('ambiguous_numeric_literal')
+                            typed = quantity_from_match(match, field)
+                        except (ValueError, ArithmeticError):issues.append('unsupported_word_numeric_literal' if field.get('quantity_normalization') else 'ambiguous_numeric_literal')
                 if field['type'] == 'formula':issues.append('formula_structure_and_calculation_not_established')
                 captures = {}
                 for name in names:

@@ -47,6 +47,7 @@ document-specific expectations. Unknown fields/captures and stale pins fail.
 | `count` | Required integer minimum and maximum; explicit zero-match negatives supported |
 | `expected_literals` | Exact Unicode values, including duplicate occurrence counts; order-independent |
 | `expected_pages` | Physical-page list per observation, in observation/span order |
+| `expected_typed_candidates` | Exact rational quantity candidates or explicit nulls, in observation order; see [word quantities](word-quantities.md) |
 | `expected_captures` | Exact capture values per observation; `null` means an explicitly unmatched capture |
 | `required_captures` | Every observation has these nonempty, matched captures |
 | `forbidden_fragments` | Literal strings that must not occur in this field's values |

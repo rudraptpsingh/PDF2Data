@@ -1,0 +1,380 @@
+{
+  "schema_version": "pdf2data.word-quantity-qualification.v1",
+  "producer_base": "v0.2.0-rc.13",
+  "qualification": "development_implementation_pending_release_adoption",
+  "observations": [
+    {
+      "role": "historical-principal",
+      "field_id": "historical.minimum_ownership_words",
+      "literal": "twenty six",
+      "source_spans": [
+        {
+          "page": 1,
+          "page_text_sha256": "9079b1bedc912143342fe059a85628495a01d299ebb1562de511e09b28ed0cb0",
+          "char_start": 1065,
+          "char_length": 10,
+          "offset_encoding": "codepoint",
+          "exact_quote": "twenty six"
+        }
+      ],
+      "match_source_spans": [
+        {
+          "page": 1,
+          "page_text_sha256": "9079b1bedc912143342fe059a85628495a01d299ebb1562de511e09b28ed0cb0",
+          "char_start": 1051,
+          "char_length": 49,
+          "offset_encoding": "codepoint",
+          "exact_quote": "not less than twenty six percent of the ownership"
+        }
+      ],
+      "native_unit_id": "pdf-4f81daa5d246e7829ebbf92e:unit:cb5f3166150bd890d6983d29",
+      "before_typed_candidate": null,
+      "before_validation_issues": [
+        "ambiguous_numeric_literal"
+      ],
+      "after_typed_candidate": {
+        "numerator": "26",
+        "denominator": "1"
+      },
+      "after_validation_issues": [],
+      "unit_literal": null,
+      "configured_unit_hint": "percent",
+      "source_quality_outcomes": [
+        "auto_accepted"
+      ]
+    },
+    {
+      "role": "historical-principal",
+      "field_id": "historical.minimum_consumption_words",
+      "literal": "fifty one",
+      "source_spans": [
+        {
+          "page": 1,
+          "page_text_sha256": "9079b1bedc912143342fe059a85628495a01d299ebb1562de511e09b28ed0cb0",
+          "char_start": 1156,
+          "char_length": 9,
+          "offset_encoding": "codepoint",
+          "exact_quote": "fifty one"
+        }
+      ],
+      "match_source_spans": [
+        {
+          "page": 1,
+          "page_text_sha256": "9079b1bedc912143342fe059a85628495a01d299ebb1562de511e09b28ed0cb0",
+          "char_start": 1142,
+          "char_length": 48,
+          "offset_encoding": "codepoint",
+          "exact_quote": "not less than fifty one percent of the aggregate"
+        }
+      ],
+      "native_unit_id": "pdf-4f81daa5d246e7829ebbf92e:unit:cb5f3166150bd890d6983d29",
+      "before_typed_candidate": null,
+      "before_validation_issues": [
+        "ambiguous_numeric_literal"
+      ],
+      "after_typed_candidate": {
+        "numerator": "51",
+        "denominator": "1"
+      },
+      "after_validation_issues": [],
+      "unit_literal": null,
+      "configured_unit_hint": "percent",
+      "source_quality_outcomes": [
+        "auto_accepted"
+      ]
+    },
+    {
+      "role": "historical-principal",
+      "field_id": "historical.aop_variation_words",
+      "literal": "ten",
+      "source_spans": [
+        {
+          "page": 2,
+          "page_text_sha256": "9f5b8c31812ff5be37d406026cc0ad3b1296ae5dcf62668e547443543d41dbac",
+          "char_start": 483,
+          "char_length": 3,
+          "offset_encoding": "codepoint",
+          "exact_quote": "ten"
+        }
+      ],
+      "match_source_spans": [
+        {
+          "page": 2,
+          "page_text_sha256": "9f5b8c31812ff5be37d406026cc0ad3b1296ae5dcf62668e547443543d41dbac",
+          "char_start": 459,
+          "char_length": 35,
+          "offset_encoding": "codepoint",
+          "exact_quote": "variation not exceeding ten\npercent"
+        }
+      ],
+      "native_unit_id": "pdf-4f81daa5d246e7829ebbf92e:unit:cb5f3166150bd890d6983d29",
+      "before_typed_candidate": null,
+      "before_validation_issues": [
+        "ambiguous_numeric_literal"
+      ],
+      "after_typed_candidate": {
+        "numerator": "10",
+        "denominator": "1"
+      },
+      "after_validation_issues": [],
+      "unit_literal": null,
+      "configured_unit_hint": "percent",
+      "source_quality_outcomes": [
+        "auto_accepted"
+      ]
+    },
+    {
+      "role": "amendment-composite",
+      "field_id": "rule3.minimum_ownership_words",
+      "literal": "twenty-six",
+      "source_spans": [
+        {
+          "page": 6,
+          "page_text_sha256": "0eeae94cadb01d2fe5350898ef13eb6239bb2b72a53687124464eebe8831df7a",
+          "char_start": 2644,
+          "char_length": 10,
+          "offset_encoding": "codepoint",
+          "exact_quote": "twenty-six"
+        }
+      ],
+      "match_source_spans": [
+        {
+          "page": 6,
+          "page_text_sha256": "0eeae94cadb01d2fe5350898ef13eb6239bb2b72a53687124464eebe8831df7a",
+          "char_start": 2630,
+          "char_length": 50,
+          "offset_encoding": "codepoint",
+          "exact_quote": "not less than twenty-six per cent of the ownership"
+        }
+      ],
+      "native_unit_id": "pdf-7a2f8071018e4f07cd86df1a:unit:268f5b38165cc57ac610f341",
+      "before_typed_candidate": null,
+      "before_validation_issues": [
+        "ambiguous_numeric_literal"
+      ],
+      "after_typed_candidate": {
+        "numerator": "26",
+        "denominator": "1"
+      },
+      "after_validation_issues": [],
+      "unit_literal": null,
+      "configured_unit_hint": "percent",
+      "source_quality_outcomes": [
+        "repair_required"
+      ]
+    },
+    {
+      "role": "amendment-composite",
+      "field_id": "rule3.minimum_consumption_words",
+      "literal": "fifty-one",
+      "source_spans": [
+        {
+          "page": 6,
+          "page_text_sha256": "0eeae94cadb01d2fe5350898ef13eb6239bb2b72a53687124464eebe8831df7a",
+          "char_start": 2737,
+          "char_length": 9,
+          "offset_encoding": "codepoint",
+          "exact_quote": "fifty-one"
+        }
+      ],
+      "match_source_spans": [
+        {
+          "page": 6,
+          "page_text_sha256": "0eeae94cadb01d2fe5350898ef13eb6239bb2b72a53687124464eebe8831df7a",
+          "char_start": 2723,
+          "char_length": 49,
+          "offset_encoding": "codepoint",
+          "exact_quote": "not less than fifty-one per cent of the aggregate"
+        }
+      ],
+      "native_unit_id": "pdf-7a2f8071018e4f07cd86df1a:unit:268f5b38165cc57ac610f341",
+      "before_typed_candidate": null,
+      "before_validation_issues": [
+        "ambiguous_numeric_literal"
+      ],
+      "after_typed_candidate": {
+        "numerator": "51",
+        "denominator": "1"
+      },
+      "after_validation_issues": [],
+      "unit_literal": null,
+      "configured_unit_hint": "percent",
+      "source_quality_outcomes": [
+        "repair_required"
+      ]
+    },
+    {
+      "role": "amendment-composite",
+      "field_id": "rule3.individual_proportion_limit_words",
+      "literal": "one hundred",
+      "source_spans": [
+        {
+          "page": 7,
+          "page_text_sha256": "9b3fa8b42143821142290bce6640f80b2ea01d8e4ff799b2244a4c3473661942",
+          "char_start": 1249,
+          "char_length": 11,
+          "offset_encoding": "codepoint",
+          "exact_quote": "one hundred"
+        }
+      ],
+      "match_source_spans": [
+        {
+          "page": 7,
+          "page_text_sha256": "9b3fa8b42143821142290bce6640f80b2ea01d8e4ff799b2244a4c3473661942",
+          "char_start": 1227,
+          "char_length": 49,
+          "offset_encoding": "codepoint",
+          "exact_quote": "admissible only up to one hundred per cent of its"
+        }
+      ],
+      "native_unit_id": "pdf-7a2f8071018e4f07cd86df1a:unit:268f5b38165cc57ac610f341",
+      "before_typed_candidate": null,
+      "before_validation_issues": [
+        "ambiguous_numeric_literal"
+      ],
+      "after_typed_candidate": {
+        "numerator": "100",
+        "denominator": "1"
+      },
+      "after_validation_issues": [],
+      "unit_literal": null,
+      "configured_unit_hint": "percent",
+      "source_quality_outcomes": [
+        "repair_required"
+      ]
+    },
+    {
+      "role": "amendment-composite",
+      "field_id": "rule3.individual_ownership_exception_words",
+      "literal": "twenty-six",
+      "source_spans": [
+        {
+          "page": 7,
+          "page_text_sha256": "9b3fa8b42143821142290bce6640f80b2ea01d8e4ff799b2244a4c3473661942",
+          "char_start": 1443,
+          "char_length": 10,
+          "offset_encoding": "codepoint",
+          "exact_quote": "twenty-six"
+        }
+      ],
+      "match_source_spans": [
+        {
+          "page": 7,
+          "page_text_sha256": "9b3fa8b42143821142290bce6640f80b2ea01d8e4ff799b2244a4c3473661942",
+          "char_start": 1406,
+          "char_length": 66,
+          "offset_encoding": "codepoint",
+          "exact_quote": "any captive user holds not less than twenty-six per cent ownership"
+        }
+      ],
+      "native_unit_id": "pdf-7a2f8071018e4f07cd86df1a:unit:268f5b38165cc57ac610f341",
+      "before_typed_candidate": null,
+      "before_validation_issues": [
+        "ambiguous_numeric_literal"
+      ],
+      "after_typed_candidate": {
+        "numerator": "26",
+        "denominator": "1"
+      },
+      "after_validation_issues": [],
+      "unit_literal": null,
+      "configured_unit_hint": "percent",
+      "source_quality_outcomes": [
+        "repair_required"
+      ]
+    }
+  ],
+  "receipts": [
+    {
+      "role": "historical-principal",
+      "source_pdf_sha256": "4f81daa5d246e7829ebbf92e3538352cd188cbd71320aec375812e9f5058236d",
+      "source_package_sha256": "e8cb4113447a4aaa411a1cdfd1126518fe4fb8d6e766b718f95060716ea5b9e7",
+      "before_fields_sha256": "a550a6141afac80898dad7fa4e398e9fda2ee64296644dc7e472beb10cfa10c3",
+      "after_fields_sha256": "40ef46710d80b2ce244b647a08740ba67b0a5f9957493eb5ca50a04425174b50",
+      "rules_sha256": "e146908a08e345bd3b6004db3fa8e26151d4374c36ef0caa5c0d2f18cff5bbd4",
+      "checks_sha256": "7b4dd1c30415d7e3b7aee69b450479b3da6d26050633dc5879462dd2f23e76fe",
+      "report_sha256": "65cce87a2cf5a1ac1577f01b633615b8321205d3b3bd615181e32c921b582660",
+      "printed_fields_sha256": "1e8377a7f9758a9f2977b8305e9c0cc7ba3557091dca8754a03100d5fa38c0bc",
+      "printed_report_sha256": "bb3c0b76d3e58fa58e60da023fd8dee2249bfd4eb0f9d667ac5726f0ebaef92a",
+      "failed_control_report_sha256": "2bea816d436ba1ff57d5e51be1bca5f52e34ebe9d3e269f927082e9b2f1fd9bd",
+      "checks_passed": 14,
+      "source_hashes_unchanged": true
+    },
+    {
+      "role": "amendment-composite",
+      "source_pdf_sha256": "7a2f8071018e4f07cd86df1a6e7daa1d410d3aa736de956a7d996b20e72fdd00",
+      "source_package_sha256": "6ccbb935210a4b43c87e0b8bc22cfb64b0bebf16ced014a7f0e49c8843fa9bb8",
+      "before_fields_sha256": "7e4e3ff47505765987f0c7dc21d16f14f9a22b2d0cf9a9a1f4ee45057b656019",
+      "after_fields_sha256": "5a00ea35e1b4cf0047576315c82e63e722be6d368785442ee6cf4cb3a1b9b8b8",
+      "rules_sha256": "5192056b81adef59e22df48992c6ef3659f700afd0162bf196e818334365716a",
+      "checks_sha256": "b1dce5d85d2788f497409873b3690d6fc92b00a72c3a0f7df083b707c228157c",
+      "report_sha256": "64465def444893d90f11916de305dd3f1625afd1a85391e50b2ee80bc8bab62e",
+      "printed_fields_sha256": "4ee7c31a6c7f52154f105f81d953f897e093722b9af6d42ec5b427902913f697",
+      "printed_report_sha256": "3218fa355b21979b7411ae5bf991f7a5fea60b3822bb8873c999913190368a45",
+      "failed_control_report_sha256": "f02f108d622d0888dd3a8e06f7b359d901e9e61908a2169d08e46258ea037f25",
+      "checks_passed": 34,
+      "source_hashes_unchanged": true
+    }
+  ],
+  "source_pages_visually_reviewed": {
+    "historical-principal": [
+      1,
+      2
+    ],
+    "amendment-composite": [
+      4,
+      6,
+      7,
+      8
+    ]
+  },
+  "real_originals": 2,
+  "word_observations": 7,
+  "original_rules_fields": 48,
+  "original_rules_observations": 46,
+  "printed_unit_witness_observations": 7,
+  "mutation_controls": "wrong expected numeric candidates, separate reports, both exit 3",
+  "raw_source_or_originals_changed": false,
+  "model_calls": 0,
+  "new_ocr_calls": 0,
+  "content_reparse": false,
+  "full_pipeline_accuracy": false,
+  "legal_approval": false,
+  "calculation_allowed": false,
+  "producer_implementation": {
+    "field_rules.py": "ae1bfa36265a3de94dd0edf38dfb926353dfb3c01b74469648d16c5fd0a67e76",
+    "formula_observations.py": "606d42bb716bfdd7809e59a2c53ef708a24b4310a2dbef095734b0b56ad0a550",
+    "document_blocks.py": "71d65a1bd76ad50f5e8454fb903bd71fa3c45f7f6cc857ffda5f4925695da728",
+    "document_metadata.py": "2e7df0a0a894d0e6a39e92f5015edfc5f3acf499c3acadcd47565c1b5f8a1398",
+    "multipart_fields.py": "b5a79c707d5524e6623e1c1e8be193187e0f2b2716c075375604ad05ce1439d4"
+  },
+  "preserved_conflict": {
+    "Hindi_example2_C_note": "9%",
+    "English_example2_C_note": "3%",
+    "source_table_C_value": "3%",
+    "source_table_conflict_evidence": "Map source inspection retained; no table or note corrected",
+    "normalized_agreement": false,
+    "visually_reviewed_source_crops_sha256": [
+      "5b215f051c147be78cdc94aa728cecec76dabc5bc73c3ddccc6989e16f7695b6",
+      "6087bc5545c5cc3a36b5309453110c34fdddf409071fafca08f8d21e3dc377fa"
+    ]
+  },
+  "consumer_adoption_required": [
+    "New immutable PDF2Data release and pinned consumer update",
+    "Versioned opt-in quantity rules and numeric checks; retain old frozen bundles",
+    "Public CLI re-extraction/checks against the release; Map native qualification and Data2DB exact readback",
+    "Query/Impact/app acceptance, client applicability and calculation approval remain separate"
+  ],
+  "scope": "Bounded normalization on seven existing real-source observations; separately widened printed-unit witness rules and engineering mutation controls. No whole-body or bilingual completeness claim.",
+  "local_evidence_manifest_sha256": "8fc8b7640ed44ccc05e97ba8c5dd70b50168ec18677a3700bbc4f8d657721556",
+  "tests": {
+    "command": "PYTHONPATH=src python -m pytest -q",
+    "result": "1532 passed, 8 skipped",
+    "receipt_sha256": "0325107348b67761c283cb6f663b0504a801cf8b424151d6e01fbb4d44205f0c",
+    "additional_checks": [
+      "git diff --check",
+      "python scripts/release_checks.py",
+      "JSON Schema validation of changed schemas and real-source rule/check configurations"
+    ]
+  }
+}

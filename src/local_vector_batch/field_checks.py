@@ -8,7 +8,7 @@ from . import field_rules as fields
 
 SCHEMA = 'pdf2data.field-check-rules.v1'
 ASSERTIONS = {'count', 'expected_literals', 'expected_pages',
-              'expected_captures', 'required_captures', 'forbidden_fragments'}
+              'expected_captures', 'required_captures', 'forbidden_fragments', 'expected_typed_candidates'}
 
 
 def _keys(value, allowed, required, label):
@@ -84,6 +84,15 @@ def load(path):
                         not isinstance(k, str) or not re.fullmatch('[A-Za-z][A-Za-z0-9_]{0,63}', k) or
                         (v is not None and (not isinstance(v, str) or len(v) > 100000)) for k, v in row.items()):
                     raise ValueError('Invalid expected capture row')
+        if 'expected_typed_candidates' in rule:
+            candidates=rule['expected_typed_candidates']
+            if not isinstance(candidates,list) or not 1 <= len(candidates) <= 1000:
+                raise ValueError('Invalid expected_typed_candidates')
+            for value in candidates:
+                if value is None:continue
+                _keys(value,{'numerator','denominator'},{'numerator','denominator'},'exact rational candidate')
+                if not isinstance(value['numerator'],str) or not re.fullmatch(r'-?(?:0|[1-9][0-9]{0,199})',value['numerator']) or not isinstance(value['denominator'],str) or not re.fullmatch(r'[1-9][0-9]{0,199}',value['denominator']):
+                    raise ValueError('Expected candidate needs bounded exact rational strings')
     return config
 
 
@@ -103,6 +112,8 @@ def evaluate(data, config):
         if referenced - configured_captures:
             raise ValueError('Unknown check capture: ' + ', '.join(sorted(referenced - configured_captures)))
         rows = [r for r in data['observations'] if r['field_id'] == name]
+        if 'expected_typed_candidates' in rule and catalog[name]['type']!='quantity':
+            raise ValueError('Typed rational checks require a quantity field')
         if len(rows) > 10000:
             raise ValueError('More than 10000 observations for one check; narrow extraction rules')
         assertions = []
@@ -119,6 +130,9 @@ def evaluate(data, config):
         if 'expected_pages' in rule:
             actual = [[s['page'] for s in r.get('source_spans', [r.get('source_span')]) if s] for r in rows]
             record('expected_pages', rule['expected_pages'], actual, actual == rule['expected_pages'])
+        if 'expected_typed_candidates' in rule:
+            actual=[r.get('typed_candidate') for r in rows]
+            record('expected_typed_candidates',rule['expected_typed_candidates'],actual,actual==rule['expected_typed_candidates'])
         if 'expected_captures' in rule:
             expected = rule['expected_captures']
             actual = [{k: rows[i].get('captures', {}).get(k, {}).get('value_literal')

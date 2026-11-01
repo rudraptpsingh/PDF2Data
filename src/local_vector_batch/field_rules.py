@@ -19,6 +19,55 @@ FIELDS_V2='pdf2data.configured-fields.v2'
 FIELDS_V3='pdf2data.configured-fields.v3'
 TYPES={'text','date','quantity','reference','formula'}
 SOURCE_FILES=('extraction/pages.jsonl','layout.jsonl','extraction/tables.json','structure.json','quality.json')
+WORD_QUANTITIES={'english_cardinal_0_100_v1','english_cardinal_percent_0_100_v1'}
+
+
+def quantity_config(field):
+    if 'quantity_normalization' not in field:return
+    mode=field['quantity_normalization']
+    if field['type']!='quantity' or not isinstance(mode,str) or mode not in WORD_QUANTITIES:
+        raise ValueError('Unknown quantity normalization or non-quantity field')
+    if mode=='english_cardinal_percent_0_100_v1' and 'unit' not in re.compile(field.get('pattern',''),flags(field)).groupindex:
+        raise ValueError('Word percent normalization requires a printed named unit group inside value')
+
+
+def quantity_candidate(literal,field,unit=None):
+    """Exact magnitude only. No unit inference, comparison parsing or approval."""
+    mode=field.get('quantity_normalization')
+    if mode is None:
+        from .formula_observations import stated_number
+        n=stated_number(literal)
+        return dict(numerator=str(n.numerator),denominator=str(n.denominator))
+    quantity_config(field)
+    words=literal
+    if mode=='english_cardinal_percent_0_100_v1':
+        # Require the separately anchored printed witness, not a configured hint.
+        if not unit or not re.fullmatch(r'(?:percent|per\s+cent|%)',unit,re.IGNORECASE) or not literal.endswith(unit):
+            raise ValueError('Unsupported printed percent unit')
+        words=literal[:-len(unit)].rstrip()
+        if not words or (unit!='%' and literal[len(words):len(literal)-len(unit)]==''):
+            raise ValueError('Word percent needs a separated printed unit')
+    small='zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen'.split()
+    tens='twenty thirty forty fifty sixty seventy eighty ninety'.split()
+    numbers={word:i for i,word in enumerate(small)}
+    numbers.update({word:(i+2)*10 for i,word in enumerate(tens)})
+    # Only ordinary cardinal forms: no OCR repair, punctuation, ranges, mixed
+    # digits, fractions, signs, conjunctions, locale or larger-scale guesses.
+    if not re.fullmatch(r'[A-Za-z]+(?:\s+[A-Za-z]+|-[A-Za-z]+)?',words):
+        raise ValueError('Unsupported English cardinal literal')
+    tokens=re.split(r'\s+|-',words.lower())
+    if len(tokens)==1 and tokens[0] in numbers:n=numbers[tokens[0]]
+    elif len(tokens)==2 and tokens[0] in tens and tokens[1] in small[1:10]:n=numbers[tokens[0]]+numbers[tokens[1]]
+    elif tokens==['one','hundred'] and '-' not in words:n=100
+    else:raise ValueError('Unsupported English cardinal literal')
+    return dict(numerator=str(n),denominator='1')
+
+
+def quantity_from_match(match,field):
+    if field.get('quantity_normalization')=='english_cardinal_percent_0_100_v1':
+        a,b=match.span('value');x,y=match.span('unit')
+        if not a < x < y == b:raise ValueError('Printed percent witness must end the value span')
+    return quantity_candidate(match.group('value'),field,match.groupdict().get('unit'))
 
 
 def implementation():
@@ -95,6 +144,7 @@ def load(path):
             if 'value'not in compiled.groupindex:raise ValueError('Regex needs a named (?P<value>...) group')
         else:raise ValueError('Use regex or formulas extractor')
         capture_config(value,field)
+        quantity_config(field)
         ids.append(field['id'])
     if len(ids)!=len(set(ids)):raise ValueError('Field IDs must be unique')
     return value
@@ -154,10 +204,9 @@ def compute(data,rules,rules_sha,family):
                                 try:typed=datetime.strptime(literal,field['date_format']).date().isoformat()
                                 except ValueError:issues.append('date_does_not_match_declared_format')
                         elif field['type']=='quantity':
-                            from .formula_observations import stated_number
                             try:
-                                n=stated_number(literal);typed=dict(numerator=str(n.numerator),denominator=str(n.denominator))
-                            except (ValueError,ArithmeticError):issues.append('ambiguous_numeric_literal')
+                                typed=quantity_from_match(match,field)
+                            except (ValueError,ArithmeticError):issues.append('unsupported_word_numeric_literal' if field.get('quantity_normalization') else 'ambiguous_numeric_literal')
                         groups=match.groupdict();unit=groups.get('unit')
                         item=dict(value_literal=literal,typed_candidate=typed,source_span=span(page,a,b),
                                   match_source_span=span(page,match.start(),match.end()),unit_literal=unit,
