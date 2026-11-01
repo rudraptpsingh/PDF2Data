@@ -277,13 +277,16 @@ def build(data,profile,profile_sha,source_package_sha):
             for i,m in enumerate(patterns['condition'].finditer(text)):
                 end=min([z for z in [text.find(';',m.end()),text.find('.”',m.end())]if z>=0]or[len(text)])
                 excluded=m.group().lower()in ('excluding','other than')
-                if excluded:
-                    depth=text[:m.start()].count('(')-text[:m.start()].count(')')
-                    current=depth
-                    if depth>0:
-                        for j in range(m.end(),end):
-                            current+=int(text[j]=='(')-int(text[j]==')')
-                            if current<depth:end=j;break
+                # Any condition introduced inside a parenthesis stops at its
+                # closing delimiter. Otherwise an inline "if" qualifier can
+                # absorb an independent deadline following the parenthesis.
+                # This is a lexical boundary, not proof of Boolean ownership.
+                depth=text[:m.start()].count('(')-text[:m.start()].count(')')
+                current=depth
+                if depth>0:
+                    for j in range(m.end(),end):
+                        current+=int(text[j]=='(')-int(text[j]==')')
+                        if current<depth:end=j;break
                 end=min(end,len(text));literal=text[m.start():end]
                 if not literal:continue
                 child=dict(kind='atom',source=u.part(a+m.start(),a+end),subject_candidate=None,property_candidate=None,comparison=None,operand=None,ownership='unresolved')
