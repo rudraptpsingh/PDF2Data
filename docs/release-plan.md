@@ -1,7 +1,7 @@
 # Release setup and next milestones
 
-1 November 2026. Release candidate: `v0.2.0-rc.9`; Python version `0.2.0rc9`;
-npm version `0.2.0-rc.9`. The npm name is `@rudraptpsingh/pdf2data`; the unscoped
+2 November 2026. Release candidate: `v0.2.0-rc.11`; Python version `0.2.0rc11`;
+npm version `0.2.0-rc.11`. The npm name is `@rudraptpsingh/pdf2data`; the unscoped
 `pdf2data` npm package is owned by another publisher.
 
 ## Distribution in this release
