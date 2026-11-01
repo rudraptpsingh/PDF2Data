@@ -20,7 +20,7 @@ def custody(tmp_path):
     save(parent/'l1-package.json',{'identity':'captured parent'})
     manifest=hashlib.sha256((parent/'l1-package.json').read_bytes()).hexdigest()
     save(parent/'source-receipt.json',dict(configuration=configuration,actual_sha256=pdf,declared={'sha256':pdf}))
-    config=dict(parent_l1_package_path='/unavailable/original/parent',parent_manifest_sha256=manifest,source_extraction_configuration=configuration)
+    config=dict(parent_l1_package_path=str(root.parent/'unavailable/original/parent'),parent_manifest_sha256=manifest,source_extraction_configuration=configuration)
     entry=dict(captured_path=config['parent_l1_package_path'],resolved_path=str(parent),manifest_sha256=manifest,source_pdf_sha256=pdf,source_configuration_sha256=hash_value(configuration))
     data=dict(schema_version=SCHEMA,custody_root=str(root),packages=[entry],files=[])
     mapping=save(root/'bindings.json',data)
@@ -78,10 +78,11 @@ def test_parent_mutation_and_symlink_rejected(custody):
 
 def test_review_files_require_exact_binding_and_remain_sealed(custody):
     root,parent,config,source,data,mapping=custody;image=root/'crop.png';image.write_bytes(b'pixel bytes');expected=hashlib.sha256(image.read_bytes()).hexdigest()
-    data['files']=[dict(captured_path='/old/crop.png',resolved_path=str(image),sha256=expected)];save(mapping,data)
+    old=str(root.parent/'old/crop.png');other=str(root.parent/'other/crop.png')
+    data['files']=[dict(captured_path=old,resolved_path=str(image),sha256=expected)];save(mapping,data)
     bound=Bindings(mapping)
-    assert bound.file('/old/crop.png',expected,'review_raster')==image
-    with pytest.raises(ValueError,match='Missing explicit file'):bound.file('/other/crop.png',expected,'review_raster')
+    assert bound.file(old,expected,'review_raster')==image
+    with pytest.raises(ValueError,match='Missing explicit file'):bound.file(other,expected,'review_raster')
     image.write_bytes(b'changed')
     with pytest.raises(ValueError,match='changed during'):bound.unchanged()
 
