@@ -51,3 +51,6 @@ and an illustration with unlocated native field geometry remain held. A
 separate ordered-operator whitespace defect is not evidence for language or
 raster acceptance. Originals, raw text, tables, structures and the original job
 remain frozen; no merge, release or consumer adoption is implied.
+
+The [source-bound development receipt](validation/rerc158-scoped-native-001.json)
+records exact original/parent/quality hashes, tested regions and remaining holds.

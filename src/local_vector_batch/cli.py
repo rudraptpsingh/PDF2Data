@@ -364,6 +364,7 @@ def parser() -> argparse.ArgumentParser:
     quality.add_argument("--references", type=Path, help="source-reviewed calibration/holdout reference JSONL")
     quality.add_argument("--source-raster", action=argparse.BooleanOptionalAction, default=True)
     quality.add_argument("--require-accepted", action="store_true", help="exit 3 after writing the report if any assessed page needs repair or a source is blocked")
+    quality.add_argument('--cached-native-operators',action='store_true',help='compare only cached L1 operator tokens into a new candidate; requires --no-source-raster and preserves the original ledger')
     quality.add_argument("--json", action="store_true")
     quality_batch = sub.add_parser("pdf-quality-batch", help="parallel quality gates over cached PDF extraction, without new OCR")
     quality_batch.add_argument("--input", required=True, type=Path, help="JSONL package/source_pdf/pages manifest")
@@ -791,6 +792,13 @@ def main(argv: list[str] | None = None) -> int:
             result = commit_page_repairs(args.package, args.source_pdf, jobs,
                 quality_output=args.quality_output, independent_cache=args.independent,
                 review_sidecar=args.review_sidecar)
+        elif args.command == 'pdf-quality' and args.cached_native_operators:
+            from .quality_gate import compare_cached_native_operators,write_quality_report
+            if args.source_raster or any(v is not None for v in (args.independent,args.policy,args.references,args.pages)):
+                raise ValueError('Cached native operator comparison requires --no-source-raster and no alternate readers/policies/page selections')
+            if args.output.exists() or args.output.resolve().is_relative_to(args.package.resolve()) or args.output.resolve()==args.source_pdf.resolve():
+                raise ValueError('Use a new cached operator report outside immutable inputs')
+            result=compare_cached_native_operators(args.package,args.source_pdf);write_quality_report(result,args.output)
         elif args.command == "pdf-quality":
             from .quality_gate import assess_package, write_quality_report
             from .quality_calibration import evaluate_calibration
