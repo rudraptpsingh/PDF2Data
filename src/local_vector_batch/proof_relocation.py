@@ -1,7 +1,7 @@
 """Explicit, sealed custody bindings for exact captured native proof decoders.
 
 Frozen JSON and source artifacts are never edited. An isolated interpreter runs
-only an exact current decoder or a known released rc12/rc13/rc14 decoder. Its Path
+only an exact current decoder or a known released rc12/rc13/rc14/rc16 decoder. Its Path
 constructors receive only prevalidated resource bindings, not a filesystem-wide
 redirect or an import path to the extraction origin.
 """
@@ -19,7 +19,8 @@ SCHEMA='pdf2data.proof-relocations.v1'
 RC12_CODE='05ec5555a128690a282ed5235f52dd684ca7f2866f4f2ab029f7700e1a47781e'
 RC13_CODE='076b5055cc1496fde274888a880a31533f1f042365384b8da935984e74da86f5'
 RC14_CODE='9ed276efcc6ddc0e1d643ddd9c68b2b014ec46d0e8ed4066cc399a835171c8e7'
-RELEASED_DECODER_CODES=frozenset({RC12_CODE,RC13_CODE,RC14_CODE})
+RC16_CODE='0e5fe813434d10b906cdca22be33557fa0507477613a396fd5b744f3a0007650'
+RELEASED_DECODER_CODES=frozenset({RC12_CODE,RC13_CODE,RC14_CODE,RC16_CODE})
 SUPPORTED={'native_whitefill_prose','native_table_regions'}
 
 
@@ -149,7 +150,10 @@ def replay(folder,source_runtime,proof_runtime,relocations):
                  map_sha256=file_sha(relocations),child_manifest_sha256=file_sha(folder/'l1-package.json'))
     with tempfile.TemporaryDirectory(prefix='pdf2data-custody-replay-')as temporary:
         path=Path(temporary)/'request.json';path.write_text(json.dumps(request),encoding='utf-8')
-        run=subprocess.run([sys.executable,'-I','-B',str(Path(__file__).resolve()),'--worker',str(path)],
+        # Isolated mode ignores environment cache settings; -B only disables writes.
+        # Each descendant launcher likewise selects its own private empty prefix.
+        cache=Path(temporary)/'bytecode';cache.mkdir(mode=0o700)
+        run=subprocess.run([sys.executable,'-I','-B','-X','pycache_prefix='+str(cache),str(Path(__file__).resolve()),'--worker',str(path)],
             capture_output=True,text=True,timeout=600,env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1'})
     if run.returncode:raise ValueError('Custody proof replay refused: '+run.stderr[-3000:])
     value=json.loads(run.stdout)

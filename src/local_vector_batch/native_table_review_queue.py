@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 
 from .proof_identity import canonical, sha, inspect_pdf2data_profile
 
@@ -88,8 +89,9 @@ def _capture(package, origin, proof_root, page):
     code = ('import json,sys;from pathlib import Path;sys.path.insert(0,sys.argv[1]+"/src");'
             'from local_vector_batch.native_table_feedback import capture_source;'
             'print(json.dumps(capture_source(Path(sys.argv[2]),Path(sys.argv[3]),int(sys.argv[4]))))')
-    run = subprocess.run([sys.executable, '-B', '-c', code, str(proof_root), str(package), str(origin), str(page)],
-                         capture_output=True, text=True, timeout=180)
+    with tempfile.TemporaryDirectory(prefix='pdf2data-capture-bytecode-') as cache:
+        run = subprocess.run([sys.executable, '-I', '-B', '-X', 'pycache_prefix='+cache, '-c', code, str(proof_root), str(package), str(origin), str(page)],
+                             capture_output=True, text=True, timeout=180)
     if run.returncode: raise ValueError('Fresh source capture failed: '+run.stderr[-600:])
     return json.loads(run.stdout)
 
@@ -283,7 +285,8 @@ print(json.dumps(result))
 '''
         args=[proof,package,origin,str(folder/'feedback.jsonl'),str(folder/'dossier.json'),str(folder),str(page)]
         try:
-            run=subprocess.run([sys.executable,'-B','-c',code,*args],capture_output=True,text=True,timeout=360)
+            with tempfile.TemporaryDirectory(prefix='pdf2data-review-bytecode-') as cache:
+                run=subprocess.run([sys.executable,'-I','-B','-X','pycache_prefix='+cache,'-c',code,*args],capture_output=True,text=True,timeout=360)
             if run.returncode:raise ValueError(run.stderr[-800:])
             result=json.loads(run.stdout)
             result.update(status='source_quality_cleared'if result['page_quality_cleared']else

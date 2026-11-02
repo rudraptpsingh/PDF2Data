@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import sys
 import time
+import tempfile
 
 from importlib.metadata import version
 import subprocess
@@ -300,9 +301,10 @@ def _verify_reproof(output, runtime, *, fresh=True):
 
 def _worker(operation, parameters):
     """Selected frozen runtime imports stay isolated from a caller's tool epoch."""
-    run=subprocess.run([sys.executable,'-B',str(Path(__file__).resolve()),'--worker'],
-                       input=json.dumps({'operation':operation,'parameters':parameters}),
-                       capture_output=True,text=True,timeout=600)
+    with tempfile.TemporaryDirectory(prefix='pdf2data-targeted-bytecode-') as cache:
+        run=subprocess.run([sys.executable,'-I','-B','-X','pycache_prefix='+cache,str(Path(__file__).resolve()),'--worker'],
+                           input=json.dumps({'operation':operation,'parameters':parameters}),
+                           capture_output=True,text=True,timeout=600)
     if run.returncode:
         raise ValueError('Targeted source proof rejected: '+run.stderr.strip().splitlines()[-1])
     return json.loads(run.stdout)

@@ -92,13 +92,22 @@ def test_multiple_saved_cells_share_one_terminal_source_revalidation(tmp_path,mo
     feedback=tmp_path/'feedback.jsonl';feedback.write_text(''.join(json.dumps(a)+'\n'for a in answers))
     monkeypatch.setattr(queue,'inspect_pdf2data_profile',lambda p:{'profile_sha256':'profile'})
     calls=[]
+    prefixes=[]
+    real_run=queue.subprocess.run
     def execute(args,**kwargs):
         calls.append(args)
-        assert len(queue.rows(args[7]))==2  # one group feedback file, not one isolated decision
+        prefix=Path(args[args.index('-X')+1].removeprefix('pycache_prefix='))
+        assert prefix.is_dir() and not list(prefix.iterdir())
+        prefixes.append(prefix)
+        probe='import json,sys;print(json.dumps([sys.pycache_prefix,sys.flags.isolated,sys.dont_write_bytecode]))'
+        actual=real_run([*args[:args.index('-c')],'-c',probe],capture_output=True,text=True,check=True)
+        assert json.loads(actual.stdout)==[str(prefix),1,True]
+        assert len(queue.rows(args[args.index('-c')+5]))==2  # one group feedback file, not one isolated decision
         return SimpleNamespace(returncode=0,stdout=json.dumps({'cell_status':'validated','page_proof_status':'held',
             'reason':'outside prose remains unverified','page_quality_cleared':False,'answer_publication_eligible':False}))
     monkeypatch.setattr(queue.subprocess,'run',execute)
     result=queue.consume_answers(manifest,feedback,tmp_path/'output')
     assert len(calls)==1 and result['saved_answers_consumed']==2
+    assert len(prefixes)==1 and not prefixes[0].exists()
     assert result['jobs'][0]['status']=='held'and result['pages_source_quality_cleared']==0
     assert queue.rows(tmp_path/'output/page-001/feedback.jsonl')[0]['decision']=='selected'
