@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.2.0-rc.18 — 2026-11-03
+
+- Route exact KrutiDev010 source fonts to Hindi glyph-map review and retain
+  known font/inventory holds through capture, assessment and machine decisions.
+  Preserve source text; native agreement does not decode or approve language.
+- Retain the exact released rc17 decoder for registered custody operations,
+  with changed-code refusals and an independently replayed frozen table proof.
+  Existing jobs, quality policies and consumer pins require explicit adoption.
+
 ## 0.2.0-rc.17 — 2026-11-02
 
 - Give custody, targeted proof and native table review workers isolated Python
