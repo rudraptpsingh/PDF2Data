@@ -13,6 +13,9 @@ def test_export_retains_every_page_raw_layout_and_unreviewed_status(tmp_path):
     assert len(doc['pages'])==len(doc['layout'])==len(doc['quality']['results'])==2
     assert all('glyphs' in page for page in doc['layout'])
     assert len(doc['structure']['units'])>0
+    assert doc['candidate_inventory']['artifacts']['fact_candidates']['count']==len(doc['fact_candidates'])
+    assert doc['candidate_inventory']['artifacts']['structure_candidates']['count']==len(doc['structure_candidates'])
+    assert [s['source_quality'] for s in doc['page_states']]==[q['outcome'] for q in doc['quality']['results']]
     with pytest.raises(ValueError,match='new file'):export_processed(root,output)
 
 def test_export_refuses_corrupt_source_package(tmp_path):

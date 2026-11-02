@@ -72,12 +72,13 @@ def build_overlays(data,source_document=None):
         return '<p class="source-paragraph">'+escape(text)+'</p>' if text else ''
     for page in data['pages']:
         number=page['page'];layout=layouts.get(number,{});regions=[];unlocated=[]
+        page_state=next((s for s in data.get('page_states',[]) if s['page']==number),None)
         if source_document:
             width,height=layout['page_size_points']
         else:
             width,height=layout.get('width'),layout.get('height')
         if not width or not height:
-            pages.append(dict(page=number,regions=[],unlocated_blocks=['page_dimensions_unavailable']))
+            pages.append(dict(page=number,regions=[],unlocated_blocks=['page_dimensions_unavailable'],page_state=page_state))
             continue
         def add(identity,kind,box,text='',**meta):
             try:bounds=normalized(box,width,height)
@@ -154,7 +155,8 @@ def build_overlays(data,source_document=None):
                 add(f'review-p{number}-{i}','unresolved',[box[0]*width,box[1]*height,box[2]*width,box[3]*height],
                     geometry_basis='source_quality_raster',order=None,confidence=None,state='needs_review',
                     reason=region.get('classification') or 'unaccounted_source_region')
-        pages.append(dict(page=number,width=width,height=height,regions=regions,unlocated_blocks=unlocated))
+        pages.append(dict(page=number,width=width,height=height,regions=regions,unlocated_blocks=unlocated,
+                          page_state=page_state))
     return dict(schema_version='pdf2data.overlays.v1',source_pdf_sha256=data['source_pdf_sha256'],
                 document_type=data.get('source',{}).get('declared',{}).get('family','unknown'),
                 palette={k:dict(label=v[0],color=v[1]) for k,v in PALETTE.items()},pages=pages,
