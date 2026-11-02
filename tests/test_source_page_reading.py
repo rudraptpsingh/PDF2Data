@@ -47,7 +47,9 @@ def test_literal_candidate_preserves_parent_and_all_quality_holds(source):
     assert len(state['calls'])==3 and 'doctor'in state['calls'][1]and 'run'in state['calls'][2]
     assert (root/'reading/reading.txt').read_bytes()==state['text'].encode()
     assert inventory(parent)==before
-    assert reading.verify(root/'reading',parent)['complete'] is True
+    calls_before=len(state['calls']);verified=reading.verify(root/'reading',parent)
+    assert verified['complete'] is True and verified['inference_calls_performed']==0 and verified['recorded_fresh_inference_calls']==1
+    assert len(state['calls'])==calls_before
     assert not (root/'reading/l1-package.json').exists()
 
 
@@ -56,7 +58,7 @@ def test_incomplete_attempt_is_retained_and_cannot_be_staged(source):
     result=execute(source);assert result['status']=='held_incomplete'and not result['complete']
     assert (root/'reading/result.json').exists()and list((root/'reading/store').iterdir())
     assert reading.verify(root/'reading',parent)['complete'] is False
-    assert result['fresh_inference_calls']==1
+    assert result['inference_calls_performed']==1 and result['recorded_fresh_inference_calls']==1
 
 
 
