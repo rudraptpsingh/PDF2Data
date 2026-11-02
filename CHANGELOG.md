@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.2.0-rc.15 — 2026-11-02
+
 - Add bounded named local image-reading candidates with exact original/prompt/profile receipts. Preserve older readings, retain incomplete output and all source-quality holds, and leave selected L1s unchanged.
 - Add scoped native source-object/raster accounting without transcription,
   language, layout or page-quality clearance.
