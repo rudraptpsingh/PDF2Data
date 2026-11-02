@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add bounded named local image-reading candidates with exact original/prompt/profile receipts. Preserve older readings, retain incomplete output and all source-quality holds, and leave selected L1s unchanged.
+
 ## 0.2.0-rc.14 — 2026-11-02
 
 - Add explicit bounded English cardinal and printed-percent quantity modes.
