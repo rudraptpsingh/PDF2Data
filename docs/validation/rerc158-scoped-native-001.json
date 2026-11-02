@@ -1,0 +1,236 @@
+{
+  "schema_version": "pdf2data.rerc158-scoped-native-development.v1",
+  "status": "unmerged_development_candidate_central_review_required",
+  "base_release": "v0.2.0-rc.14",
+  "source_pdf_sha256": "f04e384afe9c40a55105411136ba100801933fa391c36cf3493512b5129ca481",
+  "parent_manifest_sha256": "1d48bdc580ee6688f8a104ff56774a81ccd71935a38d2a3cf1a047f2599d8c19",
+  "original_quality_sha256": "08118384c0e5989ad0abfc84ab0c98fdbb36bf8b8e5b8e1dc2624008b1839571",
+  "original_quality_counts": {
+    "auto_accepted": 0,
+    "repair_required": 54,
+    "source_blocked": 0
+  },
+  "failure_classification": {
+    "language_complex_script_mapping_unknown": 54,
+    "source_render_invalid_native_glyph_box": 54,
+    "combining_mark_word_disagreement": 33,
+    "ordered_operator_disagreement": 8,
+    "table_layout_unproved_pages": [
+      1,
+      29,
+      52
+    ],
+    "column_or_decoration_layout_unproved": 51,
+    "nonpositive_area_cached_glyphs": 4823,
+    "nonwhite_nonpositive_area_cached_glyphs": 2073,
+    "english_body_pages_33_through_53_each_have_one_zero_width_header_U0941": true,
+    "cached_pdfium_line_geometry_unavailable": 54,
+    "bilingual_boundary_page": 32,
+    "hindi_printer_footer_page": 54
+  },
+  "scoped_raster": {
+    "regions": [
+      {
+        "id": "english32",
+        "page": 32,
+        "bbox_pdf_points": [
+          80,
+          380,
+          535,
+          775
+        ],
+        "state": "proved",
+        "reason": "fresh_source_objects_and_zero_unaccounted_crop_ink",
+        "unaccounted_ink_pixels": 0,
+        "outside_invalid_glyphs": 49,
+        "transcription": "unproved",
+        "language": "unproved",
+        "layout": "unproved"
+      },
+      {
+        "id": "english34",
+        "page": 34,
+        "bbox_pdf_points": [
+          60,
+          73,
+          535,
+          775
+        ],
+        "state": "proved",
+        "reason": "fresh_source_objects_and_zero_unaccounted_crop_ink",
+        "unaccounted_ink_pixels": 0,
+        "outside_invalid_glyphs": 1,
+        "transcription": "unproved",
+        "language": "unproved",
+        "layout": "unproved"
+      },
+      {
+        "id": "english40",
+        "page": 40,
+        "bbox_pdf_points": [
+          55,
+          73,
+          535,
+          775
+        ],
+        "state": "proved",
+        "reason": "fresh_source_objects_and_zero_unaccounted_crop_ink",
+        "unaccounted_ink_pixels": 0,
+        "outside_invalid_glyphs": 1,
+        "transcription": "unproved",
+        "language": "unproved",
+        "layout": "unproved"
+      },
+      {
+        "id": "formula46",
+        "page": 46,
+        "bbox_pdf_points": [
+          55,
+          73,
+          535,
+          775
+        ],
+        "state": "held",
+        "reason": "scope_does_not_bind_native_field_geometry",
+        "unaccounted_ink_pixels": null,
+        "outside_invalid_glyphs": 0,
+        "transcription": "unproved",
+        "language": "unproved",
+        "layout": "unproved"
+      },
+      {
+        "id": "clause54",
+        "page": 54,
+        "bbox_pdf_points": [
+          55,
+          80,
+          535,
+          176
+        ],
+        "state": "proved",
+        "reason": "fresh_source_objects_and_zero_unaccounted_crop_ink",
+        "unaccounted_ink_pixels": 0,
+        "outside_invalid_glyphs": 4,
+        "transcription": "unproved",
+        "language": "unproved",
+        "layout": "unproved"
+      },
+      {
+        "id": "overlap-header34",
+        "page": 34,
+        "bbox_pdf_points": [
+          55,
+          50,
+          535,
+          775
+        ],
+        "state": "held",
+        "reason": "invalid_native_glyph_intersects_scope",
+        "unaccounted_ink_pixels": null,
+        "outside_invalid_glyphs": 0,
+        "transcription": "unproved",
+        "language": "unproved",
+        "layout": "unproved"
+      },
+      {
+        "id": "table-page1",
+        "page": 1,
+        "bbox_pdf_points": [
+          60,
+          65,
+          535,
+          175
+        ],
+        "state": "held",
+        "reason": "invalid_native_glyph_intersects_scope",
+        "unaccounted_ink_pixels": null,
+        "outside_invalid_glyphs": 0,
+        "transcription": "unproved",
+        "language": "unproved",
+        "layout": "unproved"
+      }
+    ],
+    "components_proved": 4,
+    "components_held": 3,
+    "receipt_sha256": "d78bd821a951fdf2870682ea182dff8a9121f2c5ef535f20cc36dc3c7a63ede8",
+    "source_files_unchanged": 132,
+    "zero_ink_spaces_authorize_no_mask_pixels": true,
+    "transcription_language_layout": "unproved"
+  },
+  "operator_comparison": {
+    "original_results_retained_exactly": true,
+    "comparison_pass_pages_previously_failing": [
+      33,
+      37,
+      39,
+      40,
+      43,
+      44,
+      45,
+      47
+    ],
+    "raw_whitespace_examples": [
+      "shall  not",
+      "at  least",
+      "whichever  is  higher"
+    ],
+    "new_report_sha256": "5fba5e64cbe797bcefff4317d66e65c96b943063c0ab4253204e070dba814fff",
+    "require_accepted_exit_code": 3,
+    "semantics_approved": false
+  },
+  "illustration_page46_geometry_hold": {
+    "cause": "same complete native text line occurs twice; existing unique-line field geometry cannot assign one physical row",
+    "selected_line_indexes": [
+      14,
+      24
+    ],
+    "no_estimated_rectangle_assigned": true
+  },
+  "original_pages_visually_inspected": [
+    1,
+    29,
+    32,
+    33,
+    34,
+    37,
+    39,
+    40,
+    43,
+    44,
+    45,
+    46,
+    47,
+    52,
+    54
+  ],
+  "validation": {
+    "pytest_passed": 1584,
+    "pytest_skipped": 8,
+    "test_receipt_sha256": "eb5e0f56ad662d726cd3feeb74725b5e56dd9e26580d093eecf4314374a3da70",
+    "wrong_region_exit_code": 2,
+    "changed_source_exit_code": 2,
+    "overlapping_invalid_header": "held",
+    "extra_ink_and_source_paint_controls": "held",
+    "diff_and_release_version_checks": "passed"
+  },
+  "guards": {
+    "raw_source_text_tables_structures_quality_and_job_unchanged": true,
+    "new_content_extraction": 0,
+    "new_ocr_calls": 0,
+    "model_calls": 0,
+    "new_jobs": 0,
+    "merge": false,
+    "release": false,
+    "repin": false,
+    "source_quality_approval": false,
+    "legal_approval": false,
+    "calculation_allowed": false,
+    "publication_eligible": false
+  },
+  "remaining_evidence": [
+    "Source-bound independent raster/linguistic proof for unresolved Hindi/legacy font mapping.",
+    "Independent line/reading-order evidence before a transcription or layout claim; cached PDFium source lines are unavailable.",
+    "Occurrence-aware native field geometry for repeated source lines and separate table/cell ownership proof.",
+    "Central source-preservation review before owning-main/release/consumer adoption; future release must preserve exact released rc14/rc13/rc12 decoder compatibility."
+  ]
+}

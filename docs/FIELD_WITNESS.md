@@ -10,6 +10,10 @@
 4. `compare --request REQUEST --reading FIRST --reading SECOND --required-reader FIRST_ID --required-reader SECOND_ID --output NEW` compares uniquely selected, complete readings. Required qualifier tokens must survive even when both readers agree.
 5. `verify --bundle BUNDLE` verifies hashes, rerenders original regions, rederives native bindings and replays comparisons without calling models.
 
+For a separate source-object/raster component, use
+[`native-raster` and `verify-native-raster`](native-scoped-raster.md). These
+commands do not establish transcription, language, layout or page acceptance.
+
 Each command supports `--json`. Outputs must be new paths outside immutable inputs. Optional PDF rendering dependencies are needed to prepare or verify; inference requires a separately installed local vision model. Imported readers may use other local OCR engines.
 
 ## Rules

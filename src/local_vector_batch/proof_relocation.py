@@ -1,7 +1,7 @@
 """Explicit, sealed custody bindings for exact captured native proof decoders.
 
 Frozen JSON and source artifacts are never edited. An isolated interpreter runs
-only an exact current decoder or a known released rc12/rc13 decoder. Its Path
+only an exact current decoder or a known released rc12/rc13/rc14 decoder. Its Path
 constructors receive only prevalidated resource bindings, not a filesystem-wide
 redirect or an import path to the extraction origin.
 """
@@ -18,7 +18,8 @@ import tempfile
 SCHEMA='pdf2data.proof-relocations.v1'
 RC12_CODE='05ec5555a128690a282ed5235f52dd684ca7f2866f4f2ab029f7700e1a47781e'
 RC13_CODE='076b5055cc1496fde274888a880a31533f1f042365384b8da935984e74da86f5'
-RELEASED_DECODER_CODES=frozenset({RC12_CODE,RC13_CODE})
+RC14_CODE='9ed276efcc6ddc0e1d643ddd9c68b2b014ec46d0e8ed4066cc399a835171c8e7'
+RELEASED_DECODER_CODES=frozenset({RC12_CODE,RC13_CODE,RC14_CODE})
 SUPPORTED={'native_whitefill_prose','native_table_regions'}
 
 

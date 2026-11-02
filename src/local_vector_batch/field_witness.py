@@ -349,7 +349,10 @@ def configure(parser):
     for name in ('request', 'readings', 'metadata', 'output'): imp.add_argument('--'+name, type=Path, required=True)
     comp = sub.add_parser('compare'); comp.add_argument('--request', type=Path, required=True); comp.add_argument('--reading', type=Path, action='append', required=True); comp.add_argument('--required-reader', action='append', required=True); comp.add_argument('--output', type=Path, required=True)
     ver = sub.add_parser('verify'); ver.add_argument('--bundle', type=Path, required=True)
-    for item in (prep, read, imp, comp, ver): item.add_argument('--json', action='store_true')
+    native = sub.add_parser('native-raster',help='derive source-object/raster accounting only; keep transcription/language/layout and page holds')
+    native.add_argument('--request',type=Path,required=True);native.add_argument('--output',type=Path,required=True)
+    native_ver = sub.add_parser('verify-native-raster');native_ver.add_argument('--bundle',type=Path,required=True)
+    for item in (prep, read, imp, comp, ver, native, native_ver): item.add_argument('--json', action='store_true')
 
 
 def execute(args):
@@ -358,4 +361,10 @@ def execute(args):
     if op == 'ollama': return read_ollama(args.request, args.output, args.host, args.model, args.max_tokens, args.timeout)
     if op == 'import': return import_reading(args.request, args.readings, args.metadata, args.output)
     if op == 'compare': return compare(args.request, args.reading, args.required_reader, args.output)
+    if op == 'native-raster':
+        from .native_scoped_raster import build
+        return build(args.request,args.output)
+    if op == 'verify-native-raster':
+        from .native_scoped_raster import verify as verify_native
+        return verify_native(args.bundle)
     return verify(args.bundle)

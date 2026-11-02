@@ -41,6 +41,8 @@ coherent proof modules and explicit source-cell holds.
 keeps invisible paragraph rectangles from imposing an unsupported table gate,
 while preserving source evidence and ordinary independent quality checks.
 
+Use [literal page reading candidates](docs/literal-page-reading-candidates.md) for a bounded named AskMill reading of an original image while retaining every source-quality hold.
+
 Use [cached-reading admission](docs/cached-reading-admission.md) to expose a verified
 legacy `pdf-extract` reading to native fields without extraction or quality promotion.
 
