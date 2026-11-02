@@ -166,6 +166,27 @@ def derive_literal_path_mask(native,independent,ink,image_bbox):
     rules_path=Path(__file__).with_name('literal_path_frames_rules.json');rules=json.loads(rules_path.read_text());tol=rules['maximum_coordinate_error_points']
     frame_parts,frames=_closed_page_frames(native,independent,rules)
     header_parts,headers=_top_header_separators(native,independent,rules)
+    # A pair of equal, thin rules above footnote text is source structure.
+    # Both exact source objects must independently match; no footer-area mask.
+    footnotes={}
+    cfg=rules.get('footnote_separator_pair',{})
+    if cfg:
+        for i,a in enumerate(native.rects):
+            b=box(a)
+            if (not _rectangle_path(a,tol) or a.get('stroke') or not a.get('fill') or
+                not 0<b[3]-b[1]<=cfg['maximum_thickness_points'] or
+                b[2]-b[0]<native.width*cfg['minimum_width_page_fraction'] or
+                not native.height*cfg['minimum_top_fraction']<b[1]<native.height*.95):continue
+            for j,c in enumerate(native.rects):
+                d=box(c)
+                if j<=i or not _rectangle_path(c,tol) or c.get('stroke') or not c.get('fill'):continue
+                if (not 0<d[3]-d[1]<=cfg['maximum_thickness_points'] or
+                    abs(b[0]-d[0])>tol or abs(b[2]-d[2])>tol or
+                    not 2<=abs(d[1]-b[1])<=8):continue
+                lower=max(b[3],d[3]);following=[g for g in native.chars if g.get('text','').strip() and lower<g['top']<lower+12 and g['x1']>b[0]]
+                if len(following)<12:continue
+                proofs=[_independent_path(independent,native,o,'rect',tol)for o in(a,c)]
+                if all(p is not None for p in proofs):footnotes.update({i:proofs[0],j:proofs[1]})
     candidates=[];long=[];glyphs=[box(c)for c in native.chars if c.get('text','').strip()]
     for kind,objects in [('rect',native.rects),('line',native.lines)]:
         for index,obj in enumerate(objects):
@@ -180,13 +201,18 @@ def derive_literal_path_mask(native,independent,ink,image_bbox):
                 if not obj.get('stroke')or obj.get('fill')or not(dx==0 or dy==0):continue
                 thickness=float(obj.get('linewidth',0))
             maximum=(rules.get('maximum_closed_frame_thickness_points',rules['maximum_thickness_points'])if kind=='rect'and index in frame_parts else rules['top_header_black_separator']['maximum_thickness_points']if kind=='rect'and index in header_parts else rules['maximum_thickness_points'])
+            if kind=='rect'and index in footnotes:maximum=max(maximum,cfg['maximum_thickness_points'])
             wide=rules.get('wide_literal_body_separator',{})
             if kind=='rect'and dy>0 and dx>=native.width*wide.get('minimum_width_page_fraction',1):maximum=max(maximum,wide.get('maximum_thickness_points',0))
             if not 0<thickness<=maximum:continue
             clearance=rules['glyph_clearance_points']+(thickness/2 if kind=='line'else 0)
             overlapping=[g for g in glyphs if overlap(b,g,clearance)]
             baseline_header=(kind=='line'and dy==0 and b[1]<=native.height*rules['top_header_black_separator']['maximum_bottom_page_fraction']and dx>=native.width*rules['top_header_black_separator']['minimum_width_page_fraction']and overlapping and all(b[1]>=g[3]-rules.get('header_baseline_bottom_tolerance_points',0)for g in overlapping))
-            if overlapping and not baseline_header:continue
+            if overlapping and not baseline_header:
+                if kind!='rect'or index not in footnotes:continue
+                # Retain the actual printed rule even where a later footnote
+                # marker touches it. Whole-page paint visibility is separately
+                # mandatory; this path component never approves hidden glyphs.
             if kind=='line':
                 half=thickness/2;band=[b[0]-half,b[1]-half,b[2]+half,b[3]+half]
             else:band=b
@@ -198,12 +224,12 @@ def derive_literal_path_mask(native,independent,ink,image_bbox):
         b=item['bbox'];corner=max(b[2]-b[0],b[3]-b[1])<=rules['maximum_corner_side_points']
         adjacent=corner and any(overlap(b,o['bbox'],tol)for o in long)
         if item not in long and not adjacent and not item['closed_frame_part']:continue
-        independent_proof=(frame_parts.get(item['index'])if item['closed_frame_part']else header_parts.get(item['index'])if item['top_header_part']else _independent_path(independent,native,item['object'],item['kind'],tol))
+        independent_proof=(frame_parts.get(item['index'])if item['closed_frame_part']else header_parts.get(item['index'])if item['top_header_part']else footnotes.get(item['index'])if item['kind']=='rect'and item['index']in footnotes else _independent_path(independent,native,item['object'],item['kind'],tol))
         if independent_proof is not None:selected.append((item,independent_proof))
     h,w=ink.shape;ox,oy,right,bottom=image_bbox;sx=w/(right-ox);sy=h/(bottom-oy);mask=np.zeros_like(ink);paths=[]
     for item,independent_proof in selected:
         b=item['band'];pad=rules['raster_rounding_padding_pixels'];x0=max(0,int((b[0]-ox)*sx)-pad);y0=max(0,int((b[1]-oy)*sy)-pad);x1=min(w,int((b[2]-ox)*sx)+pad+1);y1=min(h,int((b[3]-oy)*sy)+pad+1)
         # Only source ink inside a narrow actual bar. No enclosing frame bbox.
         current=np.zeros_like(ink);current[y0:y1,x0:x1]=ink[y0:y1,x0:x1];mask|=current
-        paths.append({'classification':'source_header_rule_at_glyph_baseline'if item['baseline_header_part']else'opaque_top_header_separator'if item['top_header_part']else'literal_source_path_retained','semantic_role':rules['semantic_role'],'object_type':item['kind'],'object_index':item['index'],'source_bbox':item['bbox'],'literal_ink_band':b,'source_object_sha256':digest(canonical(item['object'])),'independent_path':independent_proof,'source_ink_pixels':int(current.sum()),'source_ink_mask_sha256':digest(current.tobytes()),'rectangle_interior_authorized':False})
+        paths.append({'classification':'source_footnote_separator_pair_candidate'if item['kind']=='rect'and item['index']in footnotes else'source_header_rule_at_glyph_baseline'if item['baseline_header_part']else'opaque_top_header_separator'if item['top_header_part']else'literal_source_path_retained','semantic_role':rules['semantic_role'],'object_type':item['kind'],'object_index':item['index'],'source_bbox':item['bbox'],'literal_ink_band':b,'source_object_sha256':digest(canonical(item['object'])),'independent_path':independent_proof,'source_ink_pixels':int(current.sum()),'source_ink_mask_sha256':digest(current.tobytes()),'rectangle_interior_authorized':False})
     return mask,{'contract_version':rules['contract_version'],'rules_version':rules.get('rules_version',1),'closed_page_frames':frames,'top_header_separators':headers,'paths':paths,'mask_sha256':digest(mask.tobytes()),'source_ink_pixels':int(mask.sum()),'rules_sha256':digest(rules_path.read_bytes()),'engine_sha256':digest(Path(__file__).read_bytes())}

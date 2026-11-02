@@ -59,7 +59,7 @@ def _box(obj):
     return [float(obj[k])for k in ('x0','top','x1','bottom')]
 
 
-def prove_literal_footer_paths(native, independent, policy):
+def prove_literal_footer_paths(native, independent, policy, *, grouping_curve_indexes=()):
     """Accept only independently identical non-text diamonds."""
     import numpy as np
     import pypdfium2 as pdfium
@@ -69,6 +69,8 @@ def prove_literal_footer_paths(native, independent, policy):
     tolerance=cfg['independent_coordinate_tolerance_points']
     result=[]
     for index,path in enumerate(native.curves):
+        if index in grouping_curve_indexes:
+            continue # Already independently proved by native_grouping_paths.
         box=_box(path);x0,y0,x1,y1=box
         if x0==x1 and y0==y1:
             from .native_zero_length_path_components import prove_rectangle_corner_point

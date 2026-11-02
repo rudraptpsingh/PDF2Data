@@ -111,6 +111,29 @@ def test_real_source_underline_does_not_cover_source_text_ink(tmp_path):
     assert source.read_bytes()==before
 
 
+def test_shared_paint_font_traces_do_not_claim_individual_ink_or_duplicate_keys(tmp_path):
+    from test_native_grouping_paths import source
+    from pypdf import PdfReader,PdfWriter
+    from pypdf.generic import NameObject,DecodedStreamObject
+    original=source(tmp_path/'initial.pdf');reader=PdfReader(original);writer=PdfWriter();writer.add_page(reader.pages[0])
+    stream=DecodedStreamObject();stream.set_data(b'BT /F1 10 Tf 40 100 Td (X) Tj /F1 8 Tf 20 0 Td (Y) Tj ET')
+    writer.pages[0][NameObject('/Contents')]=writer._add_object(stream);path=tmp_path/'shared.pdf';writer.write(path)
+    actual=capture(path,1)['glyphs']
+    assert len(actual)==2 and len({g['glyph_key']for g in actual})==2
+    assert all(g['ink_bounds_basis']=='not_individually_proved'for g in actual)
+
+
+def test_isolated_text_ink_cannot_clear_actual_later_glyph_overlap(tmp_path):
+    from test_native_grouping_paths import source
+    from local_vector_batch.native_zero_table_prose import _source_text_ink_disjoint_fills
+    from local_vector_batch.native_paint_visibility import analyze
+    import pdfplumber
+    path=source(tmp_path/'overpaint.pdf',extra='1 g 115 236 8 8 re f')
+    paint=analyze(path,1,[])
+    with pdfplumber.open(path)as native:
+        assert _source_text_ink_disjoint_fills(path,1,native.pages[0],paint)is None
+
+
 def make_pdf(path):
     import pymupdf
     d=pymupdf.open();p=d.new_page(width=200,height=200)

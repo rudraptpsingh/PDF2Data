@@ -137,3 +137,21 @@ def test_forged_independent_object_matrix_cannot_authorize_a_header(tmp_path,mon
     monkeypatch.setattr(PdfObject,'get_matrix',lambda self:pdfium.PdfMatrix(1,0,0,1,100,0))
     _,proof=derive(source(tmp_path,bars='0 g 15 290 210 1.44 re f'))
     assert proof['top_header_separators']==[]
+
+
+def test_exact_footnote_pair_retains_thicker_second_rule_without_global_relaxation(tmp_path):
+    bars='0 g 30 44 160 .54 re f 30 40 160 1.2 re f BT /F1 7 Tf 30 30 Td (Footnote source text with unchanged literal values) Tj ET'
+    _,proof=derive(source(tmp_path,bars=bars))
+    rules=[p for p in proof['paths']if p['classification']=='source_footnote_separator_pair_candidate']
+    assert len(rules)==2
+    assert all(p['rectangle_interior_authorized']is False and p['independent_path']['alpha']==255 for p in rules)
+
+
+@pytest.mark.parametrize('bars',[
+    '0 g 30 40 160 1.2 re f',
+    '0 g 30 44 160 .54 re f 30 40 160 2 re f',
+    '0 g 30 44 160 .54 re f 30 40 140 1.2 re f',
+])
+def test_footnote_shape_cannot_waive_missing_pair_or_thickness_or_width(tmp_path,bars):
+    _,proof=derive(source(tmp_path,bars=bars+' BT /F1 7 Tf 30 30 Td (Footnote source text with unchanged literal values) Tj ET'))
+    assert not any(p['classification']=='source_footnote_separator_pair_candidate'for p in proof['paths'])

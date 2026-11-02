@@ -39,4 +39,19 @@ normalizing it without sufficient source context. These are bounded source
 checks, not general table accuracy or legal, numeric or publication acceptance.
 Existing jobs and consumer pins require separate explicit qualification.
 
+The region decoder can retain open rounded grouping brackets as source geometry
+candidates. It matches all native subpaths to one complete independent PDFium
+object, including its transform and opaque stroke, then renders that object
+alone to account for its exact source pixels. Adjacent text blocks need both
+independent rectangle readings and the saved layout witness. The proof does
+not approve the bracket's semantic ownership or treat a blank field as zero.
+Unsupported, ambiguous, overlapping or differently painted paths remain held.
+
+Equal thin footnote separator pairs retain their source paths. Glyph visibility
+remains a separate gate: metric-box overlap can clear only when a fresh isolated
+source-text render proves no ink under the later fill. Multiple font traces
+sharing one paint operation keep distinct glyph keys and cannot claim separate
+single-character ink bounds. Failed runs retain `source-path-components.json`
+when available; this component evidence never grants whole-page quality.
+
 For relocation of frozen parents and review inputs, see [frozen native proof custody](frozen-native-proof-custody.md).

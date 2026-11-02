@@ -173,14 +173,19 @@ def capture(source, page_number):
         glyphs = []
         traces = page.get_texttrace()
         paint_log=page.get_bboxlog()
-        for trace in traces:
+        # A paint operation can yield several font/size traces with one seqno.
+        # A one-character trace is not necessarily a one-character paint.
+        from collections import Counter
+        paint_characters=Counter()
+        for trace in traces:paint_characters[trace['seqno']]+=len(trace['chars'])
+        for trace_index,trace in enumerate(traces):
             for index,(codepoint,glyph_id,origin,bbox) in enumerate(trace['chars']):
-                single=len(trace['chars'])==1 and not chr(codepoint).isspace()
+                single=paint_characters[trace['seqno']]==1 and not chr(codepoint).isspace()
                 paint_kind,ink_bbox=paint_log[trace['seqno']]
                 single=single and paint_kind=='fill-text'
                 proof_bbox=[min(bbox[0],ink_bbox[0]),min(bbox[1],ink_bbox[1]),
                             max(bbox[2],ink_bbox[2]),max(bbox[3],ink_bbox[3])] if single else list(bbox)
-                glyphs.append({'glyph_key':f"{trace['seqno']}:{index}", 'seqno':trace['seqno'],
+                glyphs.append({'glyph_key':f"{trace['seqno']}:{trace_index}:{index}", 'seqno':trace['seqno'],
                                'source_text_paint_kind':paint_kind,
                                'source_text_paint_bbox':list(ink_bbox),
                                'index':index,'codepoint':codepoint,'text':chr(codepoint), 'glyph_id':glyph_id,

@@ -100,7 +100,7 @@ def grid_path_owner(box, tables, snap_tolerance):
     return owners[0] if owners else None
 
 
-def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
+def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=(), component_output=None):
     """Re-read original source glyphs, region lines and paths; no caller gates."""
     import cv2
     import numpy as np
@@ -145,9 +145,23 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
             raster_cache=_VerifiedSourceRenderCache(source,snapshot,policy);render=native.to_image
             native.to_image=lambda **options:raster_cache.image(render,**options)
             literal_footer_paths=[]
+            from .native_grouping_paths import derive_grouping_mask
+            grouping_mask,grouping_paths=derive_grouping_mask(native,view,source,
+                np.asarray(native.to_image(resolution=120).original.convert('L'))<policy['source_dark_pixel_threshold'],
+                native.to_image(resolution=120).bbox)
+            from .literal_path_frames import derive_literal_path_mask
+            literal_mask,literal_paths=derive_literal_path_mask(native,view,
+                np.asarray(native.to_image(resolution=120).original.convert('L'))<policy['source_dark_pixel_threshold'],
+                native.to_image(resolution=120).bbox)
+            if component_output is not None:
+                save(component_output,{'kind':'source_path_components.v1','source_pdf_sha256':snapshot['source_pdf_sha256'],
+                    'physical_page':n,'page_text_sha256':page['text_sha256'],'grouping_paths':grouping_paths,
+                    'literal_paths':literal_paths,
+                    'component_only':True,'source_quality_approval_granted':False,'legal_approval':False})
             if native.images or native.curves:
                 from .native_literal_footer_paths import prove_literal_footer_paths
-                literal_footer_paths=prove_literal_footer_paths(native,view,policy)
+                literal_footer_paths=prove_literal_footer_paths(native,view,policy,
+                    grouping_curve_indexes=[i for proof in grouping_paths for i in proof['native_curve_indexes']])
             zero_table_source_proof=None
             if not tables:
                 from .native_zero_table_prose import prove_zero_table_source
@@ -221,7 +235,16 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                     try:
                         metadata_proof=prove_header_gap(line,native,n,[t['bbox']for t in tables],tp,independent_layout,pdfium_page=view,header_tables=tables,table_proofs=cell_result['tables'])
                     except ValueError as error:
-                        raise ValueError('Outside-table prose has an unresolved column/block gap: '+str(error))from error
+                        from .native_grouping_paths import prove_grouped_row
+                        try:metadata_proof=prove_grouped_row(line,native,view,tp,independent_layout,grouping_paths)
+                        except ValueError as grouping_error:
+                            if component_output is not None:
+                                components=read(component_output)
+                                components['unresolved_outside_prose']={'sequence':index,'bbox':box,'text':line['text'],
+                                    'glyphs':[{'text':g['text'],'bbox':bbox(g)}for g in line['chars']],
+                                    'reason':str(error),'grouping_reason':str(grouping_error),'source_quality_approval_granted':False}
+                                save(component_output,components)
+                            raise ValueError('Outside-table prose has an unresolved column/block gap: '+str(error)+'; '+str(grouping_error))from error
                 from .native_table_cell_spacing import read_source_box
                 read_box=[max(0,box[0]-.2),max(0,box[1]-.2),min(native.width,box[2]+.2),min(native.height,box[3]+.2)]
                 raw,source_rectangle=read_source_box(native,view,tp,read_box)
@@ -237,7 +260,7 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                 if metadata_proof is None and any(NUMBER.findall(_normalized(line['text']))!=NUMBER.findall(_normalized(mapped)) or
                        _operators(line['text'],policy)!=_operators(mapped,policy) for _ in (0,)):
                     raise ValueError('Outside prose numeric/operator disagreement')
-                prose.append({'sequence':index,'bbox':box,'region_kind':'source_header_metadata'if metadata_proof else('source_footer_metadata'if footer else'outside_table_prose'),
+                prose.append({'sequence':index,'bbox':box,'region_kind':'source_grouped_text_row'if metadata_proof and metadata_proof.get('kind')=='source_grouped_text_row.v1'else'source_header_metadata'if metadata_proof else('source_footer_metadata'if footer else'outside_table_prose'),
                               'selected_text_sha256':sha(line['text']),
                               'independent_raw_sha256':sha(raw),'independent_mapped_sha256':sha(mapped),
                               'selected_text':line['text'],'independent_raw_text':raw,'reader_mapping_repairs':repairs,'independent_source_rectangle':source_rectangle,
@@ -303,13 +326,11 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                                   'literal_ink_bbox':box,'linewidth':linewidth,'table_version_id':owner,
                                   'source_object_sha256':sha(canonical(obj)),
                                   'classification':'native_table_ruling_retained_as_structure'})
-            from .literal_path_frames import derive_literal_path_mask
-            literal_mask,literal_paths=derive_literal_path_mask(native,view,ink,image.bbox)
             from .native_literal_footer_paths import literal_footer_mask
             footer_mask=literal_footer_mask(native,image.bbox,ink.shape,literal_footer_paths)
             from .native_zero_length_path_components import retained_footer_rectangle_mask
             footer_frame_mask,footer_frames=retained_footer_rectangle_mask(native,image.bbox,ink,literal_footer_paths)
-            remaining=residual&~grid&~literal_mask&~footer_mask&~footer_frame_mask
+            remaining=residual&~grid&~literal_mask&~footer_mask&~footer_frame_mask&~grouping_mask
             count,_,stats,_=cv2.connectedComponentsWithStats(remaining.astype('uint8'),8)
             uncovered=[{'bbox_pixels':[int(x),int(y),int(x+width),int(y+height)],'ink_pixels':int(area)}for x,y,width,height,area in stats[1:]]
             if uncovered:
@@ -324,6 +345,7 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=()):
                    'source_render_dpi':base['render_dpi'],'source_style_regions':base.get('source_style_regions',[]),
                    'existing_decorative_regions':base.get('decorative_regions',[]),'native_grid_paths':paths,
                    'literal_source_paths':literal_paths,
+                   'source_grouping_paths':grouping_paths,
                    **({'literal_footer_paths':literal_footer_paths,'literal_footer_mask_sha256':sha(footer_mask.tobytes()),'literal_footer_frames':footer_frames,'literal_footer_frame_mask_sha256':sha(footer_frame_mask.tobytes())}if literal_footer_paths else{}),
                    'native_grid_snap_tolerance_points':snap,'native_grid_snap_basis':'selected_pdfplumber_TableSettings_default',
                    'source_residual_mask_sha256':sha(residual.tobytes()),'native_grid_mask_sha256':sha(grid.tobytes()),
@@ -394,7 +416,7 @@ def build_version(package,runtime,feedback,dossier,page,output,*,external_decode
     if cells['status']!='validated':raise ValueError('Source cell review remains incomplete/rejected')
     snapshot=read(output/'cell-revalidation/source-snapshot.json')
     try:
-        proof=PROOF_REGISTRY[KIND](package,snapshot,cells)
+        proof=PROOF_REGISTRY[KIND](package,snapshot,cells,component_output=output/'source-path-components.json')
         # Only the private builder reaches this path with a just-derived proof.
         # The public assessor still reconstructs arbitrary/untrusted proofs.
         quality=_quality_from_regions(snapshot,proof)
