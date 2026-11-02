@@ -174,6 +174,18 @@ def parser() -> argparse.ArgumentParser:
     legal.add_argument("--resume", action="store_true")
     legal.add_argument("--require-content-ready", action="store_true", help="exit 3 if any page still requires source review or repair")
     legal.add_argument("--json", action="store_true")
+    reading=sub.add_parser('source-page-reading',help='bounded named local image reading; preserve source holds')
+    reading_sub=reading.add_subparsers(dest='reading_operation',required=True)
+    read_run=reading_sub.add_parser('run')
+    for key in ('package','prompt','output'):read_run.add_argument('--'+key,type=Path,required=True)
+    read_run.add_argument('--page',type=int,required=True);read_run.add_argument('--profile',required=True)
+    read_run.add_argument('--askmill',default='askmill');read_run.add_argument('--askmill-config',type=Path)
+    read_run.add_argument('--dpi',type=int,default=200);read_run.add_argument('--max-tokens',type=int,default=2048)
+    read_run.add_argument('--timeout',type=float,default=120)
+    read_run.add_argument('--scope',choices=['whole_page_literal_candidate','visible_english_literal_candidate'],default='whole_page_literal_candidate')
+    read_run.add_argument('--json',action='store_true')
+    read_verify=reading_sub.add_parser('verify');read_verify.add_argument('--bundle',type=Path,required=True)
+    read_verify.add_argument('--package',type=Path,required=True);read_verify.add_argument('--json',action='store_true')
     legal_verify = sub.add_parser("verify-legal-l1", help="verify original, extraction, layout and exact legal structure")
     legal_verify.add_argument("--output", required=True, type=Path)
     legal_verify.add_argument("--json", action="store_true")
@@ -628,6 +640,11 @@ def main(argv: list[str] | None = None) -> int:
                 from .proof_relocation import replay
                 result=replay(args.package,args.source_runtime,args.proof_runtime,args.relocations)
             else:result=verify_source_quality_repair(args.package,args.source_runtime)
+        elif args.command=='source-page-reading':
+            from .source_page_reading import run,verify
+            if args.reading_operation=='run':
+                result=run(args.package,args.page,args.prompt,args.profile,args.output,askmill=args.askmill,config=args.askmill_config,dpi=args.dpi,max_tokens=args.max_tokens,timeout=args.timeout,scope=args.scope)
+            else:result=verify(args.bundle,args.package)
         elif args.command == "pdf-extract":
             from .pdf_ingest import extract_pdf
             result = extract_pdf(args.input, args.output, title=args.title,
@@ -854,6 +871,7 @@ def main(argv: list[str] | None = None) -> int:
                       "token_budget_validated": result.get("token_budget_validated", False),
                       "skipped_input_records": result.get("input_audit", {}).get("records_without_passages")}
         print(json.dumps(result, ensure_ascii=False) if args.json else json.dumps(result, indent=2, ensure_ascii=False))
+        if args.command=='source-page-reading'and args.reading_operation=='run'and not result.get('complete'):return 3
         if args.command=='fields'and args.field_operation in ('evaluate','check')and not result.get('passed'):return 3
         if args.command=='native-table-cell-revalidate'and result.get('status')!='validated':return 3
         if args.command=='native-table-region-reproof'and result.get('status')!='passed':return 3
