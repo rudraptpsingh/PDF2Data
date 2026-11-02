@@ -4,13 +4,18 @@ import pytest
 from local_vector_batch.quality_gate import _operators,operator_source_spans,load_policy,assess_page
 
 
-@pytest.mark.parametrize('raw',['shall not','shall  not','shall\tnot','shall\nnot','shall\u00a0not'])
+@pytest.mark.parametrize('raw',['shall not','shall  not','shall\tnot','shall\nnot','shall\u00a0not','shall\u202fnot'])
 def test_existing_multiword_operator_survives_layout_whitespace_without_changing_raw_spans(raw):
     text='😀 prefix '+raw+' 12 units';start=text.index('shall')
     assert _operators(text,load_policy())==['shall not']
     rows=operator_source_spans(text,load_policy())
     assert rows==[dict(canonical_operator='shall not',exact_quote=raw,char_start=start,char_length=len(raw),offset_encoding='codepoint')]
     assert text[rows[0]['char_start']:rows[0]['char_start']+rows[0]['char_length']]==raw
+
+
+@pytest.mark.parametrize('separator',['\u0085','\u2028','\u2029','\v','\f'])
+def test_nonlayout_separators_do_not_join_an_operative_phrase(separator):
+    assert _operators('shall'+separator+'not',load_policy())!=['shall not']
 
 
 @pytest.mark.parametrize('left,right',[

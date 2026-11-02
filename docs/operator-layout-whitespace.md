@@ -1,11 +1,14 @@
 # Ordered operators and layout whitespace
 
-Multiword operators match the same configured words separated by source
-whitespace. `shall not`, `shall  not` and `shall\nnot` have the same operator
+Multiword operators match the same configured words separated by spaces, tabs,
+CR/LF or nonbreaking spaces (U+00A0/U+202F). `shall not`, `shall  not` and `shall\nnot` have the same operator
 identity. Literal characters and codepoint spans remain unchanged. Only
 whitespace between the existing words is tolerated; missing words, changed
 negation, punctuation, joined words and operator reordering remain differences.
 Numbers continue through their separate, unchanged gate.
+Other control characters and Unicode paragraph/line separators do not join an
+operative phrase. Existing normalization remains separate from raw-span proof;
+unsupported source offsets remain unresolved.
 
 For an existing frozen native L1 package, derive a separate comparison report:
 

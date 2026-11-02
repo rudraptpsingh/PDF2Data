@@ -72,7 +72,9 @@ def _operator_pattern(policy: dict):
     terms = sorted((_normalized(term) for term in policy["operators"]), key=len, reverse=True)
     parts = []
     for term in terms:
-        escaped = re.escape(term).replace(r'\ ',r'\s+')
+        # Layout spacing only; Unicode paragraph/line separators and control
+        # characters must not silently join an operative phrase.
+        escaped = re.escape(term).replace(r'\ ',r'[ \t\r\n\u00a0\u202f]+')
         parts.append((r"(?<!\w)" if term[0].isalnum() else "") + escaped +
                      (r"(?!\w)" if term[-1].isalnum() else ""))
     return re.compile("(?:" + "|".join(parts) + ")")

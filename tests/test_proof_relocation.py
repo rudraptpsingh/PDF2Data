@@ -4,17 +4,17 @@ import json
 from pathlib import Path
 import pytest
 from local_vector_batch.proof_relocation import Bindings,SCHEMA,hash_value,read,inventory,captured_path
-from local_vector_batch.proof_relocation import supported_decoder_epoch,RC12_CODE,RC13_CODE
+from local_vector_batch.proof_relocation import supported_decoder_epoch,RC12_CODE,RC13_CODE,RC14_CODE
 
 
-@pytest.mark.parametrize('epoch',[RC12_CODE,RC13_CODE,'a'*64])
+@pytest.mark.parametrize('epoch',[RC12_CODE,RC13_CODE,RC14_CODE,'a'*64])
 @pytest.mark.parametrize('operation',['native_whitefill_prose','native_table_regions'])
 def test_exact_released_and_current_epochs_are_supported_only_for_registered_operations(epoch,operation):
     assert supported_decoder_epoch(epoch,'a'*64,operation)
     assert not supported_decoder_epoch(epoch,'a'*64,'unregistered_operation')
 
 
-@pytest.mark.parametrize('epoch',['b'*64,RC12_CODE[:-1]+'0',RC13_CODE[:-1]+'0','v0.2.0-rc.13',''])
+@pytest.mark.parametrize('epoch',['b'*64,RC12_CODE[:-1]+'0',RC13_CODE[:-1]+'0',RC14_CODE[:-1]+'0','v0.2.0-rc.13','v0.2.0-rc.14',''])
 def test_unreleased_or_modified_decoder_epochs_remain_refused(epoch):
     assert not supported_decoder_epoch(epoch,'a'*64,'native_table_regions')
 
