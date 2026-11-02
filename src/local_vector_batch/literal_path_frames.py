@@ -39,12 +39,13 @@ def _independent_path(independent,native,obj,kind,tolerance):
     import pypdfium2 as pdfium
     b=box(obj);expected=[b[0],native.height-b[3],b[2],native.height-b[1]]
     matches=[]
-    for candidate in independent.get_objects(filter=[pdfium.raw.FPDF_PAGEOBJ_PATH]):
+    for object_index,candidate in enumerate(independent.get_objects(max_depth=0)):
+        if candidate.type!=pdfium.raw.FPDF_PAGEOBJ_PATH:continue
         # Stroke bounds include its half-width; source segment coordinates below
         # supply the exact geometry rather than trusting that bounding interior.
         width=float(obj.get('linewidth',0))if kind=='line'else 0
         bounds=candidate.get_bounds()
-        if all(abs(a-c)<=tolerance+width for a,c in zip(bounds,expected)):matches.append(candidate)
+        if all(abs(a-c)<=tolerance+width for a,c in zip(bounds,expected)):matches.append((object_index,candidate))
     if not matches:return None
     if len(matches)>1:
         # Repeated identical opaque paint is idempotent, not an ambiguous
@@ -62,9 +63,9 @@ def _independent_path(independent,native,obj,kind,tolerance):
                 if not pdfium.raw.FPDFPathSegment_GetPoint(segment,ctypes.byref(x),ctypes.byref(y)):return None
                 points.append([pdfium.raw.FPDFPathSegment_GetType(segment),x.value,y.value,bool(pdfium.raw.FPDFPathSegment_GetClose(segment))])
             return canonical([list(candidate.get_bounds()),list(candidate.get_matrix().get()),mode.value,stroke.value,colors,points])
-        signatures=[fingerprint(candidate)for candidate in matches]
+        signatures=[fingerprint(candidate)for _,candidate in matches]
         if None in signatures or len(set(signatures))!=1:return None
-    candidate=matches[0];matrix=candidate.get_matrix();matrix_values=list(matrix.get())
+    candidate=matches[0][1];matrix=candidate.get_matrix();matrix_values=list(matrix.get())
     if any(not math.isfinite(v)for v in matrix_values)or abs(matrix.a*matrix.d-matrix.b*matrix.c)<1e-12:return None
     if kind=='line'and any(abs(a-b)>1e-9 for a,b in zip(matrix_values[:4],[1,0,0,1])):return None
     mode=ctypes.c_int();stroke=ctypes.c_int()
@@ -90,7 +91,89 @@ def _independent_path(independent,native,obj,kind,tolerance):
     wanted=[p[1]for p in obj.get('path',[])if len(p)>1]
     if kind=='rect':wanted.append(wanted[0])
     if len(wanted)!=len(points)or any(abs(x-a)>tolerance or abs(y-c)>tolerance for (x,y),(a,c)in zip(points,wanted)):return None
-    return {'matching_equivalent_independent_paths':len(matches),'PDFium_bounds':list(candidate.get_bounds()),'PDFium_path_points':points,'PDFium_local_path_points':local_points,'PDFium_object_matrix':matrix_values,'coordinate_transform_basis':'actual_PDFium_object_matrix_then_native_top_origin','RGB':[v.value for v in color[:3]],'alpha':color[3].value,'fill_mode':mode.value,'stroke':bool(stroke.value)}
+    return {'matching_equivalent_independent_paths':len(matches),'PDFium_page_object_indexes':[i for i,_ in matches],'PDFium_bounds':list(candidate.get_bounds()),'PDFium_path_points':points,'PDFium_local_path_points':local_points,'PDFium_object_matrix':matrix_values,'coordinate_transform_basis':'actual_PDFium_object_matrix_then_native_top_origin','RGB':[v.value for v in color[:3]],'alpha':color[3].value,'fill_mode':mode.value,'stroke':bool(stroke.value)}
+
+
+def _input_bytes(value):
+    if isinstance(value,bytes):return value
+    if isinstance(value,(str,Path)):return Path(value).read_bytes()
+    position=value.tell()
+    try:value.seek(0);return value.read()
+    finally:value.seek(position)
+
+
+def _isolated_path_mask(native,independent,item,proof,ink,image_bbox,*,dpi=120):
+    """Own only independently matched original object paint, without a halo."""
+    import numpy as np
+    import pypdfium2 as pdfium
+    from .native_grouping_paths import _segments
+    source=_input_bytes(independent.pdf._input)
+    if source!=_input_bytes(native.pdf.stream):raise ValueError('Literal path independent source differs')
+    if native.rotation or list(image_bbox)!=[0,0,native.width,native.height]:raise ValueError('Literal path raster needs complete unrotated source page')
+    def page_identity(page):
+        textpage=page.get_textpage()
+        try:text=textpage.get_text_range()
+        finally:textpage.close()
+        return [text,[[obj.type,list(obj.get_bounds()),list(obj.get_matrix().get()),
+            _segments(obj,native)if obj.type==pdfium.raw.FPDF_PAGEOBJ_PATH else None]
+            for obj in page.get_objects(max_depth=0)]]
+    with pdfium.PdfDocument(source)as document:
+        page=document[native.page_number-1]
+        if page_identity(page)!=page_identity(independent):raise ValueError('Literal path independent physical page differs')
+        # Re-derive the exact object indexes and paint after reopening the source.
+        fresh=_independent_path(page,native,item['object'],item['kind'],.02)
+        if fresh!=proof:raise ValueError('Literal path source object changed during raster proof')
+        indexes=set(proof['PDFium_page_object_indexes'])
+        for index,obj in enumerate(list(page.get_objects(max_depth=0))):
+            if index not in indexes:page.remove_obj(obj);obj.close()
+        page.gen_content()
+        bitmap=page.render(scale=dpi/72,may_draw_forms=False,prefer_bgrx=True,
+            no_smoothtext=True,no_smoothpath=True,no_smoothimage=True)
+        try:owned=np.asarray(bitmap.to_pil().convert('L'))<100
+        finally:bitmap.close()
+    if owned.shape!=ink.shape or not owned.any():
+        raise ValueError('Isolated literal source paint differs from original raster')
+    if(owned&~ink).any():return None,{'state':'held','reason':'isolated_source_path_paint_is_not_visible_in_original'}
+    return owned,{'kind':'isolated_literal_source_object_raster.v1','source_pdf_sha256':digest(source),
+        'physical_page':native.page_number,'page_object_indexes':sorted(indexes),'dpi':dpi,
+        'antialias':False,'source_dark_pixel_threshold':100,'original_ink_subset_verified':True,
+        'raster_mask_sha256':digest(owned.tobytes()),'raster_ink_pixels':int(owned.sum()),
+        'bounding_band_ink_authorized':False}
+
+
+def _footnote_glyph_visibility(native,independent):
+    """A later separator cannot gain ownership over actual source glyph ink."""
+    from .native_paint_visibility import analyze
+    from .native_zero_table_prose import _source_text_ink_disjoint_fills
+    source=independent.pdf._input
+    if not isinstance(source,(str,Path)):raise ValueError('Footnote paint visibility needs explicit original source')
+    paint=analyze(source,native.page_number,[])
+    held=[g for g in paint['classified_glyphs']if g['visibility_state']not in('retained_visible_or_unproven','retained_raw_whitespace')]
+    if paint['unsupported_paints']or any(g['visibility_state']!='held_partial_occlusion'for g in held):
+        raise ValueError('Footnote separator has occluded or unsupported source glyphs')
+    disjoint=_source_text_ink_disjoint_fills(source,native.page_number,native,paint)if held else None
+    if held and disjoint is None:raise ValueError('Footnote separator crosses actual source glyph ink')
+    return {'source_paint_sha256':digest(canonical(paint)),'metric_overlap_reproof':disjoint,
+        'glyphs_removed':0,'source_quality_approval_granted':False}
+
+
+def _isolated_text_mask(native,independent,ink):
+    """Exact original text paint can explain a marker beside a source rule."""
+    import numpy as np
+    import pypdfium2 as pdfium
+    with pdfium.PdfDocument(_input_bytes(independent.pdf._input))as document:
+        page=document[native.page_number-1]
+        objects=list(page.get_objects(max_depth=0))
+        if any(o.type==pdfium.raw.FPDF_PAGEOBJ_FORM for o in objects):raise ValueError('Footnote marker Form paint needs separate proof')
+        for obj in objects:
+            if obj.type!=pdfium.raw.FPDF_PAGEOBJ_TEXT:page.remove_obj(obj);obj.close()
+        page.gen_content()
+        bitmap=page.render(scale=120/72,may_draw_forms=False,prefer_bgrx=True,
+            no_smoothtext=True,no_smoothpath=True,no_smoothimage=True)
+        try:text=np.asarray(bitmap.to_pil().convert('L'))<100
+        finally:bitmap.close()
+    if text.shape!=ink.shape or(text&~ink).any():raise ValueError('Isolated source marker paint differs from original')
+    return text
 
 
 def _closed_page_frames(native,independent,rules):
@@ -187,7 +270,7 @@ def derive_literal_path_mask(native,independent,ink,image_bbox):
                 if len(following)<12:continue
                 proofs=[_independent_path(independent,native,o,'rect',tol)for o in(a,c)]
                 if all(p is not None for p in proofs):footnotes.update({i:proofs[0],j:proofs[1]})
-    candidates=[];long=[];glyphs=[box(c)for c in native.chars if c.get('text','').strip()]
+    candidates=[];long=[];glyphs=[box(c)for c in native.chars if c.get('text','').strip()];footnote_visibility=None
     for kind,objects in [('rect',native.rects),('line',native.lines)]:
         for index,obj in enumerate(objects):
             b=box(obj);dx,dy=b[2]-b[0],b[3]-b[1]
@@ -213,6 +296,7 @@ def derive_literal_path_mask(native,independent,ink,image_bbox):
                 # Retain the actual printed rule even where a later footnote
                 # marker touches it. Whole-page paint visibility is separately
                 # mandatory; this path component never approves hidden glyphs.
+                if footnote_visibility is None:footnote_visibility=_footnote_glyph_visibility(native,independent)
             if kind=='line':
                 half=thickness/2;band=[b[0]-half,b[1]-half,b[2]+half,b[3]+half]
             else:band=b
@@ -226,10 +310,21 @@ def derive_literal_path_mask(native,independent,ink,image_bbox):
         if item not in long and not adjacent and not item['closed_frame_part']:continue
         independent_proof=(frame_parts.get(item['index'])if item['closed_frame_part']else header_parts.get(item['index'])if item['top_header_part']else footnotes.get(item['index'])if item['kind']=='rect'and item['index']in footnotes else _independent_path(independent,native,item['object'],item['kind'],tol))
         if independent_proof is not None:selected.append((item,independent_proof))
-    h,w=ink.shape;ox,oy,right,bottom=image_bbox;sx=w/(right-ox);sy=h/(bottom-oy);mask=np.zeros_like(ink);paths=[]
+    mask=np.zeros_like(ink);footnote_mask=np.zeros_like(ink);paths=[];held=[]
     for item,independent_proof in selected:
-        b=item['band'];pad=rules['raster_rounding_padding_pixels'];x0=max(0,int((b[0]-ox)*sx)-pad);y0=max(0,int((b[1]-oy)*sy)-pad);x1=min(w,int((b[2]-ox)*sx)+pad+1);y1=min(h,int((b[3]-oy)*sy)+pad+1)
-        # Only source ink inside a narrow actual bar. No enclosing frame bbox.
-        current=np.zeros_like(ink);current[y0:y1,x0:x1]=ink[y0:y1,x0:x1];mask|=current
-        paths.append({'classification':'source_footnote_separator_pair_candidate'if item['kind']=='rect'and item['index']in footnotes else'source_header_rule_at_glyph_baseline'if item['baseline_header_part']else'opaque_top_header_separator'if item['top_header_part']else'literal_source_path_retained','semantic_role':rules['semantic_role'],'object_type':item['kind'],'object_index':item['index'],'source_bbox':item['bbox'],'literal_ink_band':b,'source_object_sha256':digest(canonical(item['object'])),'independent_path':independent_proof,'source_ink_pixels':int(current.sum()),'source_ink_mask_sha256':digest(current.tobytes()),'rectangle_interior_authorized':False})
-    return mask,{'contract_version':rules['contract_version'],'rules_version':rules.get('rules_version',1),'closed_page_frames':frames,'top_header_separators':headers,'paths':paths,'mask_sha256':digest(mask.tobytes()),'source_ink_pixels':int(mask.sum()),'rules_sha256':digest(rules_path.read_bytes()),'engine_sha256':digest(Path(__file__).read_bytes())}
+        current,raster_proof=_isolated_path_mask(native,independent,item,independent_proof,ink,image_bbox)
+        if current is None:
+            held.append({'object_type':item['kind'],'object_index':item['index'],**raster_proof});continue
+        mask|=current
+        if item['kind']=='rect'and item['index']in footnotes:footnote_mask|=current
+        paths.append({'classification':'source_footnote_separator_pair_candidate'if item['kind']=='rect'and item['index']in footnotes else'source_header_rule_at_glyph_baseline'if item['baseline_header_part']else'opaque_top_header_separator'if item['top_header_part']else'literal_source_path_retained','semantic_role':rules['semantic_role'],'object_type':item['kind'],'object_index':item['index'],'source_bbox':item['bbox'],'literal_ink_band':item['band'],'source_object_sha256':digest(canonical(item['object'])),'independent_path':independent_proof,'source_object_raster':raster_proof,'source_ink_pixels':int(current.sum()),'source_ink_mask_sha256':digest(current.tobytes()),'rectangle_interior_authorized':False})
+    foreign=np.zeros_like(ink);text_mask_sha=None
+    if footnote_mask.any():
+        if footnote_visibility is None:footnote_visibility=_footnote_glyph_visibility(native,independent)
+        import cv2
+        # Diagnostic ring only: it authorizes NO extra pixels. A baseline
+        # footer/speck heuristic cannot discharge foreign paint in this ring.
+        ring=cv2.dilate(footnote_mask.astype('uint8'),np.ones((3,3),dtype='uint8')).astype(bool)&~footnote_mask
+        text=_isolated_text_mask(native,independent,ink);text_mask_sha=digest(text.tobytes())
+        foreign=ring&ink&~mask&~text
+    return mask,{'contract_version':rules['contract_version'],'rules_version':rules.get('rules_version',1),'closed_page_frames':frames,'top_header_separators':headers,'paths':paths,'held_paths':held,'footnote_glyph_visibility':footnote_visibility,'unowned_footnote_halo_ink_pixels':int(foreign.sum()),'unowned_footnote_halo_mask_sha256':digest(foreign.tobytes()),'isolated_footnote_marker_text_mask_sha256':text_mask_sha,'mask_sha256':digest(mask.tobytes()),'source_ink_pixels':int(mask.sum()),'rules_sha256':digest(rules_path.read_bytes()),'engine_sha256':digest(Path(__file__).read_bytes())}

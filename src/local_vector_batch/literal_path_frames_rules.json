@@ -9,9 +9,8 @@
   "minimum_closed_frame_span_fraction": 0.75,
   "minimum_length_page_fraction": 0.2,
   "minimum_length_points": 72.0,
-  "raster_rounding_padding_pixels": 1,
   "required_alpha": 255,
-  "rules_version": 7,
+  "rules_version": 8,
   "semantic_role": "unresolved_literal_path",
   "top_header_black_separator": {
     "maximum_bottom_page_fraction": 0.15,

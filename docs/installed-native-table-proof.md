@@ -54,4 +54,11 @@ sharing one paint operation keep distinct glyph keys and cannot claim separate
 single-character ink bounds. Failed runs retain `source-path-components.json`
 when available; this component evidence never grants whole-page quality.
 
+Every literal frame, separator and footnote path owns only its independently
+matched source-object raster pixels. Padded bands grant no ink ownership.
+Foreign paint beside a footnote rule remains unowned, including at an endpoint;
+neither a footer-rule heuristic nor the speck filter can clear that adjacent
+paint. Exact source text paint may explain a touching footnote marker, while a
+later rule crossing actual glyph ink stays held.
+
 For relocation of frozen parents and review inputs, see [frozen native proof custody](frozen-native-proof-custody.md).

@@ -158,6 +158,8 @@ def derive_regions(package, snapshot, cell_result, *, omitted_path_indexes=(), c
                     'physical_page':n,'page_text_sha256':page['text_sha256'],'grouping_paths':grouping_paths,
                     'literal_paths':literal_paths,
                     'component_only':True,'source_quality_approval_granted':False,'legal_approval':False})
+            if literal_paths.get('unowned_footnote_halo_ink_pixels',0):
+                raise ValueError('Uncovered original source ink remains adjacent to independently proved footnote paths')
             if native.images or native.curves:
                 from .native_literal_footer_paths import prove_literal_footer_paths
                 literal_footer_paths=prove_literal_footer_paths(native,view,policy,

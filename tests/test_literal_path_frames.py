@@ -155,3 +155,61 @@ def test_exact_footnote_pair_retains_thicker_second_rule_without_global_relaxati
 def test_footnote_shape_cannot_waive_missing_pair_or_thickness_or_width(tmp_path,bars):
     _,proof=derive(source(tmp_path,bars=bars+' BT /F1 7 Tf 30 30 Td (Footnote source text with unchanged literal values) Tj ET'))
     assert not any(p['classification']=='source_footnote_separator_pair_candidate'for p in proof['paths'])
+
+
+FOOTNOTES='0 g 30 44 160 .54 re f 30 40 160 1.2 re f BT /F1 7 Tf 30 30 Td (Footnote source text with unchanged literal values) Tj ET'
+
+
+def _footnote_cli_reproof(tmp_path,path):
+    import json,hashlib,subprocess,sys
+    manifest=tmp_path/'manifest.json';manifest.write_text(json.dumps({'schema_version':'powerlex.legal-l1.v1','sources':[
+        {'id':'synthetic-halo-control','family':'generic','path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'expected_pages':1}]}))
+    def cli(*args):return subprocess.run([sys.executable,'-m','local_vector_batch',*map(str,args)],capture_output=True,text=True)
+    extraction=cli('legal-l1','--manifest',manifest,'--output',tmp_path/'packages','--ocr','off','--json')
+    assert extraction.returncode==0,extraction.stderr
+    feedback=tmp_path/'feedback.jsonl';feedback.write_text('');dossier=tmp_path/'dossier.json';dossier.write_text('{"decisions":[]}')
+    return cli('native-table-region-reproof','--package',tmp_path/'packages/synthetic-halo-control',
+        '--source-runtime',Path(__file__).resolve().parents[1],'--feedback',feedback,'--dossier',dossier,
+        '--page','1','--output',tmp_path/'held','--json')
+
+
+@pytest.mark.parametrize('foreign',['0 g 190.2 40.1 .4 .6 re f','0 g 80 41.45 .6 .35 re f'])
+def test_foreign_ink_in_former_footnote_rounding_halo_is_unowned_and_cli_held(tmp_path,foreign):
+    import json,numpy as np,pdfplumber
+    path=source(tmp_path,foreign,bars=FOOTNOTES);mask,proof=derive(path)
+    with pdfplumber.open(path)as pdf:
+        image=pdf.pages[0].to_image(resolution=120);ink=np.asarray(image.original.convert('L'))<100
+    h,w=ink.shape
+    # Reconstruct the old padded band solely as an adversarial test region.
+    b=[30,278.8,190,280]
+    x0=int(b[0]*w/240)-1;x1=int(b[2]*w/240)+2
+    y0=int(b[1]*h/320)-1;y1=int(b[3]*h/320)+2
+    assert(ink&~mask)[y0:y1,x0:x1].any()
+    assert all(p['source_object_raster']['bounding_band_ink_authorized']is False for p in proof['paths'])
+    result=_footnote_cli_reproof(tmp_path,path)
+    assert result.returncode==3,result.stdout+result.stderr
+    assert 'Uncovered original source ink remains'in json.loads(result.stdout)['reason']
+    assert not(tmp_path/'held/packages').exists()
+
+
+def test_footnote_rule_crossing_earlier_glyphs_cannot_gain_ownership(tmp_path):
+    import json
+    bars='BT /F1 10 Tf 75 37 Td (CUT) Tj ET '+FOOTNOTES
+    path=source(tmp_path,bars=bars)
+    with pytest.raises(ValueError,match='source glyph'):
+        derive(path)
+    result=_footnote_cli_reproof(tmp_path,path)
+    assert result.returncode==3,result.stdout+result.stderr
+    assert 'source glyph'in json.loads(result.stdout)['reason']
+    assert not(tmp_path/'held/packages').exists()
+
+
+def test_footnote_rule_cannot_borrow_same_geometry_from_changed_source(tmp_path):
+    import pdfplumber,pypdfium2 as pdfium,numpy as np
+    from local_vector_batch.literal_path_frames import derive_literal_path_mask
+    first=tmp_path/'first';second=tmp_path/'second';first.mkdir();second.mkdir()
+    a=source(first,bars=FOOTNOTES);b=source(second,'0 g 10 10 .5 .5 re f',bars=FOOTNOTES)
+    with pdfplumber.open(a)as pdf,pdfium.PdfDocument(b)as independent:
+        native=pdf.pages[0];image=native.to_image(resolution=120)
+        with pytest.raises(ValueError,match='independent source differs'):
+            derive_literal_path_mask(native,independent[0],np.asarray(image.original.convert('L'))<100,image.bbox)
