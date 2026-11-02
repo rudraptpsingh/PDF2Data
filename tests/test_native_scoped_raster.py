@@ -75,6 +75,18 @@ def test_changed_fresh_source_geometry_is_an_identity_refusal():
         m.account(region,glyphs,changed,paint,image,fields,[],policy)
 
 
+def test_fresh_zero_ink_space_paints_never_authorize_advance_box_masks():
+    values=inputs();region,glyphs,paint,image,fields,policy=values
+    space=dict(paint['glyphs'][0],seqno=1,text=' ',bbox=[15.,13.,18.,22.])
+    paint['glyphs'].append(space);paint['paint_bbox_log'].append(dict(kind='fill-text',bbox=[15.,20.,15.,20.]))
+    result=run(values);assert result['source_object_raster_accounting']=='proved'
+    assert result['zero_ink_source_spaces'][0]['mask_pixels_authorized']==0
+    image.putpixel((27,8),(0,0,0))
+    assert run(values)['reason']=='unaccounted_source_ink_inside_scope'
+    paint['paint_bbox_log'][1]['bbox']=[15.,13.,18.,22.]
+    assert run(values)['reason']=='source_paint_has_no_accountable_glyphs'
+
+
 def test_native_table_scope_is_not_promoted_by_an_ink_mask():
     region,glyphs,paint,image,fields,policy=inputs()
     r=m.account(region,glyphs,deepcopy(glyphs),paint,image,fields,[[1,11,15,25]],policy)

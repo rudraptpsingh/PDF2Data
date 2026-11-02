@@ -21,6 +21,8 @@ pixels. A proved component has zero unaccounted dark pixels under the unchanged
 source raster policy. It does not mask a whole paragraph or table interior.
 Source tables, nontext paint, clipped glyphs, unsupported text paint, ambiguous
 geometry and unexplained ink inside the crop retain a hold.
+Explicit space paints with fresh, exact point-shaped ink bounds are retained
+without authorizing any mask pixels; a space advance box cannot cover ink.
 
 A finite invalid glyph box outside the crop is retained with its original
 glyph index, text, font and full geometry as `outside_held_invalid_geometry`.

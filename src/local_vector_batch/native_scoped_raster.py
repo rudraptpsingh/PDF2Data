@@ -88,7 +88,7 @@ def account(region,cached_glyphs,fresh_glyphs,paint,image,fields,table_boxes,pol
             if draw['type'] not in ('clip','group'):
                 b=draw.get('rect')
                 witness.require(b is not None and not intersects(b,box),'nontext_source_paint_intersects_scope')
-        source_paints=[];seqs={}
+        source_paints=[];zero_ink_spaces=[];seqs={}
         for g in paint['glyphs']:seqs.setdefault(g['seqno'],[]).append(g)
         for index,item in enumerate(paint['paint_bbox_log']):
             b=item['bbox']
@@ -97,7 +97,16 @@ def account(region,cached_glyphs,fresh_glyphs,paint,image,fields,table_boxes,pol
             witness.require(item['kind']=='fill-text' and index in seqs,'unsupported_source_paint_intersects_scope')
             group=seqs[index]
             ink_glyphs=[g for g in group if g['text'].strip()]
-            witness.require(bool(ink_glyphs),'source_paint_has_no_accountable_glyphs')
+            if not ink_glyphs:
+                # A positive advance box is not painted ink. Only a fresh
+                # exact point ink-bound for explicit spaces can explain this
+                # empty paint; it never authorizes a single mask pixel.
+                witness.require(all(math.isfinite(v) for v in b) and b[0]==b[2] and b[1]==b[3]
+                    and group and all(g['text'] in (' ','\u00a0') and g['type']==0 and g['opacity']==1.0
+                        and not g['layer'] and g['direction']==[1.0,0.0] and g['wmode']==0 for g in group),
+                    'source_paint_has_no_accountable_glyphs')
+                zero_ink_spaces.append(dict(seqno=index,bbox=b,glyphs=group,mask_pixels_authorized=0))
+                continue
             for g in ink_glyphs:
                 witness.require(valid_box(g['bbox']) and contained(g['bbox'],box),'scope_cuts_independent_text_paint')
                 witness.require(g['type'] in visibility['allowed_text_paint_types'] and g['opacity']==1.0
@@ -109,7 +118,7 @@ def account(region,cached_glyphs,fresh_glyphs,paint,image,fields,table_boxes,pol
         witness.require(Counter(c for g in inside for c in g['text'] if not c.isspace())==
             Counter(c for p in source_paints for g in p['glyphs'] for c in g['text'] if not c.isspace()),
             'independent_source_object_glyph_inventory_differs')
-        result['source_text_paints']=source_paints
+        result.update(source_text_paints=source_paints,zero_ink_source_spaces=zero_ink_spaces)
         import numpy as np
         ink=np.asarray(image.convert('L'))<policy['source_dark_pixel_threshold']
         mask=np.zeros(ink.shape,dtype=bool);scale=region['render_dpi']/72;ox,oy,_,_=region['crop_bbox_pixels']
