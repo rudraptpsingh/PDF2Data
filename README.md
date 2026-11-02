@@ -1,6 +1,6 @@
 # PDF2Data
 
-[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.14` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
+[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.15` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
 
 ## Quick start
 
@@ -14,7 +14,7 @@ pdf2data workspace --workspace ./pdf2data-workspace
 ```
 
 The release candidate is published on npm under the `next` tag.
-[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.14)
+[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.15)
 remain available for direct installation.
 
 The launcher downloads the matching Python wheel and dependencies into an isolated
@@ -40,6 +40,12 @@ coherent proof modules and explicit source-cell holds.
 [White background candidate discrimination](docs/white-fill-table-candidates.md)
 keeps invisible paragraph rectangles from imposing an unsupported table gate,
 while preserving source evidence and ordinary independent quality checks.
+
+[Scoped native raster accounting](docs/native-scoped-raster.md) and
+[operator layout spacing](docs/operator-layout-whitespace.md) retain raw evidence
+and source-quality holds.
+
+Use [literal page reading candidates](docs/literal-page-reading-candidates.md) for a bounded named AskMill reading of an original image while retaining every source-quality hold.
 
 Use [cached-reading admission](docs/cached-reading-admission.md) to expose a verified
 legacy `pdf-extract` reading to native fields without extraction or quality promotion.

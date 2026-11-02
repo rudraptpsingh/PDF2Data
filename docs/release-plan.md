@@ -1,8 +1,13 @@
 # Release setup and next milestones
 
-2 November 2026. Release candidate: `v0.2.0-rc.14`; Python version `0.2.0rc14`;
-npm version `0.2.0-rc.14`. The npm name is `@rudraptpsingh/pdf2data`; the unscoped
+2 November 2026. Release candidate: `v0.2.0-rc.15`; Python version `0.2.0rc15`;
+npm version `0.2.0-rc.15`. The npm name is `@rudraptpsingh/pdf2data`; the unscoped
 `pdf2data` npm package is owned by another publisher.
+
+This release delivers bounded source-review commands, scoped raster accounting,
+operator spacing comparison and exact released rc14 proof-decoder compatibility.
+It does not approve a reading or change existing job pins. Consumers must record
+the release artifact hash and qualify their selected operations independently.
 
 ## Distribution in this release
 

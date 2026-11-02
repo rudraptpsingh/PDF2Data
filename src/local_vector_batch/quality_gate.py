@@ -68,15 +68,67 @@ def _normalized(text: str) -> str:
     return "".join(str(unicodedata.digit(c)) if c.isdigit() else c for c in text)
 
 
-def _operators(text: str, policy: dict) -> list[str]:
+def _operator_pattern(policy: dict):
     terms = sorted((_normalized(term) for term in policy["operators"]), key=len, reverse=True)
     parts = []
     for term in terms:
-        escaped = re.escape(term)
+        # Layout spacing only; Unicode paragraph/line separators and control
+        # characters must not silently join an operative phrase.
+        escaped = re.escape(term).replace(r'\ ',r'[ \t\r\n\u00a0\u202f]+')
         parts.append((r"(?<!\w)" if term[0].isalnum() else "") + escaped +
                      (r"(?!\w)" if term[-1].isalnum() else ""))
-    pattern = re.compile("(?:" + "|".join(parts) + ")")
-    return [m.group() for m in pattern.finditer(_normalized(text))]
+    return re.compile("(?:" + "|".join(parts) + ")")
+
+
+def _operators(text: str, policy: dict) -> list[str]:
+    return [' '.join(m.group().split()) for m in _operator_pattern(policy).finditer(_normalized(text))]
+
+
+def operator_source_spans(text: str, policy: dict):
+    """Raw codepoint spans; refuse to guess offsets through Unicode expansion."""
+    pattern=re.compile(_operator_pattern(policy).pattern,re.IGNORECASE)
+    rows=[dict(canonical_operator=' '.join(_normalized(m.group()).split()),exact_quote=m.group(),
+        char_start=m.start(),char_length=m.end()-m.start(),offset_encoding='codepoint') for m in pattern.finditer(text)]
+    return rows if [r['canonical_operator'] for r in rows]==_operators(text,policy) else None
+
+
+def compare_cached_native_operators(package: Path, source_pdf: Path) -> dict:
+    """New comparison candidate only; every original page outcome is retained."""
+    from copy import deepcopy
+    from .legal_l1 import verify_document,rows
+    from .field_witness import SOURCE_FILES
+    from .hashing import file_sha256
+    package=Path(package).resolve();source_pdf=Path(source_pdf).resolve();verify_document(package)
+    before={n:file_sha256(package/n) for n in SOURCE_FILES}
+    if file_sha256(source_pdf)!=before['original.pdf']:raise ValueError('Cached operator source PDF differs')
+    quality=json.loads((package/'quality.json').read_text());result=deepcopy(quality)
+    pages={r['page']:r for r in rows(package/'extraction/pages.jsonl')}
+    layout={r['page']:r for r in rows(package/'layout.jsonl')};policy=load_policy();comparisons=[]
+    for old in quality['results']:
+        n=old['page'];page=pages[n];native=layout[n];independent=native.get('quality_independent_text')
+        if native['page_text_sha256']!=page['text_sha256'] or old['page_text_sha256']!=page['text_sha256']:
+            raise ValueError('Cached operator page identity differs')
+        if independent is not None and hashlib.sha256(independent.encode()).hexdigest()!=native.get('quality_independent_text_sha256'):
+            raise ValueError('Cached independent operator reading hash differs')
+        a=operator_source_spans(page['text'],policy);b=operator_source_spans(independent,policy) if independent else None
+        left=[r['canonical_operator'] for r in a] if a is not None else None
+        right=[r['canonical_operator'] for r in b] if b is not None else None
+        comparisons.append(dict(page=n,page_text_sha256=page['text_sha256'],
+            independent_text_sha256=native.get('quality_independent_text_sha256'),
+            independent_offset_scope='frozen_layout.quality_independent_text_not_selected_page',
+            original_component=deepcopy(old['components']['ordered_operators']),
+            candidate_state='pass' if a is not None and b is not None and left==right else 'held',
+            selected=left,independent=right,selected_source_spans=a,independent_reader_spans=b))
+    if before!={n:file_sha256(package/n) for n in SOURCE_FILES} or file_sha256(source_pdf)!=before['original.pdf']:
+        raise ValueError('Cached operator source changed during comparison')
+    result['operator_comparison']=dict(schema_version='pdf2data.cached-native-operator-comparison.v1',
+        source_files_sha256=before,implementation_sha256=file_sha256(Path(__file__)),
+        policy_file_sha256=file_sha256(Path(__file__).with_name('quality_policy.json')),results=comparisons,
+        comparison_scope='ordered_operator_tokens_only_not_semantic_equivalence',
+        original_ledger_preserved=True,original_page_outcomes_preserved=True,
+        source_geometry_rederived=False,new_content_extraction=False,new_ocr_calls=0,model_calls=0,
+        source_quality_approval_granted=False,language_layout_or_raster_clearance=False,publication_eligible=False)
+    return result
 
 
 def _component(state: str, reason: str | None = None, **evidence) -> dict:
