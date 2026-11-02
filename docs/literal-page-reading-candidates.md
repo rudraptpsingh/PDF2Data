@@ -46,6 +46,9 @@ including incomplete inference results, and re-renders the original source image
 without inference. It does not compare answers against catalogue expectations.
 Preserve the installed producer wheel and dependency versions with the bundle
 for reproducibility. Reusing a saved bundle requires no additional model call.
+`runner_calls_performed` and `inference_calls_performed` describe the current
+operation; both are zero for verification. `recorded_runner_calls` and
+`recorded_fresh_inference_calls` describe the saved original attempt.
 Further source correction needs a separately qualified producer operation and
 independent original review. Keep the prior required assertions as
 failures wherever the selected source reading cannot support them; never weaken

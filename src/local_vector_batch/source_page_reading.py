@@ -101,7 +101,8 @@ def run(package,page,prompt,profile,output,*,askmill='askmill',config=None,dpi=2
     complete=call['exit_code']==0 and result.get('schema_version')=='askmill.result.v1'and result.get('status')=='completed'and result.get('complete')is True and bool(result.get('text','').strip())
     write(output/'manifest.json',dict(schema_version=SCHEMA,files=inventory(output),status='candidate'if complete else'held_incomplete',runner_calls=1,
         fresh_inference_calls=(int(not result.get('replayed',False))if result.get('schema_version')=='askmill.result.v1'else None),**FLAGS))
-    return verify(output,package)
+    verified=verify(output,package)
+    return {**verified,'runner_calls_performed':1,'inference_calls_performed':verified['recorded_fresh_inference_calls']}
 
 
 def verify(bundle,package):
@@ -149,5 +150,6 @@ def verify(bundle,package):
         image,pixels=render(package,request['region'],request['render_dpi'])
         require(image==(bundle/'source.png').read_bytes()and pixels==request['crop_bbox_pixels'],'Reading original raster/geometry differs')
     return dict(integrity='passed',status=manifest['status'],output=str(bundle),page=request['page'],source_pdf_sha256=request['source_pdf_sha256'],
-                reading_sha256=file_sha256(bundle/'reading.txt'),complete=complete,original_raster_reconstructed=True,runner_calls=manifest.get('runner_calls',manifest.get('actual_inference_attempts')),
-                fresh_inference_calls=(int(not result.get('replayed',False))if result.get('schema_version')=='askmill.result.v1'else None),**FLAGS)
+                reading_sha256=file_sha256(bundle/'reading.txt'),complete=complete,original_raster_reconstructed=True,runner_calls_performed=0,inference_calls_performed=0,
+                recorded_runner_calls=manifest.get('runner_calls',manifest.get('actual_inference_attempts')),
+                recorded_fresh_inference_calls=(int(not result.get('replayed',False))if result.get('schema_version')=='askmill.result.v1'else None),**FLAGS)
