@@ -1,6 +1,6 @@
 # PDF2Data
 
-[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.17` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
+[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.18` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
 
 ## Quick start
 
@@ -13,8 +13,8 @@ pdf2data doctor
 pdf2data workspace --workspace ./pdf2data-workspace
 ```
 
-The release candidate is published on npm under the `next` tag.
-[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.17)
+The npm launcher uses the `next` tag; registry publication can lag the GitHub release.
+[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.18)
 remain available for direct installation.
 
 The launcher downloads the matching Python wheel and dependencies into an isolated
@@ -800,3 +800,5 @@ available for review.
 Cell-local configured extraction is available through `pdf2data cell-fields`.
 See [configured cell fields](docs/configured-cell-fields.md) for explicit columns,
 source-cell citations and independent bundle re-derivation.
+
+[Legacy font review](docs/legacy-font-review.md) preserves known script requirements through capture, quality assessment and machine decisions without rewriting source text.

@@ -172,6 +172,10 @@ class Page:
 
     def __init__(self, text):
         self.text = text
+        # Software fixture declares its ordinary font; unavailable inventory is
+        # independently exercised by test_legacy_font_metadata.
+        if not hasattr(type(self), 'chars'):
+            self.chars = [{'fontname': 'Helvetica', 'text': char} for char in text]
 
     def extract_text(self):
         return self.text

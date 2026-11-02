@@ -408,8 +408,23 @@ def extract_pdf(
                                    "detail": native_error})
                 page_id = f"{document_id}:p{index}"
                 text_sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
-                from .text_script import classify_text_script, native_script_verification
-                script_verification = native_script_verification(text, quality_policy)
+                from .text_script import (classify_text_script, native_script_verification,
+                                          native_font_script_evidence)
+                font_evidence = None
+                font_inventory_failed = False
+                if selected_method == 'pdf_text':
+                    try:
+                        font_evidence = native_font_script_evidence(page.chars, quality_policy)
+                    except Exception:
+                        font_inventory_failed = True
+                        issues.append({'page': index, 'kind': 'native_font_inventory_unavailable',
+                            'detail': 'Source font inventory could not be inspected; native text is not a glyph-map proof'})
+                script_verification = native_script_verification(text, quality_policy,
+                    native_font_evidence=font_evidence)
+                if font_inventory_failed:
+                    script_verification.update(state='unverified',
+                        reason='native_font_inventory_unavailable',
+                        proof_required='source_bound_font_inventory_and_glyph_mapping_review')
                 raster_regions=native_raster_regions(page,minimum_page_fraction=quality_policy.get('native_raster_region_min_page_fraction',0.0))
                 if raster_regions:
                     issues.append({'page':index,'kind':'native_raster_content_unverified',
@@ -516,6 +531,7 @@ def extract_pdf(
                                           "text_extraction_failed", "native_extraction_recovered", "ocr_failed",
                                           "low_confidence_ocr", "table_extraction_failed", "missing_text",
                                           "native_complex_script_glyph_mapping_unverified", "native_raster_content_unverified",
+                                          "native_font_inventory_unavailable",
                                           "nested_table_geometry_candidates"}):
                     pages[-1]["status"] = "review_required"
                 else:

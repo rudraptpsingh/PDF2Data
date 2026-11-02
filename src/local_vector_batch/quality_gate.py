@@ -474,15 +474,17 @@ def assess_page(page: dict, *, source_pdf_sha256: str | None,
     if script not in policy["supported_scripts"]:
         components["language"] = _component("fail", "unsupported_or_unknown_script", detected_script=script)
     elif page.get("method") == "pdf_text":
-        from .text_script import native_script_verification
-        required = native_script_verification(text, policy)['required_scripts']
+        from .text_script import native_page_script_verification
         native_font_evidence = native_font_evidence or (source_geometry or {}).get('native_font_script_evidence')
-        font_required = (native_font_evidence or {}).get('required_scripts', [])
-        required = sorted(set(required) | set(font_required))
-        if required and not independent_language_proof:
+        gate = native_page_script_verification(page, policy, native_font_evidence=native_font_evidence)
+        required = gate['required_scripts']
+        if gate['reason'] == 'native_font_inventory_unavailable':
+            components['language'] = _component('unknown', gate['reason'], detected_script=script,
+                required_scripts=required, native_parser_agreement_is_linguistic_proof=False)
+        elif required and not independent_language_proof:
             components['language'] = _component('unknown', 'native_complex_script_glyph_mapping_unverified',
                 detected_script=script, required_scripts=required,
-                source_font_evidence=native_font_evidence,
+                source_font_evidence=gate.get('source_font_evidence'),
                 native_parser_agreement_is_linguistic_proof=False)
         else:
             components['language'] = _component('pass', detected_script=script, reader='native_pdf_text',
@@ -903,12 +905,12 @@ def apply_machine_quality_decisions(pages: list[dict], pdf_sha: str, receipt_pat
     This never creates a human review decision and does not rewrite OCR text.
     """
     receipt_path = Path(receipt_path)
-    from .text_script import native_script_verification
+    from .text_script import native_page_script_verification
     policy = load_policy()
     output = [dict(page) for page in pages]
     for page in output:
-        gate = native_script_verification(page.get('text', ''), policy)
-        if (page.get('method') == 'pdf_text' and gate['required_scripts'] and
+        gate = native_page_script_verification(page, policy)
+        if (page.get('method') == 'pdf_text' and gate['state'] == 'unverified' and
                 page.get('status') == 'ready' and page.get('review_decision') is None):
             page['status'] = 'review_required'
             page['script_verification'] = gate
@@ -942,6 +944,7 @@ def apply_machine_quality_decisions(pages: list[dict], pdf_sha: str, receipt_pat
             continue
         components = row.get("components") or {}
         render = components.get("source_render") or {}
+        gate = native_page_script_verification(page, policy)
         if (row.get("source_pdf_sha256") != pdf_sha or row.get("policy_sha256") != policy_sha or
                 row.get("page_text_sha256") != page.get("text_sha256") or
                 page.get("text_sha256") != hashlib.sha256(page.get("text", "").encode()).hexdigest() or
@@ -949,16 +952,17 @@ def apply_machine_quality_decisions(pages: list[dict], pdf_sha: str, receipt_pat
                 row.get("missing_evidence") != [] or row.get("failed_components") != [] or
                 not required.issubset(components) or
                 (page.get('method') == 'pdf_text' and
-                 native_script_verification(page.get('text', ''), policy)['required_scripts'] and
-                 components.get('language', {}).get('independent_model_confirmed') is not True) or
+                 (gate['reason'] == 'native_font_inventory_unavailable' or
+                  (gate['required_scripts'] and
+                   components.get('language', {}).get('independent_model_confirmed') is not True))) or
                 any(components[name].get("state") != "pass" for name in required) or
                 not row.get("independent_text_sha256") or not render.get("receipt_sha256") or
                 not render.get("rendered_image_sha256")):
             raise ValueError(f"incomplete machine quality proof for physical page {page.get('page')}")
         page["status"] = "ready"
         page["machine_quality_accepted"] = True
-        if page.get('method') == 'pdf_text' and native_script_verification(page.get('text', ''), policy)['required_scripts']:
-            page['script_verification'] = {**native_script_verification(page['text'], policy),
+        if page.get('method') == 'pdf_text' and gate['required_scripts']:
+            page['script_verification'] = {**gate,
                 'state': 'machine_raster_text_verified', 'legal_review_approved': False}
         page["quality_policy_sha256"] = policy_sha
         page["quality_receipt_sha256"] = hashlib.sha256(receipt_path.read_bytes()).hexdigest()
