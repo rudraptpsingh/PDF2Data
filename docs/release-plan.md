@@ -1,15 +1,16 @@
 # Release setup and next milestones
 
-2 November 2026. Release candidate: `v0.2.0-rc.17`; Python version `0.2.0rc17`;
-npm version `0.2.0-rc.17`. The npm name is `@rudraptpsingh/pdf2data`; the unscoped
+3 November 2026. Release candidate: `v0.2.0-rc.18`; Python version `0.2.0rc18`;
+npm version `0.2.0-rc.18`. The npm name is `@rudraptpsingh/pdf2data`; the unscoped
 `pdf2data` npm package is owned by another publisher.
 
-This release gives each native proof worker an explicit fresh private Python
-bytecode-cache prefix, including nested proof and review launchers. It retains
-exact released rc16 decoder compatibility under the existing source, dependency
-and operation checks. Consumers must pin the new wheel and adapter hashes and
-qualify their selected operations. Existing job pins and source-quality gates
-remain unchanged.
+This release routes observed KrutiDev010 source fonts to the existing Hindi
+glyph-mapping review gate, even when native readers agree on Latin character
+codes. Extraction metadata now retains the font route as well as the observed
+Unicode script. It preserves source text and requires independent language proof;
+it does not decode the font or clear held pages. The rc17 worker isolation and
+explicit source/dependency/operation checks remain in place. Existing jobs and
+consumer pins require separate adoption.
 
 ## Distribution in this release
 

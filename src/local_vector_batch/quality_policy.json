@@ -59,7 +59,8 @@
   "native_complex_script_min_characters": 1,
   "native_font_families_requiring_raster_proof": {
     "devnagari-chanakyanormala": "devanagari",
-    "devnagari-chanakyabolda": "devanagari"
+    "devnagari-chanakyabolda": "devanagari",
+    "krutidev010": "devanagari"
   },
   "require_exact_marked_word_tokens": true,
   "native_raster_region_min_page_fraction": 0.0,
