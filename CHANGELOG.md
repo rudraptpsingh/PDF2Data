@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 0.2.0-rc.16 — 2026-11-02
+
+- Bind native grouping strokes and adjacent text blocks to exact independent
+  paths, transforms, paint, source rectangles and layout witnesses. Keep group
+  and header relationships as candidates; preserve blank cells without filling.
+- Account for literal frames, separators and footnote rules using isolated
+  original-object raster pixels. Bounding bands grant no ink ownership;
+  foreign adjacent paint and genuine glyph intersections remain held.
+- Give font traces sharing a paint operation distinct glyph keys and require
+  complete paint cardinality before claiming individual-character ink bounds.
+- Retain component diagnostics, original packages and failed receipts. Source
+  quality repairs create separate immutable successors with fresh registered
+  decoder checks; they do not repin jobs or grant legal/publication acceptance.
+
 ## 0.2.0-rc.15 — 2026-11-02
 
 - Add bounded named local image-reading candidates with exact original/prompt/profile receipts. Preserve older readings, retain incomplete output and all source-quality holds, and leave selected L1s unchanged.

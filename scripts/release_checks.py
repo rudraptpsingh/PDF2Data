@@ -24,6 +24,8 @@ def check(dist=None):
         'document_model.py', 'formula_observations.py', 'source_locations.py', 'native_visuals.py',
         'field_checks.py', 'multipart_fields.py', 'semantic_fields.py', 'cached_l1.py',
         'field_witness.py', 'native_scoped_raster.py',
+        'native_grouping_paths.py', 'literal_path_frames.py', 'literal_path_frames_rules.json',
+        'native_zero_table_prose.py',
         'native_whitefill_prose.py', 'native_whitefill_prose_rules.json', 'proof_relocation.py', 'source_page_reading.py',
         'extraction_rules/cerc-sharing-supplement-v1.json',
         'extraction_rules/cerc-sharing-supplement-v1.checks.json']
