@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 0.2.0-rc.17 — 2026-11-02
+
+- Give custody, targeted proof and native table review workers isolated Python
+  processes with fresh private cache prefixes and bounded cleanup. Keep cache
+  writes disabled; environment-only settings do not establish this boundary.
+- Retain the exact released rc16 decoder as a historical proof epoch, alongside
+  rc12/rc13/rc14 and current code. Changed code and unsupported operations remain
+  refused under the existing source, parent and dependency checks.
+- Preserve originals, frozen quality proofs, failed receipts and consumer pins.
+  Proof reconstruction does not grant semantic, legal or publication acceptance.
+
 ## 0.2.0-rc.16 — 2026-11-02
 
 - Bind native grouping strokes and adjacent text blocks to exact independent

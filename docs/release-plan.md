@@ -1,14 +1,15 @@
 # Release setup and next milestones
 
-2 November 2026. Release candidate: `v0.2.0-rc.16`; Python version `0.2.0rc16`;
-npm version `0.2.0-rc.16`. The npm name is `@rudraptpsingh/pdf2data`; the unscoped
+2 November 2026. Release candidate: `v0.2.0-rc.17`; Python version `0.2.0rc17`;
+npm version `0.2.0-rc.17`. The npm name is `@rudraptpsingh/pdf2data`; the unscoped
 `pdf2data` npm package is owned by another publisher.
 
-This release adds independent source-object/raster proof for grouping strokes
-and paired footnote separators. It retains source relationships as candidates,
-keeps unmatched paint and glyph intersections held, and preserves blank cells.
-Existing job pins remain unchanged. Consumers must record the release artifact
-hash and qualify their selected operations independently.
+This release gives each native proof worker an explicit fresh private Python
+bytecode-cache prefix, including nested proof and review launchers. It retains
+exact released rc16 decoder compatibility under the existing source, dependency
+and operation checks. Consumers must pin the new wheel and adapter hashes and
+qualify their selected operations. Existing job pins and source-quality gates
+remain unchanged.
 
 ## Distribution in this release
 
