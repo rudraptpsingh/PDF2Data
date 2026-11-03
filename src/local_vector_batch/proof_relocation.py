@@ -1,7 +1,7 @@
 """Explicit, sealed custody bindings for exact captured native proof decoders.
 
 Frozen JSON and source artifacts are never edited. An isolated interpreter runs
-only an exact current decoder or a known released rc12/rc13/rc14/rc16/rc17 decoder. Its Path
+only an exact current decoder or a known released rc12/rc13/rc14/rc16/rc17/rc18 decoder. Its Path
 constructors receive only prevalidated resource bindings, not a filesystem-wide
 redirect or an import path to the extraction origin.
 """
@@ -21,7 +21,8 @@ RC13_CODE='076b5055cc1496fde274888a880a31533f1f042365384b8da935984e74da86f5'
 RC14_CODE='9ed276efcc6ddc0e1d643ddd9c68b2b014ec46d0e8ed4066cc399a835171c8e7'
 RC16_CODE='0e5fe813434d10b906cdca22be33557fa0507477613a396fd5b744f3a0007650'
 RC17_CODE='603454b825a9477cd5f0762d4b51b9cee64ca3df92d4dfadbd4256db32280984'
-RELEASED_DECODER_CODES=frozenset({RC12_CODE,RC13_CODE,RC14_CODE,RC16_CODE,RC17_CODE})
+RC18_CODE='23dba69bbb7c42bc5583b08181287b9cac8d4a0f5f68efb788893bdc6fc5476e'
+RELEASED_DECODER_CODES=frozenset({RC12_CODE,RC13_CODE,RC14_CODE,RC16_CODE,RC17_CODE,RC18_CODE})
 SUPPORTED={'native_whitefill_prose','native_table_regions'}
 
 

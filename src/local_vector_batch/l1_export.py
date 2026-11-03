@@ -2,6 +2,7 @@
 from pathlib import Path
 import json,hashlib,os,tempfile
 from .legal_l1 import verify_document,rows
+from .export_projection import candidate_snapshot, page_states
 SCHEMA='pdf2data.processed.v1'
 
 def export_processed(packages:Path,output:Path,region_packets:Path|None=None):
@@ -13,9 +14,13 @@ def export_processed(packages:Path,output:Path,region_packets:Path|None=None):
     for p in folders:
         checked=verify_document(p)
         load=lambda n:json.loads((p/n).read_text())
+        pages=rows(p/'extraction/pages.jsonl');quality=load('quality.json')
+        quality_ref={'path':'quality.json','sha256':hashlib.sha256((p/'quality.json').read_bytes()).hexdigest()}
         docs.append({'source_id':p.name,'package_sha256':hashlib.sha256((p/'l1-package.json').read_bytes()).hexdigest(),
             'package_path':str(p),'source_pdf_path':str(p/'original.pdf'),'source_pdf_sha256':checked['source_pdf_sha256'],
-            'source':load('source-receipt.json'),'pages':rows(p/'extraction/pages.jsonl'),'layout':rows(p/'layout.jsonl'),
+            'source':load('source-receipt.json'),'pages':pages,'layout':rows(p/'layout.jsonl'),
+            'page_states':page_states(pages,checked['source_pdf_sha256'],quality,quality_ref),
+            **candidate_snapshot(p,pages,checked['source_pdf_sha256']),
             'tables':load('extraction/tables.json'),'structure':load('structure.json'),'quality':load('quality.json'),
             'readiness':load('readiness.json'),'repair_queue':rows(p/'repair-queue.jsonl'),
             'verification':checked,'legal_state':'unreviewed','publication_eligible':False})

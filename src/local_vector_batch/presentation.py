@@ -35,11 +35,16 @@ def _html(title: str, body: str) -> str:
             f"<main>{body}</main></html>\n")
 
 
-def export_presentation(output: Path, report: dict) -> dict:
+def export_presentation(output: Path, report: dict, *, quality=None, quality_ref=None,
+                        destination: Path | None = None) -> dict:
     """Render selected page text; never silently present candidate tables as law."""
     output = Path(output)
-    root = output / "presentation"
+    root = Path(destination) if destination is not None else output / "presentation"
+    if destination is not None and (root.exists() or root.resolve().is_relative_to(output.resolve())):
+        raise ValueError("presentation projection requires a new directory outside its source")
     pages = _rows(output / "pages.jsonl")
+    from .export_projection import page_states
+    states = {row['page']: row for row in page_states(pages, report['source_pdf_sha256'], quality, quality_ref)}
     tables = json.loads((output / "tables.json").read_text(encoding="utf-8"))
     structures = _rows(output / "structure-candidates.jsonl")
     facts = _rows(output / "fact-candidates.jsonl")
@@ -66,8 +71,9 @@ def export_presentation(output: Path, report: dict) -> dict:
         stem = f"pages/page-{number:04d}"
         cite = f"{source}#page={number}" if source else None
         label = f"PDF page {number}"
-        status = page["status"].replace("_", " ")
-        metadata = f"{status} · {page['method']} · text SHA-256 {page['text_sha256']}"
+        state = states[number]
+        metadata = (f"{state['display_status']} · Selection: {page['status'].replace('_', ' ')}"
+                    f" · {page['method']} · text SHA-256 {page['text_sha256']}")
         source_link = f"[Open original PDF page]({cite})\n\n" if cite else ""
         table_links = "".join(
             f"- [Table candidate {index}](../tables/{re.sub(r'[^a-zA-Z0-9._-]', '_', table['id'])}.html) — verify rows against the PDF\n"
@@ -100,10 +106,12 @@ def export_presentation(output: Path, report: dict) -> dict:
                       "<p>Unverified OCR and table layout. Check every value against the original PDF.</p>" + blocks_html))
         page_entries.append({"page": number, "page_id": page["id"],
                              "status": page["status"], "method": page["method"],
+                             "status_scope": "extraction_selection", "page_state": state,
                              "text_sha256": page["text_sha256"], "source_pdf_sha256": report["source_pdf_sha256"],
                              "citation_url": cite, "markdown": stem + ".md", "html": stem + ".html"})
         layout_rows.append({"page": number, "page_id": page["id"], "source_pdf_sha256": report["source_pdf_sha256"],
                             "page_text_sha256": page["text_sha256"], "status": page["status"],
+                            "status_scope": "extraction_selection", "page_state": state,
                             "blocks": [{"type": "text", "text": page["text"], "method": page["method"],
                                         "status": page["status"]}] + [
                                 {"type": "table_candidate", "table_id": table["id"],
@@ -133,16 +141,17 @@ def export_presentation(output: Path, report: dict) -> dict:
         files[stem + ".html"] = _write(root / (stem + ".html"), _html(f"Page {page} table", body))
         table_entries.append({"id": table["id"], "page": page, "status": status,
                               "html": stem + ".html", "source_pdf_sha256": report["source_pdf_sha256"]})
-    links = "\n".join(f"- [PDF page {p['page']}]({p['markdown']}) — {p['status']}"
+    links = "\n".join(f"- [PDF page {p['page']}]({p['markdown']}) — {p['page_state']['display_status']}"
                       for p in page_entries)
     files["index.md"] = _write(root / "index.md", f"# {report['title']}\n\n{links}\n")
     links_html = "".join(f'<li><a href="{escape(p["html"], quote=True)}">PDF page {p["page"]}</a>'
-                         f' <small>{escape(p["status"])}</small></li>' for p in page_entries)
+                         f' <small>{escape(p["page_state"]["display_status"])}</small></li>' for p in page_entries)
     files["index.html"] = _write(root / "index.html", _html(report["title"],
         f"<h1>{escape(report['title'])}</h1><ol>{links_html}</ol>"))
     files["layout.jsonl"] = _write(root / "layout.jsonl", "".join(
         json.dumps(row, ensure_ascii=False) + "\n" for row in layout_rows))
     manifest = {"schema_version": 1, "document_id": report["document_id"],
+                "page_projection_schema": "pdf2data.page-state.v1",
                 "source_url": source, "source_pdf_sha256": report["source_pdf_sha256"],
                 "pages": page_entries, "table_candidates": table_entries,
                 "files": files}
