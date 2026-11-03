@@ -1,6 +1,6 @@
 # PDF2Data
 
-[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.18` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
+[Website & setup](https://rudraptpsingh.github.io/PDF2Data/) · **Release candidate:** `0.2.0-rc.19` · [Releases](https://github.com/rudraptpsingh/PDF2Data/releases) · [Release plan](docs/release-plan.md) · [Optional pattern-analysis integrations](docs/optional-analysis-tools.md)
 
 ## Quick start
 
@@ -14,7 +14,7 @@ pdf2data workspace --workspace ./pdf2data-workspace
 ```
 
 The npm launcher uses the `next` tag; registry publication can lag the GitHub release.
-[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.18)
+[GitHub release downloads](https://github.com/rudraptpsingh/PDF2Data/releases/tag/v0.2.0-rc.19)
 remain available for direct installation.
 
 The launcher downloads the matching Python wheel and dependencies into an isolated

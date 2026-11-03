@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.2.0-rc.19 — 2026-11-03
+
+- Retain complete fact and structure candidates in processed exports, with exact
+  artifact hashes and page witnesses. The additive inventory describes the new
+  export snapshot; it never reseals an older package.
+- Show package source-quality outcomes separately from extraction selection in
+  readable documents, page HTML/Markdown and overlay data. Repair holds remain.
+- Retain the exact rc18 custody decoder for existing supported operations.
+  Existing extraction jobs and consumer pins require explicit adoption.
+
 ## 0.2.0-rc.18 — 2026-11-03
 
 - Route exact KrutiDev010 source fonts to Hindi glyph-map review and retain
