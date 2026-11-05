@@ -104,15 +104,54 @@ def export_candidates(output: Path, pages: list[dict], pdf_sha256: str) -> dict:
     return {"file": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
 
 
-def provision_children(wrapper: dict, pages: list[dict], *, width: int = 1000) -> list[dict]:
-    """Exact searchable children, including short meaningful units; no vector invented."""
+# A sentence ends at . ; ? ! (and : before a line break), optionally closed by a bracket or quote, then whitespace,
+# with a capital, digit, bracket or quote next. Not after a paragraph number ("21."), an initial ("S."), a common
+# abbreviation, or a decimal.
+_SENTENCE_END = re.compile(r'(?<=[.;?!])[)"\u201d\u2019]?\s+(?=[A-Z0-9("\u201c\u2018])|(?<=:)[ \t]*\n\s*')
+_NOT_AN_END = re.compile(r'(?:^|\s)(?:\d{1,3}|[A-Za-z]|[ivxIVX]{1,4}|No|Nos|Rs|Sh|Smt|Dr|Mr|Ms|M/s|Ltd|Pvt|Co|Corp|Inc|viz|vs|cf|dt|Reg|Regn|Art|Cl|Sec|S|i\.e|e\.g|etc|approx|Govt|Hon\'?ble)[.)]?$')
+CHILD_CUTS = ("fixed", "sentence")
+
+
+def _child_cut(text: str, start: int, width: int) -> int:
+    """End offset of the next child: within `width`, at the last sentence end in the window's second half, else
+    the last line break, else the last space, else the width. The child is always an exact slice of `text`."""
+    if len(text) - start <= width:
+        return len(text)
+    window, floor = text[start:start+width], width // 2
+    ends = [m.end() for m in _SENTENCE_END.finditer(window) if m.end() >= floor and not _NOT_AN_END.search(window[:m.start()].rstrip(')"\u201d\u2019').rstrip('.;?!:'))]
+    if ends:
+        return start + ends[-1]
+    for sep in ("\n", " "):
+        at = window.rfind(sep, floor)
+        if at >= 0:
+            return start + at + 1
+    return start + width
+
+
+def provision_children(wrapper: dict, pages: list[dict], *, width: int = 1000, cut: str = "fixed") -> list[dict]:
+    """Exact searchable children, including short meaningful units; no vector invented.
+
+    cut="fixed" splits each span every `width` characters (packages without `child_cut` were built this way);
+    cut="sentence" ends a child at a sentence end, line break or space within `width`, so a child no longer stops
+    mid-sentence or mid-word at the size limit. Both are exact, contiguous, non-overlapping slices."""
     validate_wrapper(wrapper, pages, wrapper["source_pdf_sha256"])
     if type(width) is not int or width < 1:
         raise ValueError("invalid child width")
+    if cut not in CHILD_CUTS:
+        raise ValueError("invalid child cut")
     children = []
     for anchor in wrapper["spans"]:
-        for offset in range(0, anchor["char_length"], width):
-            text = anchor["exact_quote"][offset:offset+width]
+        quote, offsets = anchor["exact_quote"], []
+        if cut == "fixed":
+            offsets = list(range(0, anchor["char_length"], width))
+        else:
+            at = 0
+            while at < anchor["char_length"]:
+                offsets.append(at)
+                at = _child_cut(quote, at, width)
+        for n, offset in enumerate(offsets):
+            end = offset + width if cut == "fixed" else (offsets[n+1] if n + 1 < len(offsets) else anchor["char_length"])
+            text = quote[offset:end]
             children.append({"id": sha(f'{wrapper["id"]}:{anchor["page"]}:{anchor["char_start"]+offset}:{sha(text)}'),
                 "text": text, "parent_provision_version_id": wrapper["id"],
                 "source_pdf_sha256": wrapper["source_pdf_sha256"], "page": anchor["page"],
@@ -122,7 +161,7 @@ def provision_children(wrapper: dict, pages: list[dict], *, width: int = 1000) -
     return children
 
 
-def embedding_inputs(wrapper: dict, pages: list[dict], *, width: int = 1000) -> list[dict]:
+def embedding_inputs(wrapper: dict, pages: list[dict], *, width: int = 1000, cut: str = "fixed") -> list[dict]:
     """Adapt exact children to the existing ``--input-mode passages`` contract.
 
     Each page is an owning source chunk; parent provision identity survives
@@ -135,4 +174,4 @@ def embedding_inputs(wrapper: dict, pages: list[dict], *, width: int = 1000) -> 
                           "source_pdf_sha256": c["source_pdf_sha256"],
                           "page_text_sha256": c["page_text_sha256"], "page": c["page"],
                           "provision_boundary_state": wrapper["boundary_state"]}}
-            for c in provision_children(wrapper, pages, width=width)]
+            for c in provision_children(wrapper, pages, width=width, cut=cut)]

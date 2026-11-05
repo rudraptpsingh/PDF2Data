@@ -201,7 +201,7 @@ def unit_version_id(pdf_sha: str, family: str, label: str, spans: list[dict]) ->
     return f"pdf-{pdf_sha[:24]}:unit:{digest(json.dumps(payload,sort_keys=True,ensure_ascii=False).encode())[:24]}"
 
 
-def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=1000, layout=None, tables=None) -> dict:
+def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=1000, layout=None, tables=None, cut='sentence') -> dict:
     """Complete lexical navigation, not a claim of complete legal boundaries."""
     if family not in FAMILIES:raise ValueError('unknown document family')
     # Repeated long margin text is retained separately, never deleted.
@@ -275,9 +275,11 @@ def structure_document(pages: list[dict], pdf_sha: str, family: str, *, width=10
             flush();label=m.group(1);cursor=m.start()
         if hi>cursor:current.append({'page':p['page'],'char_start':cursor,'char_length':hi-cursor})
     flush()
-    children=[child for unit in units for child in provision_children(unit,pages,width=width)]
+    # Children end at sentence ends within the width (cut='sentence'); the structure records the cut so its verifier
+    # recomputes the same children. Packages without child_cut were built with fixed-width children.
+    children=[child for unit in units for child in provision_children(unit,pages,width=width,cut=cut)]
     return {'schema_version':SCHEMA,'source_pdf_sha256':pdf_sha,'declared_family':family,
-        'status':'candidate_only','child_width':width,'regions':regions,'family_regions':family_regions,
+        'status':'candidate_only','child_width':width,'child_cut':cut,'regions':regions,'family_regions':family_regions,
         'units':units,'children':children,'table_numbering_candidates':table_numbering,'legal_status':'unresolved','verified_claims':0,
         'coverage_scope':'all selected page text; visual completeness and legal boundaries require independent review'}
 
@@ -311,7 +313,7 @@ def validate_structure(structure: dict, pages: list[dict], pdf_sha: str) -> dict
         # Current region builder has at most one body interval per page.
         if expected:partition(unit_spans[n],expected[0][0],expected[-1][1])
         elif unit_spans[n]:raise ValueError('unit body on empty page')
-    children=structure['children'];expected_children=[c for u in structure['units'] for c in provision_children(u,pages,width=structure.get('child_width',1000))]
+    children=structure['children'];expected_children=[c for u in structure['units'] for c in provision_children(u,pages,width=structure.get('child_width',1000),cut=structure.get('child_cut','fixed'))]
     if children!=expected_children:raise ValueError('child coverage, parent or literal span mismatch')
     for candidate in structure.get('table_numbering_candidates',[]):
         check(candidate['span'])
