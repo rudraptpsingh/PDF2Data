@@ -130,65 +130,98 @@ def family_inventory(manifest: dict) -> list[dict]:
              'legal_currentness':'unresolved'} for group in manifest.get('families',[])]
 
 
+def _capture_page(original: Path, source_pdf_sha: str, page, selected: dict, alternate) -> dict:
+    """One page of capture_layout: depends only on this page, so pages can run in any order or process."""
+    errors=[]
+    def safe_text(call):
+        try:return call() or ''
+        except Exception as error:
+            errors.append(type(error).__name__);return None
+    native=safe_text(page.extract_text)
+    independent=safe_text(alternate.extract_text)
+    independent_layout=safe_text(lambda:alternate.extract_text(extraction_mode='layout'))
+    from .native_consensus import read_source_lines,choose_witness
+    try:source_lines=read_source_lines(original,page,selected['page'],secondary_layout_text=independent_layout)
+    except Exception as error:source_lines={'status':'unavailable','text':None,'glyph_coverage':False,'reason':type(error).__name__}
+    witness,witness_basis=choose_witness(selected['text'],independent_layout,source_lines) if selected['method']=='pdf_text' else (independent_layout,'pypdf_layout_for_ocr_comparison_only')
+    if witness is not None and any(0xD800<=ord(c)<=0xDFFF for c in witness):
+        witness=None;witness_basis='invalid_auxiliary_reader_witness_excluded'
+    reader_receipts={key:auxiliary_text_receipt(value,source_pdf_sha256=source_pdf_sha,page=selected['page'],page_text_sha256=selected['text_sha256']) for key,value in {'native_text_raw':native,'secondary_text_raw':independent,'secondary_layout_text_raw':independent_layout}.items()}
+    errors.extend('invalid_unicode_auxiliary_reader:'+key for key,receipt in reader_receipts.items()if receipt['state']=='invalid_unicode_scalar_sequence')
+    glyphs=[]
+    for c in page.chars:
+        glyphs.append({'text':c.get('text',''), 'bbox':[float(c[k]) for k in ('x0','top','x1','bottom')],
+                       'font':c.get('fontname'), 'size':float(c.get('size',0))})
+    glyph_text=''.join(c['text'] for c in glyphs)
+    opcodes=SequenceMatcher(None,glyph_text,selected['text'],autojunk=False).get_opcodes()
+    mapping=[{'kind':tag,'glyph_start':a,'glyph_end':b,'selected_start':c,'selected_end':d} for tag,a,b,c,d in opcodes]
+    return ({'page':selected['page'], 'page_text_sha256':selected['text_sha256'],
+        'coordinate_system':'PDF points, top-left', 'width':float(page.width),'height':float(page.height),
+        'native_text_raw':native, 'secondary_text_raw':independent,
+        'secondary_layout_text_raw':independent_layout,
+        'secondary_layout_text_sha256':reader_receipts['secondary_layout_text_raw']['utf8_text_sha256'],
+        'auxiliary_reader_receipts':reader_receipts,
+        'quality_independent_basis':witness_basis,
+        'quality_independent_text':witness,
+        'quality_independent_text_sha256':text_hash(witness) if witness is not None else None,
+        'pdfium_source_lines':source_lines,
+        'native_text_sha256':reader_receipts['native_text_raw']['utf8_text_sha256'],
+        'secondary_text_sha256':reader_receipts['secondary_text_raw']['utf8_text_sha256'],
+        'glyph_stream_text':glyph_text,'glyphs':glyphs,'alignment':mapping,
+        'alignment_status':'observation_only_not_reviewed_reading_order',
+        'extraction_errors':errors,
+        'nontext_objects':{k:len(getattr(page,k,[]) or []) for k in ('images','curves','rects','lines')},
+        'source_vectors':{kind:[{'bbox':[float(shape[k]) for k in ('x0','top','x1','bottom')]} for shape in (getattr(page,kind,[]) or [])] for kind in ('rects','lines')},
+        'selected_method':selected['method'],
+        'geometry_status':'native_geometry_not_ocr_geometry' if selected['method']!='pdf_text' else 'native_glyphs_retained'})
+
+
+def _page_workers(n_pages: int) -> int:
+    """PDF2DATA_PAGE_WORKERS (default 1: the single-process path, unchanged). Ranges of at least 4 pages each."""
+    import os
+    try: wanted = int(os.environ.get('PDF2DATA_PAGE_WORKERS', '1'))
+    except ValueError: wanted = 1
+    return max(1, min(wanted, n_pages // 4))
+
+
+def _capture_range(original_str: str, lo: int, hi: int, selected_pages: list[dict]) -> list[dict]:
+    """Worker: open the PDF in this process and capture pages [lo, hi)."""
+    import pdfplumber
+    from pypdf import PdfReader
+    from .pdf_ingest import _open_pdf_with_page_recovery
+    original = Path(original_str)
+    source_pdf_sha = digest(original.read_bytes())
+    secondary = PdfReader(original).pages
+    with _open_pdf_with_page_recovery(original, secondary, []) as pdf:
+        return [_capture_page(original, source_pdf_sha, pdf.pages[i], selected_pages[i - lo], secondary[i]) for i in range(lo, hi)]
+
+
 def capture_layout(original: Path, pages: list[dict]) -> list[dict]:
     """Keep both raw engines and native glyphs. Alignment is an observation only.
 
     Equal blocks map glyph-stream characters to selected text; unmatched or
     reordered ranges remain explicit. No ASCII normalization or string cap.
+    Pages are independent: with PDF2DATA_PAGE_WORKERS > 1, contiguous page ranges run in
+    separate processes and are joined in page order (the same result as one process).
     """
     import pdfplumber
     from pypdf import PdfReader
     from .pdf_ingest import _open_pdf_with_page_recovery
     source_pdf_sha=digest(original.read_bytes())
     secondary = PdfReader(original).pages
-    result=[]
     with _open_pdf_with_page_recovery(original, secondary, []) as pdf:
         if len(pdf.pages)!=len(pages) or len(secondary)!=len(pages):
             raise ValueError('raw layout page coverage differs from extraction')
-        for page, selected, alternate in zip(pdf.pages, pages, secondary):
-            errors=[]
-            def safe_text(call):
-                try:return call() or ''
-                except Exception as error:
-                    errors.append(type(error).__name__);return None
-            native=safe_text(page.extract_text)
-            independent=safe_text(alternate.extract_text)
-            independent_layout=safe_text(lambda:alternate.extract_text(extraction_mode='layout'))
-            from .native_consensus import read_source_lines,choose_witness
-            try:source_lines=read_source_lines(original,page,selected['page'],secondary_layout_text=independent_layout)
-            except Exception as error:source_lines={'status':'unavailable','text':None,'glyph_coverage':False,'reason':type(error).__name__}
-            witness,witness_basis=choose_witness(selected['text'],independent_layout,source_lines) if selected['method']=='pdf_text' else (independent_layout,'pypdf_layout_for_ocr_comparison_only')
-            if witness is not None and any(0xD800<=ord(c)<=0xDFFF for c in witness):
-                witness=None;witness_basis='invalid_auxiliary_reader_witness_excluded'
-            reader_receipts={key:auxiliary_text_receipt(value,source_pdf_sha256=source_pdf_sha,page=selected['page'],page_text_sha256=selected['text_sha256']) for key,value in {'native_text_raw':native,'secondary_text_raw':independent,'secondary_layout_text_raw':independent_layout}.items()}
-            errors.extend('invalid_unicode_auxiliary_reader:'+key for key,receipt in reader_receipts.items()if receipt['state']=='invalid_unicode_scalar_sequence')
-            glyphs=[]
-            for c in page.chars:
-                glyphs.append({'text':c.get('text',''), 'bbox':[float(c[k]) for k in ('x0','top','x1','bottom')],
-                               'font':c.get('fontname'), 'size':float(c.get('size',0))})
-            glyph_text=''.join(c['text'] for c in glyphs)
-            opcodes=SequenceMatcher(None,glyph_text,selected['text'],autojunk=False).get_opcodes()
-            mapping=[{'kind':tag,'glyph_start':a,'glyph_end':b,'selected_start':c,'selected_end':d} for tag,a,b,c,d in opcodes]
-            result.append({'page':selected['page'], 'page_text_sha256':selected['text_sha256'],
-                'coordinate_system':'PDF points, top-left', 'width':float(page.width),'height':float(page.height),
-                'native_text_raw':native, 'secondary_text_raw':independent,
-                'secondary_layout_text_raw':independent_layout,
-                'secondary_layout_text_sha256':reader_receipts['secondary_layout_text_raw']['utf8_text_sha256'],
-                'auxiliary_reader_receipts':reader_receipts,
-                'quality_independent_basis':witness_basis,
-                'quality_independent_text':witness,
-                'quality_independent_text_sha256':text_hash(witness) if witness is not None else None,
-                'pdfium_source_lines':source_lines,
-                'native_text_sha256':reader_receipts['native_text_raw']['utf8_text_sha256'],
-                'secondary_text_sha256':reader_receipts['secondary_text_raw']['utf8_text_sha256'],
-                'glyph_stream_text':glyph_text,'glyphs':glyphs,'alignment':mapping,
-                'alignment_status':'observation_only_not_reviewed_reading_order',
-                'extraction_errors':errors,
-                'nontext_objects':{k:len(getattr(page,k,[]) or []) for k in ('images','curves','rects','lines')},
-                'source_vectors':{kind:[{'bbox':[float(shape[k]) for k in ('x0','top','x1','bottom')]} for shape in (getattr(page,kind,[]) or [])] for kind in ('rects','lines')},
-                'selected_method':selected['method'],
-                'geometry_status':'native_geometry_not_ocr_geometry' if selected['method']!='pdf_text' else 'native_glyphs_retained'})
-    return result
+        workers = _page_workers(len(pages))
+        if workers == 1:
+            return [_capture_page(original, source_pdf_sha, page, selected, alternate)
+                    for page, selected, alternate in zip(pdf.pages, pages, secondary)]
+    import multiprocessing
+    from concurrent.futures import ProcessPoolExecutor
+    bounds = [round(i * len(pages) / workers) for i in range(workers + 1)]
+    with ProcessPoolExecutor(max_workers=workers, mp_context=multiprocessing.get_context('spawn')) as pool:
+        futures = [pool.submit(_capture_range, str(original), lo, hi, pages[lo:hi]) for lo, hi in zip(bounds, bounds[1:])]
+        return [row for f in futures for row in f.result()]
 
 
 def anchor(page: dict, lo: int, hi: int) -> dict:
