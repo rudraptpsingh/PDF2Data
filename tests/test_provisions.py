@@ -55,3 +55,51 @@ def test_reject_overlap_or_unsupported_complete_boundary():
     wrapper["boundary_state"] = "complete"
     with pytest.raises(ValueError):
         validate_wrapper(wrapper, source, "a"*64)
+
+
+def _unit(text, pdf="a"*64):
+    source = [{"page": 1, "text": text, "text_sha256": sha(text)}]
+    wrapper = select_provision("p", "1", source, pdf, [{"page": 1, "char_start": 0, "char_length": len(text)}], review_receipt_id="local-check")
+    return wrapper, source
+
+
+def test_fixed_children_are_unchanged_and_sentence_children_end_at_sentences():
+    text = ("21. The Bid Evaluation Committee evaluated the five bids received. " * 3
+            + "The Commission adopted the tariff of Rs. 4.89/kWh for Example Renewables Pvt. Ltd. under No. 12 of the order. "
+            + "The petition is disposed of accordingly and the next date is 3.9.2026. ") * 4
+    wrapper, source = _unit(text)
+    fixed = provision_children(wrapper, source, width=300)
+    assert [c["char_length"] for c in fixed[:-1]] == [300] * (len(fixed) - 1)  # the old behaviour, exactly
+    sentence = provision_children(wrapper, source, width=300, cut="sentence")
+    assert "".join(c["text"] for c in sentence) == text  # exact, contiguous, no overlap
+    assert all(c["char_length"] <= 300 for c in sentence)
+    for c in sentence[:-1]:
+        assert c["text"].rstrip().endswith((".", ";", ":")), c["text"][-40:]
+        assert not c["text"].rstrip().endswith((" No.", " Rs.", " Pvt.", " Ltd.", "21.")), c["text"][-40:]
+        assert source[0]["text"][c["char_start"]:c["char_start"] + c["char_length"]] == c["text"]
+
+
+def test_sentence_cut_falls_back_to_line_break_space_and_width():
+    wrapper, source = _unit("word " * 120)  # no sentence end at all
+    children = provision_children(wrapper, source, width=100, cut="sentence")
+    assert all(c["text"].endswith(" ") for c in children[:-1])
+    wrapper, source = _unit("x" * 250)  # no break at all
+    assert [c["char_length"] for c in provision_children(wrapper, source, width=100, cut="sentence")] == [100, 100, 50]
+    with pytest.raises(ValueError):
+        provision_children(wrapper, source, cut="paragraph")
+
+
+def test_structure_records_its_cut_and_old_packages_verify_as_fixed():
+    from local_vector_batch import legal_l1
+    text = ("1. The Commission heard the parties at length on the petition. " * 40) + "\n2. Ordered accordingly.\n"
+    source = [{"page": 1, "text": text, "text_sha256": sha(text)}]
+    structure = legal_l1.structure_document(source, "a" * 64, "generic")
+    assert structure["child_cut"] == "sentence"
+    legal_l1.validate_structure(structure, source, "a" * 64)
+    old = copy.deepcopy(structure)
+    del old["child_cut"]
+    old["children"] = [c for u in old["units"] for c in provision_children(u, source, width=old["child_width"])]
+    legal_l1.validate_structure(old, source, "a" * 64)  # a package built before child_cut existed
+    old["children"] = structure["children"]
+    with pytest.raises(ValueError):
+        legal_l1.validate_structure(old, source, "a" * 64)  # sentence children are not accepted as fixed ones
