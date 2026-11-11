@@ -20,6 +20,29 @@ PowerLex keeps the original PDF and the PDF2Data package as the source record. M
 
 The production handoff carries `pdf2data.processed.v1` artifacts through Map/Workbench. The optional [compact Query data export](query-data-export.md) is a separate adapter with document, page, table and unit records. See [processed export and quality](export-projection.md) and the [local evidence contract](ingestion-contract.md) for the source fields and review rules.
 
+## What the evidence means by document type
+
+The type and issuer give Query context for retrieval. Each value still needs the source passage that explains its role. The same table shape can describe a proposed rate, a claim, or an approved rate.
+
+| Document type | What the customer uses it for | What to capture and verify before querying |
+| --- | --- | --- |
+| CERC or SERC regulation, Gazette or amendment | Find the applicable rule, rates, charges, definitions, limits and calculation methods. | Instrument, issuer, clause, version, effective period, scope and provisos. Preserve the formula operands, units and definitions, and the table's row, column, year, category and notes. Link an amendment to the exact provision it changes. |
+| Commission tariff or procurement order and corrigendum | Find approved amounts, bidders, obligations, or the correction to a prior order. | Case, date, parties, project and period. Carry the table purpose and exact labels. Link approved and claimed figures to their respective passages. Bind a corrigendum to the changed table or paragraph. |
+| Commission petition, proposal, draft, staff paper or study | Understand the requested relief, proposed rule, assumptions, evidence or scenarios. | Capture the author or speaker, procedural status, scenario inputs and units, and the proposal's scope. Preserve links between the table, its caption, study methodology and outcome. |
+| APTEL or court judgment and interim order | Find the outcome, directions, stays, relevant parties and next procedural step. | Forum, case and connected matters, parties and roles, decision date, scope of relief, operative paragraphs and deadlines. Keep prior proceedings and party submissions identifiable in their own source spans. |
+| Ministry guideline, advisory, letter or notification | Find eligibility, responsibilities, dates, rates or compliance steps. | Issuing office, addressees, instrument and purpose, effective dates, annexures, exceptions and any order it modifies or extends. |
+| Grid, transmission or settlement procedure, including NLDC/Grid-India, CTUIL or a regional body | Apply an operational method, understand eligibility, compute an amount, or complete a process. | Issuer and approving authority, revision, applicability, step order, required inputs and units, formulas, thresholds, worked examples and supporting tables. |
+| Hearing, consultation or deadline notice | Find when and how to respond or attend and which proceeding the notice concerns. | Issuer, case or instrument, deadline versus event date, time and timezone when printed, submission channel and any extension or superseding notice. |
+
+| Evidence example | Purpose Query should be able to find | What to check against the original |
+| --- | --- | --- |
+| DSM 2024 Gazette, Regulation 6(2)(b), physical p13 | Compute the deviation percentage for wind and solar sellers under the rule printed for the stated period. | Subscript on the deviation variable, the sign of actual minus scheduled generation, the factor of 100, both terms of the denominator, the effective date, and the separate authority for the value of X. A numerical calculation also needs the applicable value of X and inputs with compatible units. |
+| Tariff 2024, Regulations 63(2) and 64(3), physical pp105–108 and 113–114 | Compute monthly thermal capacity charge and the coal or lignite energy charge rate. | Keep peak and off-peak quantities, cumulative fractions and ceilings, definitions, fuel category, the denominator across the page break, and CVPF's coal storage adjustment. |
+| DSM 2024, Regulation 8(1), physical p14 | Look up the deviation settlement charge for the relevant seller, injection direction, quantity band and frequency. | Preserve both columns, band headings, inequality boundaries, percentage ramps, and who pays or receives. |
+| 975/AT/2025 order and corrigendum, and 853/MP/2025 interim order | Identify awarded bidders and tariffs, or compare approved and claimed RLDC fees. | Use the specific order or correction that supplies the value. Preserve bidder/region, all rows, units, year, total, and any continuation. |
+
+Use the existing issuer and document-type research to identify the controlling source, then use the exact PDF to check the evidence. A formula needs a computable expression and a description of what it calculates, who or what it applies to, and how to obtain each input. A table needs its purpose, dimensions, labels, units, and scope. Record any missing interpretation or source evidence so a calculation or legal claim can be checked before use.
+
 | Change | Work needed |
 | --- | --- |
 | New PDF or changed original bytes | Process the new source through Index documents, retain its package and original hash, verify the evidence, then build and publish its projection. |
