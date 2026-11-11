@@ -9,6 +9,17 @@ def _glyph_key(char):
     return (char.get('text',''),)+tuple(round(float(char[k]),5) for k in ('x0','top','x1','bottom'))
 
 
+def _unique_line_glyphs(chars, expected):
+    # pdfplumber can report one physical glyph once per codepoint it represents.
+    seen = set()
+    for char in chars:
+        key = _glyph_key(char)
+        if key in seen and expected[key] == 1 and len(key[0]) > 1:
+            continue
+        seen.add(key)
+        yield char
+
+
 def read_source_lines(original: Path, source_page, physical_page: int, secondary_layout_text: str | None = None) -> dict:
     """Geometry orders source lines; PDFium independently reads their contents.
 
@@ -22,6 +33,7 @@ def read_source_lines(original: Path, source_page, physical_page: int, secondary
         return {**result,'reason':'unsupported_page_coordinate_system'}
     line_rows=source_page.extract_text_lines(return_chars=True)
     expected=Counter(_glyph_key(c) for c in source_page.chars if c.get('text','').strip())
+    line_rows = [{**row, 'chars': list(_unique_line_glyphs(row.get('chars', []), expected))} for row in line_rows]
     actual=Counter(_glyph_key(c) for line in line_rows for c in line.get('chars',[]) if c.get('text','').strip())
     if not expected or actual!=expected:return {**result,'reason':'line_geometry_does_not_cover_every_native_glyph_once'}
     # Superscripts/subscripts can be emitted as separate overlapping text lines.
@@ -77,7 +89,8 @@ def repair_source_lines(original: Path, source_page, physical_page: int, selecte
 
     Reordering raised/lowered glyphs is allowed only when every non-space source
     character is conserved and independently ordered PDFium/pypdf content agrees.
-    Ambiguous/repeated lines, whole tables and unsupported corrections are skipped.
+    Repeated lines require equal counts in all three readings in physical order.
+    Ambiguous lines, whole tables and unsupported corrections are skipped.
     """
     native_rows=source_page.extract_text_lines(return_chars=True)
     witness=read_source_lines(original,source_page,physical_page)
@@ -85,7 +98,7 @@ def repair_source_lines(original: Path, source_page, physical_page: int, selecte
     flat='';positions=[]
     for i,char in enumerate(layout_text):
         if not char.isspace():flat+=char;positions.append(i)
-    repairs=[]
+    bands = []
     for row in witness['lines']:
         box=row['bbox'];text=row['text'].replace('\r\n','\n').strip()
         # A multiline bounded read usually covers a wrapped table cell. Do not
@@ -93,8 +106,24 @@ def repair_source_lines(original: Path, source_page, physical_page: int, selecte
         if not text or '\n' in text or '\r' in text:continue
         members=[r for r in native_rows if r['top']>=box[1]-.01 and r['bottom']<=box[3]+.01 and r['x0']>=box[0]-.01 and r['x1']<=box[2]+.01]
         group='\n'.join(r['text'] for r in members)
+        bands.append((box, text, members, group))
+    repairs=[]
+    band_counts = Counter((group, ''.join(text.split())) for _, text, _, group in bands)
+    occurrences = Counter()
+    for box, text, members, group in bands:
         group_matches=list(re.finditer(r'(?m)^'+re.escape(group)+r'$',selected)) if group else []
-        intervals=[(group_matches[0].start(),group_matches[0].end())] if len(group_matches)==1 else []
+        needle=''.join(text.split())
+        independent_matches = list(re.finditer(re.escape(needle), flat)) if needle else []
+        group_key = (group, needle)
+        rank = occurrences[group_key]
+        occurrences[group_key] += 1
+        if len(group_matches) > 1:
+            if len(members) < 2 or len(group_matches) != band_counts[group_key] or len(group_matches) != len(independent_matches):
+                continue
+            match = group_matches[rank]
+            intervals = [(match.start(), match.end())]
+        else:
+            intervals=[(group_matches[0].start(),group_matches[0].end())] if group_matches else []
         for r in ([] if intervals else members):
             value=r['text']
             starts=[m.start() for m in re.finditer(re.escape(value),selected)]
@@ -106,10 +135,17 @@ def repair_source_lines(original: Path, source_page, physical_page: int, selecte
         old=selected[lo:hi]
         if agrees(old,text,exact_characters=True):continue
         if Counter(c for c in old if not c.isspace())!=Counter(c for c in text if not c.isspace()):continue
-        needle=''.join(text.split())
-        if not needle or flat.count(needle)!=1:continue
-        offset=flat.index(needle);start=positions[offset];stop=positions[offset+len(needle)-1]+1
+        if len(group_matches) <= 1 and len(independent_matches) != 1:
+            continue
+        offset=independent_matches[rank if len(group_matches) > 1 else 0].start()
+        start=positions[offset];stop=positions[offset+len(needle)-1]+1
         quote=layout_text[start:stop]
+        if len(group_matches) > 1:
+            line_start = layout_text.rfind('\n', 0, start) + 1
+            line_end = layout_text.find('\n', stop)
+            line = layout_text[line_start:] if line_end == -1 else layout_text[line_start:line_end]
+            if '\n' in quote or line.strip() != quote:
+                continue
         if not agrees(text,quote,exact_characters=True):continue
         if any(lo<r['selected_end'] and hi>r['selected_start'] for r in repairs):continue
         repairs.append({'page':physical_page,'selected_start':lo,'selected_end':hi,'original_quote':old,
