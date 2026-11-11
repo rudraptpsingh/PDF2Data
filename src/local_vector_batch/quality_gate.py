@@ -451,6 +451,15 @@ def assess_page(page: dict, *, source_pdf_sha256: str | None,
     text = page.get("text", "")
     if not text.strip():
         components["text_content"] = _component("fail", "no_searchable_text")
+    elif page.get("native_symbol_repairs"):
+        # Never trust a serialized exception without reopening the bound original.
+        from .native_symbol_font import verify_symbol_page_quality
+        verified_quality = verify_symbol_page_quality(page, source_pdf_path, package_pdf_sha256)
+        if verified_quality.get("needs_ocr"):
+            components["text_content"] = _component("fail", "unresolved_encoded_glyphs")
+        else:
+            components["text_content"] = _component("pass", chars=len(text),
+                glyph_mapping_basis="exact_original_font_and_geometry_replay")
     elif page.get("selected_quality", {}).get("needs_ocr"):
         components["text_content"] = _component("fail", "unresolved_encoded_glyphs")
     else:

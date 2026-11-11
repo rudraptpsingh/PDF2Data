@@ -64,3 +64,64 @@ def repair_reviewed_symbol(source_sha, page_number, selected, native_page, pypdf
              'basis': 'visually_reviewed_exact_original_page_and_embedded_font',
              'legal_review': 'not_run'}
     return selected[:start] + 'Δ' + selected[start + 1:], [proof]
+
+
+def quality_for_reviewed_symbol(text, before, source_sha, page_number, native_page, pypdf_page, claimed):
+    """Clear only the exact mixed-script finding after independently replaying its proof."""
+    from .pdf_ingest import text_quality
+    quality = text_quality(text)
+    if not claimed or len(claimed) != 1:
+        return quality
+    repaired, actual = repair_reviewed_symbol(source_sha, page_number, before, native_page, pypdf_page)
+    if repaired != text or actual != claimed:
+        return quality
+    proof = actual[0]
+    match = [i for i in quality['glyph_audit']['issues']
+             if i.get('reason') == 'mixed_script_word_requires_source_comparison'
+             and i.get('literal') == 'ΔECR' and i.get('char_start') == proof['selected_start']
+             and i.get('char_length') == 4]
+    if len(match) != 1:
+        return quality
+    audit = quality['glyph_audit']
+    audit['issues'].remove(match[0])
+    audit['source_verified_issues'] = [{**match[0], 'repair_index': 0,
+                                       'basis': 'exact_source_font_and_glyph_replay'}]
+    audit['status'] = 'repair_required' if audit['issues'] else 'source_verified_glyph_mapping'
+    # Other glyphs and the independent native-text checks remain binding.
+    other_marker_hold = (quality['nul_chars'] > 0 or
+                         (quality['cid_glyphs'] >= 5 and quality['cid_share'] > .01) or
+                         (quality['cid_glyphs'] > 0 and any('\u0900' <= c <= '\u097f' for c in text)) or
+                         (quality['replacement_chars'] >= 5 and quality['replacement_chars'] / max(1, len(text)) > .02))
+    quality['needs_ocr'] = bool(audit['issues']) or other_marker_hold
+    return quality
+
+
+def verify_symbol_page_quality(page, source_path, expected_sha):
+    """Reopen the actual source before relying on a claimed selected-quality exception."""
+    from pathlib import Path
+    import pdfplumber
+    from pypdf import PdfReader
+    from .pdf_ingest import text_quality
+    text = page.get('text', '')
+    raw = text_quality(text)
+    raw['needs_ocr'] = True  # A claimed repair must be independently reproduced.
+    try:
+        path = Path(source_path)
+        if hashlib.sha256(path.read_bytes()).hexdigest() != expected_sha:
+            return raw
+        repairs = page.get('native_symbol_repairs', [])
+        if len(repairs) != 1:
+            return raw
+        proof = repairs[0]
+        pos = proof['selected_start']
+        if type(pos) is not int or text[pos:pos + 1] != 'Δ':
+            return raw
+        before = text[:pos] + '\uf044' + text[pos + 1:]
+        n = page['page']
+        reader = PdfReader(path)
+        with pdfplumber.open(path) as pdf:
+            checked = quality_for_reviewed_symbol(text, before, expected_sha, n,
+                                                  pdf.pages[n - 1], reader.pages[n - 1], repairs)
+            return checked if checked['glyph_audit'].get('source_verified_issues') else raw
+    except Exception:
+        return raw

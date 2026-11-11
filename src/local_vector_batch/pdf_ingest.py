@@ -390,11 +390,14 @@ def extract_pdf(
                     except Exception as error:
                         issues.append({"page": index, "kind": "native_consensus_unavailable", "detail": str(error)[:180]})
                 symbol_repairs = []
+                before_symbol = text
                 if (native_consensus and selected_method == "pdf_text" and secondary_pages is not None
                         and index <= len(secondary_pages)):
-                    from .native_symbol_font import repair_reviewed_symbol
+                    from .native_symbol_font import repair_reviewed_symbol, quality_for_reviewed_symbol
                     text, symbol_repairs = repair_reviewed_symbol(sha, index, text, page, secondary_pages[index - 1])
-                selected_quality = text_quality(text)
+                selected_quality = (quality_for_reviewed_symbol(text, before_symbol, sha, index, page,
+                                    secondary_pages[index - 1], symbol_repairs)
+                                    if symbol_repairs else text_quality(text))
                 short_evidence = (short_native_page_evidence(page, text, secondary_text)
                                   if selected_method == "pdf_text" and 0 < len(text) < 80 else None)
                 if parser_gap:
