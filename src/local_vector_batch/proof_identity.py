@@ -58,6 +58,9 @@ def verify_source_quality_repair(folder,source_runtime):
     folder=Path(folder);config=json.loads((folder/'source-receipt.json').read_text()).get('quality_repair_configuration')
     if not config:raise ValueError('Package has no registered source-quality repair')
     operation=config.get('operation')
+    if operation=='native_dsm_text_successor_v1':
+        from .native_dsm_l1_successor import verify
+        return verify(folder,source_runtime)
     if operation=='targeted_cpu_ocr':
         from .targeted_ocr_l1 import verify
         return verify(folder,source_runtime)
