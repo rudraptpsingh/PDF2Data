@@ -60,6 +60,10 @@ def candidate_source_diagnostic(page, found):
 
 
 def white_fill_single_column_proof(page, found):
+    return _white_fill_single_column_proof(page, found)
+
+
+def _white_fill_single_column_proof(page, found, *, _replayed_lines=()):
     """Classify an invisible fill grid, retaining its complete raw evidence.
 
     This does not classify semantic tables. Multi-column or ambiguous candidates
@@ -79,7 +83,7 @@ def white_fill_single_column_proof(page, found):
             return (len(color)in(1,3) and all(c==1 for c in color))or(len(color)==4 and all(c==0 for c in color))
         return False
     if any(not r['fill']or r['stroke']or not white(r['non_stroking_color'])for r in rects):return None
-    matching=[];used=set();glyph_counts=[]
+    matching=[];used=set();glyph_counts=[];line_proofs=[]
     for box in boxes:
         matches=[i for i,r in enumerate(rects)if max(abs(a-b)for a,b in zip(box,r['bbox']))<=.5]
         if len(matches)!=1 or matches[0]in used:return None
@@ -89,13 +93,30 @@ def white_fill_single_column_proof(page, found):
         if not glyphs:return None
         # Each white rectangle must cover one physical text baseline, not a
         # multiline cell or a list whose row relationship is still ambiguous.
-        if max(g['top']for g in glyphs)-min(g['top']for g in glyphs)>2:return None
+        if max(g['top']for g in glyphs)-min(g['top']for g in glyphs)>2:
+            # Only freshly rederived source-line repairs may explain lowered glyphs.
+            # The complete native cell inventory must fit one unique repaired band.
+            # Lowered/raised glyphs must still share a physical vertical band;
+            # separate text lines cannot be treated as one source baseline.
+            if max(g['top'] for g in glyphs)>=min(g['bottom'] for g in glyphs):return None
+            char_counts=Counter(c for g in glyphs for c in g.get('text','') if not c.isspace())
+            matches=[]
+            for repair in _replayed_lines:
+                band=repair['source_bbox']
+                if (re.match(r'^Deviation-\s*(?:general seller \(DGS\)|WS seller \(DWS\)|buyer \(DBUY\))', repair['replacement']) and
+                    Counter(c for c in repair['replacement'] if not c.isspace())==char_counts and
+                    all(band[0]-.4<=g['x0'] and band[1]-.4<=g['top'] and
+                        g['x1']<=band[2]+.4 and g['bottom']<=band[3]+.4 for g in glyphs)):
+                    matches.append(repair)
+            if len(matches)!=1:return None
+            line_proofs.append({'row':len(glyph_counts),'source_line_repair':matches[0]})
         glyph_counts.append(len(glyphs))
     cells=found.extract()
     if len(cells)!=len(boxes)or any(len(row)!=1 or not isinstance(row[0],str)or not row[0].strip()for row in cells):return None
     return {'contract_version':'pdf2data.white-fill-single-column-candidate.v1',
             'bbox':[float(v)for v in found.bbox], 'raw_cells':cells,
             'source_cell_boxes':boxes,'source_rectangle_membership':matching,'nonempty_glyph_counts':glyph_counts,
+            **({'replayed_line_repairs':line_proofs} if line_proofs else {}),
             'source_object_diagnostic':diagnostic,'bbox_tolerance_points':.5,
             'disposition':'not_a_visible_source_ruling_grid_raw_observation_retained',
             'source_quality_clearance':False,'semantic_table_proven':False}
@@ -120,6 +141,52 @@ def resolve_cached_candidates(page, archived):
             'excluded_ruling_candidates':resolved,'archived_tables_modified':False,
             'source_quality_clearance':False,'semantic_table_proven':False}
 
+
+def resolve_candidates_with_source_line_replay(source, physical_page, selected_text, expected_source_sha256, archived):
+    """Reopen source and replay the registered line repair before classifying cells.
+
+    Produces candidate-only evidence. The caller cannot supply or authorize repair
+    receipts; malformed source/selected text and ambiguous membership fail closed.
+    """
+    from pathlib import Path
+    import pdfplumber
+    from pypdf import PdfReader
+    from .native_consensus import repair_source_lines
+    source=Path(source)
+    if (expected_source_sha256!='a39c0efc43709b039d6bf3cc34bb45415150eeb9ca299d789c7622bf16788fc7'
+            or physical_page!=13):
+        raise ValueError('source hash or physical page outside reviewed DSM scope')
+    if hashlib.sha256(source.read_bytes()).hexdigest()!=expected_source_sha256:
+        raise ValueError('source hash differs from expected original')
+    ids=[t.get('id') for t in archived]
+    if not ids or any(not isinstance(i,str) or not i for i in ids) or len(ids)!=len(set(ids)):
+        raise ValueError('distinct archived candidates required')
+    with pdfplumber.open(source) as pdf:
+        page=pdf.pages[physical_page-1]
+        native=(page.extract_text() or '').replace('\r\n','\n').strip()
+        layout=PdfReader(source).pages[physical_page-1].extract_text(extraction_mode='layout') or ''
+        reproduced,repairs=repair_source_lines(source,page,physical_page,native,layout)
+        if not repairs or reproduced!=selected_text:
+            raise ValueError('selected page does not reproduce registered source-line repair')
+        candidates=find_native_tables(page)
+        proofs=[_white_fill_single_column_proof(page,c,_replayed_lines=repairs) for c in candidates]
+        proofs=[p for p in proofs if p is not None]
+        resolved=[]
+        for table in archived:
+            matches=[p for p in proofs if [round(v,2)for v in p['bbox']]==[round(v,2)for v in table['bbox']]
+                     and p['raw_cells']==table['cells'] and len(p['source_cell_boxes'])==table.get('row_count')
+                     and table.get('page')==physical_page and table.get('column_count')==1
+                     and [[round(v,2)for v in box]for box in p['source_cell_boxes']]==[c['bbox']for c in table.get('cell_spans',[])]]
+            if len(matches)==1:
+                resolved.append({'archived_table_id':table['id'],
+                    'archived_table_sha256':hashlib.sha256(json.dumps(table,sort_keys=True,ensure_ascii=False).encode()).hexdigest(),
+                    'source_proof':matches[0]})
+    return {'contract_version':'pdf2data.source-line-bound-table-candidate-resolution.v1',
+            'source_pdf_sha256':expected_source_sha256,'page':physical_page,
+            'selected_page_sha256':hashlib.sha256(selected_text.encode()).hexdigest(),
+            'raw_candidate_count':len(archived),'layout_gate_table_count':len(archived)-len(resolved),
+            'excluded_ruling_candidates':resolved,'archived_tables_modified':False,
+            'source_quality_clearance':False,'semantic_table_proven':False}
 
 def glyph_audit(text: str) -> dict:
     issues=[]

@@ -69,3 +69,32 @@ def test_cached_table_match_requires_exact_cells_and_geometry():
     assert resolve_cached_candidates(page,[changed])['layout_gate_table_count']==1
     changed=deepcopy(table);changed['cell_spans'][0]['bbox'][0]+=.01
     assert resolve_cached_candidates(page,[changed])['layout_gate_table_count']==1
+
+
+def test_replayed_lowered_glyph_requires_complete_unique_band_and_no_rulings():
+    from local_vector_batch.native_tables import _white_fill_single_column_proof as white_fill_single_column_proof
+    page,found,_=fixture()
+    # The narrow policy only accepts a full DSM deviation-formula line.
+    page.chars[0]['text']='Deviation-WS seller (DW'
+    page.chars.insert(1,{'text':'S) (in %)','x0':20,'x1':24,'top':6,'bottom':12})
+    # Find the candidate normally; an unchecked source must remain held.
+    find_native_tables(page)
+    assert white_fill_single_column_proof(page,found) is None
+    replay={'source_bbox':[9,1,25,13],'replacement':'Deviation-WS seller (DWS) (in %)'}
+    proof=white_fill_single_column_proof(page,found,_replayed_lines=[replay])
+    assert proof and proof['replayed_line_repairs'][0]['row']==0
+    for bad in ([],[replay,replay],[{**replay,'replacement':'Deviation-WS seller (DWT) (in %)'}],
+                [{**replay,'source_bbox':[9,1,21,13]}]):
+        assert white_fill_single_column_proof(page,found,_replayed_lines=bad) is None
+    separate=deepcopy(page.chars[1]);page.chars[1].update(top=13,bottom=18)
+    assert white_fill_single_column_proof(page,found,_replayed_lines=[replay]) is None
+    page.chars[1]=separate
+    page.lines=[dict(object_type='line',x0=0,top=0,x1=100,bottom=0,stroke=True)]
+    assert white_fill_single_column_proof(page,found,_replayed_lines=[replay]) is None
+
+
+def test_source_line_resolver_rejects_wrong_original_before_opening(tmp_path):
+    from local_vector_batch.native_tables import resolve_candidates_with_source_line_replay
+    source=tmp_path/'source.pdf';source.write_bytes(b'%PDF controlled')
+    with pytest.raises(ValueError,match='source hash'):
+        resolve_candidates_with_source_line_replay(source,1,'candidate','0'*64,[])
