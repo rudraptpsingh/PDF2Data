@@ -389,7 +389,15 @@ def extract_pdf(
                         text, native_line_repairs = repair_source_lines(source, page, index, text, layout_reference)
                     except Exception as error:
                         issues.append({"page": index, "kind": "native_consensus_unavailable", "detail": str(error)[:180]})
-                selected_quality = text_quality(text)
+                symbol_repairs = []
+                before_symbol = text
+                if (native_consensus and selected_method == "pdf_text" and secondary_pages is not None
+                        and index <= len(secondary_pages)):
+                    from .native_symbol_font import repair_reviewed_symbol, quality_for_reviewed_symbol
+                    text, symbol_repairs = repair_reviewed_symbol(sha, index, text, page, secondary_pages[index - 1])
+                selected_quality = (quality_for_reviewed_symbol(text, before_symbol, sha, index, page,
+                                    secondary_pages[index - 1], symbol_repairs)
+                                    if symbol_repairs else text_quality(text))
                 short_evidence = (short_native_page_evidence(page, text, secondary_text)
                                   if selected_method == "pdf_text" and 0 < len(text) < 80 else None)
                 if parser_gap:
@@ -445,8 +453,9 @@ def extract_pdf(
                               "independent_coverage": independent_coverage,
                               **({"short_source_evidence": short_evidence} if short_evidence else {}),
                               **({"secondary_native_text": secondary_text} if parser_gap else {}),
-                              **({"native_text": native} if ocr_result is not None or native_line_repairs else {}),
+                              **({"native_text": native} if ocr_result is not None or native_line_repairs or symbol_repairs else {}),
                               **({"native_line_repairs": native_line_repairs} if native_line_repairs else {}),
+                              **({"native_symbol_repairs": symbol_repairs} if symbol_repairs else {}),
                               **({"ocr": ocr_result} if ocr_result else {})})
                 from .structure_candidates import page_candidates, table_candidates
                 structure_rows.extend(page_candidates(pages[-1]))
