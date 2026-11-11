@@ -1,5 +1,7 @@
 # Local PDF evidence contract
 
+See [PowerLex PDF extraction and Query data flow](powerlex-pdf-to-query.md) for the field inventory and the handoff into the search index.
+
 The extraction bundle is a set of observations for review. It does not assert
 that a legal duty is current, a contact is the issuing authority, or a date is
 a filing deadline.
