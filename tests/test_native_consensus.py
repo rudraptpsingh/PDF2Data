@@ -75,3 +75,41 @@ def test_repeated_subscript_rows_use_unique_complete_source_band(monkeypatch):
     result,proof=m.repair_source_lines(Path('source.pdf'),Page(),1,selected,'GNARE and T-GNARE apply')
     assert result=='Elsewhere\nRE RE\nGNARE and T-GNARE apply\nnext'
     assert len(proof)==1 and proof[0]['original_quote']=='GNA and T-GNA apply\nRE RE'
+
+
+def test_identical_formula_lines_require_one_source_band_and_witness_per_occurrence(monkeypatch):
+    from pathlib import Path
+    from types import SimpleNamespace
+    import local_vector_batch.native_consensus as module
+
+    old = '(D ) = scheduled output\nWS'
+    corrected = '(DWS) = scheduled output'
+    selected = f'First period\n{old}\nSecond period\n{old}'
+    rows = []
+    bands = []
+    for top in (10, 40):
+        rows.extend([
+            dict(text=old.splitlines()[0], top=top, bottom=top+10, x0=0, x1=100),
+            dict(text='WS', top=top+4, bottom=top+11, x0=10, x1=22),
+        ])
+        bands.append(dict(bbox=[0, top, 100, top+11], text=corrected))
+    page = SimpleNamespace(extract_text_lines=lambda **kwargs: rows)
+    monkeypatch.setattr(module, 'read_source_lines', lambda *args: dict(status='captured', lines=bands))
+    witness = f'First period\n  {corrected}\nSecond period\n  {corrected}'
+    result, proof = module.repair_source_lines(Path('unused.pdf'), page, 1, selected, witness)
+    assert result == f'First period\n{corrected}\nSecond period\n{corrected}'
+    assert [entry['source_bbox'][1] for entry in proof] == [10, 40]
+    for incomplete in (corrected, f'{corrected}\nPrefix {corrected}'):
+        assert len(module.repair_source_lines(Path('unused.pdf'), page, 1, selected, incomplete)[1]) < 2
+
+
+def test_duplicate_codepoint_entries_do_not_remove_distinct_native_glyphs():
+    from collections import Counter
+    from local_vector_batch.native_consensus import _glyph_key, _unique_line_glyphs
+
+    glyph = dict(text='त्र', x0=1, top=2, x1=3, bottom=4)
+    other = dict(glyph, x0=5, x1=7)
+    expected = Counter([_glyph_key(glyph), _glyph_key(other)])
+    assert list(_unique_line_glyphs([glyph, glyph, other], expected)) == [glyph, other]
+    expected[_glyph_key(glyph)] += 1
+    assert list(_unique_line_glyphs([glyph, glyph, other], expected)) == [glyph, glyph, other]
