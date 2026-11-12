@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Cross-page table continuation links now say which case they are
+  (`header_repeated`, `no_header`, `row_split`), which signals established
+  them, and which table they continue. A repeated header is matched by
+  similarity, and a "(continued)" marker or a repeated header can join
+  fragments that are not at the page edge. Table-context records carry the same
+  facts in a new `continuation` object. Cells, grids and table IDs are
+  unchanged; continuation link IDs change because the record has new fields.
+  This changes processing output and belongs in the next release candidate.
+
 ## 0.2.0-rc.19 — 2026-11-03
 
 - Retain complete fact and structure candidates in processed exports, with exact

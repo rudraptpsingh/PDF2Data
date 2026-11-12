@@ -52,6 +52,43 @@ Example record, shortened:
 }
 ```
 
+## Table continuation case and signals
+
+Each `table_continuation_candidate` link also carries:
+
+| Field | Meaning |
+| --- | --- |
+| `continues_table_id` | The fragment on the previous page (same as `from_id`). |
+| `origin_table_id` | First fragment of the chain; its row 0 is the header. |
+| `case` | `header_repeated`, `no_header` or `row_split`. |
+| `signals` | Evidence that held, from `same_column_count`, `matching_column_boundaries`, `repeated_header`, `page_foot_to_page_head`, `continuation_marker`, `no_intervening_body_content`. |
+| `header_similarity` | 0–1 against the origin header, `null` when the later fragment has no header row. |
+| `first_data_row` | 1 when the later fragment repeats the header, else 0. |
+| `row_split` | `null`, or `{from_table_id, from_row, to_table_id, to_row, basis, association}` naming the two halves of one row. |
+| `continuation_markers` | The "(continued)" blocks or first-row cells that were read as markers. |
+
+A link is emitted only when the fragments are on adjacent pages, have the same
+column count and at least one of: a repeated header (mean per-column
+similarity ≥ 0.9, no column below 0.75); the earlier fragment ends in the
+bottom 30% of its page and the later starts in the top 25%; a short
+continuation marker between them or in the later fragment's first row. Body
+text between the fragments, a terminal total row, a different header, differing
+column boundaries or missing table boxes still prevent a link.
+
+`row_split` is reported only in its complementary form: the earlier fragment's
+last row has a label and blank cells, the later fragment's first data row has a
+blank label, and no column has text in both. A sparse row can look like this,
+so it stays a candidate. No cell is moved, merged or renumbered; a reader that
+ignores these fields sees the same fragments as before.
+
+The same facts appear on the later fragment's `table-contexts.jsonl` record as
+`continuation` (`null` for a table that continues nothing).
+
+Not recognised: a later fragment whose first row is all text and not a repeated
+header (it reads as a new header), a row whose every cell wraps across the
+break, chains whose first fragment has no header row, and gaps of more than one
+page.
+
 Full records also bind the original PDF hash, both page-text hashes, fragment
 IDs, geometry and basis. Text/list records retain exact source spans. Model
 validation regenerates the candidates, rejecting altered header references or
