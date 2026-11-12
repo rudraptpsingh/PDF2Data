@@ -127,6 +127,7 @@ def iter_table_contexts(data):
                    source_artifact='data.json',
                    source_table_pointer=f'/tables/{ordinal}',header_source_table_id=origin['id'],
                    continuation_candidate_id=continuation['id'] if continuation else None,
+                   continuation={k:continuation.get(k) for k in ('continues_table_id','origin_table_id','group_id','case','signals','header_similarity','first_data_row','row_split')} if continuation else None,
                    cells=cells,context_candidates=candidates,quality_warnings=warnings,
                    blank_cell_policy='never_inherit_or_fill',semantic_review_required=True,
                    source_content_verified=False,publication_eligible=False)
