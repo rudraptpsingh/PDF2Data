@@ -1,0 +1,2286 @@
+{
+ "schema_version": "powerlex.document-taxonomy.v1",
+ "generated_from": "powerlex-taxonomy 0.2.2 sha256 a84562d437cd26089e26a090c7535275ecf5a71756ddb3611be9f9486809fd06",
+ "question_vocabulary": {
+  "WHAT": "what the rule is / what changed",
+  "WHY": "why it was made; reasoning (deliberation, never cited as law)",
+  "HOW": "how it is implemented or operated",
+  "WHICH": "which version is operative, as at when",
+  "WHO": "who is bound, party, applicant, speaker, counterparty",
+  "WHEN": "deadlines, clocks, next dates, commencement",
+  "HOW_MUCH": "amounts, rates, volumes, capacities",
+  "TREATMENT": "how it has been applied, read, affirmed or set aside since"
+ },
+ "citation_classes": {
+  "authority": "may be cited as law (the Regulatory Spine)",
+  "decision": "orders, judgments, accounts, grants; cited for what was decided",
+  "deliberation": "EM, SoR, comments, staff papers; context only, never cited as law",
+  "reference": "data, templates, listings, notices",
+  "excluded": "not admitted"
+ },
+ "bodies": [
+  {
+   "body_code": "CERC",
+   "body_id": "cerc",
+   "document_types": [
+    {
+     "id": "CERC-01",
+     "label": "Regulation — principal",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "WHO",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Spine",
+      "Clause file",
+      "Ask",
+      "Impact"
+     ],
+     "registry_roles": [
+      "cerc/regulation"
+     ],
+     "stage": "notified"
+    },
+    {
+     "id": "CERC-02",
+     "label": "Regulation — amendment",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "WHICH"
+     ],
+     "consumers": [
+      "Spine",
+      "Watch",
+      "Clause file",
+      "Impact"
+     ],
+     "registry_roles": [
+      "cerc/amendment"
+     ],
+     "stage": "notified"
+    },
+    {
+     "id": "CERC-03",
+     "label": "Draft regulation / draft amendment",
+     "citation_class": "deliberation",
+     "answers": [
+      "WHAT",
+      "WHEN"
+     ],
+     "consumers": [
+      "Watch",
+      "Spine",
+      "Reasoning"
+     ],
+     "registry_roles": [
+      "cerc/draft"
+     ],
+     "stage": "consultation"
+    },
+    {
+     "id": "CERC-04",
+     "label": "Explanatory Memorandum",
+     "citation_class": "deliberation",
+     "answers": [
+      "WHY"
+     ],
+     "consumers": [
+      "Reasoning",
+      "Impact"
+     ],
+     "registry_roles": [
+      "cerc/explanatory-memorandum"
+     ],
+     "stage": "consultation"
+    },
+    {
+     "id": "CERC-05",
+     "label": "Statement of Reasons",
+     "citation_class": "deliberation",
+     "answers": [
+      "WHY",
+      "WHO"
+     ],
+     "consumers": [
+      "Reasoning",
+      "Clause file"
+     ],
+     "registry_roles": [
+      "cerc/statement-of-reasons"
+     ],
+     "stage": "notified"
+    },
+    {
+     "id": "CERC-06",
+     "label": "Public notice / consultation / hearing notice",
+     "citation_class": "reference",
+     "answers": [
+      "WHEN"
+     ],
+     "consumers": [
+      "Watch",
+      "Operational spine"
+     ],
+     "registry_roles": [
+      "cerc/consultation-notice",
+      "cerc/hearing-notice"
+     ],
+     "stage": "consultation"
+    },
+    {
+     "id": "CERC-07",
+     "label": "Stakeholder comments and hearing presentations",
+     "citation_class": "deliberation",
+     "answers": [
+      "WHO"
+     ],
+     "consumers": [
+      "Reasoning"
+     ],
+     "registry_roles": [
+      "cerc/stakeholder-comments"
+     ],
+     "stage": "consultation"
+    },
+    {
+     "id": "CERC-08",
+     "label": "Staff / discussion / approach / consultation paper",
+     "citation_class": "deliberation",
+     "answers": [
+      "WHY"
+     ],
+     "consumers": [
+      "Reasoning",
+      "Market intel"
+     ],
+     "registry_roles": [
+      "cerc/staff-paper"
+     ],
+     "stage": "pre-draft"
+    },
+    {
+     "id": "CERC-09",
+     "label": "Gazette copy",
+     "citation_class": "reference",
+     "answers": [
+      "WHICH",
+      "WHEN"
+     ],
+     "consumers": [
+      "Spine dates"
+     ],
+     "registry_roles": [
+      "cerc/gazette-copy"
+     ],
+     "stage": "notified"
+    },
+    {
+     "id": "CERC-10",
+     "label": "Corrigendum / errata",
+     "citation_class": "authority",
+     "answers": [
+      "WHICH"
+     ],
+     "consumers": [
+      "Spine lineage",
+      "Clause file"
+     ],
+     "registry_roles": [
+      "cerc/corrigendum"
+     ],
+     "stage": "post-notification"
+    },
+    {
+     "id": "CERC-11",
+     "label": "Commencement / effective-date notification",
+     "citation_class": "authority",
+     "answers": [
+      "WHICH",
+      "WHEN"
+     ],
+     "consumers": [
+      "Spine DATES",
+      "As-at",
+      "Impact"
+     ],
+     "registry_roles": [
+      "cerc/commencement-notification"
+     ],
+     "stage": "post-notification"
+    },
+    {
+     "id": "CERC-12",
+     "label": "Detailed procedure / DOP / guidelines approved under a regulation",
+     "citation_class": "authority",
+     "answers": [
+      "HOW"
+     ],
+     "consumers": [
+      "Spine Track B",
+      "Project thread",
+      "Ask"
+     ],
+     "registry_roles": [
+      "cerc/approved-procedure"
+     ],
+     "stage": "implementation"
+    },
+    {
+     "id": "CERC-13",
+     "label": "Suo motu / general order",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH",
+      "WHAT"
+     ],
+     "consumers": [
+      "Operational spine",
+      "Impact",
+      "Watch"
+     ],
+     "registry_roles": [
+      "cerc/final-order"
+     ],
+     "stage": "implementation"
+    },
+    {
+     "id": "CERC-14",
+     "label": "Petition (MP / TT / AT / TD / TL / RP / IA)",
+     "citation_class": "reference",
+     "answers": [
+      "WHO",
+      "WHAT"
+     ],
+     "consumers": [
+      "Docket",
+      "Litigation spine",
+      "Entity spine"
+     ],
+     "registry_roles": [
+      "cerc/petition-application"
+     ],
+     "stage": "adjudication"
+    },
+    {
+     "id": "CERC-15",
+     "label": "Record of proceedings",
+     "citation_class": "decision",
+     "answers": [
+      "WHEN"
+     ],
+     "consumers": [
+      "Docket",
+      "Litigation spine"
+     ],
+     "registry_roles": [
+      "cerc/record-of-proceedings"
+     ],
+     "stage": "adjudication"
+    },
+    {
+     "id": "CERC-16",
+     "label": "Technical validation / defect notice",
+     "citation_class": "reference",
+     "answers": [
+      "WHEN"
+     ],
+     "consumers": [
+      "Docket"
+     ],
+     "registry_roles": [
+      "cerc/technical-validation"
+     ],
+     "stage": "adjudication"
+    },
+    {
+     "id": "CERC-17",
+     "label": "Interim order / IA order",
+     "citation_class": "decision",
+     "answers": [
+      "TREATMENT",
+      "WHEN"
+     ],
+     "consumers": [
+      "Litigation spine",
+      "Project thread"
+     ],
+     "registry_roles": [
+      "cerc/interim-order"
+     ],
+     "stage": "adjudication"
+    },
+    {
+     "id": "CERC-18",
+     "label": "Final order — adjudication",
+     "citation_class": "decision",
+     "answers": [
+      "TREATMENT",
+      "WHO",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Litigation spine",
+      "Impact",
+      "Ask"
+     ],
+     "registry_roles": [
+      "cerc/final-order"
+     ],
+     "stage": "adjudication"
+    },
+    {
+     "id": "CERC-19",
+     "label": "Tariff determination order (s.62)",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Impact",
+      "Market intel"
+     ],
+     "registry_roles": [
+      "cerc/final-order"
+     ],
+     "stage": "adjudication"
+    },
+    {
+     "id": "CERC-20",
+     "label": "Tariff adoption order (s.63)",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH",
+      "WHO"
+     ],
+     "consumers": [
+      "Tender spine",
+      "Impact"
+     ],
+     "registry_roles": [
+      "cerc/final-order"
+     ],
+     "stage": "adjudication"
+    },
+    {
+     "id": "CERC-21",
+     "label": "Licence and licence amendments",
+     "citation_class": "authority",
+     "answers": [
+      "WHO"
+     ],
+     "consumers": [
+      "Entity spine",
+      "Docket",
+      "Compliance"
+     ],
+     "registry_roles": [
+      "cerc/licence"
+     ],
+     "stage": "licensing"
+    },
+    {
+     "id": "CERC-22",
+     "label": "Compliance / trading returns",
+     "citation_class": "reference",
+     "answers": [
+      "HOW_MUCH",
+      "WHO"
+     ],
+     "consumers": [
+      "Entity spine",
+      "Market intel"
+     ],
+     "registry_roles": [
+      "cerc/compliance-return"
+     ],
+     "stage": "licensing"
+    },
+    {
+     "id": "CERC-23",
+     "label": "Statutory public notice (licence application)",
+     "citation_class": "reference",
+     "answers": [
+      "WHO",
+      "WHEN"
+     ],
+     "consumers": [
+      "Operational spine"
+     ],
+     "registry_roles": [
+      "cerc/statutory-public-notice"
+     ],
+     "stage": "licensing"
+    },
+    {
+     "id": "CERC-24",
+     "label": "Cause list / daily order / hearing notice",
+     "citation_class": "reference",
+     "answers": [
+      "WHEN"
+     ],
+     "consumers": [
+      "Docket"
+     ],
+     "registry_roles": [
+      "cerc/cause-list"
+     ],
+     "stage": "adjudication"
+    },
+    {
+     "id": "CERC-25",
+     "label": "Annual report / RTI / press",
+     "citation_class": "reference",
+     "answers": [],
+     "consumers": [
+      "Market intel"
+     ],
+     "registry_roles": [
+      "cerc/institutional-report"
+     ],
+     "stage": "reference"
+    },
+    {
+     "id": "CERC-26",
+     "label": "Compendium",
+     "citation_class": "excluded",
+     "answers": [],
+     "consumers": [],
+     "registry_roles": [
+      "cerc/compendium"
+     ],
+     "stage": "reference"
+    },
+    {
+     "id": "CERC-27",
+     "label": "Procedural information / clarification request",
+     "citation_class": "reference",
+     "answers": [
+      "WHO",
+      "WHAT",
+      "WHEN"
+     ],
+     "consumers": [
+      "Ask",
+      "Docket"
+     ],
+     "registry_roles": [
+      "cerc/procedural-information-request"
+     ],
+     "stage": "adjudication-procedure"
+    }
+   ]
+  },
+  {
+   "body_code": "MOP",
+   "body_id": "mop",
+   "document_types": [
+    {
+     "id": "MoP-01",
+     "label": "Act and Amendment Acts",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "WHO"
+     ],
+     "consumers": [
+      "Spine",
+      "Ask"
+     ],
+     "registry_roles": [
+      "mop/act-rules"
+     ],
+     "stage": "primary-law"
+    },
+    {
+     "id": "MoP-02",
+     "label": "Rules — principal (G.S.R.)",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "WHO"
+     ],
+     "consumers": [
+      "Spine",
+      "Clause file",
+      "Impact"
+     ],
+     "registry_roles": [
+      "mop/act-rules"
+     ],
+     "stage": "rules"
+    },
+    {
+     "id": "MoP-03",
+     "label": "Rules — amendment",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "WHICH"
+     ],
+     "consumers": [
+      "Spine",
+      "Watch"
+     ],
+     "registry_roles": [
+      "mop/amendment"
+     ],
+     "stage": "rules"
+    },
+    {
+     "id": "MoP-04",
+     "label": "Draft rules / comment invitation",
+     "citation_class": "deliberation",
+     "answers": [
+      "WHAT",
+      "WHEN"
+     ],
+     "consumers": [
+      "Watch"
+     ],
+     "registry_roles": [
+      "mop/draft",
+      "mop/consultation-notice"
+     ],
+     "stage": "consultation"
+    },
+    {
+     "id": "MoP-05",
+     "label": "Policy",
+     "citation_class": "authority",
+     "answers": [
+      "WHY",
+      "WHAT"
+     ],
+     "consumers": [
+      "Spine",
+      "Ask",
+      "Reasoning"
+     ],
+     "registry_roles": [
+      "mop/policy"
+     ],
+     "stage": "policy"
+    },
+    {
+     "id": "MoP-06",
+     "label": "Guidelines and amendments (bidding, RoW, IECBE)",
+     "citation_class": "authority",
+     "answers": [
+      "HOW",
+      "WHEN"
+     ],
+     "consumers": [
+      "Spine Track B",
+      "Tender spine",
+      "Impact"
+     ],
+     "registry_roles": [
+      "mop/guideline"
+     ],
+     "stage": "guidelines"
+    },
+    {
+     "id": "MoP-07",
+     "label": "Model / standard documents",
+     "citation_class": "reference",
+     "answers": [
+      "HOW"
+     ],
+     "consumers": [
+      "Tender spine"
+     ],
+     "registry_roles": [
+      "mop/guideline"
+     ],
+     "stage": "guidelines"
+    },
+    {
+     "id": "MoP-08",
+     "label": "Gazette notification (S.O. / G.S.R.)",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "WHO",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Spine Track B",
+      "Impact"
+     ],
+     "registry_roles": [
+      "mop/gazette-notification"
+     ],
+     "stage": "notifications"
+    },
+    {
+     "id": "MoP-09",
+     "label": "Direction (s.11 / s.37 / s.107)",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "WHEN"
+     ],
+     "consumers": [
+      "Watch",
+      "Spine"
+     ],
+     "registry_roles": [
+      "mop/direction"
+     ],
+     "stage": "notifications"
+    },
+    {
+     "id": "MoP-10",
+     "label": "Resolution",
+     "citation_class": "authority",
+     "answers": [
+      "WHO"
+     ],
+     "consumers": [
+      "Spine"
+     ],
+     "registry_roles": [
+      "mop/resolution"
+     ],
+     "stage": "notifications"
+    },
+    {
+     "id": "MoP-11",
+     "label": "Order / office memorandum",
+     "citation_class": "reference",
+     "answers": [
+      "HOW",
+      "WHEN"
+     ],
+     "consumers": [
+      "Operational spine",
+      "Reasoning"
+     ],
+     "registry_roles": [
+      "mop/scheme-approval",
+      "mop/correspondence"
+     ],
+     "stage": "schemes"
+    },
+    {
+     "id": "MoP-12",
+     "label": "Scheme guidelines",
+     "citation_class": "authority",
+     "answers": [
+      "WHO",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Impact"
+     ],
+     "registry_roles": [
+      "mop/scheme-approval"
+     ],
+     "stage": "schemes"
+    },
+    {
+     "id": "MoP-13",
+     "label": "Parliament Q&A, reports, bulletins",
+     "citation_class": "reference",
+     "answers": [],
+     "consumers": [
+      "Market intel"
+     ],
+     "registry_roles": [
+      "mop/parliamentary-reference"
+     ],
+     "stage": "reference"
+    }
+   ]
+  },
+  {
+   "body_code": "CEA",
+   "body_id": "cea",
+   "document_types": [
+    {
+     "id": "CEA-01",
+     "label": "Regulation — principal (s.177)",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "WHO"
+     ],
+     "consumers": [
+      "Spine",
+      "Clause file",
+      "Compliance"
+     ],
+     "registry_roles": [
+      "cea/regulation",
+      "cea/technical-standard"
+     ],
+     "stage": "notified"
+    },
+    {
+     "id": "CEA-02",
+     "label": "Regulation — amendment",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT"
+     ],
+     "consumers": [
+      "Spine",
+      "Watch"
+     ],
+     "registry_roles": [
+      "cea/amendment"
+     ],
+     "stage": "notified"
+    },
+    {
+     "id": "CEA-03",
+     "label": "Draft regulation / comment invitation",
+     "citation_class": "deliberation",
+     "answers": [
+      "WHAT",
+      "WHEN"
+     ],
+     "consumers": [
+      "Watch"
+     ],
+     "registry_roles": [
+      "cea/draft"
+     ],
+     "stage": "consultation"
+    },
+    {
+     "id": "CEA-04",
+     "label": "Guidelines / advisories / manuals / relevant standards",
+     "citation_class": "authority",
+     "answers": [
+      "HOW"
+     ],
+     "consumers": [
+      "Spine Track B",
+      "Compliance"
+     ],
+     "registry_roles": [
+      "cea/technical-standard"
+     ],
+     "stage": "implementation"
+    },
+    {
+     "id": "CEA-05",
+     "label": "Approvals / concurrences",
+     "citation_class": "decision",
+     "answers": [
+      "WHO",
+      "WHAT"
+     ],
+     "consumers": [
+      "Operational spine",
+      "Market intel"
+     ],
+     "registry_roles": [
+      "cea/correspondence"
+     ],
+     "stage": "decisions"
+    },
+    {
+     "id": "CEA-06",
+     "label": "NCT / sub-committee minutes",
+     "citation_class": "decision",
+     "answers": [
+      "WHICH",
+      "WHO"
+     ],
+     "consumers": [
+      "Operational spine",
+      "Tender spine"
+     ],
+     "registry_roles": [
+      "cea/meeting-minutes"
+     ],
+     "stage": "decisions"
+    },
+    {
+     "id": "CEA-07",
+     "label": "Market Monitoring Report",
+     "citation_class": "reference",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Market intel",
+      "Impact"
+     ],
+     "registry_roles": [
+      "cea/technical-report"
+     ],
+     "stage": "reports"
+    },
+    {
+     "id": "CEA-08",
+     "label": "Monthly reports",
+     "citation_class": "reference",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Market intel",
+      "Entity spine"
+     ],
+     "registry_roles": [
+      "cea/technical-report"
+     ],
+     "stage": "reports"
+    },
+    {
+     "id": "CEA-09",
+     "label": "Quarterly / annual reports (RE under construction, BESS)",
+     "citation_class": "reference",
+     "answers": [
+      "WHEN",
+      "WHO",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Market intel",
+      "Tender spine"
+     ],
+     "registry_roles": [
+      "cea/technical-report"
+     ],
+     "stage": "reports"
+    },
+    {
+     "id": "CEA-11",
+     "label": "Compliance formats / returns / registrations",
+     "citation_class": "reference",
+     "answers": [
+      "HOW"
+     ],
+     "consumers": [
+      "Compliance calendar"
+     ],
+     "registry_roles": [
+      "cea/reporting-format"
+     ],
+     "stage": "implementation"
+    }
+   ]
+  },
+  {
+   "body_code": "GRID-INDIA",
+   "body_id": "grid-india-nldc",
+   "document_types": [
+    {
+     "id": "GI-01",
+     "label": "Procedure (IEGC / DSM / AS / LPSC / NOAR / connectivity / restoration)",
+     "citation_class": "authority",
+     "answers": [
+      "HOW"
+     ],
+     "consumers": [
+      "Spine Track B",
+      "Project thread"
+     ],
+     "registry_roles": [
+      "grid-india-nldc/procedure"
+     ],
+     "stage": "procedures"
+    },
+    {
+     "id": "GI-02",
+     "label": "Draft procedure / consultation",
+     "citation_class": "deliberation",
+     "answers": [
+      "WHAT",
+      "WHEN"
+     ],
+     "consumers": [
+      "Watch"
+     ],
+     "registry_roles": [
+      "grid-india-nldc/draft",
+      "grid-india-nldc/consultation-notice"
+     ],
+     "stage": "consultation"
+    },
+    {
+     "id": "GI-04",
+     "label": "Settlement statements — DSM / AS / reactive / pool",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH",
+      "WHO"
+     ],
+     "consumers": [
+      "Commercial",
+      "Impact"
+     ],
+     "registry_roles": [
+      "grid-india-nldc/transmission-account"
+     ],
+     "stage": "accounts"
+    },
+    {
+     "id": "GI-05",
+     "label": "SCED / SCUC statements and savings",
+     "citation_class": "reference",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Market intel"
+     ],
+     "registry_roles": [
+      "grid-india-nldc/technical-report"
+     ],
+     "stage": "accounts"
+    },
+    {
+     "id": "GI-06",
+     "label": "Market snapshot / monthly market report",
+     "citation_class": "reference",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Market intel"
+     ],
+     "registry_roles": [
+      "grid-india-nldc/market-data"
+     ],
+     "stage": "reports"
+    },
+    {
+     "id": "GI-07",
+     "label": "NOAR registry / standing clearance / registration lists",
+     "citation_class": "reference",
+     "answers": [
+      "WHO"
+     ],
+     "consumers": [
+      "Entity spine",
+      "Docket"
+     ],
+     "registry_roles": [
+      "grid-india-nldc/registration-list"
+     ],
+     "stage": "registers"
+    },
+    {
+     "id": "GI-08",
+     "label": "Operating procedures / grid event reports",
+     "citation_class": "reference",
+     "answers": [
+      "HOW",
+      "WHEN"
+     ],
+     "consumers": [
+      "Spine Track B",
+      "Litigation"
+     ],
+     "registry_roles": [
+      "grid-india-nldc/procedure",
+      "grid-india-nldc/technical-report"
+     ],
+     "stage": "operations"
+    },
+    {
+     "id": "GI-09",
+     "label": "Notices — mock runs, implementation dates",
+     "citation_class": "reference",
+     "answers": [
+      "WHEN"
+     ],
+     "consumers": [
+      "Watch"
+     ],
+     "registry_roles": [
+      "grid-india-nldc/correspondence"
+     ],
+     "stage": "operations"
+    },
+    {
+     "id": "GI-10",
+     "label": "Forecasting / reserve estimation reports",
+     "citation_class": "reference",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Market intel"
+     ],
+     "registry_roles": [
+      "grid-india-nldc/technical-report"
+     ],
+     "stage": "reports"
+    }
+   ]
+  },
+  {
+   "body_code": "CTUIL",
+   "body_id": "ctuil",
+   "document_types": [
+    {
+     "id": "CT-01",
+     "label": "Detailed procedure (Connectivity & GNA, BCD, CBTE, Reg 21)",
+     "citation_class": "authority",
+     "answers": [
+      "HOW"
+     ],
+     "consumers": [
+      "Spine Track B",
+      "Project thread",
+      "Ask"
+     ],
+     "registry_roles": [
+      "ctuil/procedure"
+     ],
+     "stage": "procedures"
+    },
+    {
+     "id": "CT-02",
+     "label": "Advisory",
+     "citation_class": "authority",
+     "answers": [
+      "HOW",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Watch",
+      "Project thread",
+      "Impact"
+     ],
+     "registry_roles": [
+      "ctuil/advisory"
+     ],
+     "stage": "procedures"
+    },
+    {
+     "id": "CT-03",
+     "label": "Formats / forms",
+     "citation_class": "reference",
+     "answers": [
+      "HOW"
+     ],
+     "consumers": [
+      "Project thread"
+     ],
+     "registry_roles": [
+      "ctuil/form-template"
+     ],
+     "stage": "procedures"
+    },
+    {
+     "id": "CT-04",
+     "label": "Connectivity / GNA grant, revision, revocation, NOC, transition letters",
+     "citation_class": "decision",
+     "answers": [
+      "WHO",
+      "WHAT",
+      "WHEN",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Entity spine",
+      "Project thread",
+      "Impact"
+     ],
+     "registry_roles": [
+      "ctuil/grant"
+     ],
+     "stage": "grants"
+    },
+    {
+     "id": "CT-05",
+     "label": "Capacity margin declarations (Annex B / C / D)",
+     "citation_class": "reference",
+     "answers": [
+      "HOW_MUCH",
+      "WHO"
+     ],
+     "consumers": [
+      "Impact",
+      "Project thread"
+     ],
+     "registry_roles": [
+      "ctuil/capacity-margin-declaration"
+     ],
+     "stage": "registers"
+    },
+    {
+     "id": "CT-06",
+     "label": "Solar / non-solar hour and RE-cluster declarations",
+     "citation_class": "decision",
+     "answers": [
+      "WHICH"
+     ],
+     "consumers": [
+      "Impact"
+     ],
+     "registry_roles": [
+      "ctuil/advisory"
+     ],
+     "stage": "registers"
+    },
+    {
+     "id": "CT-07",
+     "label": "Interactive-session gists / CMETS / stakeholder MoMs",
+     "citation_class": "deliberation",
+     "answers": [
+      "WHO",
+      "WHAT"
+     ],
+     "consumers": [
+      "Reasoning",
+      "Operational"
+     ],
+     "registry_roles": [
+      "ctuil/meeting-minutes"
+     ],
+     "stage": "applications"
+    },
+    {
+     "id": "CT-08",
+     "label": "BCD data / scheme lists",
+     "citation_class": "reference",
+     "answers": [
+      "WHICH",
+      "WHO",
+      "WHEN"
+     ],
+     "consumers": [
+      "Tender spine",
+      "Market intel"
+     ],
+     "registry_roles": [
+      "ctuil/scheme-register"
+     ],
+     "stage": "registers"
+    },
+    {
+     "id": "CT-09",
+     "label": "Transmission charge bills / BCD invoices",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH",
+      "WHO"
+     ],
+     "consumers": [
+      "Commercial",
+      "Impact"
+     ],
+     "registry_roles": [
+      "ctuil/demand-invoice"
+     ],
+     "stage": "billing"
+    },
+    {
+     "id": "CT-10",
+     "label": "Consultation documents / draft procedures",
+     "citation_class": "deliberation",
+     "answers": [
+      "WHAT"
+     ],
+     "consumers": [
+      "Watch"
+     ],
+     "registry_roles": [
+      "ctuil/draft-procedure"
+     ],
+     "stage": "consultation"
+    },
+    {
+     "id": "CT-11",
+     "label": "Correspondence / memorandum / OM",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH",
+      "WHO"
+     ],
+     "consumers": [
+      "Commercial",
+      "Impact"
+     ],
+     "registry_roles": [
+      "ctuil/correspondence"
+     ],
+     "stage": "billing"
+    }
+   ]
+  },
+  {
+   "body_code": "APTEL",
+   "body_id": "aptel",
+   "document_types": [
+    {
+     "id": "AP-01",
+     "label": "Judgment",
+     "citation_class": "decision",
+     "answers": [
+      "TREATMENT",
+      "WHY",
+      "WHO"
+     ],
+     "consumers": [
+      "Litigation spine",
+      "Ask",
+      "Impact"
+     ],
+     "registry_roles": [
+      "aptel/appellate-judgment"
+     ],
+     "stage": "decision"
+    },
+    {
+     "id": "AP-02",
+     "label": "Interim order / IA order",
+     "citation_class": "decision",
+     "answers": [
+      "TREATMENT",
+      "WHEN"
+     ],
+     "consumers": [
+      "Project thread",
+      "Docket"
+     ],
+     "registry_roles": [
+      "aptel/interim-order"
+     ],
+     "stage": "hearing"
+    },
+    {
+     "id": "AP-03",
+     "label": "Daily order",
+     "citation_class": "decision",
+     "answers": [
+      "WHEN"
+     ],
+     "consumers": [
+      "Docket"
+     ],
+     "registry_roles": [
+      "aptel/interim-order"
+     ],
+     "stage": "hearing"
+    },
+    {
+     "id": "AP-04",
+     "label": "Cause list",
+     "citation_class": "reference",
+     "answers": [
+      "WHEN"
+     ],
+     "consumers": [
+      "Docket"
+     ],
+     "registry_roles": [
+      "aptel/hearing-notice"
+     ],
+     "stage": "hearing"
+    },
+    {
+     "id": "AP-05",
+     "label": "Appeal memo / DFR / registry defects / review petition",
+     "citation_class": "reference",
+     "answers": [
+      "WHO",
+      "WHAT",
+      "WHEN"
+     ],
+     "consumers": [
+      "Docket"
+     ],
+     "registry_roles": [
+      "aptel/petition-application",
+      "aptel/pleading-submission"
+     ],
+     "stage": "filing"
+    },
+    {
+     "id": "AP-06",
+     "label": "Practice directions / office orders",
+     "citation_class": "authority",
+     "answers": [
+      "HOW"
+     ],
+     "consumers": [
+      "Docket"
+     ],
+     "registry_roles": [
+      "aptel/practice-direction"
+     ],
+     "stage": "procedure"
+    }
+   ]
+  },
+  {
+   "body_code": "MNRE",
+   "body_id": "mnre",
+   "document_types": [
+    {
+     "id": "MN-01",
+     "label": "ALMM List-I / List-II revision series",
+     "citation_class": "authority",
+     "answers": [
+      "WHICH",
+      "WHO"
+     ],
+     "consumers": [
+      "Spine",
+      "Impact"
+     ],
+     "registry_roles": [
+      "mnre/approved-list"
+     ],
+     "stage": "lists"
+    },
+    {
+     "id": "MN-02",
+     "label": "ALMM order / OM / clarification / amendment",
+     "citation_class": "authority",
+     "answers": [
+      "WHO",
+      "WHEN"
+     ],
+     "consumers": [
+      "Spine",
+      "Watch",
+      "Impact"
+     ],
+     "registry_roles": [
+      "mnre/correspondence",
+      "mnre/amendment"
+     ],
+     "stage": "orders"
+    },
+    {
+     "id": "MN-03",
+     "label": "Scheme guidelines (VGF, PM-KUSUM, PLI, DCR)",
+     "citation_class": "authority",
+     "answers": [
+      "WHO",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Impact"
+     ],
+     "registry_roles": [
+      "mnre/scheme-approval"
+     ],
+     "stage": "schemes"
+    },
+    {
+     "id": "MN-04",
+     "label": "Bidding guideline amendments / policies hosted (MoP-issued)",
+     "citation_class": "authority",
+     "answers": [],
+     "consumers": [
+      "Spine (dedupe with MoP)"
+     ],
+     "registry_roles": [
+      "mnre/guideline"
+     ],
+     "stage": "orders"
+    },
+    {
+     "id": "MN-05",
+     "label": "Wind: RLMM, prototype guidelines, MoD NOC guidelines",
+     "citation_class": "authority",
+     "answers": [
+      "WHICH"
+     ],
+     "consumers": [
+      "Impact"
+     ],
+     "registry_roles": [
+      "mnre/guideline",
+      "mnre/approved-list"
+     ],
+     "stage": "lists"
+    },
+    {
+     "id": "MN-06",
+     "label": "Offshore wind lease rules / RE policies",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT"
+     ],
+     "consumers": [
+      "Spine"
+     ],
+     "registry_roles": [
+      "mnre/guideline"
+     ],
+     "stage": "orders"
+    },
+    {
+     "id": "MN-07",
+     "label": "Notices, EoIs, FAQs, statistics",
+     "citation_class": "reference",
+     "answers": [],
+     "consumers": [
+      "Market intel"
+     ],
+     "registry_roles": [
+      "mnre/correspondence"
+     ],
+     "stage": "reference"
+    }
+   ]
+  },
+  {
+   "body_code": "RPC",
+   "body_id": "rpcs",
+   "document_types": [
+    {
+     "id": "RPC-01",
+     "label": "DSM account (weekly)",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH",
+      "WHO",
+      "WHEN"
+     ],
+     "consumers": [
+      "Commercial",
+      "Entity spine",
+      "Impact"
+     ],
+     "registry_roles": [
+      "rpcs/dsm-account"
+     ],
+     "stage": "accounts"
+    },
+    {
+     "id": "RPC-02",
+     "label": "Regional Energy Account (monthly)",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH",
+      "WHO"
+     ],
+     "consumers": [
+      "Commercial",
+      "Entity spine"
+     ],
+     "registry_roles": [
+      "rpcs/rea-account"
+     ],
+     "stage": "accounts"
+    },
+    {
+     "id": "RPC-03",
+     "label": "Transmission deviation / reactive / ancillary accounts",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Commercial"
+     ],
+     "registry_roles": [
+      "rpcs/transmission-account"
+     ],
+     "stage": "accounts"
+    },
+    {
+     "id": "RPC-04",
+     "label": "Availability (PAF/PLF) and declared-capacity statements",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Impact"
+     ],
+     "registry_roles": [
+      "rpcs/availability-statement"
+     ],
+     "stage": "accounts"
+    },
+    {
+     "id": "RPC-05",
+     "label": "Meeting minutes — RPC, TCC, sub-committees",
+     "citation_class": "decision",
+     "answers": [
+      "WHAT",
+      "WHO"
+     ],
+     "consumers": [
+      "Operational spine"
+     ],
+     "registry_roles": [
+      "rpcs/meeting-minutes"
+     ],
+     "stage": "meetings"
+    },
+    {
+     "id": "RPC-06",
+     "label": "Grid disturbance / protection audit reports",
+     "citation_class": "reference",
+     "answers": [
+      "WHEN"
+     ],
+     "consumers": [
+      "Litigation"
+     ],
+     "registry_roles": [
+      "rpcs/technical-report"
+     ],
+     "stage": "reports"
+    },
+    {
+     "id": "RPC-07",
+     "label": "Agenda notes / data submissions",
+     "citation_class": "reference",
+     "answers": [],
+     "consumers": [
+      "Operational"
+     ],
+     "registry_roles": [
+      "rpcs/correspondence"
+     ],
+     "stage": "meetings"
+    }
+   ]
+  },
+  {
+   "body_code": "RLDC",
+   "body_id": "rldcs-sldcs",
+   "document_types": [
+    {
+     "id": "RL-01",
+     "label": "Schedules / drawal / SEM meter data (block-wise)",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH",
+      "WHEN"
+     ],
+     "consumers": [
+      "Commercial",
+      "Impact"
+     ],
+     "registry_roles": [
+      "rldcs-sldcs/interval-operation"
+     ],
+     "stage": "operations"
+    },
+    {
+     "id": "RL-02",
+     "label": "Trial-run / first-charging / COD recognition certificates",
+     "citation_class": "decision",
+     "answers": [
+      "WHEN",
+      "WHO"
+     ],
+     "consumers": [
+      "Project thread",
+      "Impact"
+     ],
+     "registry_roles": [
+      "rldcs-sldcs/commissioning-certificate"
+     ],
+     "stage": "certificates"
+    },
+    {
+     "id": "RL-03",
+     "label": "Open access approvals / standing clearance",
+     "citation_class": "decision",
+     "answers": [
+      "WHO",
+      "WHEN"
+     ],
+     "consumers": [
+      "Entity spine",
+      "Commercial"
+     ],
+     "registry_roles": [
+      "rldcs-sldcs/correspondence"
+     ],
+     "stage": "certificates"
+    },
+    {
+     "id": "RL-04",
+     "label": "Curtailment / backing-down / despatch instruction logs",
+     "citation_class": "decision",
+     "answers": [
+      "WHEN",
+      "WHO"
+     ],
+     "consumers": [
+      "Litigation",
+      "Impact"
+     ],
+     "registry_roles": [
+      "rldcs-sldcs/interval-operation",
+      "rldcs-sldcs/correspondence"
+     ],
+     "stage": "operations"
+    },
+    {
+     "id": "RL-05",
+     "label": "Daily PSP / operational reports",
+     "citation_class": "reference",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Market intel"
+     ],
+     "registry_roles": [
+      "rldcs-sldcs/technical-report"
+     ],
+     "stage": "reports"
+    },
+    {
+     "id": "RL-06",
+     "label": "Local procedures / operating instructions / circulars",
+     "citation_class": "authority",
+     "answers": [
+      "HOW"
+     ],
+     "consumers": [
+      "Spine Track B"
+     ],
+     "registry_roles": [
+      "rldcs-sldcs/procedure"
+     ],
+     "stage": "procedures"
+    },
+    {
+     "id": "RL-07",
+     "label": "RLDC fees and charges invoices",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Commercial"
+     ],
+     "registry_roles": [
+      "rldcs-sldcs/transmission-account"
+     ],
+     "stage": "billing"
+    },
+    {
+     "id": "RL-08",
+     "label": "Grid incident / event reports",
+     "citation_class": "reference",
+     "answers": [
+      "WHEN"
+     ],
+     "consumers": [
+      "Litigation"
+     ],
+     "registry_roles": [
+      "rldcs-sldcs/technical-report"
+     ],
+     "stage": "reports"
+    }
+   ]
+  },
+  {
+   "body_code": "BEE",
+   "body_id": "bee",
+   "document_types": [
+    {
+     "id": "BEE-01",
+     "label": "EC Act notifications — designated consumers, PAT cycles",
+     "citation_class": "authority",
+     "answers": [
+      "WHO",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Spine Track B",
+      "Impact"
+     ],
+     "registry_roles": [
+      "bee/designated-consumer-notification"
+     ],
+     "stage": "obligations"
+    },
+    {
+     "id": "BEE-02",
+     "label": "CCTS documents — methodology, baselines, procedures",
+     "citation_class": "authority",
+     "answers": [
+      "HOW",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Spine",
+      "Impact"
+     ],
+     "registry_roles": [
+      "bee/carbon-methodology"
+     ],
+     "stage": "obligations"
+    },
+    {
+     "id": "BEE-03",
+     "label": "ESCert issuance / registry / trading notices",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Impact"
+     ],
+     "registry_roles": [
+      "bee/certificate-register"
+     ],
+     "stage": "certificates"
+    },
+    {
+     "id": "BEE-04",
+     "label": "RPO/RCO-linked notifications",
+     "citation_class": "authority",
+     "answers": [
+      "WHO",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Impact"
+     ],
+     "registry_roles": [
+      "bee/rco-notification"
+     ],
+     "stage": "obligations"
+    },
+    {
+     "id": "BEE-05",
+     "label": "Standards & Labelling / appliance notifications",
+     "citation_class": "excluded",
+     "answers": [],
+     "consumers": [],
+     "registry_roles": [
+      "bee/appliance-notification"
+     ],
+     "stage": "reference"
+    },
+    {
+     "id": "BEE-06",
+     "label": "Accredited agencies / auditors; M&V guidelines; verification reports",
+     "citation_class": "reference",
+     "answers": [
+      "HOW",
+      "WHO"
+     ],
+     "consumers": [
+      "Compliance"
+     ],
+     "registry_roles": [
+      "bee/verification-report",
+      "bee/approved-list"
+     ],
+     "stage": "certificates"
+    }
+   ]
+  },
+  {
+   "body_code": "HC",
+   "body_id": "high-courts",
+   "document_types": [
+    {
+     "id": "HC-01",
+     "label": "Judgment / final order",
+     "citation_class": "decision",
+     "answers": [
+      "TREATMENT",
+      "WHO",
+      "WHY"
+     ],
+     "consumers": [
+      "Litigation spine",
+      "Ask"
+     ],
+     "registry_roles": [
+      "high-courts/appellate-judgment"
+     ],
+     "stage": "decision"
+    },
+    {
+     "id": "HC-02",
+     "label": "Interim order (stay / status quo)",
+     "citation_class": "decision",
+     "answers": [
+      "TREATMENT"
+     ],
+     "consumers": [
+      "Project thread"
+     ],
+     "registry_roles": [
+      "high-courts/interim-order"
+     ],
+     "stage": "hearing"
+    },
+    {
+     "id": "HC-03",
+     "label": "Daily order / cause list",
+     "citation_class": "reference",
+     "answers": [
+      "WHEN"
+     ],
+     "consumers": [
+      "Docket"
+     ],
+     "registry_roles": [
+      "high-courts/hearing-notice"
+     ],
+     "stage": "hearing"
+    },
+    {
+     "id": "HC-04",
+     "label": "Writ petition memo",
+     "citation_class": "reference",
+     "answers": [
+      "WHO",
+      "WHAT"
+     ],
+     "consumers": [
+      "Docket"
+     ],
+     "registry_roles": [
+      "high-courts/petition-application"
+     ],
+     "stage": "filing"
+    }
+   ]
+  },
+  {
+   "body_code": "SC",
+   "body_id": "supreme-court",
+   "document_types": [
+    {
+     "id": "SC-01",
+     "label": "Judgment (Civil Appeal s.125; SLP)",
+     "citation_class": "decision",
+     "answers": [
+      "TREATMENT",
+      "WHY"
+     ],
+     "consumers": [
+      "Litigation spine",
+      "Ask"
+     ],
+     "registry_roles": [
+      "supreme-court/appellate-judgment"
+     ],
+     "stage": "decision"
+    },
+    {
+     "id": "SC-02",
+     "label": "Interim order",
+     "citation_class": "decision",
+     "answers": [
+      "TREATMENT"
+     ],
+     "consumers": [
+      "Project thread"
+     ],
+     "registry_roles": [
+      "supreme-court/interim-order"
+     ],
+     "stage": "hearing"
+    },
+    {
+     "id": "SC-03",
+     "label": "Daily order / cause list / diary status",
+     "citation_class": "reference",
+     "answers": [
+      "WHEN"
+     ],
+     "consumers": [
+      "Docket"
+     ],
+     "registry_roles": [
+      "supreme-court/hearing-notice"
+     ],
+     "stage": "hearing"
+    },
+    {
+     "id": "SC-04",
+     "label": "Review / curative petition orders",
+     "citation_class": "decision",
+     "answers": [
+      "TREATMENT"
+     ],
+     "consumers": [
+      "Litigation spine"
+     ],
+     "registry_roles": [
+      "supreme-court/petition-application"
+     ],
+     "stage": "decision"
+    }
+   ]
+  },
+  {
+   "body_code": "PX",
+   "body_id": "power-exchanges",
+   "document_types": [
+    {
+     "id": "PX-01",
+     "label": "Rules / bye-laws / business rules (CERC-approved)",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "WHO"
+     ],
+     "consumers": [
+      "Spine (market)",
+      "Compliance"
+     ],
+     "registry_roles": [
+      "power-exchanges/regulation"
+     ],
+     "stage": "rules"
+    },
+    {
+     "id": "PX-02",
+     "label": "Circulars / notices",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "WHEN",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Watch (market)",
+      "Impact"
+     ],
+     "registry_roles": [
+      "power-exchanges/correspondence"
+     ],
+     "stage": "circulars"
+    },
+    {
+     "id": "PX-03",
+     "label": "Product / contract specifications",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "HOW"
+     ],
+     "consumers": [
+      "Spine (market)",
+      "Ask"
+     ],
+     "registry_roles": [
+      "power-exchanges/procedure"
+     ],
+     "stage": "rules"
+    },
+    {
+     "id": "PX-04",
+     "label": "Market data — snapshots, prices, volumes",
+     "citation_class": "reference",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Market intel",
+      "Impact"
+     ],
+     "registry_roles": [
+      "power-exchanges/market-data"
+     ],
+     "stage": "data"
+    },
+    {
+     "id": "PX-05",
+     "label": "Price / volume reports; REC / ESCert / CCC results",
+     "citation_class": "reference",
+     "answers": [
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Market intel",
+      "Certificates"
+     ],
+     "registry_roles": [
+      "power-exchanges/market-data"
+     ],
+     "stage": "data"
+    },
+    {
+     "id": "PX-06",
+     "label": "Member lists / client registrations",
+     "citation_class": "reference",
+     "answers": [
+      "WHO"
+     ],
+     "consumers": [
+      "Entity spine"
+     ],
+     "registry_roles": [
+      "power-exchanges/participant-register"
+     ],
+     "stage": "registers"
+    },
+    {
+     "id": "PX-07",
+     "label": "Petitions / filings before CERC",
+     "citation_class": "reference",
+     "answers": [
+      "WHO",
+      "WHAT"
+     ],
+     "consumers": [
+      "Operational spine"
+     ],
+     "registry_roles": [
+      "power-exchanges/regulatory-filing"
+     ],
+     "stage": "rules"
+    }
+   ]
+  },
+  {
+   "body_code": "SECI",
+   "body_id": "seci-ntpc-sjvn-and-other-procurers",
+   "document_types": [
+    {
+     "id": "PROC-01",
+     "label": "Request for Selection (RfS) and corrigenda",
+     "citation_class": "authority",
+     "answers": [
+      "HOW",
+      "WHEN",
+      "WHO"
+     ],
+     "consumers": [
+      "Tender spine"
+     ],
+     "registry_roles": [
+      "seci/tender",
+      "seci/amendment",
+      "ntpc/tender",
+      "ntpc/amendment",
+      "sjvn/tender",
+      "sjvn/amendment",
+      "nhpc/tender",
+      "nhpc/amendment"
+     ],
+     "stage": "tender"
+    },
+    {
+     "id": "PROC-02",
+     "label": "Bidder sheet / auction result",
+     "citation_class": "decision",
+     "answers": [
+      "WHO",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Tender spine",
+      "Impact"
+     ],
+     "registry_roles": [
+      "seci/auction-award",
+      "ntpc/auction-award",
+      "sjvn/auction-award",
+      "nhpc/auction-award"
+     ],
+     "stage": "award"
+    },
+    {
+     "id": "PROC-03",
+     "label": "Letter of Award / Letter of Intent",
+     "citation_class": "decision",
+     "answers": [
+      "WHO",
+      "WHEN",
+      "HOW_MUCH"
+     ],
+     "consumers": [
+      "Tender spine",
+      "Project thread"
+     ],
+     "registry_roles": [
+      "seci/letter-of-award",
+      "ntpc/letter-of-award",
+      "sjvn/letter-of-award",
+      "nhpc/letter-of-award"
+     ],
+     "stage": "award"
+    },
+    {
+     "id": "PROC-04",
+     "label": "PPA / PSA / TSA executed",
+     "citation_class": "decision",
+     "answers": [
+      "WHO",
+      "HOW_MUCH",
+      "WHEN"
+     ],
+     "consumers": [
+      "Impact"
+     ],
+     "registry_roles": [
+      "seci-ntpc-sjvn-and-other-procurers/executed-contract"
+     ],
+     "stage": "contract"
+    }
+   ]
+  },
+  {
+   "body_code": "SERC",
+   "body_id": "sercs",
+   "document_types": [
+    {
+     "id": "SERC-01",
+     "label": "State regulation — principal / amendment",
+     "citation_class": "authority",
+     "answers": [
+      "WHAT",
+      "WHO"
+     ],
+     "consumers": [
+      "Spine",
+      "Clause file"
+     ],
+     "registry_roles": [
+      "rerc/regulation",
+      "rerc/amendment",
+      "kerc/regulation",
+      "kerc/amendment",
+      "merc/regulation",
+      "merc/amendment",
+      "gerc/regulation",
+      "gerc/amendment",
+      "aperc/regulation",
+      "aperc/amendment",
+      "mperc/regulation",
+      "mperc/amendment"
+     ],
+     "stage": "notified"
+    },
+    {
+     "id": "SERC-02",
+     "label": "State draft / EM / SoR",
+     "citation_class": "deliberation",
+     "answers": [
+      "WHAT",
+      "WHY"
+     ],
+     "consumers": [
+      "Watch",
+      "Reasoning"
+     ],
+     "registry_roles": [
+      "rerc/draft",
+      "rerc/explanatory-memorandum",
+      "rerc/statement-of-reasons",
+      "kerc/draft",
+      "kerc/explanatory-memorandum",
+      "kerc/statement-of-reasons",
+      "merc/draft",
+      "merc/explanatory-memorandum",
+      "merc/statement-of-reasons",
+      "gerc/draft",
+      "gerc/explanatory-memorandum",
+      "gerc/statement-of-reasons",
+      "aperc/draft",
+      "aperc/explanatory-memorandum",
+      "aperc/statement-of-reasons",
+      "mperc/draft",
+      "mperc/explanatory-memorandum",
+      "mperc/statement-of-reasons"
+     ],
+     "stage": "consultation"
+    },
+    {
+     "id": "SERC-03",
+     "label": "Tariff order / open-access order / banking order",
+     "citation_class": "decision",
+     "answers": [
+      "HOW_MUCH",
+      "WHO"
+     ],
+     "consumers": [
+      "Impact"
+     ],
+     "registry_roles": [
+      "rerc/final-order",
+      "kerc/final-order",
+      "merc/final-order",
+      "gerc/final-order",
+      "aperc/final-order",
+      "mperc/final-order"
+     ],
+     "stage": "adjudication"
+    },
+    {
+     "id": "SERC-04",
+     "label": "Petition / ROP / interim order",
+     "citation_class": "decision",
+     "answers": [
+      "WHO",
+      "WHEN",
+      "TREATMENT"
+     ],
+     "consumers": [
+      "Docket"
+     ],
+     "registry_roles": [
+      "rerc/petition-application",
+      "rerc/record-of-proceedings",
+      "rerc/interim-order",
+      "kerc/petition-application",
+      "kerc/record-of-proceedings",
+      "kerc/interim-order",
+      "merc/petition-application",
+      "merc/record-of-proceedings",
+      "merc/interim-order",
+      "gerc/petition-application",
+      "gerc/record-of-proceedings",
+      "gerc/interim-order",
+      "aperc/petition-application",
+      "aperc/record-of-proceedings",
+      "aperc/interim-order",
+      "mperc/petition-application",
+      "mperc/record-of-proceedings",
+      "mperc/interim-order"
+     ],
+     "stage": "adjudication"
+    },
+    {
+     "id": "SERC-05",
+     "label": "State consultation / hearing notice",
+     "citation_class": "reference",
+     "answers": [],
+     "consumers": [],
+     "registry_roles": [
+      "kerc/consultation-notice",
+      "kerc/hearing-notice",
+      "merc/consultation-notice",
+      "merc/hearing-notice",
+      "rerc/consultation-notice",
+      "rerc/hearing-notice",
+      "gerc/consultation-notice",
+      "gerc/hearing-notice"
+     ],
+     "stage": "consultation"
+    },
+    {
+     "id": "SERC-06",
+     "label": "State licence and licence amendments",
+     "citation_class": "authority",
+     "answers": [],
+     "consumers": [],
+     "registry_roles": [
+      "kerc/licence",
+      "merc/licence",
+      "rerc/licence",
+      "gerc/licence"
+     ],
+     "stage": "licensing"
+    }
+   ]
+  }
+ ]
+}
