@@ -1,0 +1,27 @@
+[
+ [
+  "draft_notification",
+  "draft_notified",
+  "draft"
+ ],
+ [
+  "draft",
+  "draft_pending",
+  "draft"
+ ],
+ [
+  "",
+  "unknown",
+  "unknown"
+ ],
+ [
+  "repealed",
+  "repealed",
+  "superseded"
+ ],
+ [
+  "in_force",
+  "in_force",
+  "in_force"
+ ]
+]

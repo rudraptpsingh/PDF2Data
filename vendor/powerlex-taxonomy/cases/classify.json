@@ -1,0 +1,801 @@
+[
+ {
+  "url": "https://cercind.gov.in/2026/ROP/968-GT-2025-Ors_290926.pdf",
+  "label": "ROP",
+  "body": null,
+  "type": "CERC-15",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/2026/technical_validation/TV-Letter_959-GT-2025.pdf",
+  "label": "Technical Validation",
+  "body": null,
+  "type": "CERC-16",
+  "accepts": "CERC-27"
+ },
+ {
+  "url": "https://cercind.gov.in/2024/draft_reg/x.pdf",
+  "label": "Draft Regulation",
+  "body": null,
+  "type": "CERC-03",
+  "confidence": "low",
+  "accepts": "CERC-04"
+ },
+ {
+  "url": "https://aptel.gov.in/judgements/Judg2014/Appeal No. 288 of 2013.pdf",
+  "label": "Judgements/Orders",
+  "body": "APTEL",
+  "type": "AP-01"
+ },
+ {
+  "url": "https://aptel.gov.in/sites/default/files/x.pdf",
+  "label": "Circulars",
+  "body": "APTEL",
+  "type": "AP-06",
+  "confidence": "high"
+ },
+ {
+  "url": "https://kerc.karnataka.gov.in/uploads/x.pdf",
+  "label": "Generic Tariff Order",
+  "body": "KERC",
+  "type": "SERC-03"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/x_7th NCT.pdf",
+  "label": "NCT Letter",
+  "body": "MOP",
+  "type": "MoP-11",
+  "confidence": "low",
+  "accepts": "MoP-08"
+ },
+ {
+  "url": "https://cercind.gov.in/2026/Orders/5-SM-2026.pdf",
+  "label": "Suo-Moto order",
+  "body": "CERC",
+  "type": "CERC-13"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/17689043255124th NCT_Transmission system for Rajgarh.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "MoP-08",
+  "confidence": "high",
+  "issuer": "MOP"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/17689043255124th NCT_Transmission system for Rajgarh.pdf",
+  "label": "NCT Letter",
+  "body": "MOP",
+  "type": "MoP-08",
+  "confidence": "high",
+  "issuer": "MOP"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/1673503134118th NCT schemes_Gazette.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "MoP-08",
+  "issuer": "MOP"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/167350316690MoP letter dtd 18-1-2022_7th NCT.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "MoP-11",
+  "confidence": "high",
+  "issuer": "MOP"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/172415840757MoP OM dated 20.08.2024 for schemes as per 20th NCT meeting held on 25.06.2024.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "MoP-11",
+  "issuer": "MOP"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/177383311010NCT letter dated 18.03.2026 for ISTS Scehmes approved in 38th NCT meeting for implementation in RTM.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "CEA-05",
+  "confidence": "high",
+  "issuer": "CEA"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/179369100501Ltr_to_CTUIL_43rd NCT.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "CEA-05",
+  "issuer": "CEA"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/179264288272CTU letter dated 21-10-2026 forwarding recommendations of 43rd NCT meeting.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "CT-11",
+  "confidence": "high",
+  "issuer": "CTUIL"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/169510066022CTUIL_Ltr_RTM_15th_NCT.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "CT-11",
+  "issuer": "CTUIL"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/17689033368415th NCT_NERGS_I__MoM.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "CEA-06",
+  "issuer": "CEA"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/179085665016Annex-C_Substation wise margins_01102026_A.pdf",
+  "label": "Status of Bay Allocation & Margin",
+  "body": "CTUIL",
+  "type": "CT-05",
+  "confidence": "high",
+  "issuer": "CTUIL"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/179368076933Reallocation Capacity Declaration_Rolling.pdf",
+  "label": "Reallocation Meetings",
+  "body": "CTUIL",
+  "type": "CT-05",
+  "confidence": "high"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/179065755066MOM-Reallocation-SR.pdf",
+  "label": "Reallocation Meetings",
+  "body": "CTUIL",
+  "type": "CT-07",
+  "confidence": "high"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/179302133086Approved_Reallocation notice SR Oct 26.pdf",
+  "label": "Reallocation Meetings",
+  "body": "CTUIL",
+  "type": "CT-05",
+  "confidence": "high",
+  "accepts": "CT-04"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/178878310908Margin Format for Reallocation.pdf",
+  "label": "Reallocation Meetings",
+  "body": "CTUIL",
+  "type": "CT-03",
+  "confidence": "high"
+ },
+ {
+  "url": "https://www.ctuil.in/uploads/assets/178539309666Format for SCOD Extension-Delayed permission_29072026.pdf",
+  "label": "Form",
+  "body": "CTUIL",
+  "type": "CT-03",
+  "confidence": "high"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/179317144916Advisory to TSPs in view of Cyclone.pdf",
+  "label": "Updates",
+  "body": "CTUIL",
+  "type": "CT-02",
+  "confidence": "high"
+ },
+ {
+  "url": "https://powermin.gov.in/static/uploads/2026/10/e13540c29dd4a2dc51cc4ec7d05d2996.pdf",
+  "label": "Document Repository: Press Release",
+  "body": "MOP",
+  "type": "MoP-13",
+  "confidence": "high"
+ },
+ {
+  "url": "https://powermin.gov.in/static/uploads/2026/08/83511876cf8575e74a60ee2f8dcd065b.pdf",
+  "label": "Document Repository: Rajya Sabha",
+  "body": "MOP",
+  "type": "MoP-13",
+  "confidence": "high"
+ },
+ {
+  "url": "https://webcdn.grid-india.in/files/grdw/2026/08/NLDC Operating Procedure 2026_974.pdf",
+  "label": "Flasher",
+  "body": "GRID-INDIA",
+  "type": "GI-08",
+  "confidence": "high"
+ },
+ {
+  "url": "https://webcdn.grid-india.in/files/grdw/2026/08/Stakeholder Comments_AGC Consultation Paper_646.pdf",
+  "label": "Consultation Papers",
+  "body": "GRID-INDIA",
+  "type": "GI-02",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/regulations/Order_GNA Procedure.pdf",
+  "label": "Procedure",
+  "body": "CERC",
+  "type": "CERC-12",
+  "confidence": "high",
+  "issuer": "CERC"
+ },
+ {
+  "url": "https://cercind.gov.in/2014/draft_reg/pro24.pdf",
+  "label": "Procedure",
+  "body": "CERC",
+  "type": "CERC-03"
+ },
+ {
+  "url": "https://cercind.gov.in/15072004/67-2003doh24-6-04.pdf",
+  "label": "Consolidated Text",
+  "body": "CERC",
+  "type": "CERC-01",
+  "confidence": "high",
+  "accepts": "CERC-05"
+ },
+ {
+  "url": "https://gercin.org/viewdocument/T3JkZXJzX2ZpbGVzXzU3NjJfMTAtMDktMjAyNl82NjY3MTA1",
+  "label": "Order (Renewable Energy)",
+  "body": "GERC",
+  "type": "SERC-03",
+  "confidence": "high",
+  "issuer": "GERC"
+ },
+ {
+  "url": "https://webcdn.grid-india.in/files/grdw/2026/08/Comments_Draft%20NLDC%20Operating%20Procedure_2026_248.pdf",
+  "label": "IEGC Procedures",
+  "body": "GRID-INDIA",
+  "type": "GI-02",
+  "confidence": "high"
+ },
+ {
+  "url": "https://webcdn.grid-india.in/files/grdw/2026/08/NLDC%20Operating%20Procedure%202026_433.pdf",
+  "label": "IEGC Procedures",
+  "body": "GRID-INDIA",
+  "type": "GI-08",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/regulations/205-SOR.pdf",
+  "label": "Regulation (Current) · Statement of Reasons",
+  "body": null,
+  "type": "CERC-05",
+  "signal": "kind",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/regulations/L_1_261_2021-100626.pdf",
+  "label": "Regulation (Current)",
+  "body": null,
+  "kind": "Procedure in respect of Regulation 11C – date 09.06.2026",
+  "type": "CERC-12",
+  "signal": "kind"
+ },
+ {
+  "url": "https://cercind.gov.in/regulations/Addendum-14012026.pdf",
+  "label": "Regulation (Current)",
+  "body": null,
+  "kind": "Addendum (Order - date 14.01.2026)",
+  "type": "CERC-13",
+  "signal": "kind"
+ },
+ {
+  "url": "https://cercind.gov.in/regulations/194-SOR.pdf",
+  "label": "Regulation (Current)",
+  "body": null,
+  "type": "CERC-05",
+  "signal": "name"
+ },
+ {
+  "url": "https://cercind.gov.in/Regulations/190-effective-010624.pdf",
+  "label": "Commencement Notice",
+  "body": "CERC",
+  "type": "CERC-11",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/Regulations/Notification-DSM-Regulations-date-of-implementation.pdf",
+  "label": "Regulation",
+  "body": "CERC",
+  "type": "CERC-11",
+  "accepts": "CERC-09"
+ },
+ {
+  "url": "https://cercind.gov.in/2016/regulation/14.pdf",
+  "label": "Consolidated Text",
+  "body": "CERC",
+  "title": "CERC — Deviation Settlement Mechanism and Related Matters Regulations, 2014",
+  "type": "CERC-01",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/regulations/192-ERRATA.pdf",
+  "label": "Corrigendum",
+  "body": "CERC",
+  "type": "CERC-10",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/2019/regulation/COR145-IIGaz.pdf",
+  "label": "Regulation",
+  "body": "CERC",
+  "type": "CERC-10",
+  "accepts": "CERC-09"
+ },
+ {
+  "url": "https://cercind.gov.in/2015/regulation/GZ104.pdf",
+  "label": "Regulation",
+  "body": "CERC",
+  "type": "CERC-09",
+  "signal": "name"
+ },
+ {
+  "url": "https://cercind.gov.in/2024/draft_reg/EM07092024.pdf",
+  "label": "Draft Regulation",
+  "body": "CERC",
+  "type": "CERC-04",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/2020/draft_reg/Draft%20EM-2nd_Amendment_TR_2020.pdf",
+  "label": "Explanatory Memorandum",
+  "body": "CERC",
+  "type": "CERC-04"
+ },
+ {
+  "url": "https://cercind.gov.in/2026/Orders/11-SM-2026-I.pdf",
+  "label": "Draft Regulation",
+  "body": "CERC",
+  "title": "1. Draft Order",
+  "type": "CERC-13",
+  "confidence": "high",
+  "accepts": "CERC-03"
+ },
+ {
+  "url": "https://cercind.gov.in/2025/whatsnew/Draft_Order_9SM2025.pdf",
+  "label": "Discussion Paper",
+  "body": "CERC",
+  "type": "CERC-13"
+ },
+ {
+  "url": "https://cercind.gov.in/2024/draft_reg/Public%20Notice221124.pdf",
+  "label": "Public Notice",
+  "body": "CERC",
+  "type": "CERC-06",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/2021/draft_reg/PN-Methodology-23-02-21.pdf",
+  "label": "Staff Paper",
+  "body": "CERC",
+  "type": "CERC-06",
+  "accepts": "CERC-08"
+ },
+ {
+  "url": "https://cercind.gov.in/2023/Approach_paper/Approach%20Paper-Tariff%20Regulations%202024-29.pdf",
+  "label": "Staff Paper",
+  "body": "CERC",
+  "type": "CERC-08",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/2026/staff-paper/SP-RTM.pdf",
+  "label": "Staff paper",
+  "body": "CERC",
+  "type": "CERC-08"
+ },
+ {
+  "url": "https://cercind.gov.in/2024/draft_reg/Recommendations-of-CEA-130125.pdf",
+  "label": "Draft Regulation",
+  "body": "CERC",
+  "type": "CERC-07"
+ },
+ {
+  "url": "https://cercind.gov.in/2022/draft_reg/Draft-IEGC-07062022.pdf",
+  "label": "Draft Regulation",
+  "body": "CERC",
+  "title": "Draft CERC (Indian Electricity Grid Code) Regulations, 2022 — Draft Notification",
+  "type": "CERC-03",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/2020/draft_reg/Appendix%20I.pdf",
+  "label": "Draft Regulation",
+  "body": "CERC",
+  "type": "CERC-03",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/regulations/ProcedureL_1_265_2022_CERC_GRID_CODE.pdf",
+  "label": "IEGC Procedures",
+  "body": "CERC",
+  "type": "CERC-12",
+  "confidence": "high"
+ },
+ {
+  "url": "",
+  "label": "IEGC Procedures",
+  "body": "CERC",
+  "type": "CERC-12",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/regulations/Guidelines-VPPA.pdf",
+  "label": "Regulation",
+  "body": "CERC",
+  "type": "CERC-12"
+ },
+ {
+  "url": "https://cercind.gov.in/Regulations/Signed-Mini-SoR-IEGC.pdf",
+  "label": "Order",
+  "body": "CERC",
+  "type": "CERC-05"
+ },
+ {
+  "url": "https://cercind.gov.in/2014/regulation/Annexure_1_Thermal.pdf",
+  "label": "Regulation",
+  "body": "CERC",
+  "type": "CERC-01",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/08022007/Fourth-Amendment-Regulations-2007.pdf",
+  "label": "Regulation",
+  "body": "CERC",
+  "title": "CERC (Terms and Conditions of Tariff) (Fourth Amendment) Regulations, 2007 — Notification",
+  "type": "CERC-02",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/Regulations/180-Regulations.pdf",
+  "label": "Regulation",
+  "body": "CERC",
+  "title": "CERC (Indian Electricity Grid Code) Regulations, 2023 — Notification",
+  "type": "CERC-01",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/2026/Orders/243-TT-2026.pdf",
+  "label": "Order",
+  "body": "CERC",
+  "type": "CERC-19",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/2026/Orders/146-AT-2026.pdf",
+  "label": "Order",
+  "body": "CERC",
+  "title": "Petition under Section 63 ... for adoption of tariff (detailed procedure)",
+  "type": "CERC-20"
+ },
+ {
+  "url": "https://cercind.gov.in/2026/Orders/739-MP-2025.pdf",
+  "label": "Order",
+  "body": "CERC",
+  "type": "CERC-18",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/2026/Orders/86-IA-2024-Ors.pdf",
+  "label": "Order",
+  "body": "CERC",
+  "type": "CERC-17"
+ },
+ {
+  "url": "https://cercind.gov.in/2023/orders/L-1%20250%202019-CERC.pdf",
+  "label": "Order",
+  "body": "CERC",
+  "title": "CERC (Sharing of Inter-State Transmission Charges and Losses) Regulations, 2020 — Removal of Difficulty",
+  "type": "CERC-13",
+  "confidence": "high"
+ },
+ {
+  "url": "https://cercind.gov.in/2026/ROP/126-MP-2022_030926.pdf",
+  "label": "ROP",
+  "body": "CERC",
+  "title": "Petition under Section 79 seeking execution of order dated 20.1.2022 read with Corrigendum order dated 4.2.2022",
+  "type": "CERC-15",
+  "signal": "name"
+ },
+ {
+  "url": "https://aptel.gov.in/sites/default/files/2026-09/IA%20No.%201939%20of%202026.pdf",
+  "label": "Judgments/Orders",
+  "body": "APTEL",
+  "title": "IA No. 1939 of 2026 in Appeal No. 196 OF 2026 — PSEB Engineers Association VERSUS Punjab",
+  "type": "AP-02",
+  "confidence": "high"
+ },
+ {
+  "url": "https://aptel.gov.in/sites/default/files/2026-11/Final%20%20Order%20on%20IA%20862%20of%202026%20in%20Apl%20194%20of%202026.pdf",
+  "label": "Judgments/Orders",
+  "body": "APTEL",
+  "type": "AP-02"
+ },
+ {
+  "url": "https://aptel.gov.in/sites/default/files/2026-11/Judgment%20in%20Appeal%20No.%208%20of%202018.pdf",
+  "label": "Judgments/Orders",
+  "body": "APTEL",
+  "type": "AP-01",
+  "confidence": "high"
+ },
+ {
+  "url": "https://aptel.gov.in/sites/default/files/2026-09/APL%20195%20OF%202023.pdf",
+  "label": "Judgments/Orders",
+  "body": "APTEL",
+  "title": "APPEAL NO.195 OF 2023 — Rama Shanker Awasthi VERSUS UPERC",
+  "type": "AP-01",
+  "confidence": "high"
+ },
+ {
+  "url": null,
+  "label": "Judgments/Orders",
+  "body": "APTEL",
+  "title": "Original Petition No. 19 & 298 of 2022, Appeal No. 116, 74, 75 & 76 of 2022 (Change in Law)",
+  "type": "AP-01",
+  "confidence": "high"
+ },
+ {
+  "url": "https://aptel.gov.in/sites/default/files/2026-09/R.P.%202%20of%202026.pdf",
+  "label": "Judgments/Orders",
+  "body": "APTEL",
+  "title": "RP No. 2 of 2026 in Appeal Nos. 116 and 177 of 2023",
+  "type": "AP-01",
+  "accepts": "AP-05"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/179302133086Approved_Reallocation%20notice%20SR%20Oct%2026.pdf",
+  "label": "Reallocation Meetings",
+  "body": "CTUIL",
+  "type": "CT-05",
+  "confidence": "high",
+  "accepts": "CT-04"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/179241050717Reallocation%20Capacity%20Declaration_2200001431.pdf",
+  "label": "Reallocation Meetings",
+  "body": "CTUIL",
+  "type": "CT-05"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/178878310908Margin%20Format%20for%20Reallocation.pdf",
+  "label": "Reallocation Meetings",
+  "body": "CTUIL",
+  "type": "CT-03"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/178662364754Approved_Annex-B-Entitiy%20wise%20conn%20and%20baywise%20margins.pdf",
+  "label": "Status of Bay Allocation & Margin",
+  "body": "CTUIL",
+  "type": "CT-05",
+  "confidence": "high"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/179317144916Advisory%20to%20TSPs%20in%20view%20of%20Cyclone.pdf",
+  "label": "Updates",
+  "body": "CTUIL",
+  "type": "CT-02",
+  "confidence": "high"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/179178576130Notification%20regarding%20new%20application%20forms%20made%20live%20on%20NSWS%20Portal.pdf",
+  "label": "Updates",
+  "body": "CTUIL",
+  "type": "CT-02",
+  "confidence": "high"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/Final%20list%20of%20eligible%20entities%20as%20per%2011%20SM%202026.pdf",
+  "label": "Updates",
+  "body": "CTUIL",
+  "type": "CT-08"
+ },
+ {
+  "url": null,
+  "label": "Regulatory Section",
+  "body": "CTUIL",
+  "title": "Detailed Procedure for Connectivity & GNA for Cross Border Trade of Electricity-Reg.33A of CBTE,2019",
+  "type": "CT-01",
+  "confidence": "high"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/178645696705Compensation%20charges%20as%20per%20CERC%20order%20dtd%2003-08-2026%20to%20be%20uploaded%20on%20website.pdf",
+  "label": "Regulatory Section",
+  "body": "CTUIL",
+  "type": "CT-11"
+ },
+ {
+  "url": "https://ctuil.in/uploads/assets/178351887768Detailed%20Procedure%20for%20Grant%20of%20Connectivity%20&%20GNA(10.04.2026).pdf",
+  "label": "Procedure",
+  "body": "CTUIL",
+  "type": "CT-01",
+  "confidence": "high"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/176536119690CTU%20letter%20dated%2010-12-2025%20forwarding%20recommendations%20of%2035th%20NCT%20meeting.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "CT-11",
+  "confidence": "high",
+  "issuer": "CTUIL"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/167350350534Implementation%20of%20ISTS%20Transmission%20Schemes_21_12_2021%206th%20NCT.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "CEA-05",
+  "issuer": "CEA"
+ },
+ {
+  "url": "https://ctuil.in/uploads/ists_scheme_approve/167350350599Some other scheme document.pdf",
+  "label": "NCT Letter",
+  "body": "CTUIL",
+  "type": "CT-08",
+  "confidence": "low",
+  "accepts": "MoP-11"
+ },
+ {
+  "url": "https://powermin.gov.in/static/uploads/2026/11/222bd9ffdf8c0417b44be0d99ba414e1.pdf",
+  "label": "Document Repository: Uncategorized",
+  "body": "MOP",
+  "title": "Weekly Information Bulletin 24th October – 30th October 2026",
+  "type": "MoP-13",
+  "confidence": "high"
+ },
+ {
+  "url": "https://powermin.gov.in/static/uploads/2026/09/7cf424c9b2f03a31226ffe18e98d9895.pdf",
+  "label": "Document Repository: Press Release",
+  "body": "MOP",
+  "title": "Weekly News Bulletin (29th August – 4th September 2026)",
+  "type": "MoP-13"
+ },
+ {
+  "url": "https://powermin.gov.in/static/uploads/2026/08/75fb096eaa759a9dfecaf34dd1438145.pdf",
+  "label": "Document Repository: Rajya Sabha",
+  "body": "MOP",
+  "title": "03-08-2026",
+  "type": "MoP-13"
+ },
+ {
+  "url": "https://powermin.gov.in/static/uploads/2026/09/1c9e465d38785fe239f2aef55220d076.pdf",
+  "label": "Document Repository: whatsnews",
+  "body": "MOP",
+  "title": "Directions, under Section 11 of the Electricity Act, 2003, to generating companies owning imported coal based plants",
+  "type": "MoP-09",
+  "confidence": "high"
+ },
+ {
+  "url": "https://powermin.gov.in/static/uploads/2026/10/0e00977da34887886bdbb05757ec76d9.pdf",
+  "label": "Document Repository: whatsnews",
+  "body": "MOP",
+  "kind": "Guidelines",
+  "title": "Guidelines for payment of compensation in regard to Right of Way (RoW)for transmission lines (06-10-2026)",
+  "type": "MoP-06",
+  "confidence": "high"
+ },
+ {
+  "url": null,
+  "label": "scheme and services",
+  "body": "MOP",
+  "title": "Guidelines for implementation of the Revamped Distribution Sector Scheme",
+  "type": "MoP-12",
+  "confidence": "high"
+ },
+ {
+  "url": null,
+  "label": "scheme and services",
+  "body": "MOP",
+  "title": "Guidelines for payment of compensation in regard to Right of Way (RoW) for transmission lines",
+  "type": "MoP-06",
+  "confidence": "high"
+ },
+ {
+  "url": "https://powermin.gov.in/static/uploads/2026/10/640a93a04fec1dda5e4e63afcf19b056.pdf",
+  "label": "Document Repository: Uncategorized",
+  "body": "MOP",
+  "title": "Amendment of the JERC for Union Territories except Delhi (Salary, Allowances and other Conditions of Service of Chairperson and Members) Rules, 2007",
+  "type": "MoP-03"
+ },
+ {
+  "url": "https://powermin.gov.in/static/uploads/2026/10/2d0c97f5a828a42380096f8992edb475.pdf",
+  "label": "Document Repository: Uncategorized",
+  "body": "MOP",
+  "title": "National Electricity Data Sharing Framework, 2026",
+  "type": "MoP-05"
+ },
+ {
+  "url": null,
+  "label": "Guidelines",
+  "body": "MOP",
+  "title": "MoP — Constitution of the Committee for finalization of compensation in regard to Right of Way (RoW) for transmission lines in urban areas",
+  "type": "MoP-11"
+ },
+ {
+  "url": "https://webcdn.grid-india.in/files/grdw/2026/10/CEA%20guidelines%20for%20AWS%20for%20solar%20and%20wind%20Power%20Plants_121.pdf",
+  "label": "First Time Energization and Integration",
+  "body": "GRID-INDIA",
+  "type": "CEA-04",
+  "issuer": "CEA",
+  "confidence": "high"
+ },
+ {
+  "url": "https://webcdn.grid-india.in/files/grdw/2026/10/SoP%20for%20AWS%20calibration_399.pdf",
+  "label": "First Time Energization and Integration",
+  "body": "GRID-INDIA",
+  "type": "GI-08"
+ },
+ {
+  "url": "https://webcdn.grid-india.in/files/grdw/2026/10/x.pdf",
+  "label": "First Time Energization and Integration",
+  "body": "GRID-INDIA",
+  "type": "GI-01",
+  "confidence": "high"
+ },
+ {
+  "url": "https://webcdn.grid-india.in/files/grdw/2026/08/NLDC%20Operating%20Procedure%202026_974.pdf",
+  "label": "Flasher",
+  "body": "GRID-INDIA",
+  "type": "GI-08",
+  "confidence": "high"
+ },
+ {
+  "url": "https://webcdn.grid-india.in/files/grdw/2026/10/Stakeholder%20consultation%20on%20pre-publication%20procedure%20for%20verification%20of%20captive%20status%20for%20interstate%20transactions_304.pdf",
+  "label": "Other Procedures",
+  "body": "GRID-INDIA",
+  "type": "GI-02",
+  "confidence": "high"
+ },
+ {
+  "url": "https://gercin.org/viewdocument/T3JkZXJzX2ZpbGVzXzU3NjJfMTAtMDktMjAyNl82NjY3MTA1",
+  "label": "Order (Renewable Energy)",
+  "body": "GERC",
+  "title": "Determination of Tariff for Procurement of Power by Distribution Licensees and Others from Renewable Energy",
+  "type": "SERC-03",
+  "confidence": "high",
+  "issuer": "GERC"
+ },
+ {
+  "url": "https://gercin.org/viewdocument/cmVndWxhdGlvbl9lbmdfMTc5MzM2NDI5MV82MDIz",
+  "label": "Regulation (Current)",
+  "body": "GERC",
+  "title": "Statement of Reasons",
+  "type": "SERC-02",
+  "confidence": "high",
+  "issuer": "GERC"
+ },
+ {
+  "url": "https://kerc.karnataka.gov.in/uploads/media_to_upload1787642381.pdf",
+  "label": "Regulation (Current)",
+  "body": "KERC",
+  "type": "SERC-01",
+  "confidence": "high",
+  "issuer": "KERC"
+ },
+ {
+  "url": "https://cea.nic.in/whats-new/file?path=%2Fhome%2Fcea_website%2Freports%2Fgeneral%2Fen%2FManual%20on%20Transmission%20Planning%20Criteria%202026-1.pdf&mode=view",
+  "label": "What's New",
+  "body": "CEA",
+  "type": "CEA-04",
+  "confidence": "high"
+ },
+ {
+  "url": null,
+  "label": "Updates",
+  "body": "CTUIL",
+  "filename": "179178576130Notification regarding new application forms made live on NSWS Portal.pdf",
+  "type": "CT-02",
+  "confidence": "high"
+ },
+ {
+  "url": null,
+  "label": "Regulation",
+  "body": "CERC",
+  "filename": "GZ104.pdf",
+  "type": "CERC-09",
+  "signal": "name"
+ },
+ {
+  "url": "https://cercind.gov.in/2015/regulation/GZ104.pdf",
+  "label": "Regulation",
+  "body": "CERC",
+  "filename": "GZ104.pdf",
+  "type": "CERC-09",
+  "signal": "name"
+ }
+]

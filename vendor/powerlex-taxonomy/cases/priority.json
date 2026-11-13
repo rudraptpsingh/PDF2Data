@@ -1,0 +1,63 @@
+[
+ [
+  {
+   "type": "CERC-01",
+   "status": "in_force"
+  },
+  "P1"
+ ],
+ [
+  {
+   "type": "CERC-01",
+   "status": "superseded"
+  },
+  "P4"
+ ],
+ [
+  {
+   "type": "CERC-01",
+   "status": "superseded",
+   "cited_by": 5
+  },
+  "P2"
+ ],
+ [
+  {
+   "type": "CERC-18",
+   "year": 2025
+  },
+  "P2"
+ ],
+ [
+  {
+   "type": "CERC-18",
+   "year": 2019
+  },
+  "P4"
+ ],
+ [
+  {
+   "type": "CERC-15",
+   "year": 2019
+  },
+  "P5"
+ ],
+ [
+  {
+   "type": "CERC-26"
+  },
+  "P5"
+ ],
+ [
+  {
+   "type": null
+  },
+  "P3"
+ ],
+ [
+  {
+   "type": "MoP-02"
+  },
+  "P1"
+ ]
+]
