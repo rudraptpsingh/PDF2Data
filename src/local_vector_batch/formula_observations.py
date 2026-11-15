@@ -1,8 +1,10 @@
 """Bounded numeric worked equalities, preserving source and unresolved formula text."""
 import ast,re
+from bisect import bisect_right
+from collections import Counter
 from decimal import Decimal,localcontext
 from fractions import Fraction
-from .document_blocks import span,digest
+from .document_blocks import span,digest,union
 from .document_metadata import field_geometry
 from .table_headers import formula_header_symbols
 
@@ -10,6 +12,112 @@ NUMBER=r'[+\-−]?(?:\d[\d,]*(?:\.\d+)?|\.\d+)'
 EQUALITY=re.compile(r'(?<![\w.,])(?P<left>(?:\(\s*)*'+NUMBER+r'[\d\s.,()+\-−*/×÷]*?)\s*=\s*(?P<right>'+NUMBER+r')\s*(?P<unit>MWh|kWh|MW|kW|Hz|INR|%)?(?![\w.])')
 OPERATOR_BOUNDARY = '=<>≤≥≠≈≃≅≡+-−±∓*/×÷·⋅^'
 OPS={ast.Add:('add',lambda a,b:a+b),ast.Sub:('subtract',lambda a,b:a-b),ast.Mult:('multiply',lambda a,b:a*b),ast.Div:('divide',lambda a,b:a/b)}
+WRAPPED_QUOTED_FORMULA = re.compile(r'^[ \t]*[“"][^“”"=\n]{1,80}=[ \t]*[^“”"\n]{1,240}(?:\n[^“”"\n]{1,240}){1,5}[”"][ \t]*$', re.M)
+
+
+def _script_runs(page, glyphs, positions, mapping):
+    def metrics(position):
+        glyph = glyphs[mapping[position]]
+        top, bottom = glyph['bbox'][1::2]
+        return round(glyph['size'], 1), round((top + bottom) / 2, 1)
+
+    (main_size, main_center), _ = Counter(map(metrics, positions)).most_common(1)[0]
+    runs = []
+    for position in positions:
+        size, center = metrics(position)
+        if size >= main_size * .84 or abs(center - main_center) < main_size * .12:
+            continue
+        kind = 'subscript_candidate' if center > main_center else 'superscript_candidate'
+        if runs and runs[-1][0] == kind and runs[-1][1][-1] + 1 == position:
+            runs[-1][1].append(position)
+        else:
+            runs.append((kind, [position]))
+    return [{'kind': kind, 'source_span': span(page, run[0], run[-1] + 1),
+             'glyph_indexes': list(dict.fromkeys(mapping[position] for position in run))}
+            for kind, run in runs]
+
+
+def _aligned_formula_lines(page, layout, match):
+    """Reopen every visible character through exact glyph alignment on one page."""
+    if layout.get('page_text_sha256') != page['text_sha256'] or not layout.get('width') or not layout.get('height'):
+        return None
+    glyphs = layout.get('glyphs', ())
+    starts, n = [], 0
+    for glyph in glyphs:
+        starts.append(n)
+        n += len(glyph['text'])
+    mapping = {}
+    for block in layout.get('alignment', ()):
+        if block['kind'] != 'equal':
+            continue
+        start = max(match.start(), block['selected_start'])
+        stop = min(match.end(), block['selected_end'])
+        for position in range(start, stop):
+            offset = block['glyph_start'] + position - block['selected_start']
+            index = bisect_right(starts, offset) - 1
+            if index < 0:
+                return None
+            glyph = glyphs[index]
+            if glyph['text'][offset - starts[index]:offset - starts[index] + 1] != page['text'][position]:
+                return None
+            mapping[position] = index
+    result = []
+    previous = None
+    for line in re.finditer(r'[^\n]+', match[0]):
+        start, stop = match.start() + line.start(), match.start() + line.end()
+        visible = [position for position in range(start, stop) if not page['text'][position].isspace()]
+        if not visible:
+            continue
+        if any(position not in mapping for position in visible):
+            return None
+        indexes = list(dict.fromkeys(mapping[position] for position in visible))
+        boxes = [glyphs[index]['bbox'] for index in indexes]
+        box = union(boxes)
+        if not 0 <= box[0] < box[2] <= layout['width'] or not 0 <= box[1] < box[3] <= layout['height']:
+            return None
+        height = box[3] - box[1]
+        if previous and not (previous[3] - 1 <= box[1] <= previous[3] + height
+                             and abs(box[0] - previous[0]) <= height):
+            return None
+        start, stop = visible[0], visible[-1] + 1
+        result.append({'source_span': span(page, start, stop), 'bbox': box, 'glyph_indexes': indexes,
+                       'script_runs': _script_runs(page, glyphs, visible, mapping)})
+        previous = box
+    return result if len(result) >= 2 else None
+
+
+def wrapped_formula(page, layout, match, source_sha):
+    """Keep a quoted wrapped formula as source evidence without evaluating it."""
+    text = match.group().strip()
+    if (text[0], text[-1]) not in {('“', '”'), ('"', '"')}:
+        return None
+    expression = text[1:-1].partition('=')[2]
+    if not re.search(r'\)\s*[÷/]\s*\(', expression):
+        return None
+    depth, slashes = 0, 0
+    for char in expression:
+        if char == '(':
+            depth += 1
+        elif char == ')':
+            depth -= 1
+            if depth < 0:
+                return None
+        elif char in '/÷' and depth == 0:
+            slashes += 1
+    if depth or slashes != 1:
+        return None
+    lines = _aligned_formula_lines(page, layout, match)
+    if not lines:
+        return None
+    start = lines[0]['source_span']['char_start']
+    last = lines[-1]['source_span']
+    source = span(page, start, last['char_start'] + last['char_length'])
+    literal = source['exact_quote']
+    return dict(id='formula-'+digest([source_sha, source])[:24], kind='wrapped_formula_candidate',
+        literal=literal, source_span=source, expression_literal=expression.strip(),
+        expression_tree=None, arithmetic_status='unparsed', result_unit_literal=None,
+        geometry={'bbox': union([line['bbox'] for line in lines]), 'basis': 'exact_aligned_native_glyph_lines'},
+        source_lines=lines, variable_bindings_verified=False, legal_applicability='unknown', publication_eligible=False)
 
 def stated_number(literal):
     value=literal.replace('−','-')
@@ -79,9 +187,10 @@ def table_formulas(data):
     return result
 
 
-def extract_formulas(data, *, include_table_cells=True):
+def extract_formulas(data, *, include_table_cells=True, include_wrapped=True):
     layouts={p['page']:p for p in data.get('layout',[])};records=[]
     cells = table_formulas(data) if include_table_cells else []
+    wrapped = False
     for page in data['pages']:
         page_cells = [formula for formula in cells if formula['source_cell']['page']==page['page']]
         known=[]
@@ -105,6 +214,15 @@ def extract_formulas(data, *, include_table_cells=True):
             record['geometry']=field_geometry(page,layouts.get(page['page'],{}),match.start(),match.end())
             record['parent_element_ids']=[b['id'] for b in data['document_blocks']['blocks'] if any(s['page']==page['page'] and s['char_start']<match.end() and s['char_start']+s['char_length']>match.start() for s in b['spans'])]
             records.append(record);known.append((match.start(),match.end()))
+        if include_wrapped:
+            for match in WRAPPED_QUOTED_FORMULA.finditer(page['text']):
+                if any(a < match.end() and b > match.start() for a,b in known):
+                    continue
+                formula = wrapped_formula(page, layouts.get(page['page'], {}), match, data['source_pdf_sha256'])
+                if formula:
+                    records.append(formula)
+                    known.append((match.start(), match.end()))
+                    wrapped = True
         for line in re.finditer(r'[^\n]*[=<>≤≥≠≈≃≅≡±∓][^\n]*',page['text']):
             if any(a<line.end() and b>line.start() for a,b in known):continue
             geometry = field_geometry(page,layouts.get(page['page'],{}),line.start(),line.end())
@@ -120,5 +238,6 @@ def extract_formulas(data, *, include_table_cells=True):
                 geometry=geometry,
                 variable_bindings_verified=False,legal_applicability='unknown',publication_eligible=False))
         records.extend(page_cells)
-    return dict(schema_version='pdf2data.formulas.v2' if cells else 'pdf2data.formulas.v1',source_pdf_sha256=data['source_pdf_sha256'],formulas=records,
+    version = 3 if wrapped else 2 if cells else 1
+    return dict(schema_version=f'pdf2data.formulas.v{version}',source_pdf_sha256=data['source_pdf_sha256'],formulas=records,
                 grammar='bounded numeric + - * / with parentheses and stated equality; symbolic math remains unresolved',publication_eligible=False)

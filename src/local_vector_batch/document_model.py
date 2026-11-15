@@ -169,7 +169,9 @@ def validate_document_model(model,data):
     if 'formula_observations' in model:
         from .formula_observations import extract_formulas
         observations=model['formula_observations']
-        if observations!=extract_formulas(data,include_table_cells=observations.get('schema_version')!='pdf2data.formulas.v1'):
+        version=observations.get('schema_version')
+        if observations!=extract_formulas(data,include_table_cells=version!='pdf2data.formulas.v1',
+                                          include_wrapped=version=='pdf2data.formulas.v3'):
             raise ValueError('formula source anchor or arithmetic observation changed')
         pages={p['page']:p for p in data['pages']}
         for formula in model['formula_observations']['formulas']:
