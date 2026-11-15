@@ -10,7 +10,10 @@ from itertools import zip_longest
 import re
 
 from .document_blocks import digest, open_continued_sentence
-from .table_headers import OPEN_TOP_CONTINUATION_ROW, table_header_candidate
+from .table_headers import (
+    OPEN_TOP_CONTINUATION_ROW, formula_header_symbols, numeric_continuation_cell,
+    table_header_candidate,
+)
 
 FURNITURE = {'header', 'footer', 'whitespace', 'alternative_reading'}
 CONTINUED = re.compile(r'\s*\(?\s*(?:continued|continuation|contd\.?|जारी)\s*\)?\s*', re.I)
@@ -83,6 +86,20 @@ def _columns(table, width):
     return sorted({round(float(x)/width, 5) for b in boxes for x in (b[0], b[2])})
 
 
+def _formula_table_section(origin, later):
+    """A merged section label can precede a numeric continuation row."""
+    symbols = formula_header_symbols(origin)
+    rows = later.get('cells', [])
+    if not symbols or len(rows) < 2 or len(rows[1]) != len(symbols)+1:
+        return False
+    label, *values = rows[1]
+    if _blank(label) or not all(isinstance(value, str) and numeric_continuation_cell(value) for value in values):
+        return False
+    return any(cell['row']==cell['column']==0 and cell.get('column_span')==len(symbols)+1
+               and cell.get('row_span',1)==1 and cell.get('bbox') and not _blank(cell.get('text'))
+               for cell in later.get('cell_spans', []))
+
+
 def _marker(marker):
     value = marker.strip('(). ').casefold()
     if value.isdigit():
@@ -146,6 +163,7 @@ def build_continuations(data):
             boundary = bool(ab and bb and left.get('height') and right.get('height')
                             and ab[3]/left['height'] >= .7 and bb[1]/right['height'] <= .25)
             geometry = bool(ac and bc)
+            section = bool(boundary and geometry and _formula_table_section(root, b))
             if not ab or not bb or not left.get('height') or not right.get('height'):
                 reason = 'source_geometry_unavailable'
             elif not (boundary or repeated or marker):
@@ -161,17 +179,18 @@ def build_continuations(data):
                 reason = 'intervening_body_content_or_new_section'
             if reason is None and header is None:
                 reason = 'header_origin_not_established'
-            if reason is None and later_header is not None and not repeated:
+            if reason is None and later_header is not None and not (repeated or section):
                 reason = 'new_or_conflicting_header'
             if reason:
                 unresolved.append(dict(kind='table_boundary',from_id=a['id'],to_id=b['id'],
                                        from_page=number,to_page=following,reason=reason))
             else:
                 roots[b['id']] = root
-                split = _row_split(a, b, repeated)
+                split = _row_split(a, b, repeated or section)
                 signals = ['same_column_count']
                 if geometry: signals.append('matching_column_boundaries')
                 if repeated: signals.append('repeated_header')
+                if section: signals.append('full_width_section_before_formula_table_values')
                 if boundary: signals.append('page_foot_to_page_head')
                 if marker: signals.append('continuation_marker')
                 if b.get('detection_method') == OPEN_TOP_CONTINUATION_ROW:
@@ -190,7 +209,7 @@ def build_continuations(data):
                      continues_table_id=a['id'],origin_table_id=root['id'],
                      case='row_split' if split else 'header_repeated' if repeated else 'no_header',
                      signals=signals,header_similarity=similarity,
-                     first_data_row=1 if repeated else 0,row_split=split,
+                     first_data_row=1 if repeated or section else 0,row_split=split,
                      continuation_markers=[dict(location='source_block',block_id=block['id'],
                                                 page=block['spans'][0]['page'],text=_text(block))
                                            for block in marker_blocks]+

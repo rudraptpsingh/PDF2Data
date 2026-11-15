@@ -140,7 +140,8 @@ def build_overlays(data,source_document=None):
                     confidence=None,order=None,parsed_text_aligned=observation['parsed_text_aligned'],font_names=observation['font_names'])
         formatting(regions,width,height)
         for formula in data.get('document_model',{}).get('formula_observations',{}).get('formulas',[]):
-            if formula['source_span']['page']!=number:continue
+            anchor=formula.get('source_cell') or formula['source_span']
+            if anchor['page']!=number:continue
             geometry=formula.get('geometry')
             if not geometry:continue
             checked=formula.get('computed_value');unit=formula.get('result_unit_literal') or ''

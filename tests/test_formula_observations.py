@@ -93,3 +93,20 @@ def test_arithmetic_record_cannot_be_tampered_and_grouping_is_not_guessed():
     assert m['formula_observations']['formulas'][0]['arithmetic_status']=='unparsed'
     m['formula_observations']['formulas'][0]['computed_value']='123'
     with pytest.raises(ValueError,match='arithmetic observation changed'):validate_document_model(m,d)
+
+
+def test_table_formulas_use_their_own_cells_instead_of_the_interleaved_page_line():
+    mixed='(D)=(A-B)/ (F)=|min of (D-'
+    data=source([(mixed,150,False)])
+    headings=['Asset','Cost','Claimed','Norm','Allowable','Prior','Additional']
+    symbols=[None,'(A)','(B)','(C)','(D)=(A-B)/\n(100-C) * C','(E)','(F)=|min of (D-\nE) or (B-E)|']
+    data['tables']=[dict(id='table-1',table_version_id='version-1',page=1,
+        cells=[headings,symbols,['Asset-2','100','5','1%','0.96','5','0.00']],
+        cell_spans=[dict(id=f'cell-{column}',row=1,column=column,text=symbols[column],
+                         bbox=[72,140,400,175]) for column in (4,6)])]
+    model=extract_formulas(data)
+    assert model['schema_version']=='pdf2data.formulas.v2'
+    assert [(f['symbol'],f['literal'],f['source_cell']['cell_id']) for f in model['formulas']]==[
+        ('D',symbols[4],'cell-4'),('F',symbols[6],'cell-6')]
+    assert all(not f['variable_bindings_verified'] for f in model['formulas'])
+    assert extract_formulas(data,include_table_cells=False)['formulas'][0]['literal']==mixed
