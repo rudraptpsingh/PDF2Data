@@ -1,4 +1,8 @@
+from io import BytesIO
 from types import SimpleNamespace
+
+import pytest
+
 from local_vector_batch.native_tables import glyph_audit,is_ruling_object,table_shape
 
 
@@ -49,3 +53,49 @@ def test_unmapped_populated_raw_cell_is_rejected_instead_of_lost():
     found=SimpleNamespace(rows=[SimpleNamespace(cells=[(0,0,10,10),None])])
     with pytest.raises(ValueError,match='every populated'):
         table_shape(found,[['Visible','Unmapped value']],'t')
+
+
+@pytest.mark.parametrize(
+    ('prior_middle', 'extend_middle', 'expected_recovery'),
+    [(180, True, True), (200, True, False), (180, False, False)],
+)
+def test_open_top_row_requires_aligned_previous_table_and_all_rulings(
+    prior_middle, extend_middle, expected_recovery,
+):
+    pdfplumber = pytest.importorskip('pdfplumber')
+    canvas = pytest.importorskip('reportlab.pdfgen.canvas')
+    from local_vector_batch.native_tables import find_native_tables
+
+    data = BytesIO()
+    pdf = canvas.Canvas(data, pagesize=(400, 600))
+    for x in (50, prior_middle, 320):
+        pdf.line(x, 33, x, 78)
+    for y in (33, 48, 63, 78):
+        pdf.line(50, y, 320, y)
+    for label, y in zip(('Voltage', '<132kV', 'Other tier'), (67, 52, 37)):
+        pdf.drawString(55, y, label)
+        pdf.drawString(215, y, 'Rate')
+    pdf.showPage()
+    for x in (50, 180, 320):
+        top = 580 if x != 180 or extend_middle else 565
+        pdf.line(x, 535, x, top)
+    for y in (535, 550, 565):
+        pdf.line(50, y, 320, y)
+    for label, value, y in (('132 kV', 'Rs. 2 crore', 569), ('Higher tier', 'Rate A', 554),
+                            ('Top tier', 'Rate B', 539)):
+        pdf.drawString(55, y, label)
+        pdf.drawString(215, y, value)
+    pdf.save()
+    data.seek(0)
+    with pdfplumber.open(data) as source:
+        preceding, = find_native_tables(source.pages[0])
+        assert preceding.extract()[1][0] == '<132kV'
+        page = source.pages[1]
+        table, = find_native_tables(page)
+        expected = [['Higher tier', 'Rate A'], ['Top tier', 'Rate B']]
+        if expected_recovery:
+            expected.insert(0, ['132 kV', 'Rs. 2 crore'])
+        assert table.extract() == expected
+        shape = table_shape(table, table.extract(), 'continuation')
+        assert shape['structure_status'] == 'source_geometry_candidate_requires_cell_review'
+        assert (shape['detection_method'] == 'source_rulings_open_top_continuation_row') == expected_recovery

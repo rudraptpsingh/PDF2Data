@@ -7,6 +7,7 @@ from test_document_continuations import fixture
 from local_vector_batch.document_blocks import span
 from local_vector_batch.document_continuations import build_continuations
 from local_vector_batch.table_contexts import iter_table_contexts
+from local_vector_batch.table_headers import OPEN_TOP_CONTINUATION_ROW
 
 HEAD = [['Entity', 'Amount'], ['Plant A', '10']]
 FOOT, TOP = [50, 700, 350, 980], [50, 60, 350, 200]
@@ -179,6 +180,27 @@ def test_new_fields_are_additive_and_reach_the_table_context_record():
     assert [c['raw_text'] for c in second['cells']] == [None, '20']
     assert [(c['row'], c['column']) for c in second['cells']] == [(0, 0), (0, 1)]
     assert data['tables'] == tables
+
+
+def test_open_top_row_carries_earlier_header_context_without_rewriting_cells():
+    previous = [['Voltage level', 'Conn-BG2 per terminal bay'], ['<132kV', 'Rs. 1 Crore']]
+    following = [['132 kV', 'Rs. 2 crore'], ['220/230 kV', 'Rs. 3 crore']]
+    data = document([(1, previous, FOOT), (2, following, TOP)])
+    assert reason(data) == ['new_or_conflicting_header']
+    data['tables'][1]['detection_method'] = OPEN_TOP_CONTINUATION_ROW
+    data['document_model'] = {'continuations': build_continuations(data)}
+    link, = data['document_model']['continuations']['links']
+    assert link['case'] == 'no_header' and link['first_data_row'] == 0
+    assert 'open_top_row_with_native_rulings' in link['signals']
+    _, second = iter_table_contexts(data)
+    rate = next(cell for cell in second['cells'] if cell['row'] == 0 and cell['column'] == 1)
+    assert rate['raw_text'] == 'Rs. 2 crore'
+    assert rate['column_header_candidates'] == [{'table_id': 't1', 'cell_id': 't1:r0:c1', 'page': 1}]
+    assert data['tables'][0]['cells'] == previous and data['tables'][1]['cells'] == following
+    assert second['semantic_review_required'] and not second['publication_eligible']
+
+    add_block(data, 2, 'paragraph', [50, 20, 350, 40], 'A new statement intervenes.')
+    assert reason(data) == ['intervening_body_content_or_new_section']
 
 
 def test_three_page_chain_keeps_one_origin():

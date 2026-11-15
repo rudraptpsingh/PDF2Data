@@ -10,7 +10,7 @@ from itertools import zip_longest
 import re
 
 from .document_blocks import digest, open_continued_sentence
-from .table_headers import first_row_header_candidate
+from .table_headers import OPEN_TOP_CONTINUATION_ROW, table_header_candidate
 
 FURNITURE = {'header', 'footer', 'whitespace', 'alternative_reading'}
 CONTINUED = re.compile(r'\s*\(?\s*(?:continued|continuation|contd\.?|जारी)\s*\)?\s*', re.I)
@@ -27,7 +27,7 @@ def _text(block):
 
 
 def _header(table):
-    if first_row_header_candidate(table.get('cells', [])) is None:
+    if table_header_candidate(table) is None:
         return None
     return [re.sub(r'\s+', ' ', str(v or '')).strip().casefold() for v in table['cells'][0]]
 
@@ -174,6 +174,8 @@ def build_continuations(data):
                 if repeated: signals.append('repeated_header')
                 if boundary: signals.append('page_foot_to_page_head')
                 if marker: signals.append('continuation_marker')
+                if b.get('detection_method') == OPEN_TOP_CONTINUATION_ROW:
+                    signals.append('open_top_row_with_native_rulings')
                 signals.append('no_intervening_body_content')
                 basis = ['adjacent_pages']+(['boundary_geometry'] if boundary else [])+\
                         (['matching_column_boundaries'] if geometry else [])+['no_new_body_section']
