@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0-rc.22 — 2026-11-15
+
+- Preserve each symbolic table assignment in its own hashed physical cell.
+  Emit cell-anchored records in `pdf2data.formulas.v2` where applicable and
+  retain verification of the earlier page-anchored schema.
+- Reopen the original column labels, symbols and units for sectioned table
+  continuations. Keep source cells and review holds intact.
+
 ## 0.2.0-rc.21 — 2026-11-15
 
 - Retain a native table row at the top of a continued page when the printed
