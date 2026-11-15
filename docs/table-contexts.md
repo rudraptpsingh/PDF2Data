@@ -9,6 +9,24 @@ unchanged. Re-export an older package into a **new** destination to obtain it.
 pdf2data export-readable --package ./l1/example --output ./readable/example --json
 ```
 
+For a package-bound processed parent, generate the candidate model and then
+derive the fragment and sidecar together from that exact processed export:
+
+```sh
+pdf2data export-l1-data --packages ./l1 --output ./processed.json --document-model --json
+pdf2data export-l1-table-contexts --processed ./processed.json --source-id example --output ./context --json
+pdf2data verify-l1-table-contexts --processed ./processed.json --bundle ./context --json
+```
+
+`context/data.json` is the complete document object from `processed.json`;
+`context/table-contexts.jsonl` references it, and `receipt.json` records both
+hashes and the processed and package identities. Adapt the same processed
+export as the parent before consuming this pair. The sidecar command does not
+independently authenticate an arbitrary processed input; verification checks
+the exact processed bytes and reconstructs the sidecar but does not reverify the
+original L1 package. These associations
+remain candidates, and neither command clears any quality or legal hold.
+
 Each record contains:
 
 - Original PDF hash, physical page and selected-page text hash.

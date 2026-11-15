@@ -225,6 +225,16 @@ def parser() -> argparse.ArgumentParser:
     export_l1.add_argument("--output", required=True, type=Path)
     export_l1.add_argument("--json", action="store_true")
     export_l1.add_argument("--region-packets", type=Path, help="include verified mixed native/raster candidates without clearing quality flags")
+    export_l1.add_argument("--document-model", action="store_true", help="include candidate document model and source-bound continuations")
+    table_contexts=sub.add_parser('export-l1-table-contexts',help='export one processed document fragment and its matching table-context sidecar')
+    table_contexts.add_argument('--processed',required=True,type=Path)
+    table_contexts.add_argument('--source-id',required=True)
+    table_contexts.add_argument('--output',required=True,type=Path)
+    table_contexts.add_argument('--json',action='store_true')
+    verify_contexts=sub.add_parser('verify-l1-table-contexts',help='replay a processed fragment and sidecar pair')
+    verify_contexts.add_argument('--processed',required=True,type=Path)
+    verify_contexts.add_argument('--bundle',required=True,type=Path)
+    verify_contexts.add_argument('--json',action='store_true')
     query_export=sub.add_parser('export-query-data',help='export complete cached pages/tables/units with hashed raw sidecar references; no extraction or approval')
     query_export.add_argument('--packages',required=True,type=Path)
     query_export.add_argument('--output',required=True,type=Path)
@@ -596,7 +606,13 @@ def main(argv: list[str] | None = None) -> int:
             result=write_observations(args.package,args.pages,args.output,calendar_policy=args.calendar_policy,rules_path=args.rules)
         elif args.command == "export-l1-data":
             from .l1_export import export_processed
-            result = export_processed(args.packages, args.output, args.region_packets)
+            result = export_processed(args.packages, args.output, args.region_packets, document_model=args.document_model)
+        elif args.command == 'export-l1-table-contexts':
+            from .l1_export import export_table_contexts
+            result = export_table_contexts(args.processed,args.source_id,args.output)
+        elif args.command == 'verify-l1-table-contexts':
+            from .l1_export import verify_table_contexts
+            result = verify_table_contexts(args.processed,args.bundle)
         elif args.command == 'export-query-data':
             from .query_export import export_query_data
             result = export_query_data(args.packages,args.output)

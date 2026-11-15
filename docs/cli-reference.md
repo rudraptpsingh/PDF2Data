@@ -49,6 +49,8 @@ legal relationships or rerun OCR. Use a new output folder.
 | `pdf2data l1-qwen-validate` | compare source-bound readings without promoting unresolved content |
 | `pdf2data l1-qwen-reproof` | reassess exact source-raster Qwen witnesses into a new immutable L1 version; never replace text |
 | `pdf2data export-l1-data` | export ALL processed text/layout/tables and diagnostics, including flagged pages |
+| `pdf2data export-l1-table-contexts` | derive a document fragment and table-context sidecar from one processed export |
+| `pdf2data verify-l1-table-contexts` | reconstruct and verify a processed fragment and context pair |
 | `pdf2data pdf-repair` | repair selected original physical pages without reprocessing the PDF |
 | `pdf2data pdf-native-repair` | atomically replace one page from a source-bound PDFium/pypdf/raster receipt |
 | `pdf2data pdf-batch` | extract a bounded manifest of local PDFs with resumable page receipts |
