@@ -35,7 +35,63 @@ def find_native_tables(page, *, white_fill_candidates=None):
                     proof=white_fill_single_column_proof(page,candidate)
                     if proof is not None:white_fill_candidates.append(proof)
                 found.append(candidate)
+        found = [_recover_open_continuation_row(page, filtered, table) for table in found]
     return found
+
+
+def _row_columns(row):
+    if len(row.cells) < 2 or any(cell is None for cell in row.cells):
+        return None
+    columns = [(cell[0], cell[2]) for cell in row.cells]
+    if any(abs(left[1] - right[0]) > 1.5 for left, right in zip(columns, columns[1:])):
+        return None
+    return columns
+
+
+def _recover_open_continuation_row(page, filtered, table):
+    """Keep the printed cells above a continuation grid's first horizontal rule."""
+    if (getattr(table, '_powerlex_detection', None) or getattr(page, 'page_number', 1) < 2
+            or table.bbox[1] > page.height * .12):
+        return table
+    columns = _row_columns(table.rows[0])
+    if not columns:
+        return table
+    first_row = table.rows[0].cells
+    bottom = table.bbox[1]
+    row_height = min(cell[3] - cell[1] for cell in first_row)
+    boundaries = [columns[0][0], *(right for _, right in columns)]
+    # Each visible vertical ruling must extend upward by a comparable amount
+    # from the first detected row and reach the same physical top.
+    tops = []
+    for x in boundaries:
+        starts = [edge['top'] for edge in filtered.vertical_edges
+                  if abs(edge['x0'] - x) <= 1.5 and edge['bottom'] >= bottom - 1.5
+                  and row_height * .65 <= bottom - edge['top'] <= row_height * 1.35]
+        if not starts:
+            return table
+        tops.append(min(starts))
+    if max(tops) - min(tops) > 1.5:
+        return table
+    top = max(tops)
+    previous = page.pdf.pages[page.page_number - 2]
+    previous_tables = previous.filter(is_ruling_object).find_tables()
+    matching = []
+    for prior in previous_tables:
+        prior_columns = _row_columns(prior.rows[-1])
+        if (prior.bbox[3] >= previous.height * .88 and prior_columns
+                and len(prior_columns) == len(columns)
+                and all(abs(left - prior_left) <= 1.5 and abs(right - prior_right) <= 1.5
+                        for (left, right), (prior_left, prior_right) in zip(columns, prior_columns))):
+            matching.append(prior)
+    if len(matching) != 1:
+        return table
+    added_cells = [(left, top, right, bottom) for left, right in columns]
+    recovered = type(table)(table.page, added_cells + table.cells)
+    row = recovered.extract()[0]
+    if any(not value or len(value.splitlines()) != 1 for value in row):
+        return table
+    recovered._powerlex_detection = 'source_rulings_open_top_continuation_row'
+    return recovered
 
 
 def candidate_source_diagnostic(page, found):

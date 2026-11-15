@@ -41,6 +41,31 @@ def test_operator_glyphs_are_normalized_for_arithmetic_only():
     assert arithmetic('1,00,000 / 4')[0]==25000
 
 
+@pytest.mark.parametrize('literal', [
+    'Conn-BG2: <132kV Rs. 1 Crore',
+    'X + 2 + 3 = 5',
+    '2 + 3 = 5 + 7',
+    '2 + 3 = 5 ≥ X',
+])
+def test_comparison_and_partial_equalities_keep_the_entire_source_literal(literal):
+    d = source([(literal, 150, False)])
+    formula, = extract_formulas(d)['formulas']
+    assert formula['literal'] == literal
+    assert formula['kind'] == 'unparsed_formula_candidate'
+    assert formula['expression_tree'] is None
+    assert formula['arithmetic_status'] == 'unparsed'
+
+
+def test_parenthesized_numeric_equality_preserves_operators_and_units():
+    literal = '(145 − 45) × 2 ÷ 5 = 40 MW'
+    d = source([(literal, 150, False)])
+    formula, = extract_formulas(d)['formulas']
+    assert formula['literal'] == literal
+    assert formula['arithmetic_status'] == 'exact_match'
+    assert formula['computed_rational'] == '40/1'
+    assert formula['result_unit_literal'] == 'MW'
+
+
 @pytest.mark.parametrize('expr',["__import__('os').system('echo bad')",'2 ** 10','1,2,3 + 1','a + 1','9'*31+' + 1'])
 def test_unbounded_or_executable_source_syntax_is_not_accepted(expr):
     with pytest.raises((ValueError,SyntaxError)):arithmetic(expr)

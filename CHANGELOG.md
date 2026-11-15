@@ -1,7 +1,14 @@
 # Changelog
 
-## Unreleased
+## 0.2.0-rc.21 — 2026-11-15
 
+- Retain a native table row at the top of a continued page when the printed
+  vertical rulings share a top and align with the preceding page's grid.
+  The added cells remain candidates for source review. The GNA reference
+  retains the literal `<132kV` on page 21 and the separate `132 kV` row on page 22.
+- Preserve comparison operators as source literals. Treat a clipped numeric
+  fragment of a symbolic equation, comparison or longer result as unresolved.
+  Keep exact rational checks for complete supported numeric equalities.
 - Cross-page table continuation links now say which case they are
   (`header_repeated`, `no_header`, `row_split`), which signals established
   them, and which table they continue. A repeated header is matched by
@@ -9,7 +16,7 @@
   fragments that are not at the page edge. Table-context records carry the same
   facts in a new `continuation` object. Cells, grids and table IDs are
   unchanged; continuation link IDs change because the record has new fields.
-  This changes processing output and belongs in the next release candidate.
+  This changes processing output. Reprocess affected sources with a new pin.
 
 ## 0.2.0-rc.19 — 2026-11-03
 
