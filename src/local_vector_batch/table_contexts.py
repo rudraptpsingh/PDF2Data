@@ -7,7 +7,7 @@ from hashlib import sha256
 import json
 import re
 
-from .table_headers import table_header_candidate
+from .table_headers import formula_header_symbols, table_header_candidate
 
 SCHEMA = 'pdf2data.table-context.v1'
 UNIT = re.compile(r'\b(?:INR|Rs\.?|rupees|lakh|lakhs|crore|crores|MW|MWh|kW|kWh|paise|percent)\b|₹|%|रुपये|लाख|करोड़', re.I)
@@ -84,6 +84,10 @@ def iter_table_contexts(data):
         if continuation:
             origin = tables[continuation['header_context']['table_id']]
         header_row = table_header_candidate(origin)
+        symbols = formula_header_symbols(table) if physical and origin is table else {}
+        for cell in cells:
+            if cell['row']==1 and cell['column'] in symbols and cell['column_span']==1:
+                cell['role_candidate'] = 'header'
         headers = [c for c in cells if c['role_candidate']=='header' or header_row==0 and c['row']==0] if origin is table else header_cache.get(origin['id'], [])
         header_cache[table['id']] = [{k:h[k] for k in ('id','row','column','row_span','column_span')}for h in headers]
         by_row = {}
@@ -98,6 +102,11 @@ def iter_table_contexts(data):
         for cell in cells:
             raw=str(cell['raw_text'] or '')
             roles=[name for name,pattern in [('unit',UNIT),('period',PERIOD),('footnote',NOTE)] if pattern.search(raw)]
+            if cell['row']==1 and cell['column'] in symbols and cell['column_span']==1:
+                symbol, assignment = symbols[cell['column']]
+                candidates.append(dict(location='source_cell',cell_id=cell['id'],
+                    roles=['column_symbol','formula'] if assignment else ['column_symbol'],
+                    symbol=symbol,association='physical_column_header_candidate'))
             if roles:candidates.append(dict(location='source_cell',cell_id=cell['id'],roles=roles,
                                             association='scope_not_inferred'))
         box=table.get('bbox')

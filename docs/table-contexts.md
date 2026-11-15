@@ -22,9 +22,13 @@ Each record contains:
   missing unique page quote does not mean the raw cell value was lost.
 - Candidate column headers, including explicit merged/multiple header rows,
   and references to preceding cells in the same physical row.
+- A secondary header with consecutive column symbols can supply cell-local
+  formula candidates. The symbol and literal formula remain scoped to their
+  table and column. Read the candidate's referenced cell for its exact text.
 - A reference to an earlier physical header when the existing continuation
   pass found a table-continuation candidate. Values are never copied into
-  another page's grid.
+  another page's grid. A full-width section label can precede the first
+  continued data row when the source geometry and formula columns agree.
 - Literal unit, period and footnote candidates in cells or nearby source
   lines. Proximity is recorded as proximity; contradictory dates are both
   retained. A nearby unit/date is never silently assigned to all values.

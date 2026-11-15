@@ -74,6 +74,31 @@ def test_no_header_on_next_page_joins_on_page_foot_to_page_head():
     assert link['header_context']['raw_cells'] == ['Entity', 'Amount']
 
 
+def test_formula_header_links_across_a_full_width_section_row():
+    heading = [['Asset', 'Cost', 'Claim', 'Difference'],
+               [None, '(A)', '(B)', '(C)=(A-\nB)'],
+               ['Combined assets', '20', '5', '15']]
+    continuation = [['Transmission Line', None, None, None], ['Asset-2', '10', '3', '7']]
+    data = document([(1, heading, FOOT), (2, continuation, TOP)])
+    first, second = data['tables']
+    second['cell_spans'] = [cell for cell in second['cell_spans']
+                            if cell['row'] != 0 or cell['column'] == 0]
+    second['cell_spans'][0].update(column_span=4,bbox=TOP)
+    link = only(data)
+    assert link['case'] == 'no_header' and link['first_data_row'] == 1
+    assert 'full_width_section_before_formula_table_values' in link['signals']
+    data['document_model'] = {'continuations': {'links': [link]}}
+    origin, fragment = list(iter_table_contexts(data))
+    value = next(cell for cell in fragment['cells'] if cell['row']==1 and cell['column']==3)
+    assert [header['cell_id'] for header in value['column_header_candidates']] == ['t1:r0:c3','t1:r1:c3']
+    formula = next(candidate for candidate in origin['context_candidates'] if 'formula' in candidate['roles'])
+    assert formula['symbol'] == 'C' and formula['cell_id'] == 't1:r1:c3'
+    assert origin['cells'][7]['raw_text'] == '(C)=(A-\nB)'
+    assert first['cells'] == heading and second['cells'] == continuation
+    second['cell_spans'][0]['column_span'] = 1
+    assert reason(data) == ['new_or_conflicting_header']
+
+
 def test_row_split_points_at_both_fragments_and_moves_no_cell():
     data = document([(1, HEAD+[['Plant B', None]], FOOT), (2, [[None, '20'], ['Plant C', '30']], TOP)])
     original = deepcopy(data)
