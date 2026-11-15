@@ -23,6 +23,13 @@ exact native glyph lines place them wholly in the bottom seven percent of the
 source page. They remain in raw pages and block spans. This prevents footer text
 being joined to the next page's legal paragraph.
 
+Wrapped quoted formulas with one top-level division can be recorded as
+`pdf2data.formulas.v3` evidence. The extractor preserves the complete selected
+page span, each original line, its exact visible glyph indexes and bounding box,
+and candidate superscript or subscript runs. It requires matching glyphs on
+adjacent physical lines. A v3 candidate has no expression tree, variable binding
+or calculation approval. V1 and v2 records retain their original replay rules.
+
 ## Validation
 
 Block validation checks full page hashes, unique IDs, exact quotes and a complete,

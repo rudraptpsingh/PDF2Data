@@ -1,4 +1,5 @@
 from copy import deepcopy
+from difflib import SequenceMatcher
 from fractions import Fraction
 import pytest
 from test_document_model import source
@@ -110,3 +111,29 @@ def test_table_formulas_use_their_own_cells_instead_of_the_interleaved_page_line
         ('D',symbols[4],'cell-4'),('F',symbols[6],'cell-6')]
     assert all(not f['variable_bindings_verified'] for f in model['formulas'])
     assert extract_formulas(data,include_table_cells=False)['formulas'][0]['literal']==mixed
+
+
+def test_wrapped_quoted_division_requires_exact_lines_and_retains_script_glyphs():
+    lines = ['“Waiver (%) = 100 X (blocks with RE', 'that were granted) / (all blocks', 'X 0.3 X access)”']
+    data = source([(line, 150 + 14*i, False) for i,line in enumerate(lines)])
+    page, layout = data['pages'][0], data['layout'][0]
+    native = ''.join(g['text'] for g in layout['glyphs'])
+    for g in layout['glyphs'][native.index('RE'):native.index('RE') + 2]:
+        g.update(size=7, bbox=[g['bbox'][0], 156, g['bbox'][2], 163])
+    layout.update(page_text_sha256=page['text_sha256'],
+        alignment=[dict(kind=k,glyph_start=a,glyph_end=b,selected_start=c,selected_end=d)
+                   for k,a,b,c,d in SequenceMatcher(None,native,page['text'],autojunk=False).get_opcodes()])
+    historical = build_document_model(data)
+    historical['formula_observations'] = extract_formulas(data, include_wrapped=False)
+    validate_document_model(historical, data)
+    result = extract_formulas(data)
+    formula, = result['formulas']
+    assert result['schema_version'] == 'pdf2data.formulas.v3'
+    assert formula['literal'] == '\n'.join(lines)
+    assert [line['source_span']['exact_quote'] for line in formula['source_lines']] == lines
+    script, = formula['source_lines'][0]['script_runs']
+    assert (script['kind'], script['source_span']['exact_quote']) == ('subscript_candidate', 'RE')
+    assert formula['expression_tree'] is None
+    assert not formula['variable_bindings_verified']
+    layout['glyphs'][native.index('/')]['text'] = '+'
+    assert extract_formulas(data)['formulas'][0]['kind'] == 'unparsed_formula_candidate'
