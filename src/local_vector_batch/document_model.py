@@ -168,9 +168,13 @@ def validate_document_model(model,data):
         if model['continuations']!=build_continuations(data):raise ValueError('continuation source anchors or associations changed')
     if 'formula_observations' in model:
         from .formula_observations import extract_formulas
-        if model['formula_observations']!=extract_formulas(data):raise ValueError('formula source anchor or arithmetic observation changed')
+        observations=model['formula_observations']
+        if observations!=extract_formulas(data,include_table_cells=observations.get('schema_version')!='pdf2data.formulas.v1'):
+            raise ValueError('formula source anchor or arithmetic observation changed')
         pages={p['page']:p for p in data['pages']}
         for formula in model['formula_observations']['formulas']:
+            # Cell-local evidence was checked by re-deriving the complete record.
+            if formula['kind']=='table_formula_candidate':continue
             s=formula['source_span'];p=pages[s['page']]
             if s['page_text_sha256']!=p['text_sha256'] or p['text'][s['char_start']:s['char_start']+s['char_length']]!=formula['literal'] or s['exact_quote']!=formula['literal']:raise ValueError('formula source anchor changed')
     if 'metadata' in model:

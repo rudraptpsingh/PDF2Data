@@ -4,6 +4,7 @@ from decimal import Decimal,localcontext
 from fractions import Fraction
 from .document_blocks import span,digest
 from .document_metadata import field_geometry
+from .table_headers import formula_header_symbols
 
 NUMBER=r'[+\-−]?(?:\d[\d,]*(?:\.\d+)?|\.\d+)'
 EQUALITY=re.compile(r'(?<![\w.,])(?P<left>(?:\(\s*)*'+NUMBER+r'[\d\s.,()+\-−*/×÷]*?)\s*=\s*(?P<right>'+NUMBER+r')\s*(?P<unit>MWh|kWh|MW|kW|Hz|INR|%)?(?![\w.])')
@@ -54,9 +55,35 @@ def is_partial_equality(text, match):
             or bool(suffix) and suffix[0] in OPERATOR_BOUNDARY)
 
 
-def extract_formulas(data):
+def table_formulas(data):
+    result = []
+    for table in data.get('tables', []):
+        symbols = formula_header_symbols(table)
+        for index, cell in enumerate(table.get('cell_spans', [])):
+            symbol, assignment = symbols.get(cell['column'], (None, False))
+            if cell['row'] != 1 or cell.get('column_span',1) != 1 or not assignment or not cell.get('bbox'):
+                continue
+            literal = cell['text']
+            if literal != table['cells'][1][cell['column']]:
+                continue
+            source = dict(page=table['page'], table_id=table['id'], table_version_id=table['table_version_id'],
+                          cell_id=cell['id'], cell_span_index=index, row=1, column=cell['column'],
+                          char_start=0, char_length=len(literal), exact_quote=literal,
+                          offset_encoding='codepoint')
+            result.append(dict(id='formula-'+digest([data['source_pdf_sha256'],source])[:24],
+                kind='table_formula_candidate', literal=literal, source_cell=source, symbol=symbol,
+                expression_literal=literal.partition('=')[2].strip(), expression_tree=None,
+                arithmetic_status='unparsed', result_unit_literal=None,
+                geometry=dict(bbox=cell['bbox'],basis='native_table_cell'),
+                variable_bindings_verified=False, legal_applicability='unknown', publication_eligible=False))
+    return result
+
+
+def extract_formulas(data, *, include_table_cells=True):
     layouts={p['page']:p for p in data.get('layout',[])};records=[]
+    cells = table_formulas(data) if include_table_cells else []
     for page in data['pages']:
+        page_cells = [formula for formula in cells if formula['source_cell']['page']==page['page']]
         known=[]
         for match in EQUALITY.finditer(page['text']):
             if is_partial_equality(page['text'], match):
@@ -80,9 +107,18 @@ def extract_formulas(data):
             records.append(record);known.append((match.start(),match.end()))
         for line in re.finditer(r'[^\n]*[=<>≤≥≠≈≃≅≡±∓][^\n]*',page['text']):
             if any(a<line.end() and b>line.start() for a,b in known):continue
+            geometry = field_geometry(page,layouts.get(page['page'],{}),line.start(),line.end())
+            if geometry and any(
+                re.search(r'\(\s*'+formula['symbol']+r'\s*\)\s*=',line.group())
+                and all(max(geometry['bbox'][i], formula['geometry']['bbox'][i]) <
+                        min(geometry['bbox'][i+2], formula['geometry']['bbox'][i+2]) for i in (0,1))
+                for formula in page_cells
+            ):
+                continue
             records.append(dict(id='formula-'+digest([data['source_pdf_sha256'],page['page'],line.start(),line.group()])[:24],kind='unparsed_formula_candidate',literal=line.group(),
                 source_span=span(page,line.start(),line.end()),expression_tree=None,arithmetic_status='unparsed',result_unit_literal=None,
-                geometry=field_geometry(page,layouts.get(page['page'],{}),line.start(),line.end()),
+                geometry=geometry,
                 variable_bindings_verified=False,legal_applicability='unknown',publication_eligible=False))
-    return dict(schema_version='pdf2data.formulas.v1',source_pdf_sha256=data['source_pdf_sha256'],formulas=records,
+        records.extend(page_cells)
+    return dict(schema_version='pdf2data.formulas.v2' if cells else 'pdf2data.formulas.v1',source_pdf_sha256=data['source_pdf_sha256'],formulas=records,
                 grammar='bounded numeric + - * / with parentheses and stated equality; symbolic math remains unresolved',publication_eligible=False)

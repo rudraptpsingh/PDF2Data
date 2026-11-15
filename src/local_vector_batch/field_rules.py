@@ -181,7 +181,8 @@ def compute(data,rules,rules_sha,family):
         if field.get('extractor','regex')=='formulas':
             if formula_records is None:
                 from .formula_observations import extract_formulas
-                formula_records=extract_formulas(data)['formulas']
+                # Page-scoped configured fields use contiguous page text anchors.
+                formula_records=[f for f in extract_formulas(data)['formulas'] if 'source_span' in f]
             for f in formula_records:
                 if field.get('pages')and f['source_span']['page']not in field['pages']:continue
                 f.setdefault('answer_gate',dict(structured_math_allowed=False,calculation_allowed=False,reasons=['formula_structure_not_proven_by_configured_field_match']))
