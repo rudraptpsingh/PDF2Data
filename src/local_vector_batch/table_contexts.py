@@ -7,7 +7,7 @@ from hashlib import sha256
 import json
 import re
 
-from .table_headers import first_row_header_candidate
+from .table_headers import table_header_candidate
 
 SCHEMA = 'pdf2data.table-context.v1'
 UNIT = re.compile(r'\b(?:INR|Rs\.?|rupees|lakh|lakhs|crore|crores|MW|MWh|kW|kWh|paise|percent)\b|₹|%|रुपये|लाख|करोड़', re.I)
@@ -83,7 +83,7 @@ def iter_table_contexts(data):
         continuation = inherited.get(table['id'])
         if continuation:
             origin = tables[continuation['header_context']['table_id']]
-        header_row = first_row_header_candidate(origin.get('cells', []))
+        header_row = table_header_candidate(origin)
         headers = [c for c in cells if c['role_candidate']=='header' or header_row==0 and c['row']==0] if origin is table else header_cache.get(origin['id'], [])
         header_cache[table['id']] = [{k:h[k] for k in ('id','row','column','row_span','column_span')}for h in headers]
         by_row = {}

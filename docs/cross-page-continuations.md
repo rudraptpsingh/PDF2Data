@@ -75,6 +75,12 @@ continuation marker between them or in the later fragment's first row. Body
 text between the fragments, a terminal total row, a different header, differing
 column boundaries or missing table boxes still prevent a link.
 
+An open-top continuation row can be recovered when its printed vertical
+rulings align with the preceding page's grid, each cell has a single text line,
+and at least one cell contains a numeric value. That row is a data candidate.
+Column headers stay referenced on the earlier page and the ordinary boundary
+and review checks still apply.
+
 `row_split` is reported only in its complementary form: the earlier fragment's
 last row has a label and blank cells, the later fragment's first data row has a
 blank label, and no column has text in both. A sparse row can look like this,

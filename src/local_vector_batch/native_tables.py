@@ -5,7 +5,7 @@ import re
 import hashlib
 import json
 from collections import Counter
-from .table_headers import first_row_header_candidate
+from .table_headers import OPEN_TOP_CONTINUATION_ROW, numeric_continuation_cell, table_header_candidate
 
 
 def is_ruling_object(obj: dict) -> bool:
@@ -88,9 +88,10 @@ def _recover_open_continuation_row(page, filtered, table):
     added_cells = [(left, top, right, bottom) for left, right in columns]
     recovered = type(table)(table.page, added_cells + table.cells)
     row = recovered.extract()[0]
-    if any(not value or len(value.splitlines()) != 1 for value in row):
+    if (any(not value or len(value.splitlines()) != 1 for value in row)
+            or not any(numeric_continuation_cell(value) for value in row)):
         return table
-    recovered._powerlex_detection = 'source_rulings_open_top_continuation_row'
+    recovered._powerlex_detection = OPEN_TOP_CONTINUATION_ROW
     return recovered
 
 
@@ -205,7 +206,8 @@ def table_shape(found, cells: list[list], table_id: str) -> dict:
     xs=sorted(set(round(float(x),2) for b in boxes for x in (b[0],b[2])))
     ys=sorted(set(round(float(y),2) for b in boxes for y in (b[1],b[3])))
     spans=[];seen=set()
-    header_row=first_row_header_candidate(cells)
+    detection_method = getattr(found, '_powerlex_detection', 'source_rulings_excluding_fill_only_text_shading')
+    header_row=table_header_candidate({'cells': cells, 'detection_method': detection_method})
     # pdfplumber row positions may omit boundaries that occur only inside a
     # vertically merged cell. Place values by physical box coordinates.
     geometry_grid=[[None for _ in range(len(xs)-1)] for _ in range(len(ys)-1)]
@@ -238,5 +240,5 @@ def table_shape(found, cells: list[list], table_id: str) -> dict:
         'table_version_id':table_version,'table_geometry_sha256':grid_hash,'unresolved_grid_slots':unresolved,
         'row_count':len(ys)-1,'column_count':len(xs)-1,'cell_spans':spans,
         'structure_status':'source_geometry_candidate_requires_cell_review',
-        'detection_method':getattr(found,'_powerlex_detection','source_rulings_excluding_fill_only_text_shading'),
+        'detection_method':detection_method,
         'header_associations':'candidate_only','blank_cell_policy':'never_inherit_or_fill'}

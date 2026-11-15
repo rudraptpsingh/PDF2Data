@@ -46,6 +46,8 @@ def test_operator_glyphs_are_normalized_for_arithmetic_only():
     'X + 2 + 3 = 5',
     '2 + 3 = 5 + 7',
     '2 + 3 = 5 ≥ X',
+    '2 + 3 = 5 ± 0.1 MW',
+    'Voltage ≈ 132 kV',
 ])
 def test_comparison_and_partial_equalities_keep_the_entire_source_literal(literal):
     d = source([(literal, 150, False)])
@@ -64,6 +66,15 @@ def test_parenthesized_numeric_equality_preserves_operators_and_units():
     assert formula['arithmetic_status'] == 'exact_match'
     assert formula['computed_rational'] == '40/1'
     assert formula['result_unit_literal'] == 'MW'
+
+
+def test_unicode_negative_result_is_kept_as_printed():
+    literal = '4035.78 − 4045.78 = −10.00'
+    formula, = extract_formulas(source([(literal, 150, False)]))['formulas']
+    assert formula['literal'] == literal
+    assert formula['stated_result_literal'] == '−10.00'
+    assert formula['computed_rational'] == '-10/1'
+    assert formula['arithmetic_status'] == 'exact_match'
 
 
 @pytest.mark.parametrize('expr',["__import__('os').system('echo bad')",'2 ** 10','1,2,3 + 1','a + 1','9'*31+' + 1'])

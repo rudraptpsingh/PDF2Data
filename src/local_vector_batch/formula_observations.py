@@ -7,7 +7,7 @@ from .document_metadata import field_geometry
 
 NUMBER=r'[+\-−]?(?:\d[\d,]*(?:\.\d+)?|\.\d+)'
 EQUALITY=re.compile(r'(?<![\w.,])(?P<left>(?:\(\s*)*'+NUMBER+r'[\d\s.,()+\-−*/×÷]*?)\s*=\s*(?P<right>'+NUMBER+r')\s*(?P<unit>MWh|kWh|MW|kW|Hz|INR|%)?(?![\w.])')
-OPERATOR_BOUNDARY = '=<>≤≥≠+-−*/×÷^'
+OPERATOR_BOUNDARY = '=<>≤≥≠≈≃≅≡+-−±∓*/×÷·⋅^'
 OPS={ast.Add:('add',lambda a,b:a+b),ast.Sub:('subtract',lambda a,b:a-b),ast.Mult:('multiply',lambda a,b:a*b),ast.Div:('divide',lambda a,b:a/b)}
 
 def stated_number(literal):
@@ -49,7 +49,7 @@ def arithmetic(expression):
 def is_partial_equality(text, match):
     """Reject arithmetic matches clipped out of a longer expression or comparison."""
     prefix = text[text.rfind('\n', 0, match.start()) + 1:match.start()].rstrip()
-    suffix = text[match.end():].lstrip(' \t')
+    suffix = text[match.end():].partition('\n')[0].lstrip()
     return (bool(prefix) and prefix[-1] in OPERATOR_BOUNDARY + '('
             or bool(suffix) and suffix[0] in OPERATOR_BOUNDARY)
 
@@ -78,7 +78,7 @@ def extract_formulas(data):
             record['geometry']=field_geometry(page,layouts.get(page['page'],{}),match.start(),match.end())
             record['parent_element_ids']=[b['id'] for b in data['document_blocks']['blocks'] if any(s['page']==page['page'] and s['char_start']<match.end() and s['char_start']+s['char_length']>match.start() for s in b['spans'])]
             records.append(record);known.append((match.start(),match.end()))
-        for line in re.finditer(r'[^\n]*[=<>≤≥≠][^\n]*',page['text']):
+        for line in re.finditer(r'[^\n]*[=<>≤≥≠≈≃≅≡±∓][^\n]*',page['text']):
             if any(a<line.end() and b>line.start() for a,b in known):continue
             records.append(dict(id='formula-'+digest([data['source_pdf_sha256'],page['page'],line.start(),line.group()])[:24],kind='unparsed_formula_candidate',literal=line.group(),
                 source_span=span(page,line.start(),line.end()),expression_tree=None,arithmetic_status='unparsed',result_unit_literal=None,
