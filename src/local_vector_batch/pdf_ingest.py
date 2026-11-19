@@ -219,7 +219,7 @@ def extract_pdf(
     tables: bool = True, ocr: str = "auto", ocr_language: str = "eng", ocr_device: str = "auto",
     ocr_dpi: int = 180, native_consensus: bool = False,
     ocr_use_angle_classifier: bool | None = None,
-    ocr_cpu_threads: int = 2,
+    ocr_cpu_threads: int = 2, ocr_readings: list[Path] | None = None,
     repair_pages: set[int] | None = None, reuse_package: Path | None = None,
     progress: Callable[[int, int], None] | None = None,
 ) -> dict:
@@ -312,6 +312,10 @@ def extract_pdf(
                      if ocr_use_angle_classifier is not None else {})
     if ocr_cpu_threads!=2:angle_options['cpu_threads']=ocr_cpu_threads
     with LocalOCR(ocr, ocr_language, ocr_device, ocr_dpi, **angle_options) as recognizer, _open_pdf_with_page_recovery(source, secondary_pages, issues) as pdf:
+        readings_receipt = None
+        if ocr_readings:
+            from .ocr_readings import load as load_readings
+            recognizer.readings, readings_receipt = load_readings(ocr_readings, sha, recognizer)
         total = len(pdf.pages)
         if total == 0:
             raise ValueError("PDF has no pages")
@@ -366,7 +370,8 @@ def extract_pdf(
                     try:
                         if recognizer.engine != "off":
                             ocr_attempted_pages += 1
-                        ocr_result = recognizer.recognize(page)
+                        ocr_result = (recognizer.recognize(page, index) if recognizer.readings
+                                      else recognizer.recognize(page))
                         if ocr_result and ocr_result["text"].strip() and (
                             not native or native_quality["needs_ocr"] or
                             (parser_gap and ocr_result["mean_confidence"] >= .8 and
@@ -557,6 +562,8 @@ def extract_pdf(
                               "rapidocr_fallback_pages": recognizer.fallback_pages,
                               "pages_eligible": ocr_eligible_pages,
                               "pages_attempted": ocr_attempted_pages,
+                              **({"precomputed_pages": recognizer.precomputed_pages, "readings": readings_receipt}
+                                 if readings_receipt is not None else {}),
                               "queue_wait_ms": sum((row.get("ocr") or {}).get("queue_wait_ms", 0) for row in pages),
                               "execution_ms": sum((row.get("ocr") or {}).get("execution_ms", 0) for row in pages)},
               "page_status_counts": page_status_counts,
