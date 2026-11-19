@@ -172,6 +172,8 @@ def parser() -> argparse.ArgumentParser:
     legal.add_argument("--ocr", choices=["off", "auto", "vision", "tesseract", "rapidocr"], default="off")
     legal.add_argument("--ocr-language", default="eng")
     legal.add_argument("--resume", action="store_true")
+    legal.add_argument("--ocr-readings", action="append", type=Path,
+                       help="page readings from pdf-ocr-pages (file or directory of .jsonl); repeatable")
     legal.add_argument("--require-content-ready", action="store_true", help="exit 3 if any page still requires source review or repair")
     legal.add_argument("--json", action="store_true")
     reading=sub.add_parser('source-page-reading',help='bounded named local image reading; preserve source holds')
@@ -287,6 +289,16 @@ def parser() -> argparse.ArgumentParser:
     repair_verify.add_argument('--package',type=Path,required=True);repair_verify.add_argument('--source-runtime',type=Path,required=True);repair_verify.add_argument('--json',action='store_true')
     repair_verify.add_argument('--relocations',type=Path,help='typed, hash-checked custody package/file bindings')
     repair_verify.add_argument('--proof-runtime',type=Path,help='explicit exact captured decoder source closure; required with --relocations')
+    ocr_pages = sub.add_parser("pdf-ocr-pages", help="read one page range ahead of legal-l1 so ranges of a long scan run in parallel")
+    ocr_pages.add_argument("--input", required=True, type=Path, help="original source PDF")
+    ocr_pages.add_argument("--first", required=True, type=int)
+    ocr_pages.add_argument("--last", required=True, type=int)
+    ocr_pages.add_argument("--ocr", choices=["vision", "tesseract", "rapidocr"], default="rapidocr")
+    ocr_pages.add_argument("--ocr-language", default="eng")
+    ocr_pages.add_argument("--max-native-chars", type=int, default=80,
+                           help="skip pages whose native text has at least this many characters and reads cleanly")
+    ocr_pages.add_argument("--output", required=True, type=Path)
+    ocr_pages.add_argument("--json", action="store_true")
     repair = sub.add_parser("pdf-repair", help="repair selected original physical pages without reprocessing the PDF")
     repair.add_argument("--input", required=True, type=Path, help="original source PDF")
     repair.add_argument("--package", required=True, type=Path, help="existing verified extraction package")
@@ -579,7 +591,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "legal-l1":
             from .legal_l1 import run as run_legal_l1
             result = run_legal_l1(args.manifest, args.output, ocr=args.ocr,
-                                  language=args.ocr_language, resume=args.resume)
+                                  language=args.ocr_language, resume=args.resume, ocr_readings=args.ocr_readings)
             print(json.dumps(result, ensure_ascii=False, indent=None if args.json else 2))
             return 3 if result["failed"] or not result["all_required_members_supplied"] or (args.require_content_ready and result["content_ready_documents"] != len(result["documents"])) else 0
         elif args.command == "verify-legal-l1":
@@ -679,6 +691,10 @@ def main(argv: list[str] | None = None) -> int:
                       "pages_ready", "pages_blank", "pages_requiring_review",
                       "documents_requiring_source_review", "elapsed_seconds")}
             result["report"] = batch_report["report_path"]
+        elif args.command == "pdf-ocr-pages":
+            from .ocr_readings import read_pages
+            result = read_pages(args.input, args.first, args.last, args.output, ocr=args.ocr,
+                                language=args.ocr_language, max_native_chars=args.max_native_chars)
         elif args.command == "pdf-repair":
             from .pdf_repair import repair_pdf_pages
             result = repair_pdf_pages(args.input, args.package, set(args.pages), ocr=args.ocr,

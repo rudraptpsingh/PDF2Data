@@ -180,6 +180,10 @@ class LocalOCR:
     def __init__(self, engine: str = "auto", language: str = "eng", device: str = "auto",
                  render_dpi: int = OCR_BASE_DPI, *, use_angle_classifier: bool | None = None,
                  cpu_threads: int = 2):
+        # Page readings computed ahead of time by `pdf-ocr-pages` for this source and this exact recognizer
+        # (ocr_readings.load checks the binding). A page with a reading is not rendered or read again.
+        self.readings: dict[int, dict] = {}
+        self.precomputed_pages = 0
         if engine not in {"auto", "off", "vision", "tesseract", "rapidocr"}:
             raise ValueError("OCR engine must be auto, off, vision, tesseract, or rapidocr")
         if not language.replace("+", "").replace("_", "").isalnum():
@@ -247,9 +251,24 @@ class LocalOCR:
     def __exit__(self, *_):
         self.close()
 
-    def recognize(self, page) -> dict | None:
+    def identity(self) -> dict:
+        """Everything that decides a page reading besides the page itself."""
+        return {"engine": self.engine, "language": self.language,
+                "recognition_languages": list(self.recognition_languages),
+                "recognition_model": (f"{self.rapidocr_model}_PP-OCRv5_rec_mobile" if self.engine == "rapidocr" else None),
+                "recognition_model_sha256": (_rapidocr_model_sha256(self.rapidocr_model) if self.engine == "rapidocr" else None),
+                "engine_package_version": _rapidocr_version() if self.engine == "rapidocr" else None,
+                "render_dpi_requested": self.render_dpi_requested, "cpu_threads": self.cpu_threads,
+                "angle_classifier_requested": self.use_angle_classifier}
+
+    def recognize(self, page, page_number: int | None = None) -> dict | None:
         if self.engine == "off":
             return None
+        if page_number is not None and page_number in self.readings:
+            self.last_rendered_image = None
+            self.last_queue_wait_ms = 0
+            self.precomputed_pages += 1
+            return {**self.readings[page_number], "precomputed": True}
         render_dpi = bounded_ocr_dpi(float(page.width), float(page.height),
                                      base_dpi=self.render_dpi_requested)
         image = page.to_image(resolution=render_dpi).original

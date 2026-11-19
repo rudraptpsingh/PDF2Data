@@ -456,7 +456,7 @@ def _verify_document_uncached(output: Path) -> dict:
             'publication_eligible':False,'legal_review':'not_run'}
 
 
-def extract_document(source: dict, output: Path, *, ocr='off', language='eng', resume=False) -> dict:
+def extract_document(source: dict, output: Path, *, ocr='off', language='eng', resume=False, ocr_readings=None) -> dict:
     """Build in a temporary sibling, verify, then atomically publish once."""
     output=Path(output);original=Path(source['path'])
     if not original.is_file() or original.read_bytes()[:5]!=b'%PDF-':raise ValueError('source is not a readable PDF')
@@ -467,6 +467,10 @@ def extract_document(source: dict, output: Path, *, ocr='off', language='eng', r
         'pdfplumber':version('pdfplumber'),'pypdf':version('pypdf'),
         'extractor_sha256':digest(Path(__file__).with_name('pdf_ingest.py').read_bytes()),
         'package_code_sha256':digest(b''.join(p.name.encode()+p.read_bytes() for p in sorted(Path(__file__).parent.iterdir()) if p.suffix in {'.py','.json'}))}
+    if ocr_readings:
+        from .ocr_readings import reading_files
+        ocr_readings=reading_files(ocr_readings)
+        config['ocr_readings_sha256']=[digest(p.read_bytes()) for p in ocr_readings]
     request={'source':source,'config':config}
     request_sha=digest(json.dumps(request,sort_keys=True).encode())
     if output.exists():
@@ -480,7 +484,7 @@ def extract_document(source: dict, output: Path, *, ocr='off', language='eng', r
         shutil.copyfile(original,stage/'original.pdf')
         # Check the captured bytes too, eliminating source-change TOCTOU.
         if digest((stage/'original.pdf').read_bytes())!=sha:raise ValueError('source changed during acquisition')
-        report=extract_pdf(stage/'original.pdf',stage/'extraction',title=source.get('title') or source['id'],source_url=source.get('url'),ocr=ocr,ocr_language=language,tables=True,native_consensus=True)
+        report=extract_pdf(stage/'original.pdf',stage/'extraction',title=source.get('title') or source['id'],source_url=source.get('url'),ocr=ocr,ocr_language=language,tables=True,native_consensus=True,ocr_readings=ocr_readings or None)
         if source.get('expected_pages') is not None and source['expected_pages']!=report['pages']:raise ValueError('expected physical page count mismatch')
         pages=rows(stage/'extraction/pages.jsonl')
         layout=capture_layout(stage/'original.pdf',pages);write_rows(stage/'layout.jsonl',layout)
@@ -521,12 +525,12 @@ def extract_document(source: dict, output: Path, *, ocr='off', language='eng', r
     return {**result,'reused':False}
 
 
-def run(manifest_path: Path, output: Path, *, ocr='off', language='eng', resume=False) -> dict:
+def run(manifest_path: Path, output: Path, *, ocr='off', language='eng', resume=False, ocr_readings=None) -> dict:
     manifest=read_manifest(manifest_path);output=Path(output)
     results=[]
     for source in manifest['sources']:
         try:
-            result=extract_document(source,output/source['id'],ocr=ocr,language=language,resume=resume)
+            result=extract_document(source,output/source['id'],ocr=ocr,language=language,resume=resume,ocr_readings=ocr_readings)
             results.append({'id':source['id'],'status':'passed',**result})
         except Exception as error:
             results.append({'id':source['id'],'status':'failed','error':f'{type(error).__name__}: {error}'})
