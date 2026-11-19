@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Page readings made ahead of a run (`pdf-ocr-pages`, `legal-l1 --ocr-readings`),
+  first released as 0.2.0rc20.post1 (rc20 plus this only). See that entry.
+
 ## 0.2.0-rc.22 — 2026-11-15
 
 - Preserve each symbolic table assignment in its own hashed physical cell.
@@ -25,6 +30,17 @@
   facts in a new `continuation` object. Cells, grids and table IDs are
   unchanged; continuation link IDs change because the record has new fields.
   This changes processing output. Reprocess affected sources with a new pin.
+
+## 0.2.0rc20.post1 — 2026-11-20
+
+- rc20 plus page readings made ahead of a run, and nothing else. `pdf-ocr-pages`
+  reads one page range of a source PDF (pages that would be offered to OCR on
+  their native text) with the recognizer `legal-l1` builds, into a JSONL file
+  bound to the source PDF and that recognizer. `legal-l1 --ocr-readings` takes
+  those readings instead of reading the pages again; any page without one is read
+  in the run. Several machines can read the ranges of one long scan at once.
+  The extracted text is the same; the report's `ocr_compute` records
+  `precomputed_pages` and the readings files when used.
 
 ## 0.2.0-rc.19 — 2026-11-03
 
