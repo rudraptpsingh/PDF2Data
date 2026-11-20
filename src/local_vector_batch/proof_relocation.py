@@ -209,7 +209,7 @@ def worker(request):
             captured_proof_runtime=config.get('proof_runtime_path'),resolved_proof_runtime=str(runtime),
             captured_source_runtime=config.get('source_runtime'),resolved_source_runtime=str(origin),
             source_runtime_imported=False,frozen_artifacts_modified=False,bindings=bindings.records,
-            dependency_versions={name:version(name)for name in('pypdf','pdfplumber','pymupdf','pypdfium2')},
+            dependency_versions={name:version(name)for name in('pypdf','pdfplumber','pypdfium2')},
             path_binding_adapter_sha256=file_sha(Path(__file__)))
         return result
 

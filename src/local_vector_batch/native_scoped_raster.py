@@ -180,7 +180,7 @@ def derive(request_bundle):
         source_pdf_sha256=request['source_pdf_sha256'],source_package_sha256=request['source_package_sha256'],
         source_files_sha256=before,results=results,components_proved=sum(r['source_object_raster_accounting']=='proved' for r in results),
         components_held=sum(r['source_object_raster_accounting']=='held' for r in results),
-        dependency_versions={n:version(n) for n in ('pdfplumber','pypdf','pypdfium2','pymupdf')},
+        dependency_versions={n:version(n) for n in ('pdfplumber','pypdf','pypdfium2')},
         original_page_outcomes_preserved=True,new_content_extraction=False,new_ocr_calls=0,model_calls=0,
         acceptance_scope='source_object_and_raster_accounting_component_only',**witness.FLAGS)
 

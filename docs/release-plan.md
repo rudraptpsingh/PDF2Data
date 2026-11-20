@@ -21,8 +21,9 @@ registered for the existing supported operations.
 - Core extraction supports Python 3.10+; the MCP v2 extra requires 3.11+. The npm
   launcher selects 3.12. OCR/MLX/CUDA remain explicit optional installs.
 - Word is optional through `[word]`; advanced source-paint proofs use `[proof]`.
-  Third-party dependencies retain their own licenses; PyMuPDF has AGPL/commercial
-  licensing. Neither proof nor OCR model dependencies are installed by the npm CLI default.
+  Third-party dependencies retain their own licenses. No runtime path imports an
+  AGPL or GPL package: source-paint proofs read pages with pypdfium2 (pdfium,
+  BSD-3/Apache-2.0); PyMuPDF is used only by tests to build fixture PDFs. Neither proof nor OCR model dependencies are installed by the npm CLI default.
 - `local_vector_batch` and `local-vector-batch` stay available as compatibility APIs.
 
 ## Release process

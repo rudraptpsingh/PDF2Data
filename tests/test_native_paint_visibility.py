@@ -92,18 +92,20 @@ def test_text_ink_disjoint_proof_never_waives_real_or_unsupported_paint(edit):
     else:assert classify_glyphs([g],fills,POLICY)[0]['visibility_state'].startswith('held_')
 
 
+def _pdf(path,content,*,rotate=False):
+    """Base-14 fixture page built from raw operators (no AGPL reader needed)."""
+    from paint_fixtures import _write
+    return _write(path,content,rotate=rotate)
+
+
 def test_real_source_underline_does_not_cover_source_text_ink(tmp_path):
-    import pymupdf
     from local_vector_batch.native_paint_visibility import analyze
-    source=tmp_path/'underline.pdf'
-    with pymupdf.open()as document:
-        page=document.new_page(width=200,height=200)
-        page.insert_text((40,60),'INDEX',fontname='tibo',fontsize=13.2)
-        trace=page.get_texttrace()[0];ink=page.get_bboxlog()[trace['seqno']][1]
-        assert ink[3]<trace['bbox'][3]
-        top=(ink[3]+trace['bbox'][3])/2
-        page.draw_rect(pymupdf.Rect(39,top,100,top+0.1),fill=(0,0,0),color=None,overlay=True)
-        document.save(source)
+    text='BT /F2 13.2 Tf 40 140 Td (INDEX) Tj ET\n'
+    plain=capture(_pdf(tmp_path/'plain.pdf',text),1)
+    first=plain['glyphs'][0];ink=plain['paint_bbox_log'][first['seqno']]['bbox']
+    assert ink[3]<first['bbox'][3]
+    top=(ink[3]+first['bbox'][3])/2  # below the ink, inside the metric box
+    source=_pdf(tmp_path/'underline.pdf',text+f'0 0 0 rg 39 {320-top-0.1} 61 0.1 re f\n')
     before=source.read_bytes();actual=analyze(source,1,[])
     assert ''.join(g['text']for g in actual['classified_glyphs'])=='INDEX'
     assert all(g['visibility_state']=='retained_visible_or_unproven'for g in actual['classified_glyphs'])
@@ -135,12 +137,8 @@ def test_isolated_text_ink_cannot_clear_actual_later_glyph_overlap(tmp_path):
 
 
 def make_pdf(path):
-    import pymupdf
-    d=pymupdf.open();p=d.new_page(width=200,height=200)
-    p.insert_text((40,60),'X',fontsize=16)
-    p.draw_rect(pymupdf.Rect(35,35,65,70),color=None,fill=(1,1,1),overlay=True)
-    p.insert_text((40,60),'Y',fontsize=16)
-    d.save(path);d.close()
+    return _pdf(path,'BT /F1 16 Tf 40 140 Td (X) Tj ET\nq 35 130 30 35 re h 1 1 1 rg f Q\n'
+                     'BT /F1 16 Tf 40 140 Td (Y) Tj ET\n')
 
 
 def test_actual_source_rederive_rejects_resealed_exclusion_and_source_change(tmp_path):
@@ -162,8 +160,7 @@ def test_actual_source_rederive_rejects_resealed_exclusion_and_source_change(tmp
 
 
 def test_rotated_source_remains_unsupported(tmp_path):
-    import pymupdf
-    source=tmp_path/'r.pdf';d=pymupdf.open();p=d.new_page();p.set_rotation(90);d.save(source);d.close()
+    source=_pdf(tmp_path/'r.pdf','',rotate=True)
     with pytest.raises(ValueError,match='Rotated'):capture(source,1)
 
 

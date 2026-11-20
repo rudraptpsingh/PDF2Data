@@ -67,7 +67,7 @@ last repair alone does not independently reconstruct earlier repairs.
 Keep captured dependency versions available. The decoder checks the captured
 `pypdf` and `pdfplumber` versions and code profile; its existing proof algorithms
 and renderer comparisons remain unchanged. The replay receipt additionally lists
-`pymupdf` and `pypdfium2` versions. This interface performs bounded native source
+the `pypdfium2` version. This interface performs bounded native source
 verification, without OCR or model inference.
 
 The JSON result contains `custody_replay`: map hash, captured and resolved runtime

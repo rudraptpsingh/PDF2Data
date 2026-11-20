@@ -143,12 +143,14 @@ def classify_glyphs(glyphs, fills, policy, *, use_spatial_index=True):
     return result
 
 
-def capture(source, page_number):
-    import pymupdf
-    from pypdf import PdfReader
-    source = Path(source)
+READER = 'pdfium'
+_PAINT_OPS = {b'f', b'F', b'f*', b'S', b's', b'B', b'B*', b'b', b'b*'}
+_SHOW_OPS = {b'Tj', b'TJ', b"'", b'"'}
+
+
+def _soft_mask_guard(page):
     # A soft mask can make an apparently opaque fill translucent without a
-    # scalar opacity in the drawing trace. Fail closed, even for unused masks.
+    # scalar opacity in the paint trace. Fail closed, even for unused masks.
     seen=set()
     def inspect_resources(resources):
         resources=resources.get_object()
@@ -165,50 +167,302 @@ def capture(source, page_number):
             obj=obj.get_object()
             if obj.get('/SMask') is not None:raise ValueError('Image soft-mask visibility is unsupported')
             if obj.get('/Resources') is not None:inspect_resources(obj['/Resources'])
-    inspect_resources(PdfReader(source).pages[page_number-1]['/Resources'])
-    with pymupdf.open(source) as pdf:
-        page = pdf[page_number-1]
-        if page.rotation:
+    inspect_resources(page.get('/Resources',{}))
+
+
+def _content_events(reader, page):
+    """Paint events in content-stream order, as the stream itself declares them.
+
+    pdfium exposes paint order and geometry but not two facts the visibility
+    rules were written against: which show operators share one BT..ET text
+    paint, and whether a filled path was a single ``re`` rectangle. Both are
+    read from the operators. Returns (text_blocks, single_re_paths, vertical).
+    """
+    from pypdf.generic import ContentStream
+    blocks=[];paths=[];vertical=[False];counter=[0];stack=set()
+    def fonts_vertical(resources):
+        for font in (resources.get('/Font') or {}).values():
+            encoding=font.get_object().get('/Encoding')
+            if isinstance(encoding,str) and encoding.endswith('-V'):vertical[0]=True
+    def walk(stream,resources):
+        resources=resources.get_object() if hasattr(resources,'get_object') else (resources or {})
+        fonts_vertical(resources)
+        construction=[]
+        for operands,op in ContentStream(stream,reader).operations:
+            if op==b'BT':counter[0]+=1
+            elif op in _SHOW_OPS:
+                strings=operands[0] if op==b'TJ' else operands[-1:]
+                if any(not isinstance(s,(int,float)) and len(s) for s in strings):blocks.append(counter[0])
+            elif op in (b're',b'm',b'l',b'c',b'v',b'y',b'h'):construction.append(op)
+            elif op in _PAINT_OPS:
+                # ``h`` after ``re`` closes an already closed subpath: a no-op.
+                paths.append([o for o in construction if o!=b'h']==[b're'] and construction[0]==b're')
+                construction=[]
+            elif op==b'n':construction=[]
+            elif op==b'Do':
+                xobject=(resources.get('/XObject') or {}).get(operands[0])
+                xobject=xobject.get_object() if xobject is not None else None
+                if xobject is not None and xobject.get('/Subtype')=='/Form' and id(xobject) not in stack:
+                    stack.add(id(xobject))
+                    counter[0]+=1  # a form never continues the caller's text paint
+                    walk(xobject,xobject.get('/Resources',resources))
+                    stack.discard(id(xobject))
+    contents=page.get_contents()
+    if contents is not None:walk(contents,page.get('/Resources',{}))
+    return blocks,paths,vertical[0]
+
+
+def _pdfium_objects(raw,page_handle):
+    """Leaf paint objects depth-first, with their page matrix and inherited state."""
+    import ctypes
+    def matrix_of(obj):
+        m=raw.FS_MATRIX();raw.FPDFPageObj_GetMatrix(obj,ctypes.byref(m));return (m.a,m.b,m.c,m.d,m.e,m.f)
+    def compose(m,n):  # apply m, then n
+        a,b,c,d,e,f=m;A,B,C,D,E,F=n
+        return (a*A+b*C,a*B+b*D,c*A+d*C,c*B+d*D,e*A+f*C+E,e*B+f*D+F)
+    def marks(obj):
+        names=[]
+        for i in range(raw.FPDFPageObj_CountMarks(obj)):
+            mark=raw.FPDFPageObj_GetMark(obj,i);size=ctypes.c_ulong()
+            raw.FPDFPageObjMark_GetName(mark,None,0,ctypes.byref(size))
+            buffer=ctypes.create_string_buffer(size.value)
+            raw.FPDFPageObjMark_GetName(mark,ctypes.cast(buffer,ctypes.POINTER(ctypes.c_ushort)),size.value,ctypes.byref(size))
+            names.append(buffer.raw[:max(0,size.value-2)].decode('utf-16-le'))
+        return names
+    out=[]
+    def walk(count,get,parent,layer,groups):
+        for i in range(count):
+            obj=get(i);kind=raw.FPDFPageObj_GetType(obj)
+            own=matrix_of(obj)
+            obj_layer=layer or ('OC' if 'OC' in marks(obj) else '')
+            if kind==raw.FPDF_PAGEOBJ_FORM:
+                group=groups+([{'transparent':bool(raw.FPDFPageObj_HasTransparency(obj))}])
+                walk(raw.FPDFFormObj_CountObjects(obj),lambda j,o=obj:raw.FPDFFormObj_GetObject(o,j),
+                     compose(own,parent),obj_layer,group)
+            else:
+                # Leaf objects inside a form carry form-space matrices.
+                out.append({'handle':obj,'kind':kind,'matrix':own,'page_matrix':parent,'layer':obj_layer,'groups':groups})
+    identity=(1.0,0.0,0.0,1.0,0.0,0.0)
+    walk(raw.FPDFPage_CountObjects(page_handle),lambda i:raw.FPDFPage_GetObject(page_handle,i),identity,'',[])
+    return out
+
+
+def capture(source, page_number):
+    """Glyphs, paths, clips and groups of one page in paint order (pdfium).
+
+    The output keeps the contract the visibility rules were written against:
+    top-left page coordinates, a glyph ``seqno`` equal to its text paint's
+    index in ``paint_bbox_log``, one text paint per BT..ET block, and drawing
+    rows whose ``level`` nests the clip and transparency contexts in force.
+    """
+    import ctypes, math
+    import pypdfium2 as pdfium
+    import pypdfium2.raw as raw
+    from pypdf import PdfReader
+    source=Path(source)
+    reader=PdfReader(source);source_page=reader.pages[page_number-1]
+    _soft_mask_guard(source_page)
+    blocks,single_re,vertical=_content_events(reader,source_page)
+    document=pdfium.PdfDocument(source)
+    try:
+        page=document[page_number-1]
+        if raw.FPDFPage_GetRotation(page.raw) or int(source_page.get('/Rotate',0) or 0)%360:
             raise ValueError('Rotated page visibility is not supported by this rule')
-        glyphs = []
-        traces = page.get_texttrace()
-        paint_log=page.get_bboxlog()
-        # A paint operation can yield several font/size traces with one seqno.
-        # A one-character trace is not necessarily a one-character paint.
+        left,bottom,right,top=page.get_cropbox()
+        def point(x,y):return (x-left,top-y)
+        def box(x0,y0,x1,y1):
+            (a,b),(c,d)=point(x0,y0),point(x1,y1)
+            return [min(a,c),min(b,d),max(a,c),max(b,d)]
+        def apply(m,x,y):return (m[0]*x+m[2]*y+m[4],m[1]*x+m[3]*y+m[5])
+        def compose(m,n):
+            a,b,c,d,e,f=m;A,B,C,D,E,F=n
+            return (a*A+b*C,a*B+b*D,c*A+d*C,c*B+d*D,e*A+f*C+E,e*B+f*D+F)
+        def rgba(getter,obj):
+            r,g,b,a=(ctypes.c_uint() for _ in range(4))
+            if not getter(obj,*(ctypes.byref(v) for v in (r,g,b,a))):return None,None
+            return [r.value/255,g.value/255,b.value/255],a.value/255
+        def rectangle(points):
+            """Axis-aligned rectangle from transformed polygon corners, else None."""
+            if len(points)==5 and all(abs(p-q)<1e-9 for p,q in zip(points[0],points[4])):points=points[:4]
+            if len(points)!=4:return None
+            xs=sorted({round(p[0],9) for p in points});ys=sorted({round(p[1],9) for p in points})
+            if len(xs)!=2 or len(ys)!=2:return None
+            for p,q in zip(points,points[1:]+points[:1]):
+                if round(p[0],9)!=round(q[0],9) and round(p[1],9)!=round(q[1],9):return None
+            return box(xs[0],ys[0],xs[1],ys[1])
+        def segments(count,get):
+            points=[];curved=False;subpaths=0;closed=False
+            for j in range(count):
+                seg=get(j);x=ctypes.c_float();y=ctypes.c_float()
+                raw.FPDFPathSegment_GetPoint(seg,ctypes.byref(x),ctypes.byref(y))
+                kind=raw.FPDFPathSegment_GetType(seg)
+                if kind==raw.FPDF_SEGMENT_MOVETO:subpaths+=1
+                if kind==raw.FPDF_SEGMENT_BEZIERTO:curved=True
+                closed=closed or bool(raw.FPDFPathSegment_GetClose(seg))
+                points.append((x.value,y.value))
+            return points,curved,subpaths,closed
+        objects=_pdfium_objects(raw,page.raw)
+        log=[];drawings=[{'type':'group','level':0,'seqno':None,'layer':'','fill_opacity':None,'opacity':1.0,
+                          'isolated':True,'knockout':False,'blendmode':'Normal','rect':box(left,bottom,right,top),
+                          'rectangular_path':False,'fill':None}]
+        texts=[o for o in objects if o['kind']==raw.FPDF_PAGEOBJ_TEXT]
+        paths=[o for o in objects if o['kind']==raw.FPDF_PAGEOBJ_PATH]
+        # Operator facts align only when both sides saw the same paints;
+        # otherwise fall back to the conservative reading (coarser text
+        # paints, no path proved to be a single rectangle).
+        aligned_text=len(blocks)==len(texts);aligned_paths=len(single_re)==len(paths)
+        text_index={};path_index={}
+        for i,o in enumerate(texts):text_index[id(o)]=i
+        for i,o in enumerate(paths):path_index[id(o)]=i
+        handle_of=lambda h:ctypes.cast(h,ctypes.c_void_p).value
+        text_paint={};previous_block=None;previous_was_text=False;last_text_contexts=None
+        def contexts_for(o):
+            rows=[]
+            for g in o['groups']:
+                if g['transparent']:
+                    rows.append({'type':'group','opacity':None,'blendmode':'transparency','knockout':None,
+                                 'isolated':None,'rect':None,'rectangular_path':False,'layer':o['layer']})
+            if raw.FPDFPageObj_HasTransparency(o['handle']) and o['kind']==raw.FPDF_PAGEOBJ_PATH:
+                _,alpha=rgba(raw.FPDFPageObj_GetFillColor,o['handle'])
+                if alpha==1.0:  # opaque fill colour, yet blended or masked
+                    rows.append({'type':'group','opacity':None,'blendmode':'transparency','knockout':None,
+                                 'isolated':None,'rect':None,'rectangular_path':False,'layer':o['layer']})
+            clip=raw.FPDFPageObj_GetClipPath(o['handle'])
+            if clip:
+                for p in range(raw.FPDFClipPath_CountPaths(clip)):
+                    n=raw.FPDFClipPath_CountPathSegments(clip,p)
+                    if n<=0:
+                        rows.append({'type':'clip','rect':None,'rectangular_path':False,'layer':o['layer']});continue
+                    pts,curved,subpaths,_=segments(n,lambda j,c=clip,p=p:raw.FPDFClipPath_GetPathSegment(c,p,j))
+                    rect=None if curved or subpaths!=1 else rectangle(pts)
+                    if rect is None and pts:
+                        xs=[x for x,_ in pts];ys=[y for _,y in pts]
+                        bounds=box(min(xs),min(ys),max(xs),max(ys))
+                    rows.append({'type':'clip','rect':rect or bounds,'rectangular_path':rect is not None,'layer':o['layer']})
+            return rows
+        for o in objects:
+            h=o['handle'];kind=o['kind'];m=compose(o['matrix'],o['page_matrix'])
+            l,b,r,t=(ctypes.c_float() for _ in range(4))
+            raw.FPDFPageObj_GetBounds(h,*(ctypes.byref(v) for v in (l,b,r,t)))
+            corners=[apply(o['page_matrix'],x,y) for x,y in ((l.value,b.value),(r.value,t.value),(l.value,t.value),(r.value,b.value))]
+            xs=[x for x,_ in corners];ys=[y for _,y in corners]
+            bounds=box(min(xs),min(ys),max(xs),max(ys))
+            if kind==raw.FPDF_PAGEOBJ_TEXT:
+                # Clip and transparency contexts of text paints are recorded too,
+                # so callers that check every context on the page see them.
+                contexts=contexts_for(o);key=repr(contexts)
+                if contexts and key!=last_text_contexts:
+                    for level,row in enumerate(contexts,1):
+                        drawings.append({'level':level,'seqno':None,'fill_opacity':None,'opacity':row.get('opacity'),
+                                         'isolated':row.get('isolated'),'knockout':row.get('knockout'),
+                                         'blendmode':row.get('blendmode'),'fill':None,**row})
+                last_text_contexts=key
+                block=blocks[text_index[id(o)]] if aligned_text else None
+                if previous_was_text and (block==previous_block or not aligned_text):
+                    text_paint[handle_of(h)]=len(log)-1;previous_block=block;continue
+                mode=raw.FPDFTextObj_GetTextRenderMode(h)
+                paint_kind={0:'fill-text',1:'stroke-text',2:'fill-text',3:'ignore-text'}.get(mode,'clip-text')
+                text_paint[handle_of(h)]=len(log)
+                log.append({'kind':paint_kind,'bbox':None,'mode':mode,'layer':o['layer']})
+                previous_block=block;previous_was_text=True
+                continue
+            previous_was_text=False;previous_block=None
+            if kind==raw.FPDF_PAGEOBJ_PATH:
+                fillmode=ctypes.c_int();stroke=ctypes.c_int()
+                raw.FPDFPath_GetDrawMode(h,ctypes.byref(fillmode),ctypes.byref(stroke))
+                fill=fillmode.value!=0;stroked=bool(stroke.value)
+                if not fill and not stroked:continue
+                pts,curved,subpaths,_=segments(raw.FPDFPath_CountSegments(h),lambda j,h=h:raw.FPDFPath_GetPathSegment(h,j))
+                pts=[apply(m,x,y) for x,y in pts]
+                rect=None if curved or subpaths!=1 else rectangle(pts)
+                declared=single_re[path_index[id(o)]] if aligned_paths else False
+                rectangular=bool(rect) and declared
+                if pts:
+                    xs=[x for x,_ in pts];ys=[y for _,y in pts];geometry=box(min(xs),min(ys),max(xs),max(ys))
+                else:geometry=bounds
+                fill_color,fill_alpha=rgba(raw.FPDFPageObj_GetFillColor,h) if fill else (None,None)
+                _,stroke_alpha=rgba(raw.FPDFPageObj_GetStrokeColor,h) if stroked else (None,None)
+                contexts=contexts_for(o)
+                level=1
+                for row in contexts:
+                    drawings.append({'level':level,'seqno':None,'fill_opacity':None,'opacity':row.get('opacity'),
+                                     'isolated':row.get('isolated'),'knockout':row.get('knockout'),
+                                     'blendmode':row.get('blendmode'),'fill':None,**row});level+=1
+                seqno=len(log)
+                if fill:log.append({'kind':'fill-path','bbox':geometry})
+                if stroked:log.append({'kind':'stroke-path','bbox':bounds})
+                drawings.append({'type':'fs' if fill and stroked else 'f' if fill else 's','level':level,'seqno':seqno,
+                                 'layer':o['layer'],'fill_opacity':fill_alpha,'opacity':stroke_alpha,'isolated':None,
+                                 'knockout':None,'blendmode':None,'rect':rect if rectangular else geometry,
+                                 'rectangular_path':rectangular,'fill':fill_color})
+                continue
+            contexts=contexts_for(o)
+            for level,row in enumerate(contexts,1):
+                drawings.append({'level':level,'seqno':None,'fill_opacity':None,'opacity':row.get('opacity'),
+                                 'isolated':row.get('isolated'),'knockout':row.get('knockout'),
+                                 'blendmode':row.get('blendmode'),'fill':None,**row})
+            log.append({'kind':'fill-image' if kind==raw.FPDF_PAGEOBJ_IMAGE else 'fill-shade','bbox':bounds})
+        textpage=raw.FPDFText_LoadPage(page.raw)
+        try:
+            glyphs=[];per_object={}
+            for i in range(raw.FPDFText_CountChars(textpage)):
+                if raw.FPDFText_IsGenerated(textpage,i)==1:continue
+                obj=raw.FPDFText_GetTextObject(textpage,i)
+                seqno=text_paint.get(handle_of(obj)) if obj else None
+                if seqno is None:raise ValueError('Text-page character without a source text paint')
+                key=handle_of(obj);index=per_object.setdefault(key,[len(per_object),0])
+                codepoint=raw.FPDFText_GetUnicode(textpage,i)
+                rect=raw.FS_RECTF();raw.FPDFText_GetLooseCharBox(textpage,i,ctypes.byref(rect))
+                loose=box(rect.left,rect.bottom,rect.right,rect.top)
+                l,r,b,t=(ctypes.c_double() for _ in range(4))
+                raw.FPDFText_GetCharBox(textpage,i,*(ctypes.byref(v) for v in (l,r,b,t)))
+                x=ctypes.c_double();y=ctypes.c_double();raw.FPDFText_GetCharOrigin(textpage,i,ctypes.byref(x),ctypes.byref(y))
+                origin=list(point(x.value,y.value))
+                ink=box(l.value,b.value,r.value,t.value) if chr(codepoint).strip() else [origin[0],origin[1],origin[0],origin[1]]
+                size=ctypes.c_int();raw.FPDFText_GetFontInfo(textpage,i,None,0,ctypes.byref(size))
+                n=raw.FPDFText_GetFontInfo(textpage,i,None,0,None);name=ctypes.create_string_buffer(max(n,1))
+                raw.FPDFText_GetFontInfo(textpage,i,name,n,None)
+                color,alpha=rgba(lambda _,*v:raw.FPDFText_GetFillColor(textpage,i,*v),None)
+                angle=raw.FPDFText_GetCharAngle(textpage,i)
+                direction=[round(math.cos(angle),9)+0.0,round(-math.sin(angle),9)+0.0] if angle>=0 else [1.0,0.0]
+                paint=log[seqno]
+                glyphs.append({'seqno':seqno,'object':index[0],'index':index[1],'codepoint':codepoint,'text':chr(codepoint),
+                               'glyph_id':None,'origin':origin,'bbox':loose,'ink':ink,
+                               'font':name.value.decode('utf-8','replace'),'size':raw.FPDFText_GetFontSize(textpage,i),
+                               'type':paint['mode'],'opacity':alpha,'color':color,'direction':direction,
+                               'wmode':1 if vertical else 0,'layer':paint['layer']})
+                index[1]+=1
+        finally:
+            raw.FPDFText_ClosePage(textpage)
+        # Text paint ink bounds: union of the glyph outline boxes of the paint.
         from collections import Counter
-        paint_characters=Counter()
-        for trace in traces:paint_characters[trace['seqno']]+=len(trace['chars'])
-        for trace_index,trace in enumerate(traces):
-            for index,(codepoint,glyph_id,origin,bbox) in enumerate(trace['chars']):
-                single=paint_characters[trace['seqno']]==1 and not chr(codepoint).isspace()
-                paint_kind,ink_bbox=paint_log[trace['seqno']]
-                single=single and paint_kind=='fill-text'
-                proof_bbox=[min(bbox[0],ink_bbox[0]),min(bbox[1],ink_bbox[1]),
-                            max(bbox[2],ink_bbox[2]),max(bbox[3],ink_bbox[3])] if single else list(bbox)
-                glyphs.append({'glyph_key':f"{trace['seqno']}:{trace_index}:{index}", 'seqno':trace['seqno'],
-                               'source_text_paint_kind':paint_kind,
-                               'source_text_paint_bbox':list(ink_bbox),
-                               'index':index,'codepoint':codepoint,'text':chr(codepoint), 'glyph_id':glyph_id,
-                               'origin':list(origin),'bbox':list(bbox),'font':trace['font'],
-                               'size':trace['size'],'type':trace['type'],'opacity':trace['opacity'],
-                               'color':list(trace['color']) if isinstance(trace['color'],(tuple,list)) else trace['color'],
-                               'direction':list(trace['dir']),'wmode':trace['wmode'],'layer':trace['layer'],
-                               'proof_bbox':proof_bbox,'paint_ink_bbox':list(ink_bbox) if single else None,
-                               'ink_bounds_basis':'single_character_paint_bbox'if single else 'not_individually_proved'})
-        drawings = []
-        for draw in page.get_drawings(extended=True):
-            items = draw.get('items') or []
-            rectangular = len(items)==1 and items[0][0]=='re'
-            rect = list(items[0][1]) if rectangular else list(draw['rect']) if draw.get('rect') else None
-            row = {k: draw.get(k) for k in ('type','level','seqno','layer','fill_opacity', 'opacity',
-                                             'isolated','knockout','blendmode')}
-            row.update(rect=rect,rectangular_path=rectangular,
-                       fill=list(draw['fill']) if draw.get('fill') is not None else None)
-            drawings.append(row)
-        bboxlog = [{'kind':kind,'bbox':list(box)} for kind,box in page.get_bboxlog()]
-        return {'source_pdf_sha256':sha(source.read_bytes()),'page':page_number,'page_bbox':list(page.rect),
-                'reader':'PyMuPDF','reader_version':pymupdf.VersionBind,
-                'glyphs':glyphs,'drawings':drawings,'paint_bbox_log':bboxlog}
+        members=Counter(g['seqno'] for g in glyphs)
+        for g in glyphs:
+            paint=log[g['seqno']];ink=g['ink'] if g['text'].strip() else None
+            if ink:paint['bbox']=ink if paint['bbox'] is None else [min(paint['bbox'][0],ink[0]),min(paint['bbox'][1],ink[1]),
+                                                                    max(paint['bbox'][2],ink[2]),max(paint['bbox'][3],ink[3])]
+        for g in glyphs:
+            paint=log[g['seqno']]
+            if paint['bbox'] is None:paint['bbox']=list(g['ink'])
+        out=[]
+        for g in glyphs:
+            paint=log[g['seqno']];ink_bbox=paint['bbox']
+            single=members[g['seqno']]==1 and not g['text'].isspace() and paint['kind']=='fill-text'
+            bbox=g['bbox']
+            proof_bbox=[min(bbox[0],ink_bbox[0]),min(bbox[1],ink_bbox[1]),max(bbox[2],ink_bbox[2]),max(bbox[3],ink_bbox[3])] if single else list(bbox)
+            out.append({'glyph_key':f"{g['seqno']}:{g['object']}:{g['index']}",'seqno':g['seqno'],
+                        'source_text_paint_kind':paint['kind'],'source_text_paint_bbox':list(ink_bbox),
+                        'index':g['index'],'codepoint':g['codepoint'],'text':g['text'],'glyph_id':None,
+                        'origin':g['origin'],'bbox':bbox,'font':g['font'],'size':g['size'],'type':g['type'],
+                        'opacity':g['opacity'],'color':g['color'],'direction':g['direction'],'wmode':g['wmode'],
+                        'layer':g['layer'],'proof_bbox':proof_bbox,'paint_ink_bbox':list(ink_bbox) if single else None,
+                        'ink_bounds_basis':'single_character_paint_bbox' if single else 'not_individually_proved'})
+        return {'source_pdf_sha256':sha(source.read_bytes()),'page':page_number,'page_bbox':[0.0,0.0,right-left,top-bottom],
+                'reader':READER,'reader_version':f"pypdfium2 {pdfium.version.PYPDFIUM_INFO} / pdfium {pdfium.version.PDFIUM_INFO}",
+                'glyphs':out,'drawings':drawings,
+                'paint_bbox_log':[{'kind':p['kind'],'bbox':list(p['bbox'] or [0.0,0.0,0.0,0.0])} for p in log]}
+    finally:
+        document.close()
 
 
 def _crop(source, page, box):
