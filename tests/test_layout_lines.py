@@ -14,7 +14,7 @@ def _extract(tmp_path, content):
 
 
 def test_native_lines_carry_box_type_alignment_indent_and_exact_span(tmp_path):
-    title = "BT /F3 16 Tf 230 790 Td (Annual Report) Tj ET\n"            # centred, bold, larger
+    title = "BT /F3 16 Tf 242 790 Td (Annual Report) Tj ET\n"            # centred, bold, larger
     body = lines(60, 750, ["1. Scope of the agreement covers all services."])
     sub = lines(90, 734, ["(a) delivery of goods to the buyer;", "(b) installation at the site."])
     page, rows = _extract(tmp_path, title + body + sub)
@@ -32,12 +32,13 @@ def test_native_lines_carry_box_type_alignment_indent_and_exact_span(tmp_path):
 
 
 def test_two_columns_are_separate_lines(tmp_path):
-    left = lines(50, 780, ["The parties agree that services are", "delivered in accordance with the"])
-    right = lines(320, 780, ["Either party may end this agreement", "by written notice to the other"])
-    page, rows = _extract(tmp_path, left + right)
-    assert [r["text"] for r in rows] == ["The parties agree that services are", "delivered in accordance with the",
-                                         "Either party may end this agreement", "by written notice to the other"]
-    assert rows[2]["bbox"][0] > 0.5 and rows[0]["bbox"][2] < 0.5
+    L = ["The parties agree that services are", "delivered in accordance with the", "schedule agreed in writing and",
+         "each invoice states the period and", "the agreed rate for that period."]
+    R = ["Either party may end this agreement", "by written notice to the other at", "the address given above and the",
+         "notice takes effect thirty days", "after the day it is received there."]
+    page, rows = _extract(tmp_path, lines(50, 780, L) + lines(320, 780, R))
+    assert [r["text"] for r in rows] == L + R
+    assert rows[len(L)]["bbox"][0] > 0.5 and rows[0]["bbox"][2] < 0.5
 
 
 def test_ocr_lines_from_reader_boxes():
@@ -48,3 +49,16 @@ def test_ocr_lines_from_reader_boxes():
     rows = ocr_lines(page, ocr)
     assert [(r["text"], r["char_start"]) for r in rows] == [("Quarterly review", 0), ("Revenue rose in the quarter.", 17)]
     assert rows[0]["size"] > rows[1]["size"] and rows[0]["bold"] is None
+
+
+def test_indented_justified_lines_are_left_and_split_words_still_locate():
+    from local_vector_batch.layout_lines import _finish
+    page = {"page": 1, "text": "TITLE\nDate: 13th May\n(a) The licensee shall comply with all of it\nand with the rest of the order too"}
+    mk = lambda x0, x1, top, words: {"x0": x0, "x1": x1, "top": top, "bottom": top + 10, "words": words, "size": 11,
+                                     "bold": False, "italic": False, "font": "Times"}
+    rows = _finish(page, [mk(270, 330, 50, ["TITLE"]), mk(60, 200, 70, ["Date:", "13", "th", "May"]),
+                          mk(107, 523, 90, ["(a)", "The", "licensee", "shall", "comply", "with", "all", "of", "it"]),
+                          mk(107, 523, 104, ["and", "with", "the", "rest", "of", "the", "order", "too"]),
+                          mk(60, 535, 120, ["x"])], 595, 842)
+    assert [r["align"] for r in rows[:4]] == ["center", "left", "left", "left"]
+    assert rows[1]["text"] == "Date: 13th May" and rows[1]["char_start"] == 6

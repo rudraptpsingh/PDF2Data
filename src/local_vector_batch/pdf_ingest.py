@@ -296,6 +296,7 @@ def extract_pdf(
     table_rows: list[dict] = []
     fact_rows: list[dict] = []
     structure_rows: list[dict] = []
+    line_rows: list[dict] = []
     ocr_eligible_pages = 0
     ocr_attempted_pages = 0
     secondary_pages = None
@@ -485,6 +486,13 @@ def extract_pdf(
                     structure_rows.extend(styled_heading_candidates(pages[-1], metrics))
                 except Exception as error:
                     issues.append({"page": index, "kind": "styled_heading_candidates_unavailable", "detail": str(error)[:180]})
+                # Printed lines with geometry and type, for laying the document out again.
+                try:
+                    from .layout_lines import native_lines, ocr_lines
+                    line_rows.extend(native_lines(pages[-1], page) if selected_method == "pdf_text"
+                                     else ocr_lines(pages[-1], ocr_result))
+                except Exception as error:
+                    issues.append({"page": index, "kind": "layout_lines_unavailable", "detail": str(error)[:180]})
                 if len(text) < 80:
                     kind = "blank_page" if blank else "missing_text" if not text else \
                         "short_text_verified" if short_evidence and short_evidence["ready"] else "short_text"
@@ -621,9 +629,10 @@ def extract_pdf(
     _write_json(output / "tables.json", table_rows)
     _jsonl(output / "fact-candidates.jsonl", fact_rows)
     _jsonl(output / "structure-candidates.jsonl", structure_rows)
+    _jsonl(output / "lines.jsonl", line_rows)
     # Package assembly reopens persisted artifacts; release extraction-owned
     # graphs before that second materialization. Source identities do not change.
-    pages.clear(); input_rows.clear(); table_rows.clear(); fact_rows.clear(); structure_rows.clear()
+    pages.clear(); input_rows.clear(); table_rows.clear(); fact_rows.clear(); structure_rows.clear(); line_rows.clear()
     old_pages.clear(); old_inputs.clear(); old_tables.clear(); old_facts.clear(); old_structures.clear(); old_issues.clear()
     secondary_pages = None
     from .evidence_package import create_package
