@@ -339,6 +339,14 @@ def extract_pdf(
                 except Exception as error:
                     text = ""
                     native_error = str(error)[:180]
+                column_order_applied = False
+                if text:
+                    # Two-column pages: read each column top to bottom (layout_order), only when the reordered text
+                    # holds exactly the same characters, so reading order changes and nothing is added or lost.
+                    from .native_columns import column_ordered_text
+                    ordered = column_ordered_text(page)
+                    if ordered and sorted(ordered.replace(" ", "").replace("\n", "")) == sorted(text.replace(" ", "").replace("\n", "")):
+                        text, column_order_applied = ordered, True
                 native = text
                 native_quality = text_quality(native)
                 independent_coverage = None
@@ -419,6 +427,9 @@ def extract_pdf(
                 if native_error:
                     issues.append({"page": index, "kind": "native_extraction_recovered" if text else "text_extraction_failed",
                                    "detail": native_error})
+                if column_order_applied and selected_method == "pdf_text":
+                    issues.append({"page": index, "kind": "native_column_order",
+                                   "detail": "Two text columns read left column then right (central gutter, prose on both sides)"})
                 page_id = f"{document_id}:p{index}"
                 text_sha = hashlib.sha256(text.encode("utf-8")).hexdigest()
                 from .text_script import (classify_text_script, native_script_verification,
