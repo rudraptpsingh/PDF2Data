@@ -490,8 +490,12 @@ def extract_pdf(
                 # Printed lines with geometry and type, for laying the document out again.
                 try:
                     from .layout_lines import native_lines, ocr_lines
-                    line_rows.extend(native_lines(pages[-1], page) if selected_method == "pdf_text"
-                                     else ocr_lines(pages[-1], ocr_result))
+                    from .structure_candidates import run_in_heading_candidates
+                    page_lines = (native_lines(pages[-1], page) if selected_method == "pdf_text"
+                                  else ocr_lines(pages[-1], ocr_result))
+                    line_rows.extend(page_lines)
+                    # Bold phrases opening a line, followed by regular text (run-in headings).
+                    structure_rows.extend(run_in_heading_candidates(pages[-1], page_lines))
                 except Exception as error:
                     issues.append({"page": index, "kind": "layout_lines_unavailable", "detail": str(error)[:180]})
                 if len(text) < 80:
