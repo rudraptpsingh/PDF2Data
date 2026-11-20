@@ -109,3 +109,16 @@ def test_a_line_sharing_its_row_is_not_a_heading():
              {"text": "Payment", "bbox": [0.1, 0.4, 0.25, 0.43]}]
     sizes = [size for _, size, _ in ocr_line_metrics(lines, 595)]
     assert sizes[0] is None and sizes[1] is None and sizes[2]
+
+
+def test_short_bold_headings_ending_in_a_colon_and_capital_headings_at_body_size():
+    """Orders title their parts "Submissions of the Petitioner:" in body-size bold, and some bodies set headings in
+    capitals at body size, not bold. Both are headings; a sentence ending in a colon and a capital word inside
+    body text are not."""
+    body = "The petitioner has filed the present petition for approval of the tariff for the control period."
+    lines = ["Submissions of the Petitioner:", body, "ANALYSIS AND DECISION", body,
+             "The Commission has considered the following documents:", body, "Coram:"]
+    page = {"page": 1, "id": "d:p1", "text_sha256": "x", "method": "pdf_text", "text": "\n".join(lines)}
+    metrics = [(t, 12, t in ("Submissions of the Petitioner:", "Coram:")) for t in lines] + [(body, 12, False)] * 4
+    out = styled_heading_candidates(page, metrics)
+    assert [r["evidence"][0]["quote"] for r in out] == ["Submissions of the Petitioner:", "ANALYSIS AND DECISION", "Coram:"]
