@@ -43,3 +43,13 @@ def test_skewed_two_columns_still_read_left_then_right():
     left = [line(f"left line {i} of the first column text", 0.08, 0.10 + i * 0.025, 0.46, 0.115 + i * 0.025) for i in range(8)]
     right = [line(f"right line {i} of the second column", 0.54, 0.112 + i * 0.025, 0.92, 0.127 + i * 0.025) for i in range(8)]
     assert texts(left + right) == [l["text"] for l in left] + [r["text"] for r in right]
+
+
+def test_rows_never_chain_down_a_skewed_page():
+    from local_vector_batch.layout_order import rows_by_overlap
+    # Real OCR boxes from a 1.5-degree skewed two-column scan: each line overlaps its neighbour in the other column.
+    boxes = [(0.517, 0.064, 0.804, 0.085), (0.08, 0.072, 0.329, 0.093), (0.518, 0.082, 0.785, 0.101),
+             (0.081, 0.091, 0.319, 0.11), (0.519, 0.099, 0.815, 0.119), (0.081, 0.107, 0.371, 0.128),
+             (0.519, 0.116, 0.792, 0.138), (0.081, 0.124, 0.38, 0.146)]
+    items = [{"x0": a, "top": b, "x1": c, "bottom": d} for a, b, c, d in boxes]
+    assert len(rows_by_overlap(items)) >= 4
