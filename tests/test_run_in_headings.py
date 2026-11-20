@@ -113,3 +113,25 @@ def test_prefix_rule_on_words():
     assert run_in_prefix(w("(iv)", "The respondent")) == 0
     assert run_in_prefix(w("1.2", "The respondent")) == 0
     assert run_in_prefix(w("one two three four five six seven eight nine ten eleven.", "The rest")) == 0
+    # A bold run starting in lower case continues a sentence; a ")" closing a bracket opened on the line above
+    # is the tail of a wrapped bold phrase.
+    assert run_in_prefix(w("supply within the State. Further", "Section 86(1) of the Act provides")) == 0
+    assert run_in_prefix(w("Order\u201d)", "passed by the Commission in the petition")) == 0
+    assert run_in_prefix(w("Issue (i)", "whether the petition is maintainable")) == 2
+    assert run_in_prefix(w("A) Eligibility Criteria:", "The bidder must")) == 3
+    # Bold parentheticals, quoted terms and unbalanced brackets sit inside sentences.
+    assert run_in_prefix(w("(\u201cAppellant\u201d)", "challenging the Order dated")) == 0
+    assert run_in_prefix(w("\u201cCommission\u201d", "The Commission")) == 0
+    assert run_in_prefix(w("(general \u2013", "operational planning and")) == 0
+    assert run_in_prefix(w("Domestic consumers up to 150 kW).", "No Licensee")) == 0
+    assert run_in_prefix(w("\u201c(1) Wheeling charges.\u2013", "Wheeling charges shall be")) == 3
+
+
+def test_table_rows_and_two_weight_headings_need_punctuation():
+    """With no closing punctuation, a bold run is a heading only a word space before a capital: a wider gap is the
+    next table column, and capitals after it are the same heading set in another weight."""
+    from local_vector_batch.layout_lines import run_in_prefix
+    assert run_in_prefix([("Background", True, 0.0), ("The", False, 0.25), ("petitioner", False, 0.25)]) == 1
+    assert run_in_prefix([("Chapter", True, 0.0), ("3", True, 0.25), ("Year-ahead", False, 1.3), ("planning", False, 0.2)]) == 0
+    assert run_in_prefix([("Decision:", True, 0.0), ("The", False, 1.8), ("Commission", False, 0.3)]) == 1
+    assert run_in_prefix([("OF", True, 0.0), ("CONGESTION", False, 0.23), ("CHARGE", False, 0.23)]) == 0

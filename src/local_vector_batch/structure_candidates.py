@@ -300,6 +300,14 @@ def styled_heading_candidates(page: dict, metrics: list) -> list[dict]:
     return rows
 
 
+def run_in_heading_candidates(page: dict, line_rows: list[dict]) -> list[dict]:
+    """A bold phrase opening a line with regular text after it ("Background. The petitioner ..."): the exact span of
+    the phrase, from the lines.jsonl rows of this page that carry lead_bold."""
+    return [{"kind": "run_in_heading", "evidence": [_evidence(page, row["char_start"], row["char_start"] + row["lead_bold"])],
+             "status": "review_required", "review_reasons": ["hierarchy_not_inferred"]}
+            for row in line_rows if row.get("lead_bold") and row.get("char_start") is not None]
+
+
 def native_line_metrics(pdf_page) -> list:
     """[(line text, median font size, bold)] for a native page, lines grouped by vertical overlap."""
     from statistics import median
