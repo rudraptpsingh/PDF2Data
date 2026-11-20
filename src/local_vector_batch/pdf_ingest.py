@@ -482,7 +482,8 @@ def extract_pdf(
                     if selected_method == "pdf_text":
                         metrics = native_line_metrics(page)
                     else:
-                        metrics = [(l["text"], l["bbox"][3] - l["bbox"][1], False) for l in (ocr_result or {}).get("lines", [])]
+                        from .structure_candidates import ocr_line_metrics
+                        metrics = ocr_line_metrics((ocr_result or {}).get("lines", []), float(getattr(page, "width", 0) or 595))
                     structure_rows.extend(styled_heading_candidates(pages[-1], metrics))
                 except Exception as error:
                     issues.append({"page": index, "kind": "styled_heading_candidates_unavailable", "detail": str(error)[:180]})
@@ -537,11 +538,13 @@ def extract_pdf(
                     if selected_method in {"vision", "tesseract", "rapidocr"} and ocr_result and not native_tables_on_page:
                         try:
                             from .ocr_tables import ruled_table_candidates
+                            from .layout_order import page_slope as _page_slope
                             rendered = (getattr(recognizer, "last_rendered_image", None) or
                                         page.to_image(resolution=ocr_result["render_dpi"]).original)
                             for candidate in ruled_table_candidates(
                                 rendered, ocr_result["lines"], page=index, page_id=page_id,
                                 pdf_width=float(page.width), pdf_height=float(page.height),
+                                slope=_page_slope(ocr_result["lines"]),
                             ):
                                 candidate["source_pdf_sha256"] = sha
                                 candidate["page_text_sha256"] = text_sha

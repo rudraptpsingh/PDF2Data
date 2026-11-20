@@ -314,3 +314,34 @@ def drop_running_headings(rows: list[dict], page_count: int) -> list[dict]:
             pages.setdefault(shape(r), set()).add(r["evidence"][0]["page"])
     running = {s for s, ps in pages.items() if len(ps) >= 3 and len(ps) >= page_count / 2}
     return [r for r in rows if r.get("kind") != "styled_heading" or shape(r) not in running]
+
+
+# Proportional glyph widths (Helvetica, 1/1000 em): an OCR line's width over its summed glyph widths estimates its
+# type size, whatever letters it happens to contain.
+_GLYPH = {**{c: 556 for c in "abcdeghnopqu0123456789"}, **{c: 500 for c in "ksvxyz"}, **{c: 222 for c in "ijl"},
+          **{c: 278 for c in "ft .,:;!'|/\\"}, "r": 333, "m": 833, "w": 722, "(": 333, ")": 333, "-": 333, "[": 278,
+          "]": 278, "%": 889, "&": 667, **{c: 667 for c in "ABEKPSVXY"}, **{c: 722 for c in "CDHNRU"},
+          **{c: 778 for c in "GOQ"}, "F": 611, "T": 611, "Z": 611, "L": 556, "J": 500, "I": 278, "M": 833, "W": 944}
+
+
+def estimated_type_size(text: str, width_points: float) -> float | None:
+    """Type size in points of a line set in a proportional face, from its printed width."""
+    em = sum(_GLYPH.get(c, 556) for c in text) / 1000
+    return round(width_points / em, 2) if em > 0 and width_points > 0 else None
+
+
+def ocr_line_metrics(lines: list, page_width: float) -> list:
+    """[(line text, estimated type size, None)] for OCR lines with normalised boxes. Box height is mostly padding
+    and grows with skew; the width a line takes for its letters tracks type size and weight."""
+    out = []
+    boxes = [l.get("bbox") or [] for l in lines]
+    for line, b in zip(lines, boxes):
+        text = str(line.get("text") or "")
+        if len(b) != 4 or not text.strip():
+            continue
+        # A line sharing its row with another (a table cell, a form column) is never a heading: no size.
+        h = max(b[3] - b[1], 1e-6)
+        shares_row = any(o is not b and len(o) == 4 and min(o[3], b[3]) - max(o[1], b[1]) >= 0.5 * min(h, o[3] - o[1])
+                         for o in boxes)
+        out.append((text, None if shares_row else estimated_type_size(text.strip(), (b[2] - b[0]) * page_width), False))
+    return out

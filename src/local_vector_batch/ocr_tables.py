@@ -18,13 +18,16 @@ def _runs(values: list[int], minimum: int, gap: int = 5) -> list[int]:
 
 
 def ruled_table_candidates(image, ocr_lines: list[dict], *, page: int,
-                           page_id: str, pdf_width: float, pdf_height: float) -> list[dict]:
+                           page_id: str, pdf_width: float, pdf_height: float, slope: float = 0.0) -> list[dict]:
     """Map OCR words into geometrically bounded cells, never verified facts.
 
     OCR word boxes are normalized to the rendered page. A grid is accepted only
     if it has at least two rows and columns, three long lines on each axis, and
     each internal boundary crosses the opposite outer lines. Missing or
     overlapping word boxes produce blank cells or unassigned text, not guesses.
+
+    slope is the page skew as normalised dy/dx (from the OCR baselines). A tilted page is straightened before its
+    rulings are looked for, and word boxes are moved with it, so grid coordinates are in the straightened page.
     """
     try:
         import cv2
@@ -37,6 +40,12 @@ def ruled_table_candidates(image, ocr_lines: list[dict], *, page: int,
         return []
     gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
     ink = cv2.threshold(gray, 180, 255, cv2.THRESH_BINARY_INV)[1]
+    rotation = None
+    if slope and abs(slope) >= 0.003:
+        import math
+        angle = math.degrees(math.atan(slope * height / width))
+        rotation = cv2.getRotationMatrix2D((width / 2, height / 2), angle, 1.0)
+        ink = cv2.warpAffine(ink, rotation, (width, height), flags=cv2.INTER_NEAREST, borderValue=0)
     horizontal = cv2.morphologyEx(ink, cv2.MORPH_OPEN,
                                  cv2.getStructuringElement(cv2.MORPH_RECT, (max(30, width // 35), 1)))
     vertical = cv2.morphologyEx(ink, cv2.MORPH_OPEN,
@@ -50,6 +59,12 @@ def ruled_table_candidates(image, ocr_lines: list[dict], *, page: int,
             box = word.get("bbox")
             if (word.get("text", "").strip() and isinstance(box, list) and len(box) == 4 and
                     all(isinstance(value, (int, float)) for value in box)):
+                if rotation is not None:
+                    corners = np.array([[box[0] * width, box[1] * height, 1], [box[2] * width, box[1] * height, 1],
+                                        [box[0] * width, box[3] * height, 1], [box[2] * width, box[3] * height, 1]])
+                    moved = corners @ rotation.T
+                    box = [moved[:, 0].min() / width, moved[:, 1].min() / height,
+                           moved[:, 0].max() / width, moved[:, 1].max() / height]
                 words.append((word["text"], tuple(box)))
     if not words:
         return []
@@ -69,7 +84,7 @@ def ruled_table_candidates(image, ocr_lines: list[dict], *, page: int,
             continue
         # Require boundaries to meet the opposite outer lines. This rejects
         # headings and underlines that merely touch a table on the same page.
-        tolerance = max(5, round(min(width, height) * .003))
+        tolerance = max(5, round(min(width, height) * .003)) + (3 if rotation is not None else 0)   # straightening leaves jagged edges
         if (xs[0] - x0 > tolerance or x1 - xs[-1] > tolerance or
                 ys[0] - y0 > tolerance or y1 - ys[-1] > tolerance):
             continue
