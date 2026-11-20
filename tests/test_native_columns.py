@@ -61,3 +61,17 @@ def test_short_label_value_pairs_are_not_columns(tmp_path):
     labels = ["Name", "Date", "Total", "Ref", "Due", "Tax"]
     values = ["Northwind", "3 March", "1,250.00", "PO-7", "30 days", "18%"]
     assert text_of(pdf(tmp_path / "kv.pdf", lines(60, 780, labels) + lines(330, 780, values))) is None
+
+
+def test_extraction_uses_column_order_and_records_it(tmp_path):
+    from local_vector_batch.pdf_ingest import extract_pdf
+    import json
+    source = pdf(tmp_path / "c.pdf", lines(50, 780, LEFT) + lines(320, 780, RIGHT))
+    out = tmp_path / "out"
+    extract_pdf(source, out)
+    page = json.loads((out / "pages.jsonl").read_text().splitlines()[0])
+    assert page["text"].split("\n") == LEFT + RIGHT
+    issues = [json.loads(l) for l in (out / "issues.jsonl").read_text().splitlines()] if (out / "issues.jsonl").exists() else []
+    report = json.loads((out / "report.json").read_text()) if (out / "report.json").exists() else {}
+    kinds = [i.get("kind") for i in issues] + [i.get("kind") for i in report.get("issues", [])]
+    assert "native_column_order" in kinds
