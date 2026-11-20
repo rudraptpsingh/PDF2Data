@@ -100,3 +100,23 @@ def test_ocr_renders_pages_with_antialiasing():
     except RuntimeError:
         pass
     assert seen.get("antialias") is True
+
+
+def test_devanagari_pages_render_at_240_dpi_or_more():
+    # The Devanagari recogniser garbles matras and conjuncts at 180 dpi (CER 0.47 on a shaped Hindi scan) and reads
+    # the same page exactly at 240 dpi. English keeps its 180 dpi default.
+    from local_vector_batch.ocr import LocalOCR
+    seen = []
+
+    class Page:
+        width, height = 595, 842
+
+        def to_image(self, **kwargs):
+            seen.append(kwargs["resolution"])
+            raise RuntimeError("stop after render arguments")
+    for language in ("hin", "eng"):
+        try:
+            LocalOCR(engine="rapidocr", language=language).recognize(Page())
+        except RuntimeError:
+            pass
+    assert seen[0] >= 240 and seen[1] == 180
