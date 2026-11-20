@@ -59,3 +59,16 @@ def test_ocr_heading_by_line_height():
     metrics = [("Quarterly review", 0.030, False), ("Revenue grew in every region this quarter.", 0.018, False),
                ("Costs were flat.", 0.018, False), ("Outlook", 0.029, False)]
     assert [r["evidence"][0]["quote"] for r in styled_heading_candidates(page, metrics)] == ["Quarterly review", "Outlook"]
+
+
+def test_bold_names_signatures_and_label_values_are_not_headings():
+    """Front matter and signature blocks set in body-size bold: names with roles, repeated signature marks and
+    label/value lines are not headings; a short bold section title among them is."""
+    from local_vector_batch.structure_candidates import styled_heading_candidates
+    body = "The applicant has made the present application under the relevant section of the act."
+    lines = ["In the matter of", "Shri A. Kumar, Chairperson", "Date of Order: 13 November 2026", "ORDER", body,
+             "Sd/- Sd/- Sd/-", "(A. Kumar) (B. Rao) (C. Das)", "Member Member Chairperson"]
+    page = {"page": 1, "text": "\n".join(lines)}
+    metrics = [(t, 12, t != body) for t in lines] + [(body, 12, False)] * 5
+    out = styled_heading_candidates(page, metrics)
+    assert [r["evidence"][0]["quote"] for r in out] == ["In the matter of", "ORDER"]
