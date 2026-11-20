@@ -36,3 +36,10 @@ def test_title_across_columns_stays_first():
 def test_single_column_keeps_top_to_bottom():
     col = [line(f"paragraph line {i}", 0.08, 0.1 + i * 0.02, 0.9, 0.115 + i * 0.02) for i in range(8)]
     assert texts(list(reversed(col))) == [c["text"] for c in col]
+
+
+def test_skewed_two_columns_still_read_left_then_right():
+    # A page scanned 1.5 degrees off: the right column sits lower than its left partner, so no row holds both.
+    left = [line(f"left line {i} of the first column text", 0.08, 0.10 + i * 0.025, 0.46, 0.115 + i * 0.025) for i in range(8)]
+    right = [line(f"right line {i} of the second column", 0.54, 0.112 + i * 0.025, 0.92, 0.127 + i * 0.025) for i in range(8)]
+    assert texts(left + right) == [l["text"] for l in left] + [r["text"] for r in right]
