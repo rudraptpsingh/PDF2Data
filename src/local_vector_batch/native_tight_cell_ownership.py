@@ -134,7 +134,7 @@ def _prepare_ownership_page(source,page_number,page,other,tp,third):
          'paint_snapshot_sha256':sha(json.dumps(paint,sort_keys=True,separators=(',',':')).encode()),
          'implementation_sha256':sha(Path(__file__).read_bytes()),
          'policy_sha256':sha(json.dumps(policy,sort_keys=True,separators=(',',':')).encode()),
-         'reader_versions':{name:version(name)for name in('pdfplumber','pypdf','pypdfium2','PyMuPDF')}}
+         'reader_versions':{name:version(name)for name in('pdfplumber','pypdf','pypdfium2')}}
 
 
 def _audit_prepared_cells(prepared,cells):

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Source-paint visibility (`native_paint_visibility.capture`) reads pages with
+  pypdfium2 instead of PyMuPDF, so no runtime path imports AGPL code. Paint order,
+  clips, transparency and glyph ink come from pdfium page objects; the BT..ET text
+  paints and single-`re` rectangles the rules were written against are read from
+  the content stream. 36 fixture pages (30 rule edges and the six pages of CERC
+  545/TD/2026) match the PyMuPDF goldens, except reviewed differences listed in
+  `tests/goldens/paint_visibility.differences.json`, all of which are equal or more
+  conservative. The `[proof]` extra no longer installs PyMuPDF.
+
 - Page readings made ahead of a run (`pdf-ocr-pages`, `legal-l1 --ocr-readings`),
   first released as 0.2.0rc20.post1 (rc20 plus this only). See that entry.
 

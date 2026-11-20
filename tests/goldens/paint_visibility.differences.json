@@ -1,0 +1,131 @@
+{
+ "cases": {
+  "black_cover_full": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "visibility_state": "A later opaque fill covers the glyph ink and the MuPDF metric box but not pdfium's taller base-14 substitute metric box, so the glyph is held (partial occlusion) instead of removed. More conservative; no glyph the goldens kept is removed.",
+   "visible_text": "Follows from visibility_state: the glyph stays in the visible candidate text."
+  },
+  "cerc_545_td_2026_p1": {
+   "whitespace_glyphs": "pdfium's text page omits some content-stream space glyphs (no ink; always retained_raw_whitespace). Inked glyphs line up one to one with the goldens; downstream space-only paint proofs fail closed when their space glyphs are absent."
+  },
+  "cerc_545_td_2026_p2": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "whitespace_glyphs": "pdfium's text page omits some content-stream space glyphs (no ink; always retained_raw_whitespace). Inked glyphs line up one to one with the goldens; downstream space-only paint proofs fail closed when their space glyphs are absent."
+  },
+  "cerc_545_td_2026_p3": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "whitespace_glyphs": "pdfium's text page omits some content-stream space glyphs (no ink; always retained_raw_whitespace). Inked glyphs line up one to one with the goldens; downstream space-only paint proofs fail closed when their space glyphs are absent."
+  },
+  "cerc_545_td_2026_p4": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "whitespace_glyphs": "pdfium's text page omits some content-stream space glyphs (no ink; always retained_raw_whitespace). Inked glyphs line up one to one with the goldens; downstream space-only paint proofs fail closed when their space glyphs are absent."
+  },
+  "cerc_545_td_2026_p5": {
+   "whitespace_glyphs": "pdfium's text page omits some content-stream space glyphs (no ink; always retained_raw_whitespace). Inked glyphs line up one to one with the goldens; downstream space-only paint proofs fail closed when their space glyphs are absent."
+  },
+  "cerc_545_td_2026_p6": {
+   "whitespace_glyphs": "pdfium's text page omits some content-stream space glyphs (no ink; always retained_raw_whitespace). Inked glyphs line up one to one with the goldens; downstream space-only paint proofs fail closed when their space glyphs are absent."
+  },
+  "clip_nonrect": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "clip_rect_cover": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "visibility_state": "A later opaque fill covers the glyph ink and the MuPDF metric box but not pdfium's taller base-14 substitute metric box, so the glyph is held (partial occlusion) instead of removed. More conservative; no glyph the goldens kept is removed.",
+   "visible_text": "Follows from visibility_state: the glyph stays in the visible candidate text."
+  },
+  "clip_rect_narrow": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "cm_translated_cover": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "visibility_state": "A later opaque fill covers the glyph ink and the MuPDF metric box but not pdfium's taller base-14 substitute metric box, so the glyph is held (partial occlusion) instead of removed. More conservative; no glyph the goldens kept is removed.",
+   "visible_text": "Follows from visibility_state: the glyph stays in the visible candidate text."
+  },
+  "cover_earlier": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "cover_partial": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "fill_stroke_cover": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "visibility_state": "A later opaque fill covers the glyph ink and the MuPDF metric box but not pdfium's taller base-14 substitute metric box, so the glyph is held (partial occlusion) instead of removed. More conservative; no glyph the goldens kept is removed.",
+   "visible_text": "Follows from visibility_state: the glyph stays in the visible candidate text."
+  },
+  "form_group_alpha": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "form_opaque_cover": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "visibility_state": "A later opaque fill covers the glyph ink and the MuPDF metric box but not pdfium's taller base-14 substitute metric box, so the glyph is held (partial occlusion) instead of removed. More conservative; no glyph the goldens kept is removed.",
+   "visible_text": "Follows from visibility_state: the glyph stays in the visible candidate text."
+  },
+  "gray_fill_cover": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "visibility_state": "A later opaque fill covers the glyph ink and the MuPDF metric box but not pdfium's taller base-14 substitute metric box, so the glyph is held (partial occlusion) instead of removed. More conservative; no glyph the goldens kept is removed.",
+   "visible_text": "Follows from visibility_state: the glyph stays in the visible candidate text."
+  },
+  "invisible_text": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "multi_line_paragraph": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "nonrect_fill": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "optional_content": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "plain_text": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "scaled_text_matrix": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "visibility_state": "A later opaque fill covers the glyph ink and the MuPDF metric box but not pdfium's taller base-14 substitute metric box, so the glyph is held (partial occlusion) instead of removed. More conservative; no glyph the goldens kept is removed.",
+   "visible_text": "Follows from visibility_state: the glyph stays in the visible candidate text."
+  },
+  "shared_paint_fonts": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "stroke_text": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "table_redacted_cell": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "text_after_cover": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "tj_kerning": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "transparent_fill": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "two_rects_gap": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "two_rects_union": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "visibility_state": "A later opaque fill covers the glyph ink and the MuPDF metric box but not pdfium's taller base-14 substitute metric box, so the glyph is held (partial occlusion) instead of removed. More conservative; no glyph the goldens kept is removed.",
+   "visible_text": "Follows from visibility_state: the glyph stays in the visible candidate text."
+  },
+  "underline_metric_only": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  },
+  "white_cover_full": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box.",
+   "visibility_state": "A later opaque fill covers the glyph ink and the MuPDF metric box but not pdfium's taller base-14 substitute metric box, so the glyph is held (partial occlusion) instead of removed. More conservative; no glyph the goldens kept is removed.",
+   "visible_text": "Follows from visibility_state: the glyph stays in the visible candidate text."
+  },
+  "whitespace": {
+   "glyph_bbox": "Glyph boxes are font-metric boxes. pdfium sizes them from its own ascent/descent (and, for non-embedded base-14 fonts, its own substitute fonts) where MuPDF used its fonts; x extents agree, heights differ by up to ~2 pt. Removal still requires the fill to cover the glyph ink box, which pdfium measures from the glyph outline, so safety does not rest on this box."
+  }
+ },
+ "reader_after": "pypdfium2 5.14.0 / pdfium 156.0.8076.0",
+ "reader_before": "PyMuPDF 1.28.2",
+ "reviewed": "2026-11-20",
+ "safety": "test_l3_safety_never_weaker_than_goldens: no inked glyph kept by the goldens is removed"
+}

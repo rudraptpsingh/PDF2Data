@@ -34,14 +34,24 @@ def test_l2_goldens_recorded_before_the_change():
                       'held_unsupported_text_paint', 'retained_raw_whitespace', 'retained_visible_or_unproven'}
 
 
+def inked(glyphs):
+    return [g for g in glyphs if g['text'].strip()]
+
+
 def compare(golden, actual):
-    """Kinds of difference between a golden page and a fresh one (empty = equal)."""
+    """Kinds of difference between a golden page and a fresh one (empty = equal).
+
+    Whitespace glyphs carry no ink and are always retained, so they are
+    compared by count; every inked glyph must line up one to one.
+    """
     if 'error' in golden or 'error' in actual:
         return [] if golden == actual else ['error']
     kinds = []
-    g, a = golden['glyphs'], actual['glyphs']
+    g, a = inked(golden['glyphs']), inked(actual['glyphs'])
+    if len(golden['glyphs']) - len(g) != len(actual['glyphs']) - len(a):
+        kinds.append('whitespace_glyphs')
     if [x['text'] for x in g] != [x['text'] for x in a]:
-        kinds.append('glyph_text_or_order')
+        kinds.append('inked_glyph_text_or_order')
     else:
         if any(x['state'] != y['state'] or x['excluded'] != y['excluded'] for x, y in zip(g, a)):
             kinds.append('visibility_state')
@@ -49,7 +59,9 @@ def compare(golden, actual):
             kinds.append('ink_basis')
         if any(abs(p - q) > BBOX_TOLERANCE for x, y in zip(g, a) for p, q in zip(x['bbox'], y['bbox'])):
             kinds.append('glyph_bbox')
-    if golden['retained_text'] != actual['retained_text'] or golden['excluded_text'] != actual['excluded_text']:
+    squash = lambda text: ''.join(text.split())
+    if (squash(golden['retained_text']) != squash(actual['retained_text']) or
+            squash(golden['excluded_text']) != squash(actual['excluded_text'])):
         kinds.append('visible_text')
     gf, af = golden['accepted_fill_bboxes'], actual['accepted_fill_bboxes']
     if len(gf) != len(af) or any(abs(p - q) > FILL_TOLERANCE for x, y in zip(gf, af) for p, q in zip(x, y)):
@@ -102,15 +114,14 @@ def test_l3_replacement_equals_goldens_or_reviewed_difference(fresh):
 
 
 def test_l3_safety_never_weaker_than_goldens(fresh):
-    """Whatever the reviewed differences, no glyph the goldens kept is removed."""
+    """Whatever the reviewed differences, no inked glyph the goldens kept is removed."""
     _, pages = fresh
     for case, golden in load_goldens(GOLDENS)['pages'].items():
         actual = pages[case]
         if 'error' in golden:
             assert actual == golden, case
             continue
-        kept = [g['text'] for g in golden['glyphs'] if not g['excluded']]
-        removed_now = [g['text'] for g in actual['glyphs'] if g['excluded']]
-        assert [g['text'] for g in actual['glyphs']] == [g['text'] for g in golden['glyphs']], case
-        assert all(not a['excluded'] for g, a in zip(golden['glyphs'], actual['glyphs']) if not g['excluded']), \
-            (case, removed_now, kept[:20])
+        g, a = inked(golden['glyphs']), inked(actual['glyphs'])
+        assert [x['text'] for x in a] == [x['text'] for x in g], case
+        assert all(not y['excluded'] for x, y in zip(g, a) if not x['excluded']), case
+        assert not any(y['excluded'] for y in actual['glyphs'] if not y['text'].strip()), case
