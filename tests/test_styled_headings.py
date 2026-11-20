@@ -68,7 +68,19 @@ def test_bold_names_signatures_and_label_values_are_not_headings():
     body = "The applicant has made the present application under the relevant section of the act."
     lines = ["In the matter of", "Shri A. Kumar, Chairperson", "Date of Order: 13 November 2026", "ORDER", body,
              "Sd/- Sd/- Sd/-", "(A. Kumar) (B. Rao) (C. Das)", "Member Member Chairperson"]
-    page = {"page": 1, "text": "\n".join(lines)}
+    page = {"page": 1, "id": "d:p1", "text_sha256": "x", "method": "pdf_text", "text": "\n".join(lines)}
     metrics = [(t, 12, t != body) for t in lines] + [(body, 12, False)] * 5
     out = styled_heading_candidates(page, metrics)
     assert [r["evidence"][0]["quote"] for r in out] == ["In the matter of", "ORDER"]
+
+
+def test_running_lines_repeated_across_pages_are_not_headings():
+    """A bold running header ("Order in Petition No. 5/2026  Page 2 of 4") repeats on most pages with only its
+    numbers changing; it is dropped. A heading printed once stays."""
+    from local_vector_batch.structure_candidates import drop_running_headings
+    rows = [{"kind": "styled_heading", "evidence": [{"page": p, "quote": f"Order in Petition No. 5/2026 Page {p} of 4"}]}
+            for p in range(1, 5)]
+    rows.append({"kind": "styled_heading", "evidence": [{"page": 2, "quote": "ORDER"}]})
+    rows.append({"kind": "clause_heading", "evidence": [{"page": 3, "quote": "1. Scope"}]})
+    kept = drop_running_headings(rows, page_count=4)
+    assert [r["evidence"][0]["quote"] for r in kept] == ["ORDER", "1. Scope"]
