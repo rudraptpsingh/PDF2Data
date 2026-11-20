@@ -122,3 +122,15 @@ def test_short_bold_headings_ending_in_a_colon_and_capital_headings_at_body_size
     metrics = [(t, 12, t in ("Submissions of the Petitioner:", "Coram:")) for t in lines] + [(body, 12, False)] * 4
     out = styled_heading_candidates(page, metrics)
     assert [r["evidence"][0]["quote"] for r in out] == ["Submissions of the Petitioner:", "ANALYSIS AND DECISION", "Coram:"]
+
+
+def test_a_larger_heading_repeated_on_every_page_is_not_a_running_header():
+    """"Section 1. Review", "Section 2. Review" at the top of each page differ only by a number, like a running header,
+    but they are set larger than the body: they are headings. A body-size repeated line stays page furniture."""
+    from local_vector_batch.structure_candidates import drop_running_headings
+    rows = [{"kind": "styled_heading", "size_ratio": 1.18, "evidence": [{"page": p, "quote": f"Section {p}. Quarterly operations review"}]}
+            for p in range(1, 4)]
+    rows += [{"kind": "styled_heading", "size_ratio": 1.0, "evidence": [{"page": p, "quote": f"Order in Petition No. 5/2026 Page {p} of 3"}]}
+             for p in range(1, 4)]
+    kept = drop_running_headings(rows, page_count=3)
+    assert [r["evidence"][0]["quote"] for r in kept] == [f"Section {p}. Quarterly operations review" for p in range(1, 4)]
