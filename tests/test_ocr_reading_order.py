@@ -53,3 +53,17 @@ def test_rows_never_chain_down_a_skewed_page():
              (0.519, 0.116, 0.792, 0.138), (0.081, 0.124, 0.38, 0.146)]
     items = [{"x0": a, "top": b, "x1": c, "bottom": d} for a, b, c, d in boxes]
     assert len(rows_by_overlap(items)) >= 4
+
+
+def test_skewed_table_rows_stay_whole_when_the_slope_is_known():
+    # 2 degrees of skew: across the page a row drifts about one row height. Each OCR line carries its baseline slope.
+    import math
+    slope = math.tan(math.radians(2)) * 0.7   # in normalised units (page aspect folded in)
+    rows, expect = [], []
+    for r in range(5):
+        base = 0.2 + r * 0.03
+        for c, x in enumerate((0.1, 0.4, 0.6, 0.8)):
+            top = base + slope * x
+            rows.append(dict(line(f"r{r}c{c}", x, top, x + 0.08, top + 0.016), baseline_slope=slope))
+            expect.append(f"r{r}c{c}")
+    assert texts(list(reversed(rows))) == expect
