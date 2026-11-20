@@ -1,6 +1,21 @@
 # Changelog
 
-## Unreleased
+## 0.2.0rc25 — 2026-11-20
+
+Everything below "Unreleased" up to here, and the structure and layout readers added on 20 Nov 2026:
+
+- **Reading order:** two-column native pages read column by column (#32). OCR lines are ordered by rows with skew
+  straightened, renders are antialiased, and Devanagari is read at 240 dpi or more (#33).
+- **Headings:** styled headings by type size, weight, capitals or a closing colon, with OCR size estimated from glyph
+  widths (#34, #36, #39). Bold headings that open a paragraph become `run_in_heading` candidates (#40). Running headers
+  are dropped, but a larger heading repeated on every page is kept (#41).
+- **Layout:** `extraction/lines.jsonl`, every printed line with its box, size, weight, slant, face, alignment, indent and
+  exact span of the page text (#35).
+- **Tables:** tilted ruled tables are straightened by the page slope (#36). Tables without rulings are found from
+  column alignment (#37), with cells that wrap kept in their row (#38).
+- Page text (`pages.jsonl`) is unchanged on CERC 545/TD/2026 by every change above.
+
+### Also in 0.2.0rc25
 
 - Source-paint visibility (`native_paint_visibility.capture`) reads pages with
   pypdfium2 instead of PyMuPDF, so no runtime path imports AGPL code. Paint order,
