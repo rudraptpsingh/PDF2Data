@@ -255,7 +255,8 @@ def table_candidates(table: dict, page: dict) -> list[dict]:
 
 def styled_heading_candidates(page: dict, metrics: list) -> list[dict]:
     """Headings set apart by type rather than numbering: a short line (at most 12 words, not ending like a sentence)
-    set at least 15% larger than the body, or bold where the body is not. `metrics` is [(line text, size, bold)]:
+    set at least 15% larger than the body, bold where the body is not, or in capitals where the body is not. A
+    larger or bold line may end in a colon ("Submissions of the Petitioner:") when it has at most eight words. `metrics` is [(line text, size, bold)]:
     font size for native text, line height for OCR. Each candidate is the exact span of that line in the page text."""
     from statistics import median
     norm = lambda t: re.sub(r"\s+", " ", t or "").strip()
@@ -264,19 +265,28 @@ def styled_heading_candidates(page: dict, metrics: list) -> list[dict]:
         return []
     body_size = median(size for size, _ in body)
     body_bold = sum(1 for _, bold in body if bold) > len(body) / 2
+    caps = lambda t: (lambda letters: len(letters) >= 4 and sum(c.isupper() for c in letters) >= 0.9 * len(letters))(
+        [c for c in t if c.isalpha()])
+    body_caps = sum(1 for text, size, _ in metrics if len(norm(text).split()) >= 4 and size and caps(norm(text))) > len(body) / 2
     wanted = {}
     for text, size, bold in metrics:
         t = norm(text)
         words = t.split()
-        if not t or len(words) > 12 or t[-1] in ".:;," or not re.search(r"[^\W\d_]", t):
+        if not t or len(words) > 12 or t[-1] in ".;," or not re.search(r"[^\W\d_]", t):
             continue
         larger = bool(size) and size >= 1.15 * body_size
         weight_only = not larger and bold and not body_bold and bool(size) and size >= 0.95 * body_size
+        # Capitals at body size, where the body is not in capitals, mark a heading too (some bodies set them so).
+        caps_only = not larger and not weight_only and not body_caps and caps(t) and bool(size) and size >= 0.9 * body_size
+        if t.endswith(":") and (len(words) > 8 or not (larger or weight_only)):
+            continue          # a sentence introducing what follows, not a heading
+        if caps_only and ("," in t or ": " in t or t[0] in "(["):
+            continue
         # Body-size bold also sets names with roles, signature rows and label/value lines; a heading marked only by
         # weight has no internal comma or label colon, does not open with "(", and does not repeat its words.
         if weight_only and ("," in t or ": " in t or t[0] in "([" or len(set(w.lower() for w in words)) < 0.7 * len(words)):
             continue
-        if larger or weight_only:
+        if larger or weight_only or caps_only:
             wanted.setdefault(t, 0)
             wanted[t] += 1
     rows = []
