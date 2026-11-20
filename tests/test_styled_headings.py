@@ -84,3 +84,19 @@ def test_running_lines_repeated_across_pages_are_not_headings():
     rows.append({"kind": "clause_heading", "evidence": [{"page": 3, "quote": "1. Scope"}]})
     kept = drop_running_headings(rows, page_count=4)
     assert [r["evidence"][0]["quote"] for r in kept] == ["ORDER", "1. Scope"]
+
+
+def test_ocr_metrics_use_width_per_character_not_box_height():
+    """OCR box height is mostly padding; width per character grows with type size and weight. A 13 pt bold
+    heading reads wider per character than 11 pt body even when its box is no taller."""
+    from local_vector_batch.structure_candidates import ocr_line_metrics
+    lines = [{"text": "1. Definitions", "bbox": [0.099, 0.083, 0.240, 0.100]},
+             {"text": "In this agreement the words below have the meanings given.", "bbox": [0.099, 0.110, 0.554, 0.127]},
+             {"text": "(b) Goods means:", "bbox": [0.14, 0.2, 0.278, 0.217]},
+             {"text": "(a) Services means the work in the schedule;", "bbox": [0.14, 0.18, 0.475, 0.196]},
+             {"text": "(c) Site means the place where the services are", "bbox": [0.14, 0.24, 0.491, 0.256]},
+             {"text": "2. Payment", "bbox": [0.099, 0.3, 0.223, 0.32]}]
+    metrics = ocr_line_metrics(lines, 595)
+    page = {"page": 1, "id": "d:p1", "text_sha256": "x", "method": "rapidocr", "text": "\n".join(l["text"] for l in lines)}
+    out = styled_heading_candidates(page, metrics)
+    assert [r["evidence"][0]["quote"] for r in out] == ["1. Definitions", "2. Payment"]
