@@ -268,7 +268,7 @@ def styled_heading_candidates(page: dict, metrics: list) -> list[dict]:
     caps = lambda t: (lambda letters: len(letters) >= 4 and sum(c.isupper() for c in letters) >= 0.9 * len(letters))(
         [c for c in t if c.isalpha()])
     body_caps = sum(1 for text, size, _ in metrics if len(norm(text).split()) >= 4 and size and caps(norm(text))) > len(body) / 2
-    wanted = {}
+    wanted, ratio = {}, {}
     for text, size, bold in metrics:
         t = norm(text)
         words = t.split()
@@ -289,13 +289,14 @@ def styled_heading_candidates(page: dict, metrics: list) -> list[dict]:
         if larger or weight_only or caps_only:
             wanted.setdefault(t, 0)
             wanted[t] += 1
+            ratio.setdefault(t, round(size / body_size, 2) if size and body_size else None)
     rows = []
     for line in _lines(page["text"]):
         t = norm(line.group())
         if wanted.get(t):
             wanted[t] -= 1
             rows.append({"kind": "styled_heading", "evidence": [_evidence(page, line.start(), line.end())],
-                         "basis": "type_size_or_weight", "review_reasons": ["hierarchy_not_inferred"],
+                         "basis": "type_size_or_weight", **({"size_ratio": ratio[t]} if ratio.get(t) else {}), "review_reasons": ["hierarchy_not_inferred"],
                          "status": "review_required"})
     return rows
 
@@ -331,7 +332,9 @@ def drop_running_headings(rows: list[dict], page_count: int) -> list[dict]:
         if r.get("kind") == "styled_heading":
             pages.setdefault(shape(r), set()).add(r["evidence"][0]["page"])
     running = {s for s, ps in pages.items() if len(ps) >= 3 and len(ps) >= page_count / 2}
-    return [r for r in rows if r.get("kind") != "styled_heading" or shape(r) not in running]
+    # A line set larger than the body is a heading even when it repeats with only its number changing
+    # ("Section 1. …", "Section 2. …" at the top of each page); running headers are set at body size or smaller.
+    return [r for r in rows if r.get("kind") != "styled_heading" or shape(r) not in running or (r.get("size_ratio") or 0) >= 1.15]
 
 
 # Proportional glyph widths (Helvetica, 1/1000 em): an OCR line's width over its summed glyph widths estimates its
