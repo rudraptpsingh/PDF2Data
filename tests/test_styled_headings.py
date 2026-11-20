@@ -100,3 +100,12 @@ def test_ocr_metrics_use_width_per_character_not_box_height():
     page = {"page": 1, "id": "d:p1", "text_sha256": "x", "method": "rapidocr", "text": "\n".join(l["text"] for l in lines)}
     out = styled_heading_candidates(page, metrics)
     assert [r["evidence"][0]["quote"] for r in out] == ["1. Definitions", "2. Payment"]
+
+
+def test_a_line_sharing_its_row_is_not_a_heading():
+    """Table cells and form columns sit side by side on a row; a heading stands alone on its row."""
+    from local_vector_batch.structure_candidates import ocr_line_metrics
+    lines = [{"text": "Support", "bbox": [0.1, 0.5, 0.2, 0.52]}, {"text": "120.00", "bbox": [0.45, 0.5, 0.52, 0.52]},
+             {"text": "Payment", "bbox": [0.1, 0.4, 0.25, 0.43]}]
+    sizes = [size for _, size, _ in ocr_line_metrics(lines, 595)]
+    assert sizes[0] is None and sizes[1] is None and sizes[2]
