@@ -4,7 +4,7 @@ Each row of lines.jsonl is one line as printed on its page:
 - text, and its exact span of the page text (char_start, char_length), or null offsets when the page text does
   not contain it verbatim;
 - bbox as fractions of the page, top-left origin;
-- size (font size in points; for OCR, the line height in points), bold, italic and font (null where the reader
+- size (font size in points; for OCR, estimated from the line's width and its letters' standard widths), bold, italic and font (null where the reader
   cannot tell);
 - align (left, center or right) and indent (fraction of page width from the left edge of the line's column).
 
@@ -17,6 +17,7 @@ import re
 from statistics import median
 
 from .layout_order import column_order, rows_by_overlap
+from .structure_candidates import estimated_type_size
 
 _BOLD = re.compile(r"bold|black|heavy|semibold|demi", re.I)
 _ITALIC = re.compile(r"italic|oblique", re.I)
@@ -105,7 +106,7 @@ def native_lines(page: dict, pdf_page) -> list[dict]:
 
 
 def ocr_lines(page: dict, ocr_result: dict) -> list[dict]:
-    """OCR lines in the order the reader returned them (already reading order); size is the line height in points."""
+    """OCR lines in the order the reader returned them (already reading order); size is estimated from width."""
     width, height = float(page.get("pdf_width") or 1), float(page.get("pdf_height") or 1)
     items = []
     for line in (ocr_result or {}).get("lines", []):
@@ -113,6 +114,7 @@ def ocr_lines(page: dict, ocr_result: dict) -> list[dict]:
         if len(b) != 4 or not str(line.get("text", "")).strip():
             continue
         items.append({"x0": b[0] * width, "x1": b[2] * width, "top": b[1] * height, "bottom": b[3] * height,
-                      "words": str(line["text"]).split(), "size": (b[3] - b[1]) * height,
+                      "words": str(line["text"]).split(),
+                      "size": estimated_type_size(str(line["text"]).strip(), (b[2] - b[0]) * width) or (b[3] - b[1]) * height,
                       "bold": None, "italic": None, "font": None})
     return _finish(page, items, width, height)
