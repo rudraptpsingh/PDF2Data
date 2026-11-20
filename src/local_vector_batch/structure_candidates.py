@@ -251,3 +251,66 @@ def table_candidates(table: dict, page: dict) -> list[dict]:
                                             "page_text_span_missing_or_ambiguous" if not span else "visual_table_review"],
                          "status": "review_required"})
     return rows
+
+
+def styled_heading_candidates(page: dict, metrics: list) -> list[dict]:
+    """Headings set apart by type rather than numbering: a short line (at most 12 words, not ending like a sentence)
+    set at least 15% larger than the body, or bold where the body is not. `metrics` is [(line text, size, bold)]:
+    font size for native text, line height for OCR. Each candidate is the exact span of that line in the page text."""
+    from statistics import median
+    norm = lambda t: re.sub(r"\s+", " ", t or "").strip()
+    body = [(size, bold) for text, size, bold in metrics if len(norm(text).split()) >= 4 and size]
+    if len(body) < 1:
+        return []
+    body_size = median(size for size, _ in body)
+    body_bold = sum(1 for _, bold in body if bold) > len(body) / 2
+    wanted = {}
+    for text, size, bold in metrics:
+        t = norm(text)
+        words = t.split()
+        if not t or len(words) > 12 or t[-1] in ".:;," or not re.search(r"[^\W\d_]", t):
+            continue
+        larger = bool(size) and size >= 1.15 * body_size
+        weight_only = not larger and bold and not body_bold and bool(size) and size >= 0.95 * body_size
+        # Body-size bold also sets names with roles, signature rows and label/value lines; a heading marked only by
+        # weight has no internal comma or label colon, does not open with "(", and does not repeat its words.
+        if weight_only and ("," in t or ": " in t or t[0] in "([" or len(set(w.lower() for w in words)) < 0.7 * len(words)):
+            continue
+        if larger or weight_only:
+            wanted.setdefault(t, 0)
+            wanted[t] += 1
+    rows = []
+    for line in _lines(page["text"]):
+        t = norm(line.group())
+        if wanted.get(t):
+            wanted[t] -= 1
+            rows.append({"kind": "styled_heading", "evidence": [_evidence(page, line.start(), line.end())],
+                         "basis": "type_size_or_weight", "review_reasons": ["hierarchy_not_inferred"],
+                         "status": "review_required"})
+    return rows
+
+
+def native_line_metrics(pdf_page) -> list:
+    """[(line text, median font size, bold)] for a native page, lines grouped by vertical overlap."""
+    from statistics import median
+    from .layout_order import rows_by_overlap
+    words = pdf_page.extract_words(extra_attrs=["size", "fontname"])
+    items = [{"x0": float(w["x0"]), "x1": float(w["x1"]), "top": float(w["top"]), "bottom": float(w["bottom"]),
+              "text": w["text"], "size": float(w.get("size") or 0), "font": str(w.get("fontname") or "")} for w in words]
+    out = []
+    for row in rows_by_overlap(items):
+        bold = sum(1 for i in row if re.search(r"bold|black|heavy|semibold", i["font"], re.I)) > len(row) / 2
+        out.append((" ".join(i["text"] for i in row), median(i["size"] for i in row), bold))
+    return out
+
+
+def drop_running_headings(rows: list[dict], page_count: int) -> list[dict]:
+    """Drop styled headings whose shape (digits masked) recurs on at least half the pages, three or more: running
+    headers and footers set apart by type are page furniture, not section titles."""
+    shape = lambda r: re.sub(r"\d+", "#", re.sub(r"\s+", " ", r["evidence"][0]["quote"]).strip().lower())
+    pages: dict = {}
+    for r in rows:
+        if r.get("kind") == "styled_heading":
+            pages.setdefault(shape(r), set()).add(r["evidence"][0]["page"])
+    running = {s for s, ps in pages.items() if len(ps) >= 3 and len(ps) >= page_count / 2}
+    return [r for r in rows if r.get("kind") != "styled_heading" or shape(r) not in running]

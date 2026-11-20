@@ -475,6 +475,16 @@ def extract_pdf(
                               **({"ocr": ocr_result} if ocr_result else {})})
                 from .structure_candidates import page_candidates, table_candidates
                 structure_rows.extend(page_candidates(pages[-1]))
+                # Headings set apart by type (size or weight) or, on OCR pages, by line height.
+                try:
+                    from .structure_candidates import styled_heading_candidates, native_line_metrics
+                    if selected_method == "pdf_text":
+                        metrics = native_line_metrics(page)
+                    else:
+                        metrics = [(l["text"], l["bbox"][3] - l["bbox"][1], False) for l in (ocr_result or {}).get("lines", [])]
+                    structure_rows.extend(styled_heading_candidates(pages[-1], metrics))
+                except Exception as error:
+                    issues.append({"page": index, "kind": "styled_heading_candidates_unavailable", "detail": str(error)[:180]})
                 if len(text) < 80:
                     kind = "blank_page" if blank else "missing_text" if not text else \
                         "short_text_verified" if short_evidence and short_evidence["ready"] else "short_text"
@@ -567,6 +577,8 @@ def extract_pdf(
         issues.append({"page": 1, "kind": "no_searchable_text", "detail": "No page produced searchable text"})
     page_status_counts = {status: sum(row["status"] == status for row in pages)
                           for status in ("ready", "blank", "review_required")}
+    from .structure_candidates import drop_running_headings
+    structure_rows[:] = drop_running_headings(structure_rows, len(pages))
     report = {"schema_version": 1, "document_id": document_id, "title": label,
               "source_url": source_url, "source_pdf_sha256": sha, "pages": len(pages),
               "targeted_repair_pages": sorted(repair_pages) if repair_pages is not None else [],
