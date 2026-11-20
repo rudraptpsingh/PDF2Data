@@ -47,3 +47,23 @@ def test_two_column_prose_and_label_lines_are_not_tables(tmp_path):
     form = lines(60, 600, ["Invoice No: INV-2026-0417", "Invoice Date: 14 March 2026", "Customer: Contoso Ltd"])
     tables = _extract(tmp_path, lines(50, 780, L) + lines(320, 780, R) + form)
     assert [t for t in tables if t["extraction_basis"] == "aligned_text_columns"] == []
+
+
+def test_cells_that_wrap_over_several_lines_stay_in_their_row():
+    """A description that wraps puts lines under its cell with nothing in the first column: they continue that
+    cell (joined by newlines), they do not start rows or break the table."""
+    from local_vector_batch.aligned_tables import aligned_table_candidates
+    L = lambda y, x0, x1, t: {"page": 1, "text": t, "bbox": [x0, y, x1, y + 0.012]}
+    lines = [L(0.10, 0.10, 0.15, "No."), L(0.10, 0.18, 0.33, "Description"), L(0.10, 0.73, 0.79, "Amount"),
+             L(0.125, 0.10, 0.11, "1"), L(0.125, 0.18, 0.52, "Annual maintenance of the control"), L(0.125, 0.70, 0.79, "48,000.00"),
+             L(0.141, 0.18, 0.41, "system, including spares"),
+             L(0.168, 0.10, 0.11, "2"), L(0.168, 0.18, 0.34, "On-site support"), L(0.168, 0.70, 0.79, "12,500.00"),
+             L(0.193, 0.10, 0.11, "3"), L(0.193, 0.18, 0.50, "Operator training for six staff"), L(0.193, 0.71, 0.79, "9,000.00"),
+             L(0.209, 0.18, 0.47, "members over two sessions at"), L(0.225, 0.18, 0.27, "the plant"),
+             L(0.27, 0.10, 0.50, "All amounts are exclusive of tax.")]
+    [t] = aligned_table_candidates(lines, page=1, page_id="d:p1", pdf_width=595, pdf_height=842)
+    assert t["cells"] == [["No.", "Description", "Amount"],
+                          ["1", "Annual maintenance of the control\nsystem, including spares", "48,000.00"],
+                          ["2", "On-site support", "12,500.00"],
+                          ["3", "Operator training for six staff\nmembers over two sessions at\nthe plant", "9,000.00"]]
+    assert len(t["grid_y"]) == 5

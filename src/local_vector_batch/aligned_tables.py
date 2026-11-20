@@ -75,20 +75,40 @@ def _accept(run: list[list[dict]]):
 def aligned_table_candidates(lines: list[dict], *, page: int, page_id: str, pdf_width: float, pdf_height: float,
                              slope: float = 0.0) -> list[dict]:
     rows = _rows([l for l in lines if str(l.get("text") or "").strip() and len(l.get("bbox") or []) == 4], slope)
-    runs, current = [], []
+    # Runs of multi-cell rows. A row with nothing in the first column, set close under the row above and lying
+    # under its cells, is that row's cells wrapping onto another line (a continuation), not a new row.
+    runs, current, conts = [], [], []
+
+    def close_to(prev_rows, row):
+        last = prev_rows[-1]
+        return row[0]["bbox"][1] - max(c["bbox"][3] for c in last) <= 1.5 * max(c["bbox"][3] - c["bbox"][1] for c in last)
+
+    def flush():
+        if len(current) >= 3:
+            runs.append((list(current), [list(c) for c in conts]))
+        current.clear(); conts.clear()
+
     for row in rows:
-        close = current and row[0]["bbox"][1] - max(c["bbox"][3] for c in current[-1]) <= 1.5 * max(
-            c["bbox"][3] - c["bbox"][1] for c in current[-1])
-        if len(row) >= 2 and (not current or close):
+        if current:
+            tail = conts[-1] if conts[-1] else [current[-1]]
+            first_col = (min(r[0]["bbox"][0] for r in current), max(r[0]["bbox"][2] for r in current))
+            under = all(any(min(c["bbox"][2], o["bbox"][2]) - max(c["bbox"][0], o["bbox"][0]) > 0 for r in current for o in r[1:])
+                        for c in row)
+            if (close_to(tail, row) and under and len(current) >= 1 and
+                    not any(c["bbox"][0] < first_col[1] and c["bbox"][2] > first_col[0] for c in row)):
+                conts[-1].append(row)
+                continue
+        if len(row) >= 2 and (not current or close_to([current[-1]] + conts[-1], row)):
             current.append(row)
+            conts.append([])
         else:
-            if len(current) >= 3:
-                runs.append(current)
-            current = [row] if len(row) >= 2 else []
-    if len(current) >= 3:
-        runs.append(current)
+            flush()
+            if len(row) >= 2:
+                current.append(row)
+                conts.append([])
+    flush()
     out = []
-    for run in runs:
+    for run, run_conts in runs:
         accepted = _accept(run)
         if not accepted:
             continue
@@ -97,9 +117,13 @@ def aligned_table_candidates(lines: list[dict], *, page: int, page_id: str, pdf_
         for r, placed in enumerate(assignment):
             for k, cell in placed:
                 cells[r][k] = (cells[r][k] + " " + cell["text"]).strip()
+            for extra in run_conts[r]:
+                for cell in extra:
+                    k = max(range(len(cols)), key=lambda i: min(cell["bbox"][2], cols[i]["max"]) - max(cell["bbox"][0], cols[i]["min"]))
+                    cells[r][k] = (cells[r][k] + "\n" + cell["text"]).strip("\n")
         gx = [cols[0]["min"]] + [(cols[i]["max"] + cols[i + 1]["min"]) / 2 for i in range(len(cols) - 1)] + [cols[-1]["max"]]
         tops = [min(c["bbox"][1] for c in row) for row in run]
-        bottoms = [max(c["bbox"][3] for c in row) for row in run]
+        bottoms = [max(c["bbox"][3] for c in [*row, *(c for extra in run_conts[i] for c in extra)]) for i, row in enumerate(run)]
         gy = [tops[0]] + [(bottoms[i] + tops[i + 1]) / 2 for i in range(len(run) - 1)] + [bottoms[-1]]
         out.append({"id": f"{page_id}:table{len(out) + 1}", "page": page,
                     "bbox": [round(gx[0] * pdf_width, 2), round(gy[0] * pdf_height, 2),
