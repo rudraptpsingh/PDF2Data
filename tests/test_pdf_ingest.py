@@ -49,7 +49,7 @@ def test_auto_vision_empty_uses_independent_review_only_candidate(monkeypatch):
     class RenderPage:
         width, height = 612, 792
 
-        def to_image(self, resolution):
+        def to_image(self, resolution=None, **_):
             image = Image.new("RGB", (200, 200), "white")
             ImageDraw.Draw(image).rectangle((20, 20, 70, 70), fill="black")
             return type("Rendered", (), {"original": image})()
@@ -80,7 +80,7 @@ def test_visually_white_vision_empty_does_not_invoke_alternate_ocr(monkeypatch):
     class BlankPage:
         width, height = 612, 792
 
-        def to_image(self, resolution):
+        def to_image(self, resolution=None, **_):
             return type("Rendered", (), {"original": Image.new("RGB", (200, 200), "white")})()
 
     with LocalOCR("auto") as recognizer:
@@ -109,7 +109,7 @@ def test_explicit_rapidocr_candidate_keeps_cpu_provenance(monkeypatch):
     monkeypatch.setattr(ocr_module, "_rapidocr_lines", fake_rapidocr)
     class Page:
         width, height = 612, 792
-        def to_image(self, resolution):
+        def to_image(self, resolution=None, **_):
             return type("Rendered", (), {"original": Image.new("RGB", (20, 20), "white")})()
     with LocalOCR("rapidocr") as recognizer:
         result = recognizer.recognize(Page())
@@ -236,7 +236,7 @@ def test_short_native_page_requires_independent_text_and_full_source_ink_coverag
         chars = [{"text": "5", "x0": 10, "x1": 18, "top": 10, "bottom": 19}]
         images = curves = rects = lines = []
 
-        def to_image(self, resolution):
+        def to_image(self, resolution=None, **_):
             assert resolution == 72
             return type("Rendered", (), {"original": image})()
 
@@ -312,7 +312,7 @@ def test_short_text_only_pdf_page_is_ready_after_source_ink_audit(tmp_path, monk
     class ShortPage(Page):
         chars = [{"text": "5", "x0": 10, "x1": 18, "top": 10, "bottom": 19}]
         images = curves = rects = lines = []
-        def to_image(self, resolution):
+        def to_image(self, resolution=None, **_):
             return type("Rendered", (), {"original": image})()
 
     monkeypatch.setattr(pdfplumber, "open", lambda _: PDF([ShortPage("5")]))
@@ -490,7 +490,7 @@ def test_scanned_pdf_grid_is_review_only_with_source_and_page_hashes(tmp_path, m
         def find_tables(self):
             return []
 
-        def to_image(self, resolution):
+        def to_image(self, resolution=None, **_):
             assert resolution == 180
             return type("Rendered", (), {"original": image})()
 

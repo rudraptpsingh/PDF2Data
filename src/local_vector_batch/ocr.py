@@ -75,10 +75,14 @@ def _rapidocr_lines(image, recognition_model: str = "en", *,
                 words.append({"text": str(word),
                               "bbox": [min(word_xs)/image.width, min(word_ys)/image.height,
                                        max(word_xs)/image.width, max(word_ys)/image.height]})
+        # Baseline slope from the detected quadrilateral's top edge, in normalised units: lets reading order
+        # straighten a skewed scan (layout_order.page_slope).
+        dx = float(polygon[1][0]) - float(polygon[0][0])
+        slope = (float(polygon[1][1]) - float(polygon[0][1])) / dx * image.width / image.height if dx > 0 else 0.0
         lines.append({"text": str(value), "confidence": float(score),
                       "bbox": [min(xs)/image.width, min(ys)/image.height,
                                max(xs)/image.width, max(ys)/image.height],
-                      "words": words})
+                      "baseline_slope": round(slope, 6), "words": words})
     lines.sort(key=lambda line: (line["bbox"][1], line["bbox"][0]))
     return lines, round((time.monotonic() - started) * 1000)
 
@@ -105,6 +109,7 @@ def _rapidocr_model_sha256(recognition_model: str) -> str | None:
 
 
 OCR_BASE_DPI = 180
+DEVANAGARI_MIN_DPI = 240
 OCR_MAX_PIXELS = 12_000_000
 
 
@@ -269,9 +274,13 @@ class LocalOCR:
             self.last_queue_wait_ms = 0
             self.precomputed_pages += 1
             return {**self.readings[page_number], "precomputed": True}
-        render_dpi = bounded_ocr_dpi(float(page.width), float(page.height),
-                                     base_dpi=self.render_dpi_requested)
-        image = page.to_image(resolution=render_dpi).original
+        # Devanagari matras and conjuncts need more pixels than Latin: at 180 dpi the recogniser garbled lines a
+        # 240 dpi render reads exactly. English keeps the requested resolution.
+        base = (max(self.render_dpi_requested, DEVANAGARI_MIN_DPI)
+                if self.engine == "rapidocr" and self.rapidocr_model == "devanagari" else self.render_dpi_requested)
+        render_dpi = bounded_ocr_dpi(float(page.width), float(page.height), base_dpi=base)
+        # Antialiased: downsampling a scan without it drops thin strokes and the detector skips whole lines.
+        image = page.to_image(resolution=render_dpi, antialias=True).original
         self.last_rendered_image = image
         image_path = Path(self.workspace.name) / "page.png"
         image.save(image_path)
@@ -345,6 +354,8 @@ class LocalOCR:
                                                   (int(word["left"])+int(word["width"]))/image.width,
                                                   (int(word["top"])+int(word["height"]))/image.height]}
                                         for word in words]})
+        from .layout_order import order_ocr_lines
+        lines = order_ocr_lines(lines)   # reading order: rows by overlap, proven columns left then right
         selected_engine = "rapidocr" if fallback else self.engine
         return {"engine": selected_engine, "device_requested": self.device_requested,
                 "cpu_intra_op_threads":self.cpu_threads if selected_engine=='rapidocr'else None,
