@@ -67,3 +67,15 @@ def test_skewed_table_rows_stay_whole_when_the_slope_is_known():
             rows.append(dict(line(f"r{r}c{c}", x, top, x + 0.08, top + 0.016), baseline_slope=slope))
             expect.append(f"r{r}c{c}")
     assert texts(list(reversed(rows))) == expect
+
+
+def test_real_skewed_table_scan_reads_row_by_row():
+    import json
+    from pathlib import Path
+    # RapidOCR lines (boxes and baseline slopes) from a ruled table scanned 1.5 degrees off.
+    lines = json.loads((Path(__file__).parent / "fixtures_ocr_skew_table.json").read_text())
+    out = texts(lines)
+    assert out[:4] == ["Item", "Quantity", "Rate", "Amount"]
+    for k in range(1, 7):
+        i = out.index(f"Service line {k}")
+        assert len(out[i + 1:i + 4]) == 3 and not any(t.startswith("Service") for t in out[i + 1:i + 4]), out
