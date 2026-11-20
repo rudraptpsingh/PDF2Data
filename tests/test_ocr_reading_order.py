@@ -79,3 +79,24 @@ def test_real_skewed_table_scan_reads_row_by_row():
     for k in range(1, 7):
         i = out.index(f"Service line {k}")
         assert len(out[i + 1:i + 4]) == 3 and not any(t.startswith("Service") for t in out[i + 1:i + 4]), out
+
+
+def test_ocr_renders_pages_with_antialiasing():
+    # Without antialiasing, downsampling a 300 dpi scan to the OCR resolution drops thin strokes, and the detector
+    # skipped whole lines of 8 pt text (68 of 70). The page is rendered antialiased.
+    from local_vector_batch.ocr import LocalOCR
+    from PIL import Image
+    seen = {}
+
+    class Page:
+        width, height = 595, 842
+
+        def to_image(self, **kwargs):
+            seen.update(kwargs)
+            raise RuntimeError("stop after render arguments")
+    ocr = LocalOCR(engine="rapidocr")
+    try:
+        ocr.recognize(Page())
+    except RuntimeError:
+        pass
+    assert seen.get("antialias") is True
