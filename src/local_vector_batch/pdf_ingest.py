@@ -557,6 +557,21 @@ def extract_pdf(
                                                "detail": "OCR word boxes assigned to printed grid; row and column values require source review"})
                         except Exception as error:
                             issues.append({"page": index, "kind": "ocr_table_candidate_failed", "detail": str(error)[:180]})
+                    # Tables without rulings: cells lined up in columns, on pages where no ruled grid was found.
+                    if not any(t["page"] == index for t in table_rows):
+                        try:
+                            from .aligned_tables import aligned_table_candidates
+                            for candidate in aligned_table_candidates(
+                                    [l for l in line_rows if l["page"] == index], page=index, page_id=page_id,
+                                    pdf_width=float(page.width), pdf_height=float(page.height),
+                                    slope=__import__("local_vector_batch.layout_order", fromlist=["page_slope"]).page_slope(
+                                        ocr_result["lines"]) if ocr_result else 0.0):
+                                candidate["source_pdf_sha256"] = sha
+                                candidate["page_text_sha256"] = text_sha
+                                table_rows.append(candidate)
+                                structure_rows.extend(table_candidates(candidate, pages[-1]))
+                        except Exception as error:
+                            issues.append({"page": index, "kind": "aligned_table_candidates_failed", "detail": str(error)[:180]})
                     if selected_method != "pdf_text":
                         issues.append({"page": index, "kind": "ocr_layout_review",
                                        "detail": "OCR text does not reconstruct scanned table rows or merged cells"})

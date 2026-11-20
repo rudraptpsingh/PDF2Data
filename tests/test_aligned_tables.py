@@ -7,8 +7,9 @@ from tests.test_styled_headings import lines, pdf
 
 
 def _right(x_right, y, text, size=10):
-    width = 0.5 * size * len(text)          # Helvetica figures are 0.556 em; close enough to right-align by eye
-    return f"BT /F1 {size} Tf {x_right - 0.556 * size * len(text):.2f} {y} Td ({text}) Tj ET\n"
+    from local_vector_batch.structure_candidates import _GLYPH       # Helvetica widths, 1/1000 em
+    width = sum(_GLYPH.get(c, 556) for c in text) * size / 1000
+    return f"BT /F1 {size} Tf {x_right - width:.2f} {y} Td ({text}) Tj ET\n"
 
 
 def _extract(tmp_path, content):
