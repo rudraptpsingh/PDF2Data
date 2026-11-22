@@ -179,6 +179,41 @@ def test_candidate_ocr_method_cannot_borrow_native_alignment_as_proof(tmp_path,m
     assert any(op['kind']!='equal' for r in raw for op in r['alignment'])
 
 
+def test_nonblank_raster_ocr_requires_an_independent_reading(tmp_path):
+    from PIL import Image, ImageDraw
+    from local_vector_batch.legal_l1 import capture_layout
+    from local_vector_batch.quality_gate import assess_page
+    from local_vector_batch.quality_routes import matching_routes
+
+    source = tmp_path / 'raster.pdf'
+    text = 'Use 28 kg or 3 boxes.'
+    image = Image.new('RGB', (500, 200), 'white')
+    ImageDraw.Draw(image).text((40, 50), text, fill='black')
+    image.save(source, format='PDF')
+    source_sha = digest(source.read_bytes())
+    page = {**pages(text)[0], 'method': 'rapidocr', 'ocr': {'recognition_languages': ['en']}}
+    raw = capture_layout(source, [page])[0]
+    assert raw['secondary_layout_text_raw'] == ''
+    assert raw['quality_independent_text'] is None
+    assert raw['quality_independent_text_sha256'] is None
+    assert raw['quality_independent_basis'] == 'independent_ocr_required'
+    geometry = {'ready': True, 'page_text_sha256': page['text_sha256'], 'unaccounted_ink_pixels': 0,
+                'page_complete': True, 'reading_order_proven': True}
+
+    def assess(independent):
+        return assess_page(page, source_pdf_sha256=source_sha, package_pdf_sha256=source_sha,
+                           independent_text=independent, source_geometry=geometry)
+
+    result = assess(raw['quality_independent_text'])
+    comparisons = ('words_and_order', 'ordered_numbers', 'ordered_operators')
+    assert all(result['components'][key] == {'state': 'unknown', 'reason': 'independent_text_unavailable'}
+               for key in comparisons)
+    assert result['outcome'] == 'repair_required'
+    assert matching_routes(result)[0]['id'] == 'independent_text_evidence'
+    assert assess('Use 29 kg and 3 boxes.')['components']['ordered_numbers']['state'] == 'fail'
+    assert assess('Use 29 kg and 3 boxes.')['components']['ordered_operators']['state'] == 'fail'
+
+
 def test_sequential_bare_page_numbers_are_retained_as_margins_not_body():
     p=pages('1. Contract entered before the date\n1','and furnished before the filing cutoff.\n2')
     s=structure_document(p,'a'*64,'draft')

@@ -144,6 +144,9 @@ def _capture_page(original: Path, source_pdf_sha: str, page, selected: dict, alt
     try:source_lines=read_source_lines(original,page,selected['page'],secondary_layout_text=independent_layout)
     except Exception as error:source_lines={'status':'unavailable','text':None,'glyph_coverage':False,'reason':type(error).__name__}
     witness,witness_basis=choose_witness(selected['text'],independent_layout,source_lines) if selected['method']=='pdf_text' else (independent_layout,'pypdf_layout_for_ocr_comparison_only')
+    if selected['method'] != 'pdf_text' and selected['text'].strip() and not (witness or '').strip():
+        witness = None
+        witness_basis = 'independent_ocr_required'
     if witness is not None and any(0xD800<=ord(c)<=0xDFFF for c in witness):
         witness=None;witness_basis='invalid_auxiliary_reader_witness_excluded'
     reader_receipts={key:auxiliary_text_receipt(value,source_pdf_sha256=source_pdf_sha,page=selected['page'],page_text_sha256=selected['text_sha256']) for key,value in {'native_text_raw':native,'secondary_text_raw':independent,'secondary_layout_text_raw':independent_layout}.items()}
@@ -493,6 +496,8 @@ def extract_document(source: dict, output: Path, *, ocr='off', language='eng', r
         from .quality_gate import assess_package
         quality=assess_package(stage/'extraction',stage/'original.pdf',derive_ocr_source_raster=True,
             independent_by_page={p['page']:p['quality_independent_text'] for p in layout if p['quality_independent_text'] is not None},
+            independent_metadata_by_page={p['page']: {'basis': p['quality_independent_basis']} for p in layout
+                                          if p['quality_independent_basis'] == 'independent_ocr_required'},
             derive_independent_native=False)
         quality['independent_extraction_mode']='pypdf_layout_or_exact_source_line_native_consensus'
         quality['independent_basis_by_page']={str(p['page']):p['quality_independent_basis'] for p in layout}
