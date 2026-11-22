@@ -150,6 +150,7 @@ def native_source_raster_evidence(page: dict, source_page, source_pdf_sha256: st
         raise ValueError("native source audit DPI must be 72..240")
     from .pdf_ingest import independent_text_coverage
     import math
+    import unicodedata
     import numpy as np
     import cv2
 
@@ -211,16 +212,36 @@ def native_source_raster_evidence(page: dict, source_page, source_pdf_sha256: st
         scale_x, scale_y = raster.width / (right-origin_x), raster.height / (bottom-origin_y)
         pad = policy["ocr_box_padding_px"]
         glyph_boxes = []
+        combining_glyphs = []
+        anchor = None
         for char in chars:
             box = [char.get(key) for key in ("x0", "top", "x1", "bottom")]
             if (any(type(value) not in (int, float) or not math.isfinite(value) for value in box) or
                     box[0] > box[2] or box[1] > box[3]):
                 return {**result, "reason": "invalid_native_glyph_box"}
             # Zero-width spaces do not authorize a mask over adjacent ink.
-            if not str(char.get("text", "")).strip():
+            glyph = str(char.get("text", ""))
+            if not glyph.strip():
+                anchor = None
                 continue
+            if box[0] == box[2] and box[1] < box[3] and anchor:
+                base, base_box, base_text = anchor
+                # A zero-advance Devanagari mark can belong to its immediately
+                # preceding native glyph. Record the anchor without adding any
+                # coverage pixels. The raster and complex-script gates still run.
+                if (all("\u0900" <= ch <= "\u097f" and unicodedata.category(ch) == "Mn" for ch in glyph)
+                        and any("\u0900" <= ch <= "\u097f" and unicodedata.category(ch) == "Lo"
+                                for ch in base_text)
+                        and base.get("upright") is True and char.get("upright") is True
+                        and char.get("fontname") and char["fontname"] == base.get("fontname")
+                        and base_box[0] <= box[0] <= base_box[2]
+                        and abs(box[1] - base_box[1]) <= .05 * (base_box[3] - base_box[1])
+                        and abs(box[3] - base_box[3]) <= .05 * (base_box[3] - base_box[1])):
+                    combining_glyphs.append({"text": glyph, "bbox": box, "anchor_bbox": base_box})
+                    continue
             if box[0] == box[2] or box[1] == box[3]:
                 return {**result, "reason": "invalid_native_glyph_box"}
+            anchor = (char, box, glyph)
             x0 = max(0, int((box[0]-origin_x)*scale_x)-pad)
             x1 = min(raster.width, int((box[2]-origin_x)*scale_x)+pad+1)
             y0 = max(0, int((box[1]-origin_y)*scale_y)-pad)
@@ -232,6 +253,8 @@ def native_source_raster_evidence(page: dict, source_page, source_pdf_sha256: st
             if y0 < .85*raster.height:
                 body_bottom = max(body_bottom, y1)
         result["glyph_boxes_sha256"] = hashlib.sha256(json.dumps(glyph_boxes, separators=(",", ":")).encode()).hexdigest()
+        if combining_glyphs:
+            result["zero_advance_combining_glyphs"] = combining_glyphs
         # Explicit native underline rectangles explain visible rule ink in gaps
         # between glyph boxes. Retain these as style evidence; do not relax the
         # zero-unaccounted-ink threshold or mask general graphics.
