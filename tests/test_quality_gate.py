@@ -81,6 +81,26 @@ def test_exact_inequalities_and_negation_are_hard_gates():
     assert "ordered_operators" in changed_negation["failed_components"]
 
 
+def test_ordinal_changes_fail_even_with_high_independent_word_agreement():
+    context = "The generating company shall provide the requested details for every generating station. " * 6
+    text = context + "The status is as on 1st April and the submission is due by 30th April."
+    page = _page(text, method="rapidocr", script_languages=["en"])
+
+    def check(independent):
+        return assess_page(page, source_pdf_sha256="a"*64, package_pdf_sha256="a"*64,
+                           independent_text=independent, source_geometry=_geometry(page))
+
+    unchanged = check(text.replace("1st", "1ˢᵗ").replace("30th", "30ᵗʰ"))
+    assert unchanged["components"]["ordered_numbers"]["state"] == "pass"
+    for witness in (text.replace("1st", "2nd"), text.replace("30th", "31st"),
+                    text.replace("1st", "1s*"), text.replace("1st", "1")):
+        result = check(witness)
+        assert result["components"]["words_and_order"]["state"] == "pass"
+        assert result["components"]["ordered_numbers"]["state"] == "fail"
+        assert result["components"]["ordered_numbers"]["selected"] == ["1st", "30th"]
+        assert result["outcome"] == "repair_required"
+
+
 def test_ocr_agreement_without_rendered_source_coverage_is_held():
     page = _page("The rate is 51% and 12 years.", method="vision", script_languages=["en-IN"])
     receipt = assess_page(page, source_pdf_sha256="a"*64, package_pdf_sha256="a"*64,

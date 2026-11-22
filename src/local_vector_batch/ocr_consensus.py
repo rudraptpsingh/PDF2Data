@@ -20,8 +20,8 @@ import re
 import time
 import unicodedata
 
+from .quality_gate import NUMBER
 
-NUMBER = re.compile(r"(?<!\w)\d+(?:[.,:/-]\d+)*(?:\s*%)?(?!\w)")
 WORD = re.compile(r"\w+", re.UNICODE)
 
 

@@ -21,7 +21,8 @@ from .evidence_package import verify_package
 
 
 from .unicode_words import WORD
-NUMBER = re.compile(r"(?<!\w)\d+(?:[.,:/-]\d+)*(?:\s*%)?(?!\w)")
+# Keep an attached ordinal suffix in the exact ordered comparison.
+NUMBER = re.compile(r"(?<!\w)(?:\d+(?:st|nd|rd|th)|\d+(?:[.,:/-]\d+)*(?:\s*%)?)(?!\w)")
 STATES = {"pass", "fail", "unknown"}
 
 
