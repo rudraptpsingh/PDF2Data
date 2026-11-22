@@ -147,3 +147,35 @@ def test_source_raster_batch_flag_closes_real_pdfium_ocr_page(tmp_path):
                             independent_by_page={1: page["text"]})
     assert report["counts"]["auto_accepted"] == 1
     assert report["results"][0]["components"]["source_render"]["rendered_image_sha256"]
+
+
+@pytest.mark.parametrize(("change", "expected"), [
+    ({}, "source_ink_outside_native_glyphs"),
+    ({"text": "क"}, "invalid_native_glyph_box"),
+    ({"text": "A"}, "invalid_native_glyph_box"),
+    ({"x0": 25, "x1": 25}, "invalid_native_glyph_box"),
+    ({"fontname": "AnotherFont"}, "invalid_native_glyph_box"),
+    ({"upright": False}, "invalid_native_glyph_box"),
+])
+def test_native_zero_advance_devanagari_mark_never_covers_new_ink(tmp_path, change, expected):
+    source = tmp_path / "mark-and-ink.pdf"
+    sha = _source(source, extra="0 0 0 rg 60 150 80 30 re f")
+    with pdfplumber.open(source) as pdf:
+        page = pdf.pages[0]
+        chars = page.chars
+        # Use the rendered PDF to test the geometry and mask contract. The
+        # pinned real-font source is replayed separately for source acceptance.
+        chars[0] = {**chars[0], "text": "क"}
+        mark = {**chars[0], "text": "ें", "x1": chars[0]["x0"], **change}
+        original = "".join(char["text"] for char in chars)
+        baseline = native_source_raster_evidence(_record(original), page, sha, original)
+        chars.insert(1, mark)
+        selected = "".join(char["text"] for char in chars)
+        proof = native_source_raster_evidence(_record(selected), page, sha, selected)
+        assert not proof["ready"] and proof["reason"] == expected
+        if not change:
+            assert proof["unaccounted_ink_pixels"] == baseline["unaccounted_ink_pixels"] > 0
+            assert proof["glyph_boxes_sha256"] == baseline["glyph_boxes_sha256"]
+            assert proof["zero_advance_combining_glyphs"][0]["text"] == "ें"
+        else:
+            assert "zero_advance_combining_glyphs" not in proof
