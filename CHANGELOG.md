@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0rc25.post1
+
+- Recognize anchored zero-advance Devanagari combining marks in native PDF
+  headings while retaining the visible-ink and source-quality gates.
+- Keep malformed zero-area non-combining glyphs held.
+
 ## 0.2.0rc25 — 2026-11-20
 
 Everything below "Unreleased" up to here, and the structure and layout readers added on 20 Nov 2026:
