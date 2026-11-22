@@ -50,8 +50,9 @@ def ruled_table_candidates(image, ocr_lines: list[dict], *, page: int,
                                  cv2.getStructuringElement(cv2.MORPH_RECT, (max(30, width // 35), 1)))
     vertical = cv2.morphologyEx(ink, cv2.MORPH_OPEN,
                                cv2.getStructuringElement(cv2.MORPH_RECT, (1, max(30, height // 45))))
-    connected = cv2.dilate(cv2.bitwise_or(horizontal, vertical),
-                           cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)))
+    contour_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    contour_padding = contour_kernel.shape[0] // 2
+    connected = cv2.dilate(cv2.bitwise_or(horizontal, vertical), contour_kernel)
     contours, _ = cv2.findContours(connected, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     words = []
     for line in ocr_lines:
@@ -69,6 +70,7 @@ def ruled_table_candidates(image, ocr_lines: list[dict], *, page: int,
     if not words:
         return []
     candidates = []
+    recovered_candidates = []
     for contour in contours:
         x0, y0, box_width, box_height = cv2.boundingRect(contour)
         if box_width < width * .12 or box_height < height * .025:
@@ -85,9 +87,20 @@ def ruled_table_candidates(image, ocr_lines: list[dict], *, page: int,
         # Require boundaries to meet the opposite outer lines. This rejects
         # headings and underlines that merely touch a table on the same page.
         tolerance = max(5, round(min(width, height) * .003)) + (3 if rotation is not None else 0)   # straightening leaves jagged edges
-        if (xs[0] - x0 > tolerance or x1 - xs[-1] > tolerance or
-                ys[0] - y0 > tolerance or y1 - ys[-1] > tolerance):
+        if xs[0] - x0 > tolerance or x1 - xs[-1] > tolerance or ys[0] - y0 > tolerance:
             continue
+        bottom = ys[-1]
+        recovered_bottom = y1 - bottom > tolerance
+        if recovered_bottom:
+            # The contour is padded for grouping. Remove its bottom padding
+            # only when the source masks show the complete line and both joins.
+            if (y1 == height or y1 - bottom - contour_padding > tolerance or
+                    not horizontal[bottom, xs[0]:xs[-1] + 1].all() or
+                    not (vertical[bottom, xs[0]] and vertical[bottom, xs[-1]])):
+                continue
+            last_source_row = (h_region | v_region).any(axis=1).nonzero()[0][-1]
+            if box_height - last_source_row - 1 != contour_padding:
+                continue
         cells: list[list[list[tuple[float, float, str]]]] = [
             [[] for _ in range(len(xs) - 1)] for _ in range(len(ys) - 1)
         ]
@@ -113,7 +126,7 @@ def ruled_table_candidates(image, ocr_lines: list[dict], *, page: int,
         values = [[" ".join(word for _, _, word in sorted(cell)) for cell in row] for row in cells]
         if sum(bool(cell) for row in values for cell in row) < 2:
             continue
-        candidates.append({
+        table = {
             "id": f"{page_id}:table{len(candidates)+1}", "page": page,
             "bbox": [round(xs[0] / width * pdf_width, 2), round(ys[0] / height * pdf_height, 2),
                      round(xs[-1] / width * pdf_width, 2), round(ys[-1] / height * pdf_height, 2)],
@@ -123,5 +136,12 @@ def ruled_table_candidates(image, ocr_lines: list[dict], *, page: int,
             "grid_coordinates": "normalized top-left",
             "grid_x": [round(x / width, 6) for x in xs],
             "grid_y": [round(y / height, 6) for y in ys],
-        })
-    return sorted(candidates, key=lambda table: (table["bbox"][1], table["bbox"][0]))
+        }
+        if recovered_bottom:
+            recovered_candidates.append(table)
+        else:
+            candidates.append(table)
+    # Keep existing table IDs stable when a recovered grid appears before one.
+    for index, table in enumerate(recovered_candidates, len(candidates) + 1):
+        table["id"] = f"{page_id}:table{index}"
+    return sorted(candidates + recovered_candidates, key=lambda table: (table["bbox"][1], table["bbox"][0]))

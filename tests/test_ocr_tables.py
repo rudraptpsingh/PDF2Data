@@ -72,3 +72,23 @@ def test_no_printed_grid_produces_no_table_candidate():
     lines = [{'words': [{'text': '51%', 'bbox': [.2, .2, .3, .25]}]}]
     assert ruled_table_candidates(image, lines, page=1, page_id='p1',
                                    pdf_width=612, pdf_height=340) == []
+
+
+def test_padded_bottom_contour_requires_an_unbroken_source_ruling_and_both_joins():
+    from PIL import ImageDraw
+
+    rows = [['Condition', 'Value'], ['Threshold', '51%'], ['Term', '12 years']]
+    image, lines = scanned_grid(rows)
+    ImageDraw.Draw(image).line((70, 420, 830, 420), fill="black", width=5)
+
+    def detect(source):
+        return ruled_table_candidates(source, lines, page=1, page_id='p1',
+                                       pdf_width=612, pdf_height=340)
+
+    table, = detect(image)
+    assert table['cells'] == rows
+    assert table['status'] == 'needs_row_column_review'
+    for gap in ((449, 410, 451, 430), (66, 414, 74, 416), (826, 414, 834, 416)):
+        open_grid = image.copy()
+        ImageDraw.Draw(open_grid).rectangle(gap, fill="white")
+        assert detect(open_grid) == []
