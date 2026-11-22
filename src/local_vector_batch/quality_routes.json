@@ -6,6 +6,7 @@
     {"id": "table_structure", "reasons": ["table_row_column_proof_unavailable", "table_cells_or_numeric_values_unproven", "table_layout_provenance_mismatch"], "execution": "awaiting_evidence", "action": "recover_table_headers_cells_and_row_column_links"},
     {"id": "ocr_coordinates", "reasons": ["ocr_line_box_invalid", "ocr_line_boxes_missing"], "execution": "awaiting_evidence", "action": "repair_source_bound_ocr_geometry"},
     {"id": "verified_text_visual_gap", "all_pass": ["language", "words_and_order", "ordered_numbers", "ordered_operators"], "execution": "awaiting_evidence", "action": "resolve_layout_or_visual_regions_without_repeating_text_ocr"},
+    {"id": "independent_text_evidence", "reasons": ["independent_text_unavailable"], "execution": "ocr_text", "action": "obtain_independent_source_bound_text_with_a_distinct_reader"},
     {"id": "numbers_or_logic", "failed": ["ordered_numbers", "ordered_operators"], "execution": "ocr_text", "action": "compare_source_numbers_units_and_column_semantics"},
     {"id": "text_or_reading_order", "failed": ["words_and_order", "text_content"], "execution": "ocr_text", "action": "repair_only_affected_text_blocks_and_reading_order"},
     {"id": "source_coverage_or_layout", "failed": ["source_render", "layout", "complete_page_visual_accounting"], "execution": "awaiting_evidence", "action": "classify_unresolved_source_regions_and_layout"}

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0rc25.post2
+
+- Route nonblank raster OCR pages with an empty native text layer to independent OCR verification. Existing page holds and source evidence stay intact.
+
 ## 0.2.0rc25.post1
 
 - Recognize anchored zero-advance Devanagari combining marks in native PDF
