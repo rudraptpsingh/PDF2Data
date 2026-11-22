@@ -6,8 +6,68 @@ changes the source-ink threshold, or treats text-like/stained marks as rules.
 
 from __future__ import annotations
 
+import math
+import re
 import statistics
 
+
+def native_gazette_issue_dividers(source_page, ink, stats, *, source_bbox, policy):
+    """Bind solid raster components to two native strokes bracketing a Gazette issue."""
+    lines = getattr(source_page, "lines", [])
+    if len(lines) != 2 or getattr(source_page, "images", []) or getattr(source_page, "curves", []):
+        return {}
+    strokes = sorted(lines, key=lambda line: line["top"])
+    for line in strokes:
+        if (line["top"] != line["bottom"] or line.get("stroke") is not True or
+                line.get("fill") is not False or not 0 < line["linewidth"] <= 1 or
+                (line.get("dash") and line["dash"][0]) or
+                [op[0] for op in line.get("path", [])] != ["m", "l"]):
+            return {}
+    upper, lower = strokes
+    if (upper["x0"], upper["x1"]) != (lower["x0"], lower["x1"]):
+        return {}
+
+    header = source_page.extract_text_lines(return_chars=False)[:6]
+    if header and header[0]["text"].isdigit():
+        header = header[1:]
+    title = ["THE ORISSA GAZETTE", "EXTRA ORDINARY", "PUBLISHED BY AUTHORITY"]
+    if len(header) < 5 or [line["text"].upper() for line in header[:3]] != title:
+        return {}
+    authority, issue, issuer = header[2:5]
+    if (not re.fullmatch(r"No\.\s*\d+,\s*CUTTACK,\s*.+\b\d{4}\s*/\s*.+\b\d{4}", issue["text"], re.I) or
+            issuer["text"].upper() != "ORISSA ELECTRICITY REGULATORY COMMISSION" or
+            not (authority["bottom"] < upper["top"] < issue["top"] < issue["bottom"] <
+                 lower["top"] < issuer["top"]) or
+            not (upper["x0"] <= issue["x0"] < issue["x1"] <= upper["x1"])):
+        return {}
+
+    height, width = ink.shape
+    x0, y0, x1, y1 = source_bbox
+    sx, sy = width / (x1 - x0), height / (y1 - y0)
+    proof = {}
+    for line in strokes:
+        a, b = ((line[key] - x0) * sx for key in ("x0", "x1"))
+        center = (line["top"] - y0) * sy
+        component_matches = []
+        for index, stat in enumerate(stats[1:], 1):
+            x, y, w, h, area = (int(value) for value in stat)
+            if (y <= 0 or y + h >= height or h > math.ceil(line["linewidth"] * sy) + 1 or
+                    w < width * policy["footer_rule_min_width_fraction"] or area != w * h or
+                    abs(x - a) > 1 or abs(x + w - b) > 1 or abs(y + h / 2 - center) > 1 or
+                    not ink[y:y + h, x:x + w].all() or
+                    ink[y - 1, x:x + w].any() or ink[y + h, x:x + w].any()):
+                continue
+            component_matches.append((index, [x, y, x + w, y + h], area))
+        if len(component_matches) != 1:
+            return {}
+        index, bbox, area = component_matches[0]
+        proof[index] = {
+            "classification": "native_gazette_issue_divider", "bbox_pixels": bbox,
+            "ink_pixels": area, "source_line_bbox": [line["x0"], line["top"], line["x1"], line["bottom"]],
+            "source_linewidth_pt": line["linewidth"],
+            "source_issue_bbox": [issue[key] for key in ("x0", "top", "x1", "bottom")],
+        }
+    return proof if len(proof) == 2 else {}
 
 def continuous_footer_rule_fragment(ink, *, x: int, y: int, width: int,
                                     height: int, area: int, body_limit: int,

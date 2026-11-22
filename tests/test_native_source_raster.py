@@ -13,7 +13,7 @@ from pypdf.generic import DictionaryObject, NameObject, DecodedStreamObject
 from local_vector_batch.quality_gate import assess_page, assess_package, native_source_raster_evidence
 
 
-def _source(path, *, extra="", crop=False):
+def _source(path, *, extra="", crop=False, paragraph_y=320):
     writer = PdfWriter()
     pdf_page = writer.add_blank_page(width=400, height=400)
     font = DictionaryObject({NameObject("/Type"): NameObject("/Font"),
@@ -22,7 +22,7 @@ def _source(path, *, extra="", crop=False):
     pdf_page[NameObject("/Resources")] = DictionaryObject({NameObject("/Font"): DictionaryObject({
         NameObject("/F1"): writer._add_object(font)})})
     stream = DecodedStreamObject()
-    stream.set_data(("BT /F1 14 Tf 60 320 Td (The charge is 51% for 12 years.) Tj ET\n"+extra).encode())
+    stream.set_data((f"BT /F1 14 Tf 60 {paragraph_y} Td (The charge is 51% for 12 years.) Tj ET\n"+extra).encode())
     pdf_page[NameObject("/Contents")] = writer._add_object(stream)
     if crop:
         pdf_page.cropbox.lower_left = (40, 40)
@@ -179,3 +179,45 @@ def test_native_zero_advance_devanagari_mark_never_covers_new_ink(tmp_path, chan
             assert proof["zero_advance_combining_glyphs"][0]["text"] == "ें"
         else:
             assert "zero_advance_combining_glyphs" not in proof
+
+
+def test_gazette_dividers_require_exact_native_and_raster_witnesses(tmp_path):
+    titles = [
+        ('THE ORISSA GAZETTE', 80, 380, 12),
+        ('EXTRA ORDINARY', 80, 364, 10),
+        ('PUBLISHED BY AUTHORITY', 80, 348, 10),
+        ('No.710, CUTTACK, FRIDAY, MAY 28, 2004 / JAISTHA 7, 1926', 65, 326, 9),
+        ('ORISSA ELECTRICITY REGULATORY COMMISSION', 80, 297, 10),
+    ]
+    header = '\n'.join(f'BT /F1 {size} Tf {x} {y} Td ({line}) Tj ET' for line, x, y, size in titles)
+    strokes = '\n0.72 w 55 338 m 345 338 l S 55 313 m 345 313 l S'
+    proof_source = tmp_path / 'gazette.pdf'
+    sha = _source(proof_source, extra=header + strokes, paragraph_y=260)
+    with pdfplumber.open(proof_source) as pdf:
+        page = pdf.pages[0]
+        text = page.extract_text()
+        proof = native_source_raster_evidence(_record(text), page, sha, text)
+        assert proof['ready'] and proof['unaccounted_ink_pixels'] == 0
+        assert [r['classification'] for r in proof['decorative_regions']] == [
+            'native_gazette_issue_divider', 'native_gazette_issue_divider']
+        assert [r['source_line_bbox'][1] for r in proof['decorative_regions']] == [62, 87]
+
+        missing_number = text.replace('51%', '')
+        verdict = native_source_raster_evidence(_record(missing_number), page, sha, missing_number)
+        assert not verdict['ready']
+        assert verdict['reason'] == 'native_text_omits_pdf_character'
+
+    for variation, variant_header, extra in (
+            ('adjacent ink', header, '\n0 0 0 rg 90 336 3 7 re f'),
+            ('without authority', header.replace('PUBLISHED BY AUTHORITY', 'THIRD PARTY'), ''),
+            ('no native vectors', header, '\n55 337.64 290 0.72 re f 55 312.64 290 0.72 re f')):
+        negative_source = tmp_path / (variation + '.pdf')
+        actual_strokes = '' if variation == 'no native vectors' else strokes
+        sha = _source(negative_source, extra=variant_header + actual_strokes + extra, paragraph_y=260)
+        with pdfplumber.open(negative_source) as pdf:
+            page = pdf.pages[0]
+            text = page.extract_text()
+            verdict = native_source_raster_evidence(_record(text), page, sha, text)
+        assert not verdict['ready'], variation
+        assert verdict['unaccounted_ink_pixels'] > 0, variation
+        assert verdict['decorative_regions'] == [], variation
