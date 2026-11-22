@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0rc25.post5
+
+- Recognize the two source-native issue dividers in the historical Orissa Gazette when their complete raster components match the original strokes and surround the printed issue line. Independent text and uncovered ink checks still apply.
+
 ## 0.2.0rc25.post4
 
 - Recover scanned grid candidates when the original bottom ruling joins both sides and the contour padding explains the offset. Keep the prior table IDs and row and column review requirements.

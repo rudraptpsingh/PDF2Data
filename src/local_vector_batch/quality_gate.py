@@ -270,12 +270,15 @@ def native_source_raster_evidence(page: dict, source_page, source_pdf_sha256: st
         body_limit = min(raster.height, body_bottom+int(.04*raster.height)) if body_bottom else raster.height
         outside = (ink & ~covered).astype("uint8")
         nlabels, _, stats, _ = cv2.connectedComponentsWithStats(outside, 8)
-        from .source_rules import dotted_horizontal_rules
+        from .source_rules import dotted_horizontal_rules, native_gazette_issue_dividers
         dotted_indices, decorative = dotted_horizontal_rules(ink, stats, body_limit=body_limit,
             table_count=table_count, policy=policy)
+        dividers = native_gazette_issue_dividers(source_page, ink, stats,
+            source_bbox=rendered.bbox, policy=policy) if table_count == 0 else {}
+        decorative.extend(dividers.values())
         unresolved = []
         for index in range(1, nlabels):
-            if index in dotted_indices:
+            if index in dotted_indices or index in dividers:
                 continue
             x, y, width, height, area = [int(value) for value in stats[index]]
             if area <= policy["source_speck_max_pixels"]:
