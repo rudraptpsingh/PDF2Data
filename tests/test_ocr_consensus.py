@@ -17,6 +17,17 @@ def test_exact_numeric_sequence_required_even_with_nearly_identical_words():
     assert "numeric_disagreement" in result["review_reasons"]
 
 
+def test_ocr_consensus_compares_numeric_ordinals_exactly():
+    text = ("The commission may examine every application in the register and review the information supplied "
+            "with the documents before publishing a decision after the hearing has been completed. ") * 3
+    text += "File by the 30th day."
+    same = _compare(text, text.replace("30th", "30ᵗʰ"))
+    assert same["consensus_candidate"]
+    assert same["vision_numeric_tokens"] == ["30th"]
+    changed = _compare(text, text.replace("30th", "31st"))
+    assert changed["review_reasons"] == ["numeric_disagreement"]
+
+
 def test_layout_warning_and_missing_clause_block_candidate():
     text = "Clause 1 requires generation from renewable sources. Clause 2 requires monthly reporting of actual drawal. Clause 3 defines the yearly test and billing."
     assert "table_or_layout_review" in _compare(text, text, True)["review_reasons"]
