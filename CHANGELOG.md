@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0rc25.post4
+
+- Recover scanned grid candidates when the original bottom ruling joins both sides and the contour padding explains the offset. Keep the prior table IDs and row and column review requirements.
+
 ## 0.2.0rc25.post3
 
 - Include attached ordinals such as `30th` in exact numeric comparisons for the quality gate and independent OCR audit.
